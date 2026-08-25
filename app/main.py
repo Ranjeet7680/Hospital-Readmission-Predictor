@@ -341,15 +341,22 @@ async def patients_directory(request: Request):
 async def prediction_history(
     request: Request,
     search: Optional[str] = Query(None),
+    risk_level: Optional[str] = Query(None),
     risk_tier: Optional[str] = Query(None),
+    department: Optional[str] = Query(None),
     status: Optional[str] = Query(None)
 ):
-    filtered = db.filter_history(search=search, risk_tier=risk_tier, status=status)
+    r_filter = risk_level or risk_tier
+    filtered = db.get_predictions(risk_level=r_filter, department=department, search=search)
     return templates.TemplateResponse(request=request, name="prediction_history.html", context={
         "active_page": "history",
+        "predictions": filtered,
         "history": filtered,
+        "selected_search": search or "",
+        "selected_risk": r_filter or "All Levels",
+        "selected_dept": department or "All Departments",
         "current_search": search or "",
-        "current_risk": risk_tier or "",
+        "current_risk": r_filter or "",
         "current_status": status or ""
     })
 

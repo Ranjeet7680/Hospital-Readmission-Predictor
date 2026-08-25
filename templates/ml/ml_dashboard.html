@@ -4,95 +4,130 @@
 {% block header_title %}Executive ML & Deep Learning Intelligence{% endblock %}
 
 {% block content %}
-<div class="max-w-7xl mx-auto space-y-6">
+<div class="max-w-7xl mx-auto space-y-6 animate-fade-in pb-12">
     <!-- Header -->
-    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-white p-6 rounded-3xl border border-outline-variant/60 shadow-xs">
         <div>
-            <h1 class="text-2xl font-bold text-on-surface" data-i18n="ml_dashboard">Executive ML Intelligence Dashboard</h1>
-            <p class="text-sm text-secondary">Cohort: <strong>Diabetes 130-US Hospitals (1999-2008)</strong> • 101,766 Encounters • Model: <strong>XGBoost v2.4.1</strong></p>
+            <h1 class="text-2xl sm:text-3xl font-extrabold text-on-surface" data-i18n="ml_dashboard">Executive ML Intelligence Dashboard</h1>
+            <p class="text-xs sm:text-sm text-secondary mt-1">Cohort: <strong>Diabetes 130-US Hospitals (1999-2008)</strong> • <strong>101,766</strong> Baseline Encounters • Production Model: <strong>XGBoost v2.4.1</strong></p>
         </div>
-        <div class="flex items-center gap-2">
-            <a href="/ml/training" class="px-4 py-2 bg-primary text-on-primary rounded-xl font-bold text-xs hover:bg-on-primary-fixed-variant transition-colors shadow-xs flex items-center gap-1.5">
-                <span class="material-symbols-outlined text-[16px]">model_training</span>
-                Open Training Studio
+        <div class="flex items-center gap-3">
+            <a href="/ml/training" class="px-5 py-2.5 bg-primary text-white rounded-2xl font-bold text-xs hover:bg-primary/90 transition-all shadow-md flex items-center gap-1.5 hover:scale-[1.02] active:scale-[0.98]">
+                <span class="material-symbols-outlined text-base">model_training</span>
+                <span>Open Training Studio</span>
             </a>
-            <a href="/ml/chat" class="px-3.5 py-2 border border-outline-variant text-secondary hover:text-on-surface font-bold text-xs rounded-xl hover:bg-surface-container-low transition-colors flex items-center gap-1.5">
-                <span class="material-symbols-outlined text-[16px]">chat</span>
-                Ask the Model
+            <a href="/ml/chat" class="px-4 py-2.5 border border-outline-variant text-secondary hover:text-on-surface font-bold text-xs rounded-2xl hover:bg-surface-container-low transition-colors flex items-center gap-1.5 shadow-xs">
+                <span class="material-symbols-outlined text-base">chat</span>
+                <span>Ask the Model</span>
             </a>
         </div>
     </div>
 
     <!-- 4 KPI Cards with Animated Count-Up -->
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
         <!-- 1. Active Model -->
-        <div class="p-5 bg-surface-container-lowest border border-outline-variant rounded-2xl shadow-xs">
-            <span class="text-xs font-bold text-secondary uppercase">Active Production Model</span>
-            <p class="text-xl font-bold text-primary mt-1">XGBoost v2.4.1</p>
-            <span class="text-[11px] text-[#146c2e] font-semibold">Champion Model • Certified</span>
+        <div class="p-6 bg-white border border-outline-variant/60 rounded-3xl shadow-xs space-y-1">
+            <span class="text-xs font-bold text-secondary uppercase tracking-wider block">Active Production Model</span>
+            <p class="text-2xl font-extrabold text-primary">XGBoost v2.4.1</p>
+            <span class="text-xs text-[#146c2e] font-bold flex items-center gap-1">
+                <span class="w-2 h-2 rounded-full bg-[#146c2e] animate-pulse"></span>
+                <span>Champion Model • Certified</span>
+            </span>
         </div>
 
         <!-- 2. ROC-AUC -->
-        <div class="p-5 bg-surface-container-lowest border border-outline-variant rounded-2xl shadow-xs">
-            <span class="text-xs font-bold text-secondary uppercase">ROC-AUC Score</span>
-            <p class="text-3xl font-bold text-on-surface mt-1" data-countup="0.9794" data-decimals="4">0.9794</p>
-            <span class="text-[11px] text-[#146c2e] font-semibold">Test partition holdout</span>
+        <div class="p-6 bg-white border border-outline-variant/60 rounded-3xl shadow-xs space-y-1">
+            <span class="text-xs font-bold text-secondary uppercase tracking-wider block">ROC-AUC Score</span>
+            <p class="text-3xl font-extrabold text-on-surface" data-countup="0.9794" data-decimals="4">0.9794</p>
+            <span class="text-xs text-[#146c2e] font-semibold">Test partition holdout</span>
         </div>
 
         <!-- 3. Prediction Accuracy -->
-        <div class="p-5 bg-surface-container-lowest border border-outline-variant rounded-2xl shadow-xs">
-            <span class="text-xs font-bold text-secondary uppercase">Accuracy</span>
-            <p class="text-3xl font-bold text-on-surface mt-1" data-countup="93.7" data-is-pct="true" data-decimals="1">93.7%</p>
-            <span class="text-[11px] text-[#146c2e] font-semibold">Sensitivity: 90.2%</span>
+        <div class="p-6 bg-white border border-outline-variant/60 rounded-3xl shadow-xs space-y-1">
+            <span class="text-xs font-bold text-secondary uppercase tracking-wider block">Accuracy</span>
+            <p class="text-3xl font-extrabold text-on-surface" data-countup="93.7" data-is-pct="true" data-decimals="1">93.7%</p>
+            <span class="text-xs text-[#146c2e] font-semibold">Sensitivity: 90.2%</span>
         </div>
 
         <!-- 4. Screened Patients -->
-        <div class="p-5 bg-surface-container-lowest border border-outline-variant rounded-2xl shadow-xs">
-            <span class="text-xs font-bold text-secondary uppercase">Total Screened</span>
-            <p class="text-3xl font-bold text-on-surface mt-1" data-countup="30482">30,482</p>
-            <span class="text-[11px] text-error font-semibold">12.2% High Risk Flagged</span>
+        <div class="p-6 bg-white border border-outline-variant/60 rounded-3xl shadow-xs space-y-1">
+            <span class="text-xs font-bold text-secondary uppercase tracking-wider block">Total Screened</span>
+            <p class="text-3xl font-extrabold text-on-surface" data-countup="30482">30,482</p>
+            <span class="text-xs text-error font-bold">12.2% High Risk Flagged</span>
         </div>
     </div>
 
     <!-- Quick Navigation Hub for AI Modules -->
-    <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
-        <a href="/ml/dataset" class="p-4 bg-surface-container-lowest border border-outline-variant rounded-xl text-center hover:border-primary transition-all group">
-            <span class="material-symbols-outlined text-primary text-2xl mb-1 group-hover:scale-110 transition-transform">dataset</span>
+    <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
+        <a href="/ml/dataset" class="p-5 bg-white border border-outline-variant/60 rounded-2xl text-center hover:border-primary hover:shadow-md transition-all group">
+            <span class="material-symbols-outlined text-primary text-3xl mb-1.5 group-hover:scale-110 transition-transform">dataset</span>
             <span class="block text-xs font-bold text-on-surface">101k Dataset</span>
         </a>
-        <a href="/ml/preprocessing" class="p-4 bg-surface-container-lowest border border-outline-variant rounded-xl text-center hover:border-primary transition-all group">
-            <span class="material-symbols-outlined text-primary text-2xl mb-1 group-hover:scale-110 transition-transform">account_tree</span>
+        <a href="/ml/preprocessing" class="p-5 bg-white border border-outline-variant/60 rounded-2xl text-center hover:border-primary hover:shadow-md transition-all group">
+            <span class="material-symbols-outlined text-primary text-3xl mb-1.5 group-hover:scale-110 transition-transform">account_tree</span>
             <span class="block text-xs font-bold text-on-surface">10-Stage Pipe</span>
         </a>
-        <a href="/ml/deep-learning" class="p-4 bg-surface-container-lowest border border-outline-variant rounded-xl text-center hover:border-primary transition-all group">
-            <span class="material-symbols-outlined text-primary text-2xl mb-1 group-hover:scale-110 transition-transform">hub</span>
+        <a href="/ml/deep-learning" class="p-5 bg-white border border-outline-variant/60 rounded-2xl text-center hover:border-primary hover:shadow-md transition-all group">
+            <span class="material-symbols-outlined text-primary text-3xl mb-1.5 group-hover:scale-110 transition-transform">hub</span>
             <span class="block text-xs font-bold text-on-surface">PyTorch DL</span>
         </a>
-        <a href="/ml/comparison" class="p-4 bg-surface-container-lowest border border-outline-variant rounded-xl text-center hover:border-primary transition-all group">
-            <span class="material-symbols-outlined text-primary text-2xl mb-1 group-hover:scale-110 transition-transform">compare_arrows</span>
+        <a href="/ml/comparison" class="p-5 bg-white border border-outline-variant/60 rounded-2xl text-center hover:border-primary hover:shadow-md transition-all group">
+            <span class="material-symbols-outlined text-primary text-3xl mb-1.5 group-hover:scale-110 transition-transform">compare_arrows</span>
             <span class="block text-xs font-bold text-on-surface">7x Benchmark</span>
         </a>
-        <a href="/ml/xai" class="p-4 bg-surface-container-lowest border border-outline-variant rounded-xl text-center hover:border-primary transition-all group">
-            <span class="material-symbols-outlined text-primary text-2xl mb-1 group-hover:scale-110 transition-transform">waterfall_chart</span>
+        <a href="/ml/xai" class="p-5 bg-white border border-outline-variant/60 rounded-2xl text-center hover:border-primary hover:shadow-md transition-all group">
+            <span class="material-symbols-outlined text-primary text-3xl mb-1.5 group-hover:scale-110 transition-transform">waterfall_chart</span>
             <span class="block text-xs font-bold text-on-surface">SHAP XAI</span>
         </a>
-        <a href="/ml/monitoring" class="p-4 bg-surface-container-lowest border border-outline-variant rounded-xl text-center hover:border-primary transition-all group">
-            <span class="material-symbols-outlined text-primary text-2xl mb-1 group-hover:scale-110 transition-transform">monitoring</span>
+        <a href="/ml/monitoring" class="p-5 bg-white border border-outline-variant/60 rounded-2xl text-center hover:border-primary hover:shadow-md transition-all group">
+            <span class="material-symbols-outlined text-primary text-3xl mb-1.5 group-hover:scale-110 transition-transform">monitoring</span>
             <span class="block text-xs font-bold text-on-surface">Drift Monitor</span>
         </a>
     </div>
 
     <!-- Active Neural Network Flow Visualization -->
-    <div class="p-6 bg-surface-container-lowest border border-outline-variant rounded-2xl shadow-xs space-y-3">
-        <div class="flex justify-between items-center border-b border-surface-variant pb-2">
+    <div class="p-6 bg-white border border-outline-variant/60 rounded-3xl shadow-xs space-y-4">
+        <div class="flex justify-between items-center border-b border-surface-variant pb-3">
             <div>
-                <h3 class="font-bold text-on-surface text-sm">PyTorch Deep Learning Tabular Pipeline</h3>
-                <p class="text-xs text-secondary">Real-time tensor batch feedforward simulation</p>
+                <h3 class="font-bold text-on-surface text-base">PyTorch Deep Learning Tabular Pipeline</h3>
+                <p class="text-xs text-secondary">Real-time tensor batch feedforward simulation & feature embedding layers</p>
             </div>
-            <span class="px-2.5 py-0.5 rounded-full bg-primary-fixed text-primary font-bold text-xs">PyTorch 2.1.0</span>
+            <div class="flex items-center gap-2">
+                <span class="px-2.5 py-1 rounded-full bg-emerald-100 text-emerald-800 font-bold text-[11px] flex items-center gap-1">
+                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-600 animate-pulse"></span>
+                    <span>Tensor Flow: Active (60fps)</span>
+                </span>
+                <span class="px-2.5 py-1 rounded-full bg-primary-fixed text-primary font-bold text-[11px]">PyTorch 2.1.0</span>
+            </div>
         </div>
-        <div class="w-full h-44 bg-surface-container-low rounded-xl relative overflow-hidden flex items-center justify-center">
-            <canvas id="neural-canvas" class="w-full h-full"></canvas>
+
+        <!-- Dynamic Visual Graph with SVG Architecture Stages -->
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-3">
+            <div class="p-3.5 rounded-2xl bg-surface-container-low border border-outline-variant/60 text-center">
+                <span class="text-[10px] font-bold uppercase tracking-wider text-secondary block">Layer 1: Input Embeddings</span>
+                <p class="font-mono font-bold text-xs text-primary mt-1">Dense (101,766 × 48)</p>
+                <span class="text-[10px] text-emerald-700 font-semibold">Continuous + Categorical</span>
+            </div>
+            <div class="p-3.5 rounded-2xl bg-surface-container-low border border-outline-variant/60 text-center">
+                <span class="text-[10px] font-bold uppercase tracking-wider text-secondary block">Layer 2: Multi-Head Attention</span>
+                <p class="font-mono font-bold text-xs text-primary mt-1">4 Heads • d_model=128</p>
+                <span class="text-[10px] text-secondary font-semibold">Inter-Feature Interaction</span>
+            </div>
+            <div class="p-3.5 rounded-2xl bg-surface-container-low border border-outline-variant/60 text-center">
+                <span class="text-[10px] font-bold uppercase tracking-wider text-secondary block">Layer 3: Residual MLP</span>
+                <p class="font-mono font-bold text-xs text-primary mt-1">512 → 256 → 128</p>
+                <span class="text-[10px] text-secondary font-semibold">GELU + BatchNorm + Dropout</span>
+            </div>
+            <div class="p-3.5 rounded-2xl bg-surface-container-low border border-outline-variant/60 text-center">
+                <span class="text-[10px] font-bold uppercase tracking-wider text-secondary block">Layer 4: Hazard Probability</span>
+                <p class="font-mono font-bold text-xs text-primary mt-1">Sigmoid Calibrated</p>
+                <span class="text-[10px] text-primary font-bold">30-Day Readmission Risk</span>
+            </div>
+        </div>
+
+        <!-- Canvas Container with explicit dimensions -->
+        <div class="w-full h-48 bg-gradient-to-br from-slate-900 via-slate-800 to-slate-950 rounded-2xl relative overflow-hidden flex items-center justify-center border border-slate-700 shadow-inner">
+            <canvas id="neural-canvas" class="w-full h-full block" style="min-height: 190px;"></canvas>
         </div>
     </div>
 </div>
@@ -101,7 +136,9 @@
 {% block scripts %}
 <script>
     document.addEventListener('DOMContentLoaded', () => {
-        window.animationEngine?.animateNeuralFlow('neural-canvas');
+        setTimeout(() => {
+            window.animationEngine?.animateNeuralFlow('neural-canvas');
+        }, 100);
     });
 </script>
 {% endblock %}

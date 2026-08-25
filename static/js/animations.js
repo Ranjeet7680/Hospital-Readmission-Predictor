@@ -147,32 +147,44 @@ class AnimationEngine {
     }
 
     /**
-     * Neural Particle Canvas Simulator
+     * Neural Particle Canvas Simulator (High-Contrast 60FPS)
      */
     animateNeuralFlow(canvasId) {
         const canvas = document.getElementById(canvasId);
         if (!canvas) return;
         const ctx = canvas.getContext('2d');
-        let width = canvas.width = canvas.parentElement.clientWidth || 400;
-        let height = canvas.height = canvas.parentElement.clientHeight || 180;
+        
+        const resize = () => {
+            const rect = canvas.getBoundingClientRect();
+            canvas.width = rect.width || canvas.parentElement?.clientWidth || 600;
+            canvas.height = rect.height || canvas.parentElement?.clientHeight || 190;
+        };
+        resize();
+        window.addEventListener('resize', resize);
 
         const layers = [4, 6, 6, 2];
         const nodes = [];
 
-        layers.forEach((count, lIdx) => {
-            const layerX = (lIdx / (layers.length - 1)) * (width - 60) + 30;
-            for (let i = 0; i < count; i++) {
-                const nodeY = ((i + 0.5) / count) * (height - 40) + 20;
-                nodes.push({ x: layerX, y: nodeY, layer: lIdx });
-            }
-        });
+        const updateNodes = () => {
+            nodes.length = 0;
+            const width = canvas.width;
+            const height = canvas.height;
+            layers.forEach((count, lIdx) => {
+                const layerX = (lIdx / (layers.length - 1)) * (width - 80) + 40;
+                for (let i = 0; i < count; i++) {
+                    const nodeY = ((i + 0.5) / count) * (height - 40) + 20;
+                    nodes.push({ x: layerX, y: nodeY, layer: lIdx });
+                }
+            });
+        };
+        updateNodes();
 
         const particles = [];
-        for (let i = 0; i < 20; i++) {
+        for (let i = 0; i < 24; i++) {
             particles.push({
                 fromLayer: 0,
                 progress: Math.random(),
-                speed: 0.006 + Math.random() * 0.008,
+                speed: 0.008 + Math.random() * 0.009,
                 fromNode: Math.floor(Math.random() * layers[0]),
                 toNode: Math.floor(Math.random() * layers[1])
             });
@@ -180,11 +192,13 @@ class AnimationEngine {
 
         const render = () => {
             if (this.reduceMotion) return;
+            const width = canvas.width;
+            const height = canvas.height;
             ctx.clearRect(0, 0, width, height);
 
             // Connective Synapse Lines
-            ctx.strokeStyle = 'rgba(0, 91, 191, 0.12)';
-            ctx.lineWidth = 1;
+            ctx.strokeStyle = 'rgba(56, 189, 248, 0.2)';
+            ctx.lineWidth = 1.2;
             for (let i = 0; i < nodes.length; i++) {
                 for (let j = i + 1; j < nodes.length; j++) {
                     if (nodes[j].layer === nodes[i].layer + 1) {
@@ -196,7 +210,7 @@ class AnimationEngine {
                 }
             }
 
-            // Flowing AI Pulses
+            // Flowing AI Pulses (Glowing Cyan & Amber)
             particles.forEach(p => {
                 p.progress += p.speed;
                 if (p.progress >= 1) {
@@ -212,8 +226,8 @@ class AnimationEngine {
                     const px = p.fromNodeCoord.x + (p.toNodeCoord.x - p.fromNodeCoord.x) * p.progress;
                     const py = p.fromNodeCoord.y + (p.toNodeCoord.y - p.fromNodeCoord.y) * p.progress;
                     ctx.fillStyle = '#22d3ee';
-                    ctx.shadowColor = '#005bbf';
-                    ctx.shadowBlur = 4;
+                    ctx.shadowColor = '#00d2ff';
+                    ctx.shadowBlur = 8;
                     ctx.beginPath();
                     ctx.arc(px, py, 3.5, 0, Math.PI * 2);
                     ctx.fill();
@@ -223,9 +237,9 @@ class AnimationEngine {
 
             // Neural Nodes
             nodes.forEach(node => {
-                ctx.fillStyle = '#005bbf';
+                ctx.fillStyle = '#0284c7';
                 ctx.beginPath();
-                ctx.arc(node.x, node.y, 4, 0, Math.PI * 2);
+                ctx.arc(node.x, node.y, 4.5, 0, Math.PI * 2);
                 ctx.fill();
                 ctx.strokeStyle = '#ffffff';
                 ctx.lineWidth = 1.5;

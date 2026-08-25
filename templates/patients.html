@@ -4,15 +4,15 @@
 {% block header_title %}Active Inpatients & Patient Directory{% endblock %}
 
 {% block content %}
-<div class="max-w-7xl mx-auto space-y-lg">
+<div class="max-w-7xl mx-auto space-y-6 animate-fade-in pb-12">
     <!-- Header Section -->
-    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-white p-6 rounded-3xl border border-outline-variant/60 shadow-xs">
         <div>
-            <h1 class="text-headline-lg font-headline-lg font-bold text-on-surface">Patient Directory</h1>
-            <p class="text-body-lg font-body-lg text-secondary mt-1">Manage active hospital admissions, diagnostic history, and readmission risk tracking.</p>
+            <h1 class="text-2xl sm:text-3xl font-extrabold text-on-surface">Patient Directory</h1>
+            <p class="text-xs sm:text-sm text-secondary mt-1">Manage active hospital admissions, diagnostic history, and readmission risk tracking.</p>
         </div>
         <div class="flex items-center gap-3">
-            <a href="/prediction/new" class="flex items-center gap-2 px-5 py-2.5 bg-primary text-on-primary rounded-xl font-bold font-label-lg hover:bg-on-primary-fixed-variant transition-colors shadow-md">
+            <a href="/prediction/new" class="flex items-center gap-2 px-5 py-2.5 bg-primary text-white rounded-2xl font-bold text-xs hover:bg-primary/90 transition-all shadow-md hover:scale-[1.02] active:scale-[0.98]">
                 <span class="material-symbols-outlined text-[18px]">person_add</span>
                 <span>Add Patient / Prediction</span>
             </a>
@@ -20,13 +20,13 @@
     </div>
 
     <!-- Search & Filter Card -->
-    <div class="bg-surface-container-lowest p-md rounded-2xl border border-outline-variant shadow-sm flex flex-col md:flex-row gap-md items-center">
+    <div class="bg-white p-4 sm:p-5 rounded-3xl border border-outline-variant/60 shadow-xs flex flex-col md:flex-row gap-4 items-center">
         <div class="flex-1 w-full relative">
-            <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-secondary">search</span>
-            <input id="patient-search" placeholder="Filter by patient name, ID, or condition..." oninput="filterPatients()" class="w-full pl-10 pr-4 py-2.5 bg-surface border border-outline-variant rounded-xl text-body-md focus:border-primary outline-none"/>
+            <span class="material-symbols-outlined absolute left-3.5 top-1/2 -translate-y-1/2 text-secondary text-lg">search</span>
+            <input id="patient-search" placeholder="Filter by patient name, ID, or condition..." oninput="filterPatients()" class="w-full pl-10 pr-4 py-2.5 bg-surface border border-outline-variant rounded-2xl text-xs focus:ring-2 focus:ring-primary focus:border-primary outline-none font-medium"/>
         </div>
         <div class="w-full md:w-64">
-            <select id="department-filter" onchange="filterPatients()" class="w-full bg-surface border border-outline-variant rounded-xl px-3 py-2.5 text-body-md focus:border-primary outline-none cursor-pointer">
+            <select id="department-filter" onchange="filterPatients()" class="w-full bg-surface border border-outline-variant rounded-2xl px-4 py-2.5 text-xs focus:ring-2 focus:ring-primary focus:border-primary outline-none cursor-pointer font-medium">
                 <option value="all">All Departments</option>
                 <option value="Cardiology">Cardiology</option>
                 <option value="Neurology">Neurology</option>
@@ -37,63 +37,66 @@
     </div>
 
     <!-- Patient Grid Cards -->
-    <div id="patients-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-lg">
+    <div id="patients-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {% for pid, p in patients.items() %}
-        <div class="patient-card bg-surface-container-lowest border border-outline-variant rounded-2xl p-lg shadow-sm hover:shadow-md hover:border-primary/50 transition-all flex flex-col justify-between"
+        <div class="patient-card bg-white border border-outline-variant/80 rounded-3xl p-6 shadow-xs hover:shadow-lg hover:border-primary/50 transition-all flex flex-col justify-between"
              data-name="{{ p.name | lower }}" data-id="{{ p.id | lower }}" data-dept="{{ p.department }}" data-diag="{{ p.primary_diagnosis | lower }}">
             
             <div>
-                <div class="flex justify-between items-start mb-md">
+                <!-- Top Card Header -->
+                <div class="flex justify-between items-start mb-4 border-b border-surface-variant pb-3">
                     <div class="flex items-center gap-3">
-                        <div class="w-12 h-12 rounded-full bg-secondary-container text-on-secondary-container flex items-center justify-center font-bold text-base">
+                        <div class="w-12 h-12 rounded-2xl bg-gradient-to-br from-primary/15 to-primary/5 text-primary flex items-center justify-center font-extrabold text-base border border-primary/20 shadow-inner">
                             {{ p.initials }}
                         </div>
                         <div>
-                            <h3 class="text-title-md font-bold text-on-surface">{{ p.name }}</h3>
-                            <span class="text-xs text-secondary font-mono">#{{ p.id }}</span>
+                            <h3 class="text-base font-bold text-on-surface leading-tight">{{ p.name }}</h3>
+                            <span class="text-xs text-secondary font-mono font-semibold">#{{ p.id }}</span>
                         </div>
                     </div>
 
                     {% if p.acuity_level == 'High' %}
-                        <span class="px-2.5 py-0.5 rounded-full bg-error text-on-error text-xs font-bold flex items-center gap-1 shadow-xs">
-                            <span class="material-symbols-outlined text-[14px]">warning</span> High
+                        <span class="px-2.5 py-1 rounded-full bg-error text-white text-[11px] font-extrabold flex items-center gap-1 shadow-xs">
+                            <span class="material-symbols-outlined text-[13px]">warning</span> High Risk
                         </span>
                     {% elif p.acuity_level == 'Moderate' %}
-                        <span class="px-2.5 py-0.5 rounded-full bg-amber-100 text-amber-800 border border-amber-200 text-xs font-bold">
+                        <span class="px-2.5 py-1 rounded-full bg-amber-100 text-amber-800 border border-amber-300 text-[11px] font-bold">
                             Moderate
                         </span>
                     {% else %}
-                        <span class="px-2.5 py-0.5 rounded-full bg-green-100 text-green-800 border border-green-200 text-xs font-bold">
-                            Low
+                        <span class="px-2.5 py-1 rounded-full bg-emerald-100 text-emerald-800 border border-emerald-300 text-[11px] font-bold">
+                            Low Risk
                         </span>
                     {% endif %}
                 </div>
 
-                <div class="space-y-2 text-xs text-secondary mb-md">
-                    <div class="flex justify-between py-1 border-b border-surface-variant">
-                        <span>Age / Gender:</span>
+                <!-- Patient Clinical Meta -->
+                <div class="space-y-2 text-xs text-secondary mb-5">
+                    <div class="flex justify-between py-1 border-b border-surface-variant/60">
+                        <span class="font-medium text-secondary">Age / Gender:</span>
                         <span class="font-bold text-on-surface">{{ p.age }} yrs / {{ p.gender }}</span>
                     </div>
-                    <div class="flex justify-between py-1 border-b border-surface-variant">
-                        <span>Department:</span>
+                    <div class="flex justify-between py-1 border-b border-surface-variant/60">
+                        <span class="font-medium text-secondary">Department:</span>
                         <span class="font-bold text-primary">{{ p.department }}</span>
                     </div>
-                    <div class="flex justify-between py-1 border-b border-surface-variant">
-                        <span>Attending:</span>
+                    <div class="flex justify-between py-1 border-b border-surface-variant/60">
+                        <span class="font-medium text-secondary">Attending:</span>
                         <span class="font-medium text-on-surface">{{ p.attending_physician }}</span>
                     </div>
-                    <div class="py-1">
-                        <span class="block text-secondary">Primary Diagnosis:</span>
-                        <span class="font-bold text-on-surface line-clamp-1">{{ p.primary_diagnosis }}</span>
+                    <div class="pt-1">
+                        <span class="block font-medium text-secondary mb-0.5">Primary Diagnosis:</span>
+                        <span class="font-bold text-on-surface line-clamp-1 bg-surface-container-low px-2 py-1 rounded-lg border border-outline-variant/40">{{ p.primary_diagnosis }}</span>
                     </div>
                 </div>
             </div>
 
+            <!-- Card Bottom Actions -->
             <div class="flex items-center gap-2 pt-3 border-t border-outline-variant/60">
-                <a href="/patient/{{ p.id }}" class="flex-1 text-center py-2 rounded-xl bg-surface border border-outline-variant text-secondary hover:text-primary font-bold text-xs hover:bg-surface-container-low transition-colors">
+                <a href="/patient/{{ p.id }}" class="flex-1 text-center py-2.5 rounded-2xl bg-surface border border-outline-variant text-secondary hover:text-primary font-bold text-xs hover:bg-surface-container-low transition-colors">
                     Profile & Timeline
                 </a>
-                <a href="/prediction/{{ p.id }}" class="flex-1 text-center py-2 rounded-xl bg-primary text-on-primary font-bold text-xs hover:bg-on-primary-fixed-variant transition-colors shadow-xs">
+                <a href="/prediction/{{ p.id }}" class="flex-1 text-center py-2.5 rounded-2xl bg-primary text-white font-bold text-xs hover:bg-primary/90 transition-colors shadow-xs">
                     Assessment
                 </a>
             </div>

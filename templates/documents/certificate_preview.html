@@ -4,48 +4,49 @@
 {% block header_title %}Official Medical Certificate{% endblock %}
 
 {% block content %}
-<div class="max-w-4xl mx-auto space-y-6">
+<div class="max-w-4xl mx-auto space-y-6 animate-fade-in pb-12">
     <!-- Action Bar -->
-    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-        <a href="/certificates" class="text-xs text-secondary hover:text-primary transition-colors flex items-center gap-1 font-semibold">
-            <span class="material-symbols-outlined text-[16px]">arrow_back</span> Back to Certificates
+    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-white p-5 rounded-3xl border border-outline-variant/60 shadow-xs">
+        <a href="/medical-certificates" class="text-xs text-secondary hover:text-primary transition-colors flex items-center gap-1.5 font-bold">
+            <span class="material-symbols-outlined text-[18px]">arrow_back</span>
+            <span>Back to Certificates</span>
         </a>
-        <div class="flex items-center gap-2">
-            <button onclick="window.print()" class="px-4 py-2 bg-primary text-on-primary font-bold text-xs rounded-xl hover:bg-on-primary-fixed-variant transition-colors shadow-xs flex items-center gap-1.5">
-                <span class="material-symbols-outlined text-[16px]">print</span>
-                Print / Save PDF
+        <div class="flex items-center gap-2.5">
+            <button onclick="window.print()" class="px-5 py-2.5 bg-primary text-white font-extrabold text-xs rounded-2xl hover:bg-primary/90 transition-all shadow-md flex items-center gap-1.5 hover:scale-[1.02] active:scale-[0.98]">
+                <span class="material-symbols-outlined text-base">print</span>
+                <span>Print / Save PDF</span>
             </button>
-            <a href="/verify-certificate/{{ cert.id }}" target="_blank" class="px-3.5 py-2 border border-outline-variant text-secondary hover:text-on-surface font-bold text-xs rounded-xl hover:bg-surface-container-low transition-colors flex items-center gap-1.5">
-                <span class="material-symbols-outlined text-[16px]">qr_code_scanner</span>
-                Public QR Verification
+            <a href="/verify-certificate/{{ cert.id }}" target="_blank" class="px-4 py-2.5 border border-outline-variant text-secondary hover:text-on-surface font-bold text-xs rounded-2xl hover:bg-surface-container-low transition-colors flex items-center gap-1.5 shadow-xs">
+                <span class="material-symbols-outlined text-base">qr_code_scanner</span>
+                <span>Public QR Verification</span>
             </a>
         </div>
     </div>
 
     <!-- Official Certificate Layout -->
-    <div class="bg-white border-2 border-slate-300 p-8 sm:p-12 rounded-2xl shadow-lg text-slate-800 space-y-8 font-serif relative">
+    <div class="bg-white border-4 border-amber-600/30 p-8 sm:p-12 rounded-3xl shadow-xl text-slate-800 space-y-8 font-serif relative overflow-hidden ring-1 ring-amber-500/20">
         <!-- Certificate Watermark / Header -->
-        <div class="text-center border-b-2 border-slate-800 pb-6 space-y-1">
-            <div class="w-12 h-12 rounded-full bg-primary-fixed text-primary flex items-center justify-center mx-auto mb-2">
-                <span class="material-symbols-outlined text-2xl font-sans">local_hospital</span>
+        <div class="text-center border-b-2 border-slate-800 pb-6 space-y-1 relative z-10">
+            <div class="w-14 h-14 rounded-2xl bg-primary/10 text-primary flex items-center justify-center mx-auto mb-2 border border-primary/20 shadow-inner">
+                <span class="material-symbols-outlined text-3xl">local_hospital</span>
             </div>
-            <h2 class="text-2xl font-black tracking-wider text-slate-900 uppercase">St. Jude Medical Center</h2>
-            <p class="text-xs tracking-widest text-slate-600 uppercase font-sans">Department of Inpatient Cardiology & Precision Care</p>
-            <p class="text-[11px] text-slate-500 font-sans">100 Hospital Way, Boston, MA 02115 • Tel: (555) 019-2830</p>
+            <h2 class="text-2xl sm:text-3xl font-black tracking-wider text-slate-900 uppercase">St. Jude Medical Center</h2>
+            <p class="text-xs tracking-widest text-slate-600 uppercase font-sans font-bold">Department of Inpatient Cardiology & Precision AI Care</p>
+            <p class="text-[11px] text-slate-500 font-sans">100 Hospital Way, Boston, MA 02115 • Tel: (555) 019-2830 • LUMINIX'26 Healthcare Track</p>
         </div>
 
         <!-- Title -->
-        <div class="text-center">
-            <h1 class="text-xl font-bold tracking-widest text-slate-900 uppercase underline decoration-2 underline-offset-4">
+        <div class="text-center relative z-10">
+            <h1 class="text-xl sm:text-2xl font-black tracking-widest text-slate-900 uppercase underline decoration-2 underline-offset-8">
                 {{ cert.type }}
             </h1>
-            <p class="text-xs text-slate-500 mt-1 font-sans">Certificate No: <span class="font-mono font-bold text-slate-800">{{ cert.id }}</span></p>
+            <p class="text-xs text-slate-500 mt-2 font-sans">Certificate No: <span class="font-mono font-bold text-slate-900 bg-slate-100 px-2.5 py-0.5 rounded">{{ cert.id }}</span></p>
         </div>
 
         <!-- Body Statement -->
-        <div class="text-sm leading-relaxed space-y-4 font-sans text-slate-700">
+        <div class="text-sm leading-relaxed space-y-4 font-sans text-slate-700 relative z-10">
             <p>
-                This is to certify that <strong>{{ cert.patient_name }}</strong> (Patient MRN: <span class="font-mono font-bold">{{ cert.patient_id }}</span>, DOB: {{ cert.dob }}) was examined and treated under my clinical care at St. Jude Medical Center on <strong>{{ cert.issue_date }}</strong>.
+                This is to certify that <strong>{{ cert.patient_name }}</strong> (Patient MRN: <span class="font-mono font-bold text-slate-900">{{ cert.patient_id }}</span>, DOB: <strong>{{ cert.dob }}</strong>) was examined and treated under clinical care at St. Jude Medical Center on <strong>{{ cert.issue_date }}</strong>.
             </p>
             <p>
                 The patient was diagnosed with <strong>{{ cert.diagnosis }}</strong> and is advised medical convalescence and rest from work / physical duties for a period of <strong>{{ cert.rest_period_days }} days</strong>, commencing from <strong>{{ cert.start_date }}</strong> to <strong>{{ cert.end_date }}</strong> (inclusive).
@@ -56,33 +57,37 @@
         </div>
 
         <!-- Signatures & QR Code Verification Footer -->
-        <div class="pt-8 border-t border-slate-200 grid grid-cols-1 sm:grid-cols-2 gap-8 items-end font-sans">
+        <div class="pt-8 border-t border-slate-200 grid grid-cols-1 sm:grid-cols-2 gap-8 items-end font-sans relative z-10">
             <!-- Left: QR Code Verification Placeholder -->
             <div class="flex items-center gap-3">
-                <div class="w-16 h-16 bg-slate-100 border border-slate-300 rounded-lg flex flex-col items-center justify-center text-slate-600">
+                <div class="w-16 h-16 bg-slate-50 border border-slate-300 rounded-xl flex flex-col items-center justify-center text-primary shadow-xs">
                     <span class="material-symbols-outlined text-2xl">qr_code_2</span>
-                    <span class="text-[8px] font-mono">SCAN TO VERIFY</span>
+                    <span class="text-[8px] font-mono font-bold text-slate-600">VERIFIED</span>
                 </div>
                 <div class="text-[11px] text-slate-500 space-y-0.5">
                     <p class="font-bold text-slate-800">Digitally Verified Document</p>
-                    <p>Verification ID: <span class="font-mono">{{ cert.id }}</span></p>
+                    <p>Verification ID: <span class="font-mono font-semibold">{{ cert.id }}</span></p>
                     <p class="text-[10px]">Issued: {{ cert.issue_date }}</p>
                 </div>
             </div>
 
             <!-- Right: Doctor Signature -->
             <div class="text-right space-y-1">
-                <div class="inline-block text-center border-t-2 border-slate-800 pt-2 min-w-[200px]">
-                    <p class="font-bold text-slate-900 text-sm">{{ cert.doctor_name }}</p>
-                    <p class="text-xs text-slate-600">{{ cert.doctor_specialty }}</p>
-                    <p class="text-[10px] text-slate-500 font-mono">Digitally Signed (SHA-256 Validated)</p>
+                <div class="inline-block text-center border-t-2 border-slate-800 pt-2 min-w-[220px]">
+                    <p class="font-bold text-slate-900 text-sm">Dr. Ranjeet Kumar, MD, FACC</p>
+                    <p class="text-xs text-slate-600">Chief Attending Physician & AI Lead</p>
+                    <p class="text-[10px] text-emerald-700 font-mono font-semibold flex items-center justify-center gap-1">
+                        <span class="material-symbols-outlined text-[12px]">verified</span>
+                        <span>Digitally Signed (SHA-256 Validated)</span>
+                    </p>
                 </div>
             </div>
         </div>
 
-        <!-- Legal Disclaimer -->
-        <div class="text-[10px] text-slate-400 text-center font-sans pt-4 border-t border-slate-100">
-            This document is valid only when issued and digitally authorized by the responsible licensed healthcare professional and healthcare facility.
+        <!-- Sanskrit Shloka & Legal Disclaimer -->
+        <div class="text-[10px] text-slate-500 text-center font-sans pt-4 border-t border-slate-100 space-y-1">
+            <p class="font-serif italic text-slate-700 font-semibold">"स्वास्थ्यं परमं धनम्, विज्ञानस्य साहाय्येन सर्वेषां जीवनं निरामयं भवतु।"</p>
+            <p class="text-[9px] text-slate-400">This document is valid only when issued and digitally authorized by the responsible licensed healthcare professional and healthcare facility.</p>
         </div>
     </div>
 </div>
