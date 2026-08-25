@@ -1,6 +1,7 @@
 /**
- * Premium Animation & Interaction Utilities
+ * Precision Clinical Animation & Physics Easing Engine
  * Hospital Readmission Predictor (HRP Clinical)
+ * Supports Spring Physics, Staggered Reveals, Gauge Sweeps, and Zero-Jank 60FPS CSS Transitions.
  */
 
 class AnimationEngine {
@@ -14,6 +15,9 @@ class AnimationEngine {
         }
         this.initCountUps();
         this.initGauges();
+        this.initScrollReveal();
+        this.initButtonMicroInteractions();
+        this.initCardHoverPhysics();
     }
 
     setReduceMotion(enabled) {
@@ -26,10 +30,74 @@ class AnimationEngine {
         }
     }
 
+    /**
+     * Staggered Scroll Observer for Cards and KPI Panels
+     */
+    initScrollReveal() {
+        if (this.reduceMotion) return;
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach((entry, idx) => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('is-revealed');
+                    entry.target.style.transitionDelay = `${(idx % 4) * 60}ms`;
+                    observer.unobserve(entry.target);
+                }
+            });
+        }, { threshold: 0.1 });
+
+        document.querySelectorAll('.animate-on-scroll, .patient-card, .kpi-card, .metric-card').forEach(el => {
+            el.classList.add('reveal-init');
+            observer.observe(el);
+        });
+    }
+
+    /**
+     * Interactive Button Micro-Interactions & Acoustic Click Binding
+     */
+    initButtonMicroInteractions() {
+        document.querySelectorAll('button, a.btn, [role="button"]').forEach(btn => {
+            btn.addEventListener('mousedown', () => {
+                if (!this.reduceMotion) {
+                    btn.style.transform = 'scale(0.97)';
+                }
+            });
+            btn.addEventListener('mouseup', () => {
+                if (!this.reduceMotion) {
+                    btn.style.transform = '';
+                }
+            });
+            btn.addEventListener('mouseleave', () => {
+                if (!this.reduceMotion) {
+                    btn.style.transform = '';
+                }
+            });
+        });
+    }
+
+    /**
+     * Card Elevation & Hover Physics
+     */
+    initCardHoverPhysics() {
+        if (this.reduceMotion) return;
+        document.querySelectorAll('.hover-lift, .patient-card, .bento-card').forEach(card => {
+            card.addEventListener('mouseenter', () => {
+                card.style.transition = 'transform 250ms cubic-bezier(0.16, 1, 0.3, 1), box-shadow 250ms ease';
+                card.style.transform = 'translateY(-3px)';
+            });
+            card.addEventListener('mouseleave', () => {
+                card.style.transform = 'translateY(0)';
+            });
+        });
+    }
+
+    /**
+     * Physics-Calibrated Count-Up for Telemetry & Risk Numbers
+     */
     initCountUps() {
         if (this.reduceMotion) return;
         document.querySelectorAll('[data-countup]').forEach(el => {
             const target = parseFloat(el.getAttribute('data-countup'));
+            if (isNaN(target)) return;
             const isPct = el.getAttribute('data-is-pct') === 'true';
             const decimals = parseInt(el.getAttribute('data-decimals') || '0');
             const duration = 1200;
@@ -39,8 +107,8 @@ class AnimationEngine {
             const update = (now) => {
                 const elapsed = now - startTime;
                 const progress = Math.min(elapsed / duration, 1);
-                // Ease-out cubic
-                const easeProgress = 1 - Math.pow(1 - progress, 3);
+                // Ease-out cubic with slight deceleration
+                const easeProgress = 1 - Math.pow(1 - progress, 3.5);
                 const current = start + (target - start) * easeProgress;
 
                 if (isPct) {
@@ -53,25 +121,34 @@ class AnimationEngine {
 
                 if (progress < 1) {
                     requestAnimationFrame(update);
+                } else {
+                    el.textContent = isPct ? target.toFixed(decimals) + '%' : (decimals > 0 ? target.toFixed(decimals) : Math.round(target).toLocaleString());
                 }
             };
             requestAnimationFrame(update);
         });
     }
 
+    /**
+     * Smooth Radial Gauge Sweep
+     */
     initGauges() {
-        document.querySelectorAll('.gauge-circle-animated').forEach(el => {
-            const offset = parseFloat(el.getAttribute('data-dashoffset') || '0');
+        document.querySelectorAll('.gauge-circle-animated, #gauge-circle').forEach(el => {
+            const offset = parseFloat(el.getAttribute('data-dashoffset') || el.style.strokeDashoffset || '0');
             if (this.reduceMotion) {
                 el.style.strokeDashoffset = offset;
             } else {
+                el.style.transition = 'stroke-dashoffset 1.4s cubic-bezier(0.16, 1, 0.3, 1)';
                 setTimeout(() => {
                     el.style.strokeDashoffset = offset;
-                }, 150);
+                }, 100);
             }
         });
     }
 
+    /**
+     * Neural Particle Canvas Simulator
+     */
     animateNeuralFlow(canvasId) {
         const canvas = document.getElementById(canvasId);
         if (!canvas) return;
@@ -82,7 +159,6 @@ class AnimationEngine {
         const layers = [4, 6, 6, 2];
         const nodes = [];
 
-        // Build node coords
         layers.forEach((count, lIdx) => {
             const layerX = (lIdx / (layers.length - 1)) * (width - 60) + 30;
             for (let i = 0; i < count; i++) {
@@ -92,11 +168,11 @@ class AnimationEngine {
         });
 
         const particles = [];
-        for (let i = 0; i < 16; i++) {
+        for (let i = 0; i < 20; i++) {
             particles.push({
                 fromLayer: 0,
                 progress: Math.random(),
-                speed: 0.008 + Math.random() * 0.006,
+                speed: 0.006 + Math.random() * 0.008,
                 fromNode: Math.floor(Math.random() * layers[0]),
                 toNode: Math.floor(Math.random() * layers[1])
             });
@@ -106,8 +182,8 @@ class AnimationEngine {
             if (this.reduceMotion) return;
             ctx.clearRect(0, 0, width, height);
 
-            // Draw connection lines
-            ctx.strokeStyle = '#dde0e6';
+            // Connective Synapse Lines
+            ctx.strokeStyle = 'rgba(0, 91, 191, 0.12)';
             ctx.lineWidth = 1;
             for (let i = 0; i < nodes.length; i++) {
                 for (let j = i + 1; j < nodes.length; j++) {
@@ -120,7 +196,7 @@ class AnimationEngine {
                 }
             }
 
-            // Draw animated particles
+            // Flowing AI Pulses
             particles.forEach(p => {
                 p.progress += p.speed;
                 if (p.progress >= 1) {
@@ -135,18 +211,21 @@ class AnimationEngine {
                 if (p.fromNodeCoord && p.toNodeCoord) {
                     const px = p.fromNodeCoord.x + (p.toNodeCoord.x - p.fromNodeCoord.x) * p.progress;
                     const py = p.fromNodeCoord.y + (p.toNodeCoord.y - p.fromNodeCoord.y) * p.progress;
-                    ctx.fillStyle = '#005bbf';
+                    ctx.fillStyle = '#22d3ee';
+                    ctx.shadowColor = '#005bbf';
+                    ctx.shadowBlur = 4;
                     ctx.beginPath();
-                    ctx.arc(px, py, 3, 0, Math.PI * 2);
+                    ctx.arc(px, py, 3.5, 0, Math.PI * 2);
                     ctx.fill();
+                    ctx.shadowBlur = 0;
                 }
             });
 
-            // Draw nodes
+            // Neural Nodes
             nodes.forEach(node => {
-                ctx.fillStyle = '#1a73e8';
+                ctx.fillStyle = '#005bbf';
                 ctx.beginPath();
-                ctx.arc(node.x, node.y, 4.5, 0, Math.PI * 2);
+                ctx.arc(node.x, node.y, 4, 0, Math.PI * 2);
                 ctx.fill();
                 ctx.strokeStyle = '#ffffff';
                 ctx.lineWidth = 1.5;

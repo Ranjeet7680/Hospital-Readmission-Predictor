@@ -108,7 +108,56 @@
         .gauge-ring {
             stroke-dasharray: 283;
             stroke-dashoffset: 283;
-            transition: stroke-dashoffset 1.4s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: stroke-dashoffset 1.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        /* Staggered Scroll Reveals */
+        .reveal-init {
+            opacity: 0;
+            transform: translateY(14px);
+            transition: opacity 500ms cubic-bezier(0.16, 1, 0.3, 1), transform 500ms cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .is-revealed {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Gentle Floating Physics */
+        @keyframes floatSlow {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-6px); }
+        }
+        .animate-float {
+            animation: floatSlow 4s ease-in-out infinite;
+        }
+
+        /* Shimmer Wave */
+        @keyframes shimmer {
+            0% { background-position: -200% 0; }
+            100% { background-position: 200% 0; }
+        }
+        .animate-shimmer {
+            background: linear-gradient(90deg, rgba(255,255,255,0) 0%, rgba(255,255,255,0.4) 50%, rgba(255,255,255,0) 100%);
+            background-size: 200% 100%;
+            animation: shimmer 2.5s infinite;
+        }
+
+        /* Smooth Slide Down for Banners & Alerts */
+        @keyframes slideDown {
+            from { transform: translateY(-100%); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+        .animate-slide-down {
+            animation: slideDown 350ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+
+        /* Scale Up for Modals & Overlays */
+        @keyframes scaleUp {
+            from { transform: scale(0.95); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+        .animate-scale-up {
+            animation: scaleUp 250ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
         }
 
         /* Reduce Motion accessibility */
