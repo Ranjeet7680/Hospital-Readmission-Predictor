@@ -523,22 +523,26 @@
                     <!-- Profile Avatar & Quick Action Dropdown -->
                     <div class="relative">
                         <button onclick="toggleUserDropdown()" class="flex items-center gap-2 p-1 pr-2.5 bg-surface-container-low rounded-full hover:bg-surface-container-high transition-colors cursor-pointer border border-outline-variant/40" aria-label="User menu">
-                            <div class="w-7 h-7 rounded-full bg-primary text-white flex items-center justify-center font-bold text-[10px]">
-                                DR
+                            <div class="w-7 h-7 rounded-full bg-gradient-to-tr from-primary to-[#002f6c] text-white flex items-center justify-center font-bold text-[10px] shadow-xs">
+                                RK
                             </div>
-                            <span class="text-xs font-bold text-on-surface hidden lg:block">Dr. Smith</span>
+                            <span class="text-xs font-bold text-on-surface hidden lg:block">Dr. Ranjeet Kumar</span>
                             <span class="material-symbols-outlined text-sm text-secondary">expand_more</span>
                         </button>
 
                         <!-- User Profile Dropdown Menu -->
-                        <div id="user-profile-menu" class="hidden absolute right-0 mt-2 w-60 bg-white border border-outline-variant/80 rounded-2xl shadow-xl p-2 z-50 animate-scale-up space-y-1">
+                        <div id="user-profile-menu" class="hidden absolute right-0 mt-2 w-64 bg-white border border-outline-variant/80 rounded-2xl shadow-xl p-2 z-50 animate-scale-up space-y-1">
                             <div class="px-3 py-2 border-b border-surface-variant">
-                                <p class="text-xs font-bold text-on-surface">Dr. Smith, MD</p>
-                                <p class="text-[10px] text-secondary">Cardiology Attending • St. Jude</p>
+                                <p class="text-xs font-bold text-on-surface">Dr. Ranjeet Kumar, MD</p>
+                                <p class="text-[10px] text-secondary">Lead AI Architect • St. Jude / Team Nexora</p>
                             </div>
                             <a href="/doctor-id" class="flex items-center gap-2 px-3 py-2 text-xs font-semibold text-secondary hover:text-primary hover:bg-surface-container-low rounded-xl transition-all">
                                 <span class="material-symbols-outlined text-base">badge</span>
-                                <span>My Doctor ID</span>
+                                <span>Doctor Digital ID</span>
+                            </a>
+                            <a href="/doctor-profile/edit" class="flex items-center gap-2 px-3 py-2 text-xs font-semibold text-secondary hover:text-primary hover:bg-surface-container-low rounded-xl transition-all">
+                                <span class="material-symbols-outlined text-base">edit</span>
+                                <span>Edit Doctor Profile</span>
                             </a>
                             <a href="/settings" class="flex items-center gap-2 px-3 py-2 text-xs font-semibold text-secondary hover:text-primary hover:bg-surface-container-low rounded-xl transition-all">
                                 <span class="material-symbols-outlined text-base">settings</span>

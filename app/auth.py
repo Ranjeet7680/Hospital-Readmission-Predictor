@@ -33,21 +33,35 @@ class AuthManager:
         return hashlib.sha256(password.encode('utf-8')).hexdigest()
 
     def seed_auth_data(self):
-        # 1. Doctor
+        # 1. Doctor / Lead Architect (Dr. Ranjeet Kumar)
         dr_id = "USER-DOC-01"
         self.users["dr.smith@hospital.org"] = {
             "id": dr_id,
-            "name": "Dr. Smith",
+            "name": "Dr. Ranjeet Kumar, MD, FACC",
             "email": "dr.smith@hospital.org",
             "password_hash": self.hash_password("Doctor@2026!"),
             "role": "Doctor",
-            "organization": "St. Jude Medical Center",
-            "department": "Cardiology",
+            "organization": "St. Jude Medical Center • LUMINIX'26",
+            "department": "Cardiology & Clinical AI",
             "status": "Active",
             "verification": "Verified",
             "mfa_enabled": True,
-            "phone": "+1 (555) 234-5678",
+            "phone": "+91 98765 43210",
             "last_login": "Today, 09:15 AM"
+        }
+        self.users["rajranjeet7680@gmail.com"] = {
+            "id": "USER-DOC-RK01",
+            "name": "Dr. Ranjeet Kumar, MD, FACC",
+            "email": "rajranjeet7680@gmail.com",
+            "password_hash": self.hash_password("Doctor@2026!"),
+            "role": "Doctor",
+            "organization": "St. Jude Medical Center • LUMINIX'26",
+            "department": "Cardiology & Clinical AI",
+            "status": "Active",
+            "verification": "Verified",
+            "mfa_enabled": True,
+            "phone": "+91 98765 43210",
+            "last_login": "Just now"
         }
 
         # 2. Patient
