@@ -9,7 +9,7 @@ import uuid
 from datetime import datetime
 from typing import Optional
 from fastapi import FastAPI, Request, Form, Query, Response
-from fastapi.responses import HTMLResponse, RedirectResponse, StreamingResponse, JSONResponse
+from fastapi.responses import HTMLResponse, RedirectResponse, StreamingResponse, JSONResponse, FileResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 
@@ -35,6 +35,13 @@ app = FastAPI(
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 app.mount("/static", StaticFiles(directory=os.path.join(BASE_DIR, "static")), name="static")
 templates = Jinja2Templates(directory=os.path.join(BASE_DIR, "templates"))
+
+@app.get("/favicon.ico")
+async def favicon():
+    favicon_path = os.path.join(BASE_DIR, "static", "favicon.ico")
+    if os.path.exists(favicon_path):
+        return FileResponse(favicon_path, media_type="image/x-icon")
+    return FileResponse(os.path.join(BASE_DIR, "static", "favicon.svg"), media_type="image/svg+xml")
 
 # ==========================================
 # 1. AUTHENTICATION & SECURITY ROUTES
