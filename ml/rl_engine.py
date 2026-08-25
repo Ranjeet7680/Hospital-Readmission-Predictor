@@ -5,31 +5,41 @@ PyTorch DQN & PPO Agents, Safety Constraint Engine, and Human-in-the-Loop Verifi
 """
 
 import numpy as np
-import torch
-import torch.nn as nn
-import torch.nn.functional as F
 
-class DQNAgent(nn.Module):
+try:
+    import torch
+    import torch.nn as nn
+    import torch.nn.functional as F
+    HAS_TORCH = True
+except ImportError:
+    torch = None
+    nn = object
+    F = None
+    HAS_TORCH = False
+
+class DQNAgent(nn.Module if HAS_TORCH else object):
     """Deep Q-Network for Care Pathway Action Optimization."""
     def __init__(self, state_dim=24, action_dim=8):
-        super(DQNAgent, self).__init__()
-        self.fc1 = nn.Linear(state_dim, 64)
-        self.fc2 = nn.Linear(64, 64)
-        self.q_out = nn.Linear(64, action_dim)
+        if HAS_TORCH:
+            super(DQNAgent, self).__init__()
+            self.fc1 = nn.Linear(state_dim, 64)
+            self.fc2 = nn.Linear(64, 64)
+            self.q_out = nn.Linear(64, action_dim)
 
     def forward(self, state):
         x = F.relu(self.fc1(state))
         x = F.relu(self.fc2(x))
         return self.q_out(x)
 
-class ActorCritic(nn.Module):
+class ActorCritic(nn.Module if HAS_TORCH else object):
     """Actor-Critic / PPO Network for Continuous / Discrete Policy Learning."""
     def __init__(self, state_dim=24, action_dim=8):
-        super(ActorCritic, self).__init__()
-        self.shared = nn.Sequential(
-            nn.Linear(state_dim, 64),
-            nn.ReLU()
-        )
+        if HAS_TORCH:
+            super(ActorCritic, self).__init__()
+            self.shared = nn.Sequential(
+                nn.Linear(state_dim, 64),
+                nn.ReLU()
+            )
         self.actor = nn.Sequential(
             nn.Linear(64, 32),
             nn.ReLU(),

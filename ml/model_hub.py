@@ -3,8 +3,14 @@ Model Hub: Benchmark Suite, Model Evaluation, Multi-Model Comparison & Ensemble 
 """
 
 import numpy as np
-import torch
-from ml.deep_models import TabularANN, TabularTransformer
+
+try:
+    import torch
+    from ml.deep_models import TabularANN, TabularTransformer
+    HAS_TORCH = True
+except ImportError:
+    torch = None
+    HAS_TORCH = False
 
 class ModelHub:
     def __init__(self):

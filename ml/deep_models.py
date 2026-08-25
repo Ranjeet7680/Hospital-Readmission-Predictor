@@ -3,23 +3,29 @@ PyTorch Deep Learning Architectures for Hospital Readmission Prediction
 Includes Tabular ANN/MLP, Tabular Transformer, Patient Autoencoder, and Sequence LSTM.
 """
 
-import torch
-import torch.nn as nn
-import torch.nn.functional as F
+try:
+    import torch
+    import torch.nn as nn
+    import torch.nn.functional as F
+    HAS_TORCH = True
+except ImportError:
+    torch = None
+    nn = object
+    F = None
+    HAS_TORCH = False
 
-class TabularANN(nn.Module):
+class TabularANN(nn.Module if HAS_TORCH else object):
     """Feed-Forward Neural Network for Structured Tabular Healthcare Data."""
     def __init__(self, input_dim=24, hidden_dims=[64, 32], dropout_rate=0.25):
-        super(TabularANN, self).__init__()
-        self.fc1 = nn.Linear(input_dim, hidden_dims[0])
-        self.bn1 = nn.BatchNorm1d(hidden_dims[0])
-        self.dropout1 = nn.Dropout(dropout_rate)
-        
-        self.fc2 = nn.Linear(hidden_dims[0], hidden_dims[1])
-        self.bn2 = nn.BatchNorm1d(hidden_dims[1])
-        self.dropout2 = nn.Dropout(dropout_rate)
-        
-        self.out = nn.Linear(hidden_dims[1], 1)
+        if HAS_TORCH:
+            super(TabularANN, self).__init__()
+            self.fc1 = nn.Linear(input_dim, hidden_dims[0])
+            self.bn1 = nn.BatchNorm1d(hidden_dims[0])
+            self.dropout1 = nn.Dropout(dropout_rate)
+            self.fc2 = nn.Linear(hidden_dims[0], hidden_dims[1])
+            self.bn2 = nn.BatchNorm1d(hidden_dims[1])
+            self.dropout2 = nn.Dropout(dropout_rate)
+            self.out = nn.Linear(hidden_dims[1], 1)
 
     def forward(self, x):
         # Layer 1: Dense -> BatchNorm -> ReLU -> Dropout
