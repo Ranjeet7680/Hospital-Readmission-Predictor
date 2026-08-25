@@ -471,13 +471,42 @@
                         <span class="absolute top-1.5 right-1.5 w-2 h-2 bg-error rounded-full animate-pulse"></span>
                     </button>
 
-                    <!-- Profile Avatar -->
-                    <a href="/patient/PT-84729" class="flex items-center gap-2 p-1 pr-2.5 bg-surface-container-low rounded-full hover:bg-surface-container-high transition-colors cursor-pointer border border-outline-variant/40">
-                        <div class="w-7 h-7 rounded-full bg-primary text-white flex items-center justify-center font-bold text-[10px]">
-                            EV
+                    <!-- Profile Avatar & Quick Action Dropdown -->
+                    <div class="relative">
+                        <button onclick="toggleUserDropdown()" class="flex items-center gap-2 p-1 pr-2.5 bg-surface-container-low rounded-full hover:bg-surface-container-high transition-colors cursor-pointer border border-outline-variant/40" aria-label="User menu">
+                            <div class="w-7 h-7 rounded-full bg-primary text-white flex items-center justify-center font-bold text-[10px]">
+                                DR
+                            </div>
+                            <span class="text-xs font-bold text-on-surface hidden lg:block">Dr. Smith</span>
+                            <span class="material-symbols-outlined text-sm text-secondary">expand_more</span>
+                        </button>
+
+                        <!-- User Profile Dropdown Menu -->
+                        <div id="user-profile-menu" class="hidden absolute right-0 mt-2 w-60 bg-white border border-outline-variant/80 rounded-2xl shadow-xl p-2 z-50 animate-scale-up space-y-1">
+                            <div class="px-3 py-2 border-b border-surface-variant">
+                                <p class="text-xs font-bold text-on-surface">Dr. Smith, MD</p>
+                                <p class="text-[10px] text-secondary">Cardiology Attending • St. Jude</p>
+                            </div>
+                            <a href="/doctor-id" class="flex items-center gap-2 px-3 py-2 text-xs font-semibold text-secondary hover:text-primary hover:bg-surface-container-low rounded-xl transition-all">
+                                <span class="material-symbols-outlined text-base">badge</span>
+                                <span>My Doctor ID</span>
+                            </a>
+                            <a href="/settings" class="flex items-center gap-2 px-3 py-2 text-xs font-semibold text-secondary hover:text-primary hover:bg-surface-container-low rounded-xl transition-all">
+                                <span class="material-symbols-outlined text-base">settings</span>
+                                <span>Account & Settings</span>
+                            </a>
+                            <a href="/ebook" target="_blank" class="flex items-center gap-2 px-3 py-2 text-xs font-bold text-primary hover:bg-primary/10 rounded-xl transition-all">
+                                <span class="material-symbols-outlined text-base">menu_book</span>
+                                <span>Master eBook (88 Ch)</span>
+                            </a>
+                            <div class="border-t border-surface-variant pt-1 mt-1">
+                                <a href="/logout" class="flex items-center gap-2 px-3 py-2 text-xs font-bold text-error hover:bg-error-container/30 rounded-xl transition-all">
+                                    <span class="material-symbols-outlined text-base">logout</span>
+                                    <span>Log Out</span>
+                                </a>
+                            </div>
                         </div>
-                        <span class="text-xs font-bold text-on-surface hidden lg:block">Eleanor Vance</span>
-                    </a>
+                    </div>
                 </div>
             </header>
 
@@ -486,18 +515,18 @@
                 {% block content %}{% endblock %}
             </main>
 
-            <!-- Footer Component (Desktop & Tablet) -->
+            <!-- Footer Component (Desktop & Tablet) with Sanskrit Healthcare Shloka -->
             <footer class="w-full py-3 px-4 sm:px-6 flex flex-col md:flex-row justify-between items-center text-center bg-surface-container-lowest border-t border-surface-variant text-secondary text-xs">
-                <div class="flex items-center gap-2 mb-2 md:mb-0">
+                <div class="flex flex-col sm:flex-row items-center gap-1 sm:gap-2 mb-2 md:mb-0">
                     <span class="font-bold text-primary">HRP Clinical v2.4.1</span>
                     <span class="hidden sm:inline">|</span>
-                    <span class="hidden sm:inline">Diabetes 130-US Hospitals (1999-2008) Dataset • PPO RL Lab • CareAI</span>
+                    <span class="font-serif text-[11px] text-[#002f6c] font-semibold">"स्वास्थ्यं परमं धनम्, विज्ञानस्य साहाय्येन सर्वेषां जीवनं निरामयं भवतु।"</span>
                 </div>
                 <div class="flex flex-wrap justify-center gap-3 sm:gap-4 text-[11px]">
-                    <a class="text-secondary hover:text-primary underline transition-colors" href="/help">Privacy</a>
-                    <a class="text-secondary hover:text-primary underline transition-colors" href="/help">Terms</a>
-                    <a class="text-secondary hover:text-primary underline transition-colors" href="/rl/safety">Safety</a>
-                    <a class="text-secondary hover:text-primary underline transition-colors" href="/admin/audit-logs">Audit Log</a>
+                    <a class="text-secondary hover:text-primary underline transition-colors" href="/welcome">Welcome Tour</a>
+                    <a class="text-secondary hover:text-primary underline transition-colors" href="/ebook" target="_blank">Master eBook</a>
+                    <a class="text-secondary hover:text-primary underline transition-colors" href="/help">Privacy & Safety</a>
+                    <a class="text-error hover:underline transition-colors font-semibold" href="/logout">Sign Out</a>
                 </div>
             </footer>
         </div>
@@ -746,6 +775,23 @@
                 sheet.classList.add('hidden');
             }
         };
+
+        // User Dropdown Menu Toggle
+        function toggleUserDropdown() {
+            const menu = document.getElementById('user-profile-menu');
+            if (menu) {
+                menu.classList.toggle('hidden');
+                window.soundEngine?.click();
+            }
+        }
+        document.addEventListener('click', function(e) {
+            const menu = document.getElementById('user-profile-menu');
+            if (menu && !menu.classList.contains('hidden')) {
+                if (!e.target.closest('#user-profile-menu') && !e.target.closest('[aria-label="User menu"]')) {
+                    menu.classList.add('hidden');
+                }
+            }
+        });
     </script>
     {% block scripts %}{% endblock %}
 </body>

@@ -5,6 +5,32 @@
 {% block full_content %}
 <div class="bg-[#f8f9fd] text-[#1b1b1f] min-h-screen flex flex-col font-sans antialiased selection:bg-primary selection:text-white relative overflow-x-hidden">
 
+    {% if logged_out %}
+    <!-- LOGOUT SUCCESS NOTIFICATION TOAST -->
+    <div id="logout-toast" class="sticky top-0 z-[110] bg-gradient-to-r from-emerald-600 via-teal-600 to-cyan-700 text-white px-4 py-3 shadow-xl border-b border-white/20 animate-slide-down">
+        <div class="max-w-6xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-3">
+            <div class="flex items-center gap-3">
+                <div class="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center font-bold text-sm shadow-inner">
+                    <span class="material-symbols-outlined text-lg">check_circle</span>
+                </div>
+                <div>
+                    <p class="font-bold text-sm leading-tight">You have been securely signed out.</p>
+                    <p class="text-xs text-white/90 font-serif">स्वास्थ्यं परमं धनम्, विज्ञानस्य साहाय्येन सर्वेषां जीवनं निरामयं भवतु।</p>
+                </div>
+            </div>
+            <div class="flex items-center gap-2.5">
+                <a href="/login" class="px-4 py-1.5 bg-white text-teal-800 hover:bg-white/90 rounded-full font-bold text-xs shadow-xs transition-all flex items-center gap-1.5">
+                    <span class="material-symbols-outlined text-sm">login</span>
+                    <span>Sign In Again</span>
+                </a>
+                <button onclick="document.getElementById('logout-toast').remove()" class="text-white/80 hover:text-white p-1" title="Dismiss">
+                    <span class="material-symbols-outlined text-lg">close</span>
+                </button>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
     <!-- ========================================================================= -->
     <!-- 1. FULL-SCREEN ANIMATED SPLASH / WELCOME SCREEN (0–2500ms auto/skip)      -->
     <!-- ========================================================================= -->
@@ -85,8 +111,18 @@
             </div>
 
             <!-- Progress Bar -->
-            <div class="w-48 h-1.5 bg-surface-container-high rounded-full overflow-hidden">
-                <div id="splash-progress-bar" class="h-full bg-primary rounded-full transition-all duration-300 w-0"></div>
+            <div class="w-56 h-1.5 bg-surface-container-high rounded-full overflow-hidden shadow-inner">
+                <div id="splash-progress-bar" class="h-full bg-gradient-to-r from-primary via-cyan-500 to-primary rounded-full transition-all duration-300 w-0"></div>
+            </div>
+
+            <!-- Sacred Healthcare Sanskrit Motto Banner -->
+            <div class="mt-4 px-6 py-3 rounded-2xl bg-gradient-to-r from-primary/10 via-amber-500/10 to-primary/10 border border-primary/25 shadow-xs max-w-lg text-center backdrop-blur-xs animate-fade-in">
+                <p class="text-sm sm:text-base font-bold text-[#002f6c] tracking-wide font-serif leading-relaxed">
+                    "स्वास्थ्यं परमं धनम्, विज्ञानस्य साहाय्येन सर्वेषां जीवनं निरामयं भवतु।"
+                </p>
+                <p class="text-[11px] font-medium text-secondary mt-1">
+                    <span class="text-amber-700 font-bold">Health is Supreme Wealth</span> — May All Lives Be Disease-Free Through Science
+                </p>
             </div>
         </div>
 
@@ -94,10 +130,11 @@
         <div class="w-full flex flex-col sm:flex-row justify-between items-center text-center sm:text-left gap-2 text-xs text-secondary max-w-6xl border-t border-surface-variant pt-4">
             <div>
                 <p class="font-bold text-on-surface">Predict risk. Explain insights. Connect care.</p>
-                <p class="text-[10px] text-secondary/80">AI-assisted healthcare decision support</p>
+                <p class="text-[10px] text-secondary/80">AI-assisted healthcare decision support • LUMINIX'26</p>
             </div>
-            <div class="font-mono text-[10px] text-secondary">
-                Clinical Release v2.4.1
+            <div class="font-mono text-[10px] text-secondary flex items-center gap-2">
+                <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+                <span>Team Nexora • v2.4.1 Production</span>
             </div>
         </div>
     </div>

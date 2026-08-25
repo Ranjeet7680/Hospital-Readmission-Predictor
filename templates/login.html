@@ -1,151 +1,274 @@
 {% extends "base.html" %}
 
-{% block title %}Login - Hospital Readmission Predictor{% endblock %}
+{% block title %}Sign In - Hospital Readmission Predictor{% endblock %}
 
 {% block full_content %}
-<div class="bg-surface text-on-surface h-screen w-screen overflow-hidden flex flex-col font-body-md">
-    <!-- Main Split Layout -->
-    <main class="flex-1 flex w-full h-full">
-        <!-- Left Panel: Illustration & Value Prop (Hidden on Mobile) -->
-        <section class="hidden lg:flex lg:w-1/2 bg-surface-container-low flex-col justify-between relative overflow-hidden p-margin-desktop border-r border-outline-variant/30">
-            <!-- Branding -->
-            <div class="z-10 flex items-center gap-2">
-                <span class="material-symbols-outlined text-primary text-3xl fill-icon">monitor_heart</span>
-                <span class="font-title-lg text-title-lg font-bold text-primary">Clinical AI</span>
-            </div>
+<div class="bg-[#f8f9fd] text-[#1b1b1f] min-h-screen flex flex-col font-sans antialiased selection:bg-primary selection:text-white relative overflow-x-hidden">
 
-            <!-- Value Prop & Illustration Container -->
-            <div class="flex flex-col justify-center z-10 max-w-xl mx-auto py-8">
-                <h1 class="font-display-lg text-display-lg text-on-surface mb-lg leading-tight">Predictive Analytics for Better Outcomes.</h1>
-                <p class="font-body-lg text-body-lg text-on-surface-variant mb-xl max-w-md">
-                    Empowering healthcare professionals with advanced AI to accurately forecast readmission risks, optimize care plans, and prioritize patient well-being.
-                </p>
-                <!-- Decorative Abstract Data Viz -->
-                <div class="w-full h-64 rounded-2xl overflow-hidden shadow-md border border-outline-variant/50 bg-gradient-to-tr from-primary-container/20 via-surface-container-highest to-surface-container-lowest p-6 flex flex-col justify-between">
-                    <div class="flex items-center justify-between">
-                        <span class="px-3 py-1 bg-primary text-on-primary rounded-full text-xs font-bold">Live Model: Active</span>
-                        <span class="text-xs text-secondary">Latency: 48ms</span>
+    <!-- Top Floating Navigation Bar -->
+    <header class="w-full bg-white/80 backdrop-blur-md border-b border-outline-variant/40 px-4 sm:px-8 py-3 sticky top-0 z-30 flex justify-between items-center">
+        <a href="/welcome" class="flex items-center gap-2.5 group">
+            <div class="w-8 h-8 rounded-xl bg-gradient-to-br from-primary to-[#002f6c] flex items-center justify-center text-white shadow-xs group-hover:scale-105 transition-transform">
+                <span class="material-symbols-outlined text-lg">arrow_back</span>
+            </div>
+            <div class="hidden sm:block">
+                <span class="text-xs font-bold text-primary block leading-none">HRP Clinical Suite</span>
+                <span class="text-[10px] text-secondary font-medium">← Back to Welcome & Tour</span>
+            </div>
+        </a>
+
+        <!-- Sacred Motto Center Strip (Hidden on small mobile) -->
+        <div class="hidden md:flex items-center gap-2 px-4 py-1 rounded-full bg-primary/5 border border-primary/20 text-xs font-medium text-[#002f6c]">
+            <span class="text-amber-600 font-bold">स्वास्थ्यं परमं धनम्</span>
+            <span class="text-secondary/50">•</span>
+            <span class="text-secondary text-[11px]">विज्ञानस्य साहाय्येन सर्वेषां जीवनं निरामयं भवतु।</span>
+        </div>
+
+        <div class="flex items-center gap-3">
+            <button onclick="window.i18n.toggle()" class="px-3 py-1 rounded-full bg-surface-container-low hover:bg-surface-container-high border border-outline-variant/60 text-xs font-bold text-primary transition-all flex items-center gap-1">
+                <span class="material-symbols-outlined text-[14px]">translate</span>
+                <span class="lang-indicator-text">English | हिन्दी</span>
+            </button>
+            <a href="/dashboard" class="px-3.5 py-1 rounded-full bg-surface-container-high hover:bg-surface-container-highest text-secondary text-xs font-semibold">
+                Explore Demo &rarr;
+            </a>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <main class="flex-1 max-w-6xl w-full mx-auto p-4 sm:p-8 flex items-center justify-center">
+        <div class="w-full grid grid-cols-1 lg:grid-cols-12 gap-8 items-center bg-white rounded-3xl border border-outline-variant/60 shadow-xl overflow-hidden">
+            
+            <!-- Left Column: Branding, Value Prop & Live Stats (Span 5) -->
+            <div class="lg:col-span-5 bg-gradient-to-br from-[#002f6c] via-[#004a9e] to-[#005bbf] text-white p-8 sm:p-10 flex flex-col justify-between h-full relative overflow-hidden">
+                <!-- Background Decorative Rings -->
+                <div class="absolute -right-16 -top-16 w-64 h-64 rounded-full bg-white/5 blur-2xl pointer-events-none"></div>
+                <div class="absolute -left-16 -bottom-16 w-64 h-64 rounded-full bg-cyan-400/10 blur-2xl pointer-events-none"></div>
+
+                <div class="space-y-6 relative z-10">
+                    <!-- Brand Cross Logo -->
+                    <div class="w-14 h-14 rounded-2xl bg-white/10 border border-white/20 flex items-center justify-center shadow-lg backdrop-blur-xs">
+                        <svg viewBox="0 0 100 100" class="w-9 h-9 text-white" fill="none" stroke="currentColor" stroke-width="3">
+                            <path d="M50 14 L80 26 V52 C80 70 50 86 50 86 C50 86 20 70 20 52 V26 Z" stroke="#ffffff" stroke-width="3" fill="rgba(255,255,255,0.15)"/>
+                            <path d="M50 32 V56 M38 44 H62" stroke="#ffffff" stroke-width="5" stroke-linecap="round"/>
+                            <circle cx="50" cy="32" r="3.5" fill="#22d3ee"/>
+                            <circle cx="50" cy="56" r="3.5" fill="#22d3ee"/>
+                            <circle cx="38" cy="44" r="3.5" fill="#22d3ee"/>
+                            <circle cx="62" cy="44" r="3.5" fill="#22d3ee"/>
+                        </svg>
                     </div>
+
                     <div class="space-y-2">
-                        <div class="flex justify-between text-xs font-semibold">
-                            <span>High-Risk Readmission Identification</span>
-                            <span class="text-primary font-bold">93.7% Accuracy</span>
+                        <h2 class="text-2xl sm:text-3xl font-extrabold tracking-tight leading-tight">
+                            Clinical Decision Support Platform
+                        </h2>
+                        <p class="text-xs sm:text-sm text-cyan-100/90 leading-relaxed">
+                            Connecting calibrated machine learning, deep learning tabular transformers, and WebRTC telemedicine into a unified transition care cockpit.
+                        </p>
+                    </div>
+
+                    <!-- Verified Features Pill Grid -->
+                    <div class="space-y-2.5 pt-2">
+                        <div class="flex items-center gap-2.5 text-xs text-white/90">
+                            <span class="w-5 h-5 rounded-full bg-emerald-500/20 text-emerald-300 flex items-center justify-center font-bold text-xs">✓</span>
+                            <span><strong>0.9794 ROC-AUC</strong> XGBoost Benchmark</span>
                         </div>
-                        <div class="h-2 bg-surface-variant rounded-full overflow-hidden">
-                            <div class="h-full bg-primary rounded-full w-[94%]"></div>
+                        <div class="flex items-center gap-2.5 text-xs text-white/90">
+                            <span class="w-5 h-5 rounded-full bg-emerald-500/20 text-emerald-300 flex items-center justify-center font-bold text-xs">✓</span>
+                            <span><strong>100% TreeSHAP</strong> Local Attribution</span>
+                        </div>
+                        <div class="flex items-center gap-2.5 text-xs text-white/90">
+                            <span class="w-5 h-5 rounded-full bg-emerald-500/20 text-emerald-300 flex items-center justify-center font-bold text-xs">✓</span>
+                            <span><strong>6-Stage Care Twin</strong> RL Optimization</span>
+                        </div>
+                        <div class="flex items-center gap-2.5 text-xs text-white/90">
+                            <span class="w-5 h-5 rounded-full bg-emerald-500/20 text-emerald-300 flex items-center justify-center font-bold text-xs">✓</span>
+                            <span><strong>Bilingual Live Subtitles</strong> (English ↔ हिन्दी)</span>
                         </div>
                     </div>
-                    <div class="flex items-center justify-around pt-2 text-xs text-secondary border-t border-outline-variant/40">
-                        <span>• 30-Day Risk Window</span>
-                        <span>• Dynamic XAI Attribution</span>
-                        <span>• EHR Integration Ready</span>
-                    </div>
+                </div>
+
+                <!-- Bottom Sanskrit Inscription -->
+                <div class="mt-8 pt-6 border-t border-white/15 relative z-10">
+                    <p class="text-xs font-serif text-cyan-200 font-bold tracking-wide">
+                        "स्वास्थ्यं परमं धनम्, विज्ञानस्य साहाय्येन सर्वेषां जीवनं निरामयं भवतु।"
+                    </p>
+                    <p class="text-[10px] text-white/60 mt-0.5">
+                        Team Nexora • LUMINIX'26 Healthcare Track
+                    </p>
                 </div>
             </div>
 
-            <!-- Footer Left -->
-            <div class="z-10 text-on-surface-variant font-label-sm text-label-sm opacity-80 flex items-center gap-2">
-                <span class="material-symbols-outlined text-xs">verified</span> v2.4.1-stable | Hospital Readmission Predictor
-            </div>
-
-            <!-- Subtle Background Pattern/Gradient -->
-            <div class="absolute inset-0 bg-gradient-to-br from-primary-fixed/20 to-transparent pointer-events-none z-0"></div>
-        </section>
-
-        <!-- Right Panel: Sign In Form -->
-        <section class="w-full lg:w-1/2 flex flex-col justify-center items-center p-margin-mobile md:p-margin-desktop bg-surface relative">
-            <!-- Mobile Branding (Visible only on small screens) -->
-            <div class="lg:hidden absolute top-margin-mobile left-margin-mobile flex items-center gap-2">
-                <span class="material-symbols-outlined text-primary text-2xl fill-icon">monitor_heart</span>
-                <span class="font-title-md text-title-md font-bold text-primary">Clinical AI</span>
-            </div>
-
-            <div class="w-full max-w-md">
-                <div class="mb-xl text-center lg:text-left">
-                    <h2 class="font-headline-lg text-headline-lg text-on-surface mb-sm">Secure Sign In</h2>
-                    <p class="font-body-md text-body-md text-on-surface-variant">Enter your credentials to access the clinical decision support platform.</p>
+            <!-- Right Column: Interactive Login Form (Span 7) -->
+            <div class="lg:col-span-7 p-6 sm:p-10 space-y-6">
+                <!-- Header Title -->
+                <div>
+                    <span class="text-[11px] font-bold uppercase tracking-wider text-primary">Secure Clinical Authentication</span>
+                    <h3 class="text-2xl font-bold text-on-surface mt-0.5">Welcome Back</h3>
+                    <p class="text-xs text-secondary">Select your portal role or sign in with your healthcare credentials.</p>
                 </div>
 
-                <form class="flex flex-col gap-md" action="/dashboard" method="get">
-                    <!-- Email Input -->
-                    <div class="flex flex-col gap-xs">
-                        <label class="font-label-lg text-label-lg text-on-surface" for="email">Corporate Email</label>
+                {% if error_message %}
+                <div class="p-3.5 rounded-xl bg-error-container text-error text-xs font-bold flex items-center gap-2">
+                    <span class="material-symbols-outlined text-base">error</span>
+                    <span>{{ error_message }}</span>
+                </div>
+                {% endif %}
+
+                <!-- 1-Click Quick Demo Persona Fill Buttons -->
+                <div class="space-y-2 p-3.5 rounded-2xl bg-surface-container-low border border-outline-variant/60">
+                    <div class="flex justify-between items-center">
+                        <span class="text-[11px] font-bold text-secondary uppercase tracking-wider">Quick Demo 1-Click Login:</span>
+                        <span class="text-[10px] text-primary font-semibold">Click to auto-fill</span>
+                    </div>
+                    <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                        <button type="button" onclick="fillCredentials('dr.smith@hospital.org', 'Doctor@2026!')" class="p-2 rounded-xl bg-white hover:bg-primary/10 hover:border-primary/40 border border-outline-variant/60 text-left transition-all group">
+                            <span class="material-symbols-outlined text-primary text-base block mb-0.5 group-hover:scale-110 transition-transform">stethoscope</span>
+                            <span class="text-[11px] font-bold text-on-surface block leading-tight">Doctor</span>
+                            <span class="text-[9px] text-secondary">Cardiology</span>
+                        </button>
+
+                        <button type="button" onclick="fillCredentials('eleanor.vance@patient.org', 'Patient@2026!')" class="p-2 rounded-xl bg-white hover:bg-primary/10 hover:border-primary/40 border border-outline-variant/60 text-left transition-all group">
+                            <span class="material-symbols-outlined text-primary text-base block mb-0.5 group-hover:scale-110 transition-transform">person</span>
+                            <span class="text-[11px] font-bold text-on-surface block leading-tight">Patient</span>
+                            <span class="text-[9px] text-secondary">Eleanor V.</span>
+                        </button>
+
+                        <button type="button" onclick="fillCredentials('sarah.coordinator@hospital.org', 'Coord@2026!')" class="p-2 rounded-xl bg-white hover:bg-primary/10 hover:border-primary/40 border border-outline-variant/60 text-left transition-all group">
+                            <span class="material-symbols-outlined text-primary text-base block mb-0.5 group-hover:scale-110 transition-transform">checklist</span>
+                            <span class="text-[11px] font-bold text-on-surface block leading-tight">Coordinator</span>
+                            <span class="text-[9px] text-secondary">Care Triage</span>
+                        </button>
+
+                        <button type="button" onclick="fillCredentials('admin@hospital.org', 'Admin@2026!')" class="p-2 rounded-xl bg-white hover:bg-primary/10 hover:border-primary/40 border border-outline-variant/60 text-left transition-all group">
+                            <span class="material-symbols-outlined text-primary text-base block mb-0.5 group-hover:scale-110 transition-transform">admin_panel_settings</span>
+                            <span class="text-[11px] font-bold text-on-surface block leading-tight">Admin</span>
+                            <span class="text-[9px] text-secondary">Superuser</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Login Method Tab Bar -->
+                <div class="flex border-b border-outline-variant/60">
+                    <button type="button" onclick="switchLoginTab('password')" id="tab-password" class="px-4 py-2 text-xs font-bold border-b-2 border-primary text-primary transition-all flex items-center gap-1.5">
+                        <span class="material-symbols-outlined text-sm">lock</span>
+                        <span>Password Login</span>
+                    </button>
+                    <button type="button" onclick="switchLoginTab('otp')" id="tab-otp" class="px-4 py-2 text-xs font-semibold text-secondary hover:text-on-surface border-b-2 border-transparent transition-all flex items-center gap-1.5">
+                        <span class="material-symbols-outlined text-sm">sms</span>
+                        <span>Instant Phone OTP</span>
+                    </button>
+                </div>
+
+                <!-- Standard Password Login Form -->
+                <form id="form-password" action="/login" method="post" class="space-y-4">
+                    <div class="space-y-1">
+                        <label for="email" class="text-xs font-bold text-on-surface">Institutional Email</label>
                         <div class="relative">
-                            <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline-variant">mail</span>
-                            <input class="w-full pl-10 pr-4 py-3 rounded-lg border border-outline bg-surface-container-lowest text-on-surface focus:border-primary focus:ring-2 focus:ring-primary focus:outline-none transition-shadow font-body-md text-body-md h-12" id="email" placeholder="dr.smith@hospital.org" value="dr.smith@hospital.org" required="" type="email"/>
+                            <span class="material-symbols-outlined absolute left-3.5 top-1/2 -translate-y-1/2 text-secondary text-lg">mail</span>
+                            <input type="email" id="email" name="email" value="dr.smith@hospital.org" required class="w-full pl-10 pr-4 py-2.5 rounded-xl border border-outline-variant/80 bg-surface text-on-surface text-xs focus:ring-2 focus:ring-primary focus:border-primary transition-all font-medium" placeholder="name@hospital.org"/>
                         </div>
                     </div>
 
-                    <!-- Password Input -->
-                    <div class="flex flex-col gap-xs">
-                        <label class="font-label-lg text-label-lg text-on-surface" for="password">Password</label>
+                    <div class="space-y-1">
+                        <div class="flex justify-between items-center">
+                            <label for="password" class="text-xs font-bold text-on-surface">Password</label>
+                            <a href="/auth/forgot-password" class="text-[11px] font-semibold text-primary hover:underline">Forgot password?</a>
+                        </div>
                         <div class="relative">
-                            <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline-variant">lock</span>
-                            <input class="w-full pl-10 pr-10 py-3 rounded-lg border border-outline bg-surface-container-lowest text-on-surface focus:border-primary focus:ring-2 focus:ring-primary focus:outline-none transition-shadow font-body-md text-body-md h-12" id="password" value="••••••••••••" placeholder="••••••••" required="" type="password"/>
-                            <button class="absolute right-3 top-1/2 -translate-y-1/2 text-outline-variant hover:text-on-surface focus:outline-none transition-colors" onclick="togglePassword()" type="button" aria-label="Toggle password visibility">
-                                <span class="material-symbols-outlined" id="visibility-icon">visibility</span>
+                            <span class="material-symbols-outlined absolute left-3.5 top-1/2 -translate-y-1/2 text-secondary text-lg">lock</span>
+                            <input type="password" id="password" name="password" value="Doctor@2026!" required class="w-full pl-10 pr-10 py-2.5 rounded-xl border border-outline-variant/80 bg-surface text-on-surface text-xs focus:ring-2 focus:ring-primary focus:border-primary transition-all font-medium" placeholder="••••••••"/>
+                            <button type="button" onclick="togglePasswordVisibility()" class="absolute right-3.5 top-1/2 -translate-y-1/2 text-secondary hover:text-on-surface" title="Toggle visibility">
+                                <span id="pwd-eye-icon" class="material-symbols-outlined text-lg">visibility</span>
                             </button>
                         </div>
                     </div>
 
-                    <!-- Remember Me & Forgot Password -->
-                    <div class="flex justify-between items-center mt-sm">
-                        <label class="flex items-center gap-2 cursor-pointer group">
-                            <input class="w-4 h-4 rounded border-outline text-primary focus:ring-primary" checked type="checkbox"/>
-                            <span class="font-body-md text-body-md text-on-surface-variant group-hover:text-on-surface transition-colors">Remember device</span>
+                    <div class="flex items-center justify-between pt-1">
+                        <label class="flex items-center gap-2 cursor-pointer text-xs text-secondary font-medium">
+                            <input type="checkbox" checked class="rounded border-outline-variant text-primary focus:ring-primary w-4 h-4"/>
+                            <span>Remember this workstation (30d)</span>
                         </label>
-                        <a class="font-label-lg text-label-lg text-primary hover:text-primary-container transition-colors" href="/help">Forgot Password?</a>
                     </div>
 
-                    <!-- Sign In Button -->
-                    <button class="mt-lg w-full h-12 bg-primary text-on-primary rounded-lg font-label-lg text-label-lg hover:bg-surface-tint focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:ring-offset-surface transition-all active:scale-[0.98] shadow-md flex items-center justify-center gap-2 font-bold" type="submit">
-                        Sign In
-                        <span class="material-symbols-outlined text-[20px]">arrow_forward</span>
+                    <button type="submit" class="w-full py-3 rounded-xl bg-primary hover:bg-primary-container text-white font-bold text-xs sm:text-sm shadow-md transition-all flex items-center justify-center gap-2 active:scale-[0.99]">
+                        <span>Sign In to Decision Cockpit</span>
+                        <span class="material-symbols-outlined text-lg">arrow_forward</span>
                     </button>
-
-                    <!-- Divider -->
-                    <div class="flex items-center gap-4 my-md">
-                        <div class="flex-1 h-px bg-outline-variant/50"></div>
-                        <span class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">or continue with</span>
-                        <div class="flex-1 h-px bg-outline-variant/50"></div>
-                    </div>
-
-                    <!-- SSO Option -->
-                    <a href="/dashboard" class="w-full h-12 bg-surface-container-lowest border border-outline-variant text-on-surface rounded-lg font-label-lg text-label-lg hover:bg-surface-container-low focus:ring-2 focus:ring-outline focus:ring-offset-2 focus:ring-offset-surface transition-all shadow-sm flex items-center justify-center gap-3">
-                        <svg class="w-5 h-5" viewBox="0 0 24 24">
-                            <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
-                            <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
-                            <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/>
-                            <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/>
-                        </svg>
-                        Google Workspace / Enterprise SSO
-                    </a>
                 </form>
-            </div>
 
-            <!-- Footer Right -->
-            <div class="absolute bottom-margin-mobile md:bottom-margin-desktop w-full text-center px-margin-mobile md:px-margin-desktop">
-                <p class="font-label-sm text-label-sm text-on-surface-variant flex items-center justify-center gap-1 opacity-70">
-                    <span class="material-symbols-outlined text-[16px]">verified_user</span>
-                    Authorized healthcare professionals only. Protected health information (PHI) environment.
-                </p>
+                <!-- OTP Phone Form (Hidden by default) -->
+                <form id="form-otp" action="/auth/mfa" method="get" class="space-y-4 hidden">
+                    <div class="space-y-1">
+                        <label for="phone" class="text-xs font-bold text-on-surface">Registered Mobile Number</label>
+                        <div class="relative">
+                            <span class="material-symbols-outlined absolute left-3.5 top-1/2 -translate-y-1/2 text-secondary text-lg">phone_iphone</span>
+                            <input type="tel" id="phone" value="+1 (555) 234-5678" class="w-full pl-10 pr-4 py-2.5 rounded-xl border border-outline-variant/80 bg-surface text-on-surface text-xs focus:ring-2 focus:ring-primary focus:border-primary transition-all font-medium" placeholder="+1 (555) 000-0000"/>
+                        </div>
+                    </div>
+                    <button type="submit" class="w-full py-3 rounded-xl bg-primary hover:bg-primary-container text-white font-bold text-xs sm:text-sm shadow-md transition-all flex items-center justify-center gap-2">
+                        <span>Send 6-Digit OTP Code</span>
+                        <span class="material-symbols-outlined text-lg">sms</span>
+                    </button>
+                </form>
+
+                <!-- Bottom Registration Link -->
+                <div class="pt-2 text-center text-xs text-secondary border-t border-outline-variant/40 flex justify-center items-center gap-3">
+                    <span>New to the platform?</span>
+                    <a href="/auth/register-patient" class="font-bold text-primary hover:underline">Patient Sign Up</a>
+                    <span>•</span>
+                    <a href="/auth/register-doctor" class="font-bold text-primary hover:underline">Doctor Sign Up</a>
+                </div>
             </div>
-        </section>
+        </div>
     </main>
+
+    <!-- Bottom Global Footer -->
+    <footer class="w-full py-4 text-center text-[11px] text-secondary">
+        <p class="font-serif font-semibold text-[#002f6c]">"स्वास्थ्यं परमं धनम्, विज्ञानस्य साहाय्येन सर्वेषां जीवनं निरामयं भवतु।"</p>
+        <p class="text-[10px] text-secondary/70 mt-0.5">Hospital Readmission Predictor • Team Nexora • LUMINIX'26</p>
+    </footer>
 </div>
 
 <script>
-    function togglePassword() {
-        const passwordInput = document.getElementById('password');
-        const visibilityIcon = document.getElementById('visibility-icon');
-        
-        if (passwordInput.type === 'password') {
-            passwordInput.type = 'text';
-            visibilityIcon.textContent = 'visibility_off';
-        } else {
-            passwordInput.type = 'password';
-            visibilityIcon.textContent = 'visibility';
-        }
+function fillCredentials(email, pwd) {
+    document.getElementById('email').value = email;
+    document.getElementById('password').value = pwd;
+    // Play subtle chime if audio enabled
+    if (window.audioSystem && window.audioSystem.playChime) {
+        window.audioSystem.playChime('click');
     }
+}
+
+function switchLoginTab(tab) {
+    const tabPwd = document.getElementById('tab-password');
+    const tabOtp = document.getElementById('tab-otp');
+    const formPwd = document.getElementById('form-password');
+    const formOtp = document.getElementById('form-otp');
+
+    if (tab === 'password') {
+        tabPwd.className = "px-4 py-2 text-xs font-bold border-b-2 border-primary text-primary transition-all flex items-center gap-1.5";
+        tabOtp.className = "px-4 py-2 text-xs font-semibold text-secondary hover:text-on-surface border-b-2 border-transparent transition-all flex items-center gap-1.5";
+        formPwd.classList.remove('hidden');
+        formOtp.classList.add('hidden');
+    } else {
+        tabOtp.className = "px-4 py-2 text-xs font-bold border-b-2 border-primary text-primary transition-all flex items-center gap-1.5";
+        tabPwd.className = "px-4 py-2 text-xs font-semibold text-secondary hover:text-on-surface border-b-2 border-transparent transition-all flex items-center gap-1.5";
+        formOtp.classList.remove('hidden');
+        formPwd.classList.add('hidden');
+    }
+}
+
+function togglePasswordVisibility() {
+    const pwdInput = document.getElementById('password');
+    const eyeIcon = document.getElementById('pwd-eye-icon');
+    if (pwdInput.type === 'password') {
+        pwdInput.type = 'text';
+        eyeIcon.textContent = 'visibility_off';
+    } else {
+        pwdInput.type = 'password';
+        eyeIcon.textContent = 'visibility';
+    }
+}
 </script>
 {% endblock %}

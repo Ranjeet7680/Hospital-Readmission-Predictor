@@ -116,8 +116,16 @@ async def sessions_page(request: Request):
 
 @app.get("/", response_class=HTMLResponse)
 @app.get("/welcome", response_class=HTMLResponse)
-async def root(request: Request):
-    return templates.TemplateResponse(request=request, name="welcome.html", context={"hide_nav": True})
+async def root(request: Request, logout: Optional[bool] = Query(False)):
+    return templates.TemplateResponse(request=request, name="welcome.html", context={"hide_nav": True, "logged_out": logout})
+
+@app.get("/logout")
+@app.post("/logout")
+async def logout_endpoint(request: Request):
+    response = RedirectResponse(url="/welcome?logout=true", status_code=303)
+    response.delete_cookie("session_token")
+    response.delete_cookie("user_role")
+    return response
 
 @app.post("/api/predict")
 async def api_predict(data: dict):
