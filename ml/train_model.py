@@ -12,7 +12,7 @@ import pandas as pd
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler
 from sklearn.metrics import roc_auc_score, accuracy_score, precision_score, recall_score, f1_score, confusion_matrix
-import xgboost as xgb
+from sklearn.ensemble import GradientBoostingClassifier
 
 def parse_bp(bp_str):
     """Parse '130/85' into (130, 85). Default to (120, 80) if invalid."""
@@ -86,7 +86,9 @@ def load_and_preprocess():
 
     return X, y, feature_cols
 
-def train():
+from sklearn.ensemble import RandomForestClassifier
+
+def train_and_evaluate():
     X, y, feature_cols = load_and_preprocess()
 
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42, stratify=y)
@@ -95,17 +97,12 @@ def train():
     X_train_scaled = scaler.fit_transform(X_train)
     X_test_scaled = scaler.transform(X_test)
 
-    # Train XGBoost Classifier
-    scale_pos_weight = (len(y_train) - sum(y_train)) / max(1, sum(y_train))
-    model = xgb.XGBClassifier(
-        n_estimators=180,
-        max_depth=5,
-        learning_rate=0.06,
-        subsample=0.85,
-        colsample_bytree=0.85,
-        scale_pos_weight=scale_pos_weight,
+    # Train High-Performance Random Forest Classifier (Pure Scikit-Learn)
+    model = RandomForestClassifier(
+        n_estimators=80,
+        max_depth=12,
         random_state=42,
-        eval_metric='logloss'
+        n_jobs=-1
     )
     model.fit(X_train_scaled, y_train)
 
@@ -159,4 +156,4 @@ def train():
     return payload
 
 if __name__ == "__main__":
-    train()
+    train_and_evaluate()

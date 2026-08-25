@@ -1,0 +1,10 @@
+Dataset/
+docs/
+tests/
+*.pptx
+*.log
+.pytest_cache/
+__pycache__/
+.git/
+.github/
+scripts/

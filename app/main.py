@@ -31,10 +31,19 @@ app = FastAPI(
     version="2.4.1"
 )
 
-# Mount Static Assets & Templates
+# Mount Static Assets & Templates with Serverless Path Resolution
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-app.mount("/static", StaticFiles(directory=os.path.join(BASE_DIR, "static")), name="static")
-templates = Jinja2Templates(directory=os.path.join(BASE_DIR, "templates"))
+static_dir = os.path.join(BASE_DIR, "static")
+if not os.path.exists(static_dir):
+    static_dir = os.path.join(os.getcwd(), "static")
+
+if os.path.exists(static_dir):
+    app.mount("/static", StaticFiles(directory=static_dir), name="static")
+
+template_dir = os.path.join(BASE_DIR, "templates")
+if not os.path.exists(template_dir):
+    template_dir = os.path.join(os.getcwd(), "templates")
+templates = Jinja2Templates(directory=template_dir)
 
 @app.get("/favicon.ico")
 async def favicon():
