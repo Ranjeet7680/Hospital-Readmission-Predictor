@@ -640,10 +640,17 @@
                             </div>
                         </div>
 
-                        <!-- Group 5: Settings -->
+                        <!-- Group 5: System & Resources -->
                         <div>
-                            <span class="text-[10px] uppercase font-bold text-secondary tracking-wider block px-2 mb-1">System</span>
+                            <span class="text-[10px] uppercase font-bold text-secondary tracking-wider block px-2 mb-1">System & Knowledge</span>
                             <div class="space-y-0.5">
+                                <a href="/ebook" target="_blank" class="flex items-center justify-between px-3 py-2 rounded-xl text-primary bg-primary/5 hover:bg-primary/10 border border-primary/20">
+                                    <div class="flex items-center gap-2.5">
+                                        <span class="material-symbols-outlined text-[18px] text-primary">menu_book</span>
+                                        <span class="font-bold">Master eBook (88 Ch)</span>
+                                    </div>
+                                    <span class="px-1.5 py-0.5 rounded text-[9px] bg-primary text-white font-bold">PDF</span>
+                                </a>
                                 <a href="/settings" class="flex items-center gap-2.5 px-3 py-2 rounded-xl text-on-surface hover:bg-surface-container">
                                     <span class="material-symbols-outlined text-[18px] text-secondary">settings</span>
                                     <span>Account & Settings</span>
@@ -659,9 +666,9 @@
 
                 <!-- Drawer Logout -->
                 <div class="pt-3 border-t border-surface-variant mt-4">
-                    <a href="/auth/landing" class="flex items-center gap-2 px-3 py-2 text-error font-bold text-xs hover:bg-error/10 rounded-xl">
+                    <a href="/logout" class="flex items-center gap-2 px-3 py-2.5 text-error font-bold text-xs hover:bg-error-container/30 rounded-xl transition-colors">
                         <span class="material-symbols-outlined text-base">logout</span>
-                        <span>Sign Out / Switch Role</span>
+                        <span>Sign Out / Lock Session</span>
                     </a>
                 </div>
 
@@ -671,7 +678,7 @@
         <!-- ========================================================================= -->
         <!-- MOBILE BOTTOM NAVIGATION (Fixed above safe-area)                          -->
         <!-- ========================================================================= -->
-        <nav class="fixed bottom-0 left-0 w-full z-40 flex justify-around items-center px-2 pb-[calc(env(safe-area-inset-bottom,0px)+6px)] pt-2 md:hidden bg-white/95 backdrop-blur-md shadow-[0_-4px_16px_rgba(0,0,0,0.08)] border-t border-surface-variant">
+        <nav class="fixed bottom-0 left-0 w-full z-40 flex justify-around items-center px-2 pb-[calc(env(safe-area-inset-bottom,0px)+8px)] pt-2 md:hidden bg-white/95 backdrop-blur-md shadow-[0_-4px_16px_rgba(0,0,0,0.08)] border-t border-surface-variant">
             <!-- 1. Home -->
             <a href="/dashboard" class="flex flex-col items-center justify-center w-14 py-1 {% if active_page == 'dashboard' %}text-primary font-bold{% else %}text-secondary{% endif %}">
                 <span class="material-symbols-outlined text-[22px] {% if active_page == 'dashboard' %}fill-icon{% endif %}">dashboard</span>
@@ -684,24 +691,24 @@
                 <span class="text-[10px] mt-0.5">Patients</span>
             </a>
 
-            <!-- 3. Elevated Predict Button -->
-            <a href="/prediction/new" class="flex flex-col items-center justify-center -mt-5 group">
-                <div class="w-12 h-12 rounded-full bg-primary text-white shadow-lg flex items-center justify-center group-hover:scale-105 transition-transform border-2 border-white ring-4 ring-primary/20">
-                    <span class="material-symbols-outlined text-2xl">add</span>
+            <!-- 3. Elevated Center Predict Button -->
+            <a href="/prediction/new" class="flex flex-col items-center justify-center -mt-6 group">
+                <div class="w-13 h-13 p-3 rounded-full bg-gradient-to-br from-primary to-[#002f6c] text-white shadow-xl flex items-center justify-center group-hover:scale-105 group-active:scale-95 transition-all border-2 border-white ring-4 ring-primary/20">
+                    <span class="material-symbols-outlined text-2xl">add_chart</span>
                 </div>
-                <span class="text-[10px] font-bold text-primary mt-0.5">Predict</span>
+                <span class="text-[10px] font-extrabold text-primary mt-1">Predict</span>
             </a>
 
-            <!-- 4. Consult -->
-            <a href="/consultation/careai" class="flex flex-col items-center justify-center w-14 py-1 {% if active_page == 'video_consult' %}text-primary font-bold{% else %}text-secondary{% endif %}">
-                <span class="material-symbols-outlined text-[22px]">videocam</span>
-                <span class="text-[10px] mt-0.5">Consult</span>
+            <!-- 4. Telehealth -->
+            <a href="/telemedicine" class="flex flex-col items-center justify-center w-14 py-1 {% if active_page == 'video_consult' %}text-primary font-bold{% else %}text-secondary{% endif %}">
+                <span class="material-symbols-outlined text-[22px]">video_call</span>
+                <span class="text-[10px] mt-0.5">Telehealth</span>
             </a>
 
             <!-- 5. More / Menu -->
             <button onclick="openMobileDrawer()" class="flex flex-col items-center justify-center w-14 py-1 text-secondary hover:text-on-surface">
                 <span class="material-symbols-outlined text-[22px]">menu</span>
-                <span class="text-[10px] mt-0.5">More</span>
+                <span class="text-[10px] mt-0.5">Menu</span>
             </button>
         </nav>
     </div>
