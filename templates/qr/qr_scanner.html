@@ -1,0 +1,202 @@
+{% extends "base.html" %}
+
+{% block title %}QR Code Scanner - Hospital Readmission Predictor{% endblock %}
+{% block header_title %}QR Code Scanner{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto space-y-6 animate-fade-in pb-12">
+    <!-- Header -->
+    <div class="text-center space-y-1">
+        <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-primary/10 text-primary text-xs font-bold border border-primary/20">
+            <span class="material-symbols-outlined text-[16px]">qr_code_scanner</span>
+            <span>Healthcare Identity & Pass Verification</span>
+        </div>
+        <h1 class="text-2xl sm:text-3xl font-bold text-on-surface">Scan a Healthcare QR Code</h1>
+        <p class="text-xs sm:text-sm text-secondary max-w-lg mx-auto">Scan Health IDs, Doctor Badges, Appointment Passes, or Medical Certificates.</p>
+    </div>
+
+    <!-- Scanner Viewfinder & Simulation Container -->
+    <div class="grid grid-cols-1 md:grid-cols-12 gap-6 items-start">
+        
+        <!-- Live Viewfinder (Span 7) -->
+        <div class="md:col-span-7 bg-surface-container-lowest border border-outline-variant rounded-3xl p-6 shadow-sm flex flex-col items-center space-y-4">
+            
+            <div class="relative w-full max-w-[320px] aspect-square bg-slate-950 rounded-2xl overflow-hidden flex items-center justify-center border-2 border-primary/40 shadow-inner">
+                <!-- Video Stream Background / Camera Placeholder -->
+                <div class="absolute inset-0 flex flex-col items-center justify-center text-slate-400 p-4 text-center space-y-2">
+                    <span class="material-symbols-outlined text-5xl text-primary animate-pulse">videocam</span>
+                    <span class="text-xs font-medium text-slate-300">Camera Viewfinder Active</span>
+                    <span class="text-[10px] text-slate-500">Align QR code within the target box</span>
+                </div>
+
+                <!-- Viewfinder Target Box with Corner Reticles -->
+                <div class="relative w-48 h-48 border-2 border-dashed border-white/40 rounded-2xl flex items-center justify-center z-10">
+                    <!-- Top-Left Corner -->
+                    <div class="absolute -top-1 -left-1 w-6 h-6 border-t-4 border-l-4 border-primary rounded-tl-lg"></div>
+                    <!-- Top-Right Corner -->
+                    <div class="absolute -top-1 -right-1 w-6 h-6 border-t-4 border-r-4 border-primary rounded-tr-lg"></div>
+                    <!-- Bottom-Left Corner -->
+                    <div class="absolute -bottom-1 -left-1 w-6 h-6 border-b-4 border-l-4 border-primary rounded-bl-lg"></div>
+                    <!-- Bottom-Right Corner -->
+                    <div class="absolute -bottom-1 -right-1 w-6 h-6 border-b-4 border-r-4 border-primary rounded-br-lg"></div>
+
+                    <!-- Animated Scanning Laser Line -->
+                    <div class="absolute left-0 right-0 h-1 bg-gradient-to-r from-transparent via-cyan-400 to-transparent shadow-[0_0_12px_#22d3ee] animate-scanner-laser"></div>
+                </div>
+
+                <!-- Status Overlay Pill -->
+                <div class="absolute bottom-3 left-1/2 -translate-x-1/2 px-3 py-1 bg-black/70 backdrop-blur-md rounded-full text-[10px] text-white font-bold flex items-center gap-1.5 z-20 border border-white/20">
+                    <span class="w-2 h-2 rounded-full bg-green-400 animate-ping"></span>
+                    <span id="scanner-status-text">Scanning for QR code...</span>
+                </div>
+            </div>
+
+            <!-- Scanner Controls -->
+            <div class="flex items-center gap-3 w-full max-w-[320px]">
+                <button onclick="simulateScan('QRT-EV-HEALTHID-1042')" class="flex-1 py-2 rounded-xl bg-primary hover:bg-primary/90 text-on-primary font-bold text-xs shadow-sm flex items-center justify-center gap-1.5 transition-all">
+                    <span class="material-symbols-outlined text-[16px]">play_arrow</span>
+                    <span>Simulate Scan</span>
+                </button>
+                <label class="flex-1 py-2 rounded-xl bg-surface-container-high hover:bg-surface-container-highest border border-outline-variant text-on-surface font-semibold text-xs flex items-center justify-center gap-1.5 transition-all cursor-pointer">
+                    <span class="material-symbols-outlined text-[16px] text-primary">upload_file</span>
+                    <span>Upload Image</span>
+                    <input type="file" accept="image/*" class="hidden" onchange="simulateScan('QRT-EV-HEALTHID-1042')"/>
+                </label>
+            </div>
+        </div>
+
+        <!-- Sample Presets & Verification Result (Span 5) -->
+        <div class="md:col-span-5 space-y-4">
+            
+            <!-- Preset Test QR Tokens -->
+            <div class="bg-surface-container-lowest border border-outline-variant rounded-3xl p-5 shadow-sm space-y-3">
+                <h3 class="text-xs font-bold uppercase tracking-wider text-secondary flex items-center gap-1.5">
+                    <span class="material-symbols-outlined text-primary text-base">science</span>
+                    <span>Test Healthcare QR Tokens</span>
+                </h3>
+
+                <div class="space-y-2">
+                    <button onclick="simulateScan('QRT-EV-HEALTHID-1042')" class="w-full p-2.5 rounded-xl bg-surface-container-low hover:bg-primary/10 border border-outline-variant/60 text-left transition-all flex items-center justify-between group">
+                        <div>
+                            <span class="text-xs font-bold text-on-surface block group-hover:text-primary">1. Eleanor Vance Health ID</span>
+                            <span class="text-[10px] text-secondary font-mono">QRT-EV-HEALTHID-1042</span>
+                        </div>
+                        <span class="material-symbols-outlined text-secondary group-hover:text-primary text-base">arrow_forward</span>
+                    </button>
+
+                    <button onclick="simulateScan('QRT-DOC-ARIS-88219')" class="w-full p-2.5 rounded-xl bg-surface-container-low hover:bg-primary/10 border border-outline-variant/60 text-left transition-all flex items-center justify-between group">
+                        <div>
+                            <span class="text-xs font-bold text-on-surface block group-hover:text-primary">2. Dr. J. Aris Physician Badge</span>
+                            <span class="text-[10px] text-secondary font-mono">QRT-DOC-ARIS-88219</span>
+                        </div>
+                        <span class="material-symbols-outlined text-secondary group-hover:text-primary text-base">arrow_forward</span>
+                    </button>
+
+                    <button onclick="simulateScan('QRT-APT-99214')" class="w-full p-2.5 rounded-xl bg-surface-container-low hover:bg-primary/10 border border-outline-variant/60 text-left transition-all flex items-center justify-between group">
+                        <div>
+                            <span class="text-xs font-bold text-on-surface block group-hover:text-primary">3. Appointment Review Pass</span>
+                            <span class="text-[10px] text-secondary font-mono">QRT-APT-99214</span>
+                        </div>
+                        <span class="material-symbols-outlined text-secondary group-hover:text-primary text-base">arrow_forward</span>
+                    </button>
+
+                    <button onclick="simulateScan('QRT-CERT-84729')" class="w-full p-2.5 rounded-xl bg-surface-container-low hover:bg-primary/10 border border-outline-variant/60 text-left transition-all flex items-center justify-between group">
+                        <div>
+                            <span class="text-xs font-bold text-on-surface block group-hover:text-primary">4. Medical Leave Certificate</span>
+                            <span class="text-[10px] text-secondary font-mono">QRT-CERT-84729</span>
+                        </div>
+                        <span class="material-symbols-outlined text-secondary group-hover:text-primary text-base">arrow_forward</span>
+                    </button>
+
+                    <button onclick="simulateScan('QRT-SHARE-DOC84729')" class="w-full p-2.5 rounded-xl bg-surface-container-low hover:bg-primary/10 border border-outline-variant/60 text-left transition-all flex items-center justify-between group">
+                        <div>
+                            <span class="text-xs font-bold text-on-surface block group-hover:text-primary">5. 24h Temporary Share Pass</span>
+                            <span class="text-[10px] text-secondary font-mono">QRT-SHARE-DOC84729</span>
+                        </div>
+                        <span class="material-symbols-outlined text-secondary group-hover:text-primary text-base">arrow_forward</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Real-time Scan Result Drawer -->
+            <div id="scan-result-card" class="bg-surface-container-lowest border-2 border-primary/50 rounded-3xl p-5 shadow-md space-y-3 hidden animate-scale-up">
+                <div class="flex items-center gap-2 text-green-700">
+                    <span class="material-symbols-outlined text-xl">check_circle</span>
+                    <h4 class="text-sm font-bold">QR Token Detected</h4>
+                </div>
+                <div class="p-3 bg-surface-container-low rounded-2xl text-xs space-y-1">
+                    <div class="flex justify-between">
+                        <span class="text-secondary">Subject:</span>
+                        <strong id="res-subject" class="text-on-surface">Eleanor Vance</strong>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="text-secondary">Type:</span>
+                        <span id="res-type" class="font-bold text-primary">Health ID</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="text-secondary">Status:</span>
+                        <span class="px-2 py-0.5 rounded-full bg-green-100 text-green-800 text-[10px] font-bold">Active & Verified</span>
+                    </div>
+                </div>
+                <a id="res-verify-link" href="#" class="w-full py-2 rounded-xl bg-primary hover:bg-primary/90 text-on-primary font-bold text-xs shadow-sm flex items-center justify-center gap-1.5 transition-all">
+                    <span>Open Verified Record</span>
+                    <span class="material-symbols-outlined text-[16px]">arrow_forward</span>
+                </a>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<script>
+function simulateScan(tokenId) {
+    window.soundEngine?.click();
+    document.getElementById('scanner-status-text').innerText = 'Verifying QR Token...';
+    
+    setTimeout(() => {
+        window.soundEngine?.success();
+        document.getElementById('scanner-status-text').innerText = 'Verified: ' + tokenId;
+        
+        const card = document.getElementById('scan-result-card');
+        card.classList.remove('hidden');
+        
+        let typeName = "Health ID";
+        let subName = "Eleanor Vance";
+        let linkUrl = "/verify-id/" + tokenId;
+        
+        if (tokenId.includes('DOC-ARIS')) {
+            typeName = "Doctor Credential";
+            subName = "Dr. J. Aris, MD";
+            linkUrl = "/verify-doctor/" + tokenId;
+        } else if (tokenId.includes('APT')) {
+            typeName = "Appointment Pass";
+            subName = "Cardiology Review (Dr. J. Aris)";
+            linkUrl = "/verify-appointment/" + tokenId;
+        } else if (tokenId.includes('CERT')) {
+            typeName = "Medical Certificate";
+            subName = "14-Day Convalescence Leave";
+            linkUrl = "/verify-certificate/CERT-2023-84729";
+        } else if (tokenId.includes('SHARE')) {
+            typeName = "Temporary Share Pass";
+            subName = "Lab Panel & CBC (24h)";
+            linkUrl = "/verify-share/" + tokenId;
+        }
+        
+        document.getElementById('res-type').innerText = typeName;
+        document.getElementById('res-subject').innerText = subName;
+        document.getElementById('res-verify-link').href = linkUrl;
+    }, 800);
+}
+</script>
+
+<style>
+@keyframes scannerLaser {
+    0% { top: 0%; opacity: 0.8; }
+    50% { top: 96%; opacity: 1; }
+    100% { top: 0%; opacity: 0.8; }
+}
+.animate-scanner-laser {
+    animation: scannerLaser 2.2s ease-in-out infinite;
+}
+</style>
+{% endblock %}

@@ -1,0 +1,88 @@
+{% extends "base.html" %}
+
+{% block title %}Medical Document Center - Hospital Readmission Predictor{% endblock %}
+{% block header_title %}Medical Document Center{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto space-y-6">
+    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+        <div>
+            <h1 class="text-2xl font-bold text-on-surface" data-i18n="medical_documents">Medical Document Center</h1>
+            <p class="text-sm text-secondary">Upload, extract OCR lab biomarkers, analyze clinical records, and issue verified medical certificates.</p>
+        </div>
+        <div class="flex items-center gap-3">
+            <a href="/certificates/new" class="px-4 py-2 bg-primary text-on-primary rounded-xl font-bold text-xs hover:bg-on-primary-fixed-variant transition-colors shadow-xs flex items-center gap-1.5">
+                <span class="material-symbols-outlined text-[16px]">add_task</span>
+                Issue Medical Certificate
+            </a>
+        </div>
+    </div>
+
+    <!-- Drag & Drop Upload Card -->
+    <div id="drop-zone" class="p-8 bg-surface-container-lowest border-2 border-dashed border-primary/40 rounded-2xl text-center hover:border-primary transition-all cursor-pointer shadow-xs" onclick="document.getElementById('file-upload-input').click()">
+        <input id="file-upload-input" type="file" class="hidden" accept=".pdf,.jpg,.jpeg,.png,.docx" onchange="handleFileUpload(this)"/>
+        <div class="w-16 h-16 rounded-full bg-primary-fixed text-primary flex items-center justify-center mx-auto mb-3">
+            <span class="material-symbols-outlined text-3xl">cloud_upload</span>
+        </div>
+        <h3 class="text-base font-bold text-on-surface mb-1">Drag & Drop Medical Report (PDF, JPG, PNG, DOCX)</h3>
+        <p class="text-xs text-secondary mb-3">Supports multi-page blood panels, discharge summaries, imaging reports, and prescriptions.</p>
+        <button type="button" class="px-4 py-1.5 bg-primary/10 text-primary rounded-lg font-bold text-xs hover:bg-primary hover:text-on-primary transition-colors">
+            Choose From Device
+        </button>
+        <p class="text-[10px] text-secondary mt-3">AI extracted information is assistive and requires doctor review before clinical finalization.</p>
+    </div>
+
+    <!-- Document Repository Table -->
+    <div class="bg-surface-container-lowest border border-outline-variant rounded-2xl overflow-hidden shadow-xs">
+        <div class="p-4 border-b border-surface-variant flex justify-between items-center">
+            <h3 class="font-bold text-on-surface text-sm">Processed Patient Documents</h3>
+            <span class="text-xs text-secondary">All records HIPAA-encrypted</span>
+        </div>
+        <div class="overflow-x-auto">
+            <table class="w-full text-left text-xs">
+                <thead class="bg-surface-container-low border-b border-outline-variant text-secondary uppercase font-semibold">
+                    <tr>
+                        <th class="py-3 px-4">Document Title</th>
+                        <th class="py-3 px-4">Patient</th>
+                        <th class="py-3 px-4">Type</th>
+                        <th class="py-3 px-4">Upload Date</th>
+                        <th class="py-3 px-4">OCR Confidence</th>
+                        <th class="py-3 px-4">Verification</th>
+                        <th class="py-3 px-4 text-right">Actions</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-surface-variant">
+                    {% for doc in documents %}
+                    <tr class="hover:bg-surface-container-low transition-colors">
+                        <td class="py-3.5 px-4 font-bold text-primary">
+                            <a href="/documents/analyze/{{ doc.id }}" class="hover:underline">{{ doc.title }}</a>
+                        </td>
+                        <td class="py-3.5 px-4 font-semibold text-on-surface">{{ doc.patient_name }} ({{ doc.patient_id }})</td>
+                        <td class="py-3.5 px-4">
+                            <span class="px-2.5 py-0.5 bg-primary-fixed text-primary font-bold rounded-full text-[10px]">{{ doc.type }}</span>
+                        </td>
+                        <td class="py-3.5 px-4 text-secondary">{{ doc.upload_date }}</td>
+                        <td class="py-3.5 px-4 font-semibold text-[#146c2e]">{{ doc.ocr_confidence }}</td>
+                        <td class="py-3.5 px-4">
+                            <span class="px-2 py-0.5 bg-green-100 text-[#146c2e] font-bold rounded-full text-[10px]">{{ doc.status }}</span>
+                        </td>
+                        <td class="py-3.5 px-4 text-right">
+                            <a href="/documents/analyze/{{ doc.id }}" class="text-primary font-bold hover:underline">View Analysis</a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<script>
+    function handleFileUpload(input) {
+        if (!input.files || !input.files[0]) return;
+        window.soundEngine?.uploadComplete();
+        alert(`File '${input.files[0].name}' uploaded successfully. Optical Character Recognition (OCR) is extracting clinical entities.`);
+        window.location.href = '/documents/analyze/DOC-84729-LAB';
+    }
+</script>
+{% endblock %}

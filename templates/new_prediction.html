@@ -1,0 +1,751 @@
+{% extends "base.html" %}
+
+{% block title %}New Prediction - Hospital Readmission Predictor{% endblock %}
+{% block header_title %}New Prediction Workflow{% endblock %}
+
+{% block extra_head %}
+<style>
+    .card-enter {
+        animation: slideUpFade 0.35s ease-out forwards;
+    }
+    @keyframes slideUpFade {
+        from { opacity: 0; transform: translateY(8px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="max-w-5xl mx-auto space-y-lg">
+    <!-- Header & Progress Stepper -->
+    <div class="mb-lg">
+        <div class="flex flex-col md:flex-row justify-between items-start md:items-end gap-4 mb-lg">
+            <div>
+                <h1 class="text-headline-lg font-headline-lg font-bold text-on-surface tracking-tight mb-1">New Risk Assessment</h1>
+                <p id="step-subtitle" class="text-body-lg font-body-lg text-secondary">Step 1 of 4: Patient Demographics & Profile</p>
+            </div>
+            <div class="flex items-center gap-2 bg-surface px-4 py-2 rounded-xl border border-outline-variant shadow-sm">
+                <span class="material-symbols-outlined text-primary">person</span>
+                <span id="badge-patient-id" class="text-title-md font-title-md font-bold text-on-surface">ID: PT-84729-A</span>
+            </div>
+        </div>
+
+        <!-- 4-Step Stepper Progress Bar -->
+        <div class="relative w-full max-w-4xl mx-auto py-2">
+            <div class="absolute top-1/2 left-0 w-full h-1 bg-surface-variant -translate-y-1/2 rounded-full z-0 hidden sm:block"></div>
+            <div id="stepper-progress-bar" class="absolute top-1/2 left-0 w-[0%] h-1 bg-primary -translate-y-1/2 rounded-full z-0 hidden sm:block transition-all duration-500"></div>
+
+            <div class="flex justify-between items-center relative z-10">
+                <!-- Step 1 -->
+                <button type="button" onclick="goToStep(1)" id="step-btn-1" class="flex flex-col items-center gap-2 group cursor-pointer focus:outline-none">
+                    <div id="step-circle-1" class="w-10 h-10 rounded-full bg-primary-container text-on-primary-container border-2 border-primary flex items-center justify-center font-bold shadow-md ring-4 ring-primary-fixed">
+                        1
+                    </div>
+                    <span id="step-label-1" class="text-label-lg font-label-lg text-primary font-bold hidden sm:block">Demographics</span>
+                </button>
+
+                <!-- Step 2 -->
+                <button type="button" onclick="goToStep(2)" id="step-btn-2" class="flex flex-col items-center gap-2 group cursor-pointer focus:outline-none">
+                    <div id="step-circle-2" class="w-10 h-10 rounded-full bg-surface text-secondary border-2 border-outline-variant flex items-center justify-center font-bold shadow-sm transition-all">
+                        2
+                    </div>
+                    <span id="step-label-2" class="text-label-lg font-label-lg text-secondary hidden sm:block">Clinical Data</span>
+                </button>
+
+                <!-- Step 3 -->
+                <button type="button" onclick="goToStep(3)" id="step-btn-3" class="flex flex-col items-center gap-2 group cursor-pointer focus:outline-none">
+                    <div id="step-circle-3" class="w-10 h-10 rounded-full bg-surface text-secondary border-2 border-outline-variant flex items-center justify-center font-bold shadow-sm transition-all">
+                        3
+                    </div>
+                    <span id="step-label-3" class="text-label-lg font-label-lg text-secondary hidden sm:block">Medical History</span>
+                </button>
+
+                <!-- Step 4 -->
+                <button type="button" onclick="goToStep(4)" id="step-btn-4" class="flex flex-col items-center gap-2 group cursor-pointer focus:outline-none">
+                    <div id="step-circle-4" class="w-10 h-10 rounded-full bg-surface text-secondary border-2 border-outline-variant flex items-center justify-center font-bold shadow-sm transition-all">
+                        4
+                    </div>
+                    <span id="step-label-4" class="text-label-lg font-label-lg text-secondary hidden sm:block">Review & Predict</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Prediction Form -->
+    <form id="prediction-form" onsubmit="submitPrediction(event)">
+        <!-- STEP 1: Demographics -->
+        <div id="step-1-content" class="step-container space-y-lg card-enter">
+            <div class="bg-surface-container-lowest rounded-2xl border border-outline-variant p-lg shadow-sm">
+                <div class="flex items-center gap-3 mb-md border-b border-surface-variant pb-3">
+                    <div class="w-10 h-10 rounded-lg bg-primary-fixed flex items-center justify-center text-primary">
+                        <span class="material-symbols-outlined">badge</span>
+                    </div>
+                    <div>
+                        <h3 class="text-title-lg font-title-lg font-bold text-on-surface">Patient Information</h3>
+                        <p class="text-xs text-secondary">Basic demographic information and inpatient admission context</p>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-md">
+                    <div>
+                        <label class="block text-label-lg font-label-lg text-secondary mb-1">Patient ID</label>
+                        <input id="input_patient_id" name="patient_id" type="text" value="PT-84729-A" required class="w-full rounded-lg border border-outline-variant bg-surface px-3 py-2.5 text-body-lg focus:border-primary focus:ring-1 focus:ring-primary outline-none" oninput="updateReviewData()"/>
+                    </div>
+
+                    <div>
+                        <label class="block text-label-lg font-label-lg text-secondary mb-1">Full Name</label>
+                        <input id="input_full_name" name="full_name" type="text" value="Eleanor Vance" required class="w-full rounded-lg border border-outline-variant bg-surface px-3 py-2.5 text-body-lg focus:border-primary focus:ring-1 focus:ring-primary outline-none" oninput="updateReviewData()"/>
+                    </div>
+
+                    <div>
+                        <label class="block text-label-lg font-label-lg text-secondary mb-1">Date of Birth</label>
+                        <input id="input_dob" name="dob" type="date" value="1952-10-14" class="w-full rounded-lg border border-outline-variant bg-surface px-3 py-2.5 text-body-lg focus:border-primary focus:ring-1 focus:ring-primary outline-none" onchange="calcAge()"/>
+                    </div>
+
+                    <div>
+                        <label class="block text-label-lg font-label-lg text-secondary mb-1">Age (Years)</label>
+                        <input id="input_age" name="age" type="number" value="71" min="1" max="120" required class="w-full rounded-lg border border-outline-variant bg-surface px-3 py-2.5 text-body-lg focus:border-primary focus:ring-1 focus:ring-primary outline-none" oninput="updateReviewData()"/>
+                    </div>
+
+                    <div>
+                        <label class="block text-label-lg font-label-lg text-secondary mb-1">Gender</label>
+                        <select id="input_gender" name="gender" class="w-full rounded-lg border border-outline-variant bg-surface px-3 py-2.5 text-body-lg focus:border-primary focus:ring-1 focus:ring-primary outline-none cursor-pointer" onchange="updateReviewData()">
+                            <option value="Female" selected>Female</option>
+                            <option value="Male">Male</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label class="block text-label-lg font-label-lg text-secondary mb-1">Department</label>
+                        <select id="input_department" name="department" class="w-full rounded-lg border border-outline-variant bg-surface px-3 py-2.5 text-body-lg focus:border-primary focus:ring-1 focus:ring-primary outline-none cursor-pointer">
+                            <option value="Cardiology" selected>Cardiology</option>
+                            <option value="Neurology">Neurology</option>
+                            <option value="General Surgery">General Surgery</option>
+                            <option value="Internal Medicine">Internal Medicine</option>
+                            <option value="Orthopedics">Orthopedics</option>
+                            <option value="Oncology">Oncology</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label class="block text-label-lg font-label-lg text-secondary mb-1">Attending Physician</label>
+                        <input id="input_attending" name="attending_physician" type="text" value="Dr. J. Aris" class="w-full rounded-lg border border-outline-variant bg-surface px-3 py-2.5 text-body-lg focus:border-primary focus:ring-1 focus:ring-primary outline-none"/>
+                    </div>
+
+                    <div>
+                        <label class="block text-label-lg font-label-lg text-secondary mb-1">Primary Diagnosis</label>
+                        <input id="input_primary_diagnosis" name="primary_diagnosis" type="text" value="Congestive Heart Failure" required class="w-full rounded-lg border border-outline-variant bg-surface px-3 py-2.5 text-body-lg focus:border-primary focus:ring-1 focus:ring-primary outline-none" oninput="updateReviewData()"/>
+                    </div>
+
+                    <div>
+                        <label class="block text-label-lg font-label-lg text-secondary mb-1">Admission Date</label>
+                        <input id="input_admission_date" name="admission_date" type="date" value="2023-10-24" class="w-full rounded-lg border border-outline-variant bg-surface px-3 py-2.5 text-body-lg focus:border-primary focus:ring-1 focus:ring-primary outline-none" onchange="updateReviewData()"/>
+                    </div>
+
+                    <div>
+                        <label class="block text-label-lg font-label-lg text-secondary mb-1">Discharge Date (Expected)</label>
+                        <input id="input_discharge_date" name="discharge_date" type="date" value="2023-11-02" class="w-full rounded-lg border border-outline-variant bg-surface px-3 py-2.5 text-body-lg focus:border-primary focus:ring-1 focus:ring-primary outline-none" onchange="updateReviewData()"/>
+                    </div>
+
+                    <div>
+                        <label class="block text-label-lg font-label-lg text-secondary mb-1">Length of Stay (Days)</label>
+                        <input id="input_los" name="length_of_stay" type="number" value="9" min="1" max="90" class="w-full rounded-lg border border-outline-variant bg-surface px-3 py-2.5 text-body-lg focus:border-primary focus:ring-1 focus:ring-primary outline-none" oninput="updateReviewData()"/>
+                    </div>
+
+                    <div>
+                        <label class="block text-label-lg font-label-lg text-secondary mb-1">Acuity Level</label>
+                        <select id="input_acuity" name="acuity_level" class="w-full rounded-lg border border-outline-variant bg-surface px-3 py-2.5 text-body-lg focus:border-primary focus:ring-1 focus:ring-primary outline-none cursor-pointer" onchange="updateReviewData()">
+                            <option value="High" selected>High Acuity</option>
+                            <option value="Moderate">Moderate Acuity</option>
+                            <option value="Low">Low Acuity</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Action Bar -->
+            <div class="flex justify-end gap-md pt-md border-t border-outline-variant">
+                <button type="button" onclick="goToStep(2)" class="px-6 py-2.5 rounded-full bg-primary text-on-primary font-bold hover:bg-on-primary-fixed-variant shadow-md flex items-center gap-2">
+                    Next: Clinical Data
+                    <span class="material-symbols-outlined text-[18px]">arrow_forward</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- STEP 2: Clinical Data -->
+        <div id="step-2-content" class="step-container space-y-lg hidden card-enter">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-lg">
+                <!-- Vitals -->
+                <section class="bg-surface-container-lowest rounded-2xl border border-outline-variant p-lg shadow-sm">
+                    <div class="flex items-center mb-md border-b border-surface-variant pb-3 gap-2">
+                        <span class="material-symbols-outlined text-primary">monitor_heart</span>
+                        <h3 class="text-title-md font-title-md font-bold text-on-surface">Physiological Vitals</h3>
+                    </div>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-md">
+                        <div>
+                            <label class="block text-label-lg font-label-lg text-secondary mb-1">Heart Rate</label>
+                            <div class="relative">
+                                <input id="input_hr" name="heart_rate" type="number" value="88" class="w-full rounded-lg border border-outline-variant bg-surface px-3 py-2.5 pr-12 text-body-lg focus:border-primary focus:ring-1 focus:ring-primary outline-none" oninput="updateReviewData()"/>
+                                <span class="absolute right-3 top-2.5 text-xs text-secondary font-medium">bpm</span>
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block text-label-lg font-label-lg text-secondary mb-1">Blood Pressure (Sys/Dia)</label>
+                            <div class="flex items-center gap-2">
+                                <input id="input_sys_bp" name="systolic_bp" type="number" value="135" placeholder="135" class="w-full rounded-lg border border-outline-variant bg-surface px-3 py-2.5 text-center text-body-lg focus:border-primary focus:ring-1 focus:ring-primary outline-none" oninput="updateReviewData()"/>
+                                <span class="text-secondary font-bold">/</span>
+                                <input id="input_dia_bp" name="diastolic_bp" type="number" value="85" placeholder="85" class="w-full rounded-lg border border-outline-variant bg-surface px-3 py-2.5 text-center text-body-lg focus:border-primary focus:ring-1 focus:ring-primary outline-none" oninput="updateReviewData()"/>
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block text-label-lg font-label-lg text-secondary mb-1">Temperature</label>
+                            <div class="relative">
+                                <input id="input_temp" name="temperature" type="number" step="0.1" value="37.0" class="w-full rounded-lg border border-outline-variant bg-surface px-3 py-2.5 pr-12 text-body-lg focus:border-primary focus:ring-1 focus:ring-primary outline-none"/>
+                                <span class="absolute right-3 top-2.5 text-xs text-secondary font-medium">°C</span>
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block text-label-lg font-label-lg text-secondary mb-1">Respiratory Rate</label>
+                            <div class="relative">
+                                <input id="input_resp" name="resp_rate" type="number" value="18" class="w-full rounded-lg border border-outline-variant bg-surface px-3 py-2.5 pr-16 text-body-lg focus:border-primary focus:ring-1 focus:ring-primary outline-none"/>
+                                <span class="absolute right-3 top-2.5 text-xs text-secondary font-medium">breaths/m</span>
+                            </div>
+                        </div>
+
+                        <div class="sm:col-span-2">
+                            <label class="block text-label-lg font-label-lg text-secondary mb-1">Oxygen Saturation (SpO2)</label>
+                            <div class="relative w-full sm:w-1/2">
+                                <input id="input_spo2" name="spo2" type="number" value="94" max="100" min="50" class="w-full rounded-lg border border-outline-variant bg-surface px-3 py-2.5 pr-12 text-body-lg focus:border-primary focus:ring-1 focus:ring-primary outline-none" oninput="updateReviewData()"/>
+                                <span class="absolute right-3 top-2.5 text-xs text-secondary font-medium">%</span>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Lab Tests -->
+                <section class="bg-surface-container-lowest rounded-2xl border border-outline-variant p-lg shadow-sm">
+                    <div class="flex items-center mb-md border-b border-surface-variant pb-3 gap-2">
+                        <span class="material-symbols-outlined text-primary">science</span>
+                        <h3 class="text-title-md font-title-md font-bold text-on-surface">Laboratory Biomarkers</h3>
+                    </div>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-md">
+                        <div>
+                            <label class="block text-label-lg font-label-lg text-secondary mb-1">Hemoglobin</label>
+                            <div class="relative">
+                                <input id="input_hgb" name="hemoglobin" type="number" step="0.1" value="11.2" class="w-full rounded-lg border border-outline-variant bg-surface px-3 py-2.5 pr-12 text-body-lg focus:border-primary focus:ring-1 focus:ring-primary outline-none"/>
+                                <span class="absolute right-3 top-2.5 text-xs text-secondary font-medium">g/dL</span>
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block text-label-lg font-label-lg text-secondary mb-1">White Blood Cells (WBC)</label>
+                            <div class="relative">
+                                <input id="input_wbc" name="wbc" type="number" step="0.1" value="8.4" class="w-full rounded-lg border border-outline-variant bg-surface px-3 py-2.5 pr-16 text-body-lg focus:border-primary focus:ring-1 focus:ring-primary outline-none"/>
+                                <span class="absolute right-3 top-2.5 text-xs text-secondary font-medium">x10³/µL</span>
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block text-label-lg font-label-lg text-secondary mb-1">Serum Creatinine</label>
+                            <div class="relative">
+                                <input id="input_creat" name="creatinine" type="number" step="0.01" value="1.6" class="w-full rounded-lg border border-outline-variant bg-surface px-3 py-2.5 pr-14 text-body-lg focus:border-primary focus:ring-1 focus:ring-primary outline-none"/>
+                                <span class="absolute right-3 top-2.5 text-xs text-secondary font-medium">mg/dL</span>
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block text-label-lg font-label-lg text-secondary mb-1">Blood Glucose</label>
+                            <div class="relative">
+                                <input id="input_glucose" name="glucose" type="number" value="145" class="w-full rounded-lg border border-outline-variant bg-surface px-3 py-2.5 pr-14 text-body-lg focus:border-primary focus:ring-1 focus:ring-primary outline-none"/>
+                                <span class="absolute right-3 top-2.5 text-xs text-secondary font-medium">mg/dL</span>
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block text-label-lg font-label-lg text-secondary mb-1">HbA1c</label>
+                            <div class="relative">
+                                <input id="input_hba1c" name="hba1c" type="number" step="0.1" value="7.4" class="w-full rounded-lg border border-outline-variant bg-surface px-3 py-2.5 pr-10 text-body-lg focus:border-primary focus:ring-1 focus:ring-primary outline-none"/>
+                                <span class="absolute right-3 top-2.5 text-xs text-secondary font-medium">%</span>
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block text-label-lg font-label-lg text-secondary mb-1">BMI</label>
+                            <div class="relative">
+                                <input id="input_bmi" name="bmi" type="number" step="0.1" value="29.4" class="w-full rounded-lg border border-outline-variant bg-surface px-3 py-2.5 pr-16 text-body-lg focus:border-primary focus:ring-1 focus:ring-primary outline-none"/>
+                                <span class="absolute right-3 top-2.5 text-xs text-secondary font-medium">kg/m²</span>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+
+            <!-- Action Bar -->
+            <div class="flex justify-between gap-md pt-md border-t border-outline-variant">
+                <button type="button" onclick="goToStep(1)" class="px-6 py-2.5 rounded-full border border-outline-variant text-secondary hover:text-on-surface font-bold transition-colors">
+                    Back
+                </button>
+                <button type="button" onclick="goToStep(3)" class="px-6 py-2.5 rounded-full bg-primary text-on-primary font-bold hover:bg-on-primary-fixed-variant shadow-md flex items-center gap-2">
+                    Next: Medical History
+                    <span class="material-symbols-outlined text-[18px]">arrow_forward</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- STEP 3: Medical History -->
+        <div id="step-3-content" class="step-container space-y-lg hidden card-enter">
+            <div class="grid grid-cols-1 md:grid-cols-12 gap-gutter">
+                <!-- 1. Previous Admissions -->
+                <section class="md:col-span-8 bg-surface-container-lowest rounded-2xl border border-outline-variant p-lg shadow-sm">
+                    <div class="flex items-center gap-3 mb-md border-b border-surface-variant pb-3">
+                        <div class="w-10 h-10 rounded-lg bg-tertiary-fixed flex items-center justify-center text-primary">
+                            <span class="material-symbols-outlined">calendar_month</span>
+                        </div>
+                        <h3 class="text-title-lg font-title-lg font-bold text-on-surface">Previous Inpatient Admissions</h3>
+                    </div>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-md">
+                        <div>
+                            <label class="block text-label-lg font-label-lg text-secondary mb-1">Admissions in Last 30 Days</label>
+                            <input id="input_prev_30d" name="prev_admissions_30d" type="number" min="0" value="1" class="w-full rounded-lg border border-outline-variant bg-surface px-3 py-2.5 text-body-lg focus:border-primary focus:ring-1 focus:ring-primary outline-none" oninput="updateReviewData()"/>
+                        </div>
+                        <div>
+                            <label class="block text-label-lg font-label-lg text-secondary mb-1">Admissions in Last 12 Months</label>
+                            <input id="input_prev_12m" name="prev_admissions_12m" type="number" min="0" value="2" class="w-full rounded-lg border border-outline-variant bg-surface px-3 py-2.5 text-body-lg focus:border-primary focus:ring-1 focus:ring-primary outline-none" oninput="updateReviewData()"/>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 2. Healthcare Utilization -->
+                <section class="md:col-span-4 bg-surface-container-lowest rounded-2xl border border-outline-variant p-lg shadow-sm">
+                    <div class="flex items-center gap-3 mb-md border-b border-surface-variant pb-3">
+                        <div class="w-10 h-10 rounded-lg bg-error-container flex items-center justify-center text-error">
+                            <span class="material-symbols-outlined">emergency</span>
+                        </div>
+                        <h3 class="text-title-lg font-title-lg font-bold text-on-surface">ED Utilization</h3>
+                    </div>
+                    <div class="space-y-3">
+                        <div>
+                            <div class="flex justify-between text-xs text-secondary font-bold mb-1">
+                                <span>ED Visits (12mo)</span>
+                                <span id="ed-val" class="text-primary font-bold">2</span>
+                            </div>
+                            <input id="input_ed_visits" name="ed_visits_12m" type="range" min="0" max="10" value="2" class="w-full accent-primary cursor-pointer" oninput="document.getElementById('ed-val').textContent = this.value; updateReviewData()"/>
+                        </div>
+                        <div>
+                            <div class="flex justify-between text-xs text-secondary font-bold mb-1">
+                                <span>ICU Admissions</span>
+                                <span id="icu-val" class="text-primary font-bold">0</span>
+                            </div>
+                            <input id="input_icu" name="icu_admissions" type="range" min="0" max="5" value="0" class="w-full accent-primary cursor-pointer" oninput="document.getElementById('icu-val').textContent = this.value;"/>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 3. Medications & Comorbidities -->
+                <section class="md:col-span-12 bg-surface-container-lowest rounded-2xl border border-outline-variant p-lg shadow-sm">
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-md border-b border-surface-variant pb-3">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 rounded-lg bg-primary-fixed-dim flex items-center justify-center text-on-primary-fixed">
+                                <span class="material-symbols-outlined">pill</span>
+                            </div>
+                            <h3 class="text-title-lg font-title-lg font-bold text-on-surface">Active Medications & Chronic Conditions</h3>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <label class="text-label-lg font-label-lg text-secondary">Total Active Count:</label>
+                            <input id="input_med_count" name="medication_count" type="number" min="0" value="8" class="w-20 rounded-lg border border-outline-variant bg-surface px-2 py-1 text-center font-bold focus:border-primary outline-none" oninput="updateReviewData()"/>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-md mb-lg">
+                        <label class="flex items-start gap-3 p-3 rounded-xl border border-outline-variant hover:bg-surface-container-low cursor-pointer transition-colors has-[:checked]:border-primary has-[:checked]:bg-primary-fixed/20">
+                            <input type="checkbox" name="comorbidities" value="Congestive Heart Failure" checked class="mt-0.5 rounded text-primary focus:ring-primary"/>
+                            <div>
+                                <span class="block font-bold text-sm text-on-surface">Congestive Heart Failure</span>
+                                <span class="text-xs text-secondary">CHF Class II/III</span>
+                            </div>
+                        </label>
+
+                        <label class="flex items-start gap-3 p-3 rounded-xl border border-outline-variant hover:bg-surface-container-low cursor-pointer transition-colors has-[:checked]:border-primary has-[:checked]:bg-primary-fixed/20">
+                            <input type="checkbox" name="comorbidities" value="Type 2 Diabetes Mellitus" checked class="mt-0.5 rounded text-primary focus:ring-primary"/>
+                            <div>
+                                <span class="block font-bold text-sm text-on-surface">Type 2 Diabetes</span>
+                                <span class="text-xs text-secondary">Insulin / Metformin</span>
+                            </div>
+                        </label>
+
+                        <label class="flex items-start gap-3 p-3 rounded-xl border border-outline-variant hover:bg-surface-container-low cursor-pointer transition-colors has-[:checked]:border-primary has-[:checked]:bg-primary-fixed/20">
+                            <input type="checkbox" name="comorbidities" value="Hypertension" checked class="mt-0.5 rounded text-primary focus:ring-primary"/>
+                            <div>
+                                <span class="block font-bold text-sm text-on-surface">Hypertension</span>
+                                <span class="text-xs text-secondary">Beta-blockers, ACE</span>
+                            </div>
+                        </label>
+
+                        <label class="flex items-start gap-3 p-3 rounded-xl border border-outline-variant hover:bg-surface-container-low cursor-pointer transition-colors has-[:checked]:border-primary has-[:checked]:bg-primary-fixed/20">
+                            <input type="checkbox" name="comorbidities" value="Chronic Kidney Disease (Stage 3)" checked class="mt-0.5 rounded text-primary focus:ring-primary"/>
+                            <div>
+                                <span class="block font-bold text-sm text-on-surface">CKD (Stage 3)</span>
+                                <span class="text-xs text-secondary">Elevated Creatinine</span>
+                            </div>
+                        </label>
+                    </div>
+
+                    <!-- Social Determinants -->
+                    <div class="border-t border-surface-variant pt-md">
+                        <h4 class="text-title-md font-title-md font-bold text-on-surface mb-3 flex items-center gap-2">
+                            <span class="material-symbols-outlined text-secondary">diversity_1</span>
+                            Social & Environmental Determinants
+                        </h4>
+                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-md">
+                            <div>
+                                <label class="block text-label-lg font-label-lg text-secondary mb-1">Living Arrangement</label>
+                                <select id="input_living" name="living_arrangement" class="w-full rounded-lg border border-outline-variant bg-surface px-3 py-2 text-body-md focus:border-primary outline-none">
+                                    <option value="With Family/Spouse" selected>With Family/Spouse</option>
+                                    <option value="Lives Alone">Lives Alone</option>
+                                    <option value="Assisted Living">Assisted Living</option>
+                                    <option value="Unhoused">Unhoused</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-label-lg font-label-lg text-secondary mb-1">Transportation Access</label>
+                                <select id="input_transport" name="transportation" class="w-full rounded-lg border border-outline-variant bg-surface px-3 py-2 text-body-md focus:border-primary outline-none">
+                                    <option value="Reliable / Owns Car" selected>Reliable / Owns Car</option>
+                                    <option value="Public Transit">Public Transit</option>
+                                    <option value="Unreliable / Dependent">Unreliable / Dependent</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-label-lg font-label-lg text-secondary mb-1">Follow-up Adherence</label>
+                                <select id="input_adherence" name="followup_adherence" class="w-full rounded-lg border border-outline-variant bg-surface px-3 py-2 text-body-md focus:border-primary outline-none">
+                                    <option value="High">High Adherence</option>
+                                    <option value="Moderate" selected>Moderate Adherence</option>
+                                    <option value="Poor">Poor / Non-compliant</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+
+            <!-- Action Bar -->
+            <div class="flex justify-between gap-md pt-md border-t border-outline-variant">
+                <button type="button" onclick="goToStep(2)" class="px-6 py-2.5 rounded-full border border-outline-variant text-secondary hover:text-on-surface font-bold transition-colors">
+                    Back
+                </button>
+                <button type="button" onclick="goToStep(4)" class="px-6 py-2.5 rounded-full bg-primary text-on-primary font-bold hover:bg-on-primary-fixed-variant shadow-md flex items-center gap-2">
+                    Next: Review & Predict
+                    <span class="material-symbols-outlined text-[18px]">arrow_forward</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- STEP 4: Review Information & Live Predict -->
+        <div id="step-4-content" class="step-container space-y-lg hidden card-enter">
+            <div class="mb-md">
+                <h2 class="text-headline-md font-headline-md font-bold text-on-surface mb-1">Review Information</h2>
+                <p class="text-body-lg text-secondary">Please verify the entered patient information before executing the AI readmission model.</p>
+            </div>
+
+            <!-- Collapsible Card 1: Patient Information -->
+            <div class="bg-surface-container-lowest rounded-2xl border border-outline-variant shadow-sm overflow-hidden">
+                <div class="p-md sm:p-lg border-b border-surface-variant bg-surface flex justify-between items-center cursor-pointer" onclick="toggleReviewSection('review-patient-info', 'patient-rev-icon')">
+                    <div class="flex items-center gap-sm">
+                        <span class="material-symbols-outlined text-primary">person</span>
+                        <h3 class="text-title-lg font-title-lg font-bold text-on-surface">Patient Information</h3>
+                    </div>
+                    <div class="flex items-center gap-md">
+                        <button type="button" class="text-primary text-label-lg font-bold flex items-center gap-1 hover:underline" onclick="event.stopPropagation(); goToStep(1)">
+                            <span class="material-symbols-outlined text-[16px]">edit</span> Edit
+                        </button>
+                        <span class="material-symbols-outlined text-secondary transition-transform duration-300 transform rotate-180" id="patient-rev-icon">expand_more</span>
+                    </div>
+                </div>
+                <div id="review-patient-info" class="p-md sm:p-lg grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-y-md gap-x-lg">
+                    <div>
+                        <p class="text-label-lg text-secondary uppercase tracking-wider mb-1">Patient ID</p>
+                        <p id="rev-patient-id" class="text-body-lg font-bold text-on-surface">PT-84729-A</p>
+                    </div>
+                    <div>
+                        <p class="text-label-lg text-secondary uppercase tracking-wider mb-1">Full Name</p>
+                        <p id="rev-full-name" class="text-body-lg font-bold text-on-surface">Eleanor Vance</p>
+                    </div>
+                    <div>
+                        <p class="text-label-lg text-secondary uppercase tracking-wider mb-1">Age / Gender</p>
+                        <p id="rev-age-gender" class="text-body-lg font-bold text-on-surface">71 yrs / Female</p>
+                    </div>
+                    <div>
+                        <p class="text-label-lg text-secondary uppercase tracking-wider mb-1">Primary Diagnosis</p>
+                        <p id="rev-diagnosis" class="text-body-lg font-bold text-on-surface">Congestive Heart Failure</p>
+                    </div>
+                    <div>
+                        <p class="text-label-lg text-secondary uppercase tracking-wider mb-1">Department</p>
+                        <p id="rev-department" class="text-body-lg font-bold text-on-surface">Cardiology</p>
+                    </div>
+                    <div>
+                        <p class="text-label-lg text-secondary uppercase tracking-wider mb-1">Length of Stay</p>
+                        <p id="rev-los" class="text-body-lg font-bold text-on-surface">9 Days</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Collapsible Card 2: Clinical Information -->
+            <div class="bg-surface-container-lowest rounded-2xl border border-outline-variant shadow-sm overflow-hidden">
+                <div class="p-md sm:p-lg border-b border-surface-variant bg-surface flex justify-between items-center cursor-pointer" onclick="toggleReviewSection('review-clinical-info', 'clinical-rev-icon')">
+                    <div class="flex items-center gap-sm">
+                        <span class="material-symbols-outlined text-primary">vital_signs</span>
+                        <h3 class="text-title-lg font-title-lg font-bold text-on-surface">Clinical Vitals & Labs</h3>
+                    </div>
+                    <div class="flex items-center gap-md">
+                        <button type="button" class="text-primary text-label-lg font-bold flex items-center gap-1 hover:underline" onclick="event.stopPropagation(); goToStep(2)">
+                            <span class="material-symbols-outlined text-[16px]">edit</span> Edit
+                        </button>
+                        <span class="material-symbols-outlined text-secondary transition-transform duration-300 transform rotate-180" id="clinical-rev-icon">expand_more</span>
+                    </div>
+                </div>
+                <div id="review-clinical-info" class="p-md sm:p-lg grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-y-md gap-x-lg">
+                    <div>
+                        <p class="text-label-lg text-secondary uppercase tracking-wider mb-1">Heart Rate</p>
+                        <p id="rev-hr" class="text-body-lg font-bold text-on-surface">88 bpm</p>
+                    </div>
+                    <div>
+                        <p class="text-label-lg text-secondary uppercase tracking-wider mb-1">Blood Pressure</p>
+                        <p id="rev-bp" class="text-body-lg font-bold text-on-surface">135/85 mmHg</p>
+                    </div>
+                    <div>
+                        <p class="text-label-lg text-secondary uppercase tracking-wider mb-1">SpO2</p>
+                        <p id="rev-spo2" class="text-body-lg font-bold text-on-surface">94%</p>
+                    </div>
+                    <div>
+                        <p class="text-label-lg text-secondary uppercase tracking-wider mb-1">Serum Creatinine</p>
+                        <p id="rev-creat" class="text-body-lg font-bold text-on-surface">1.60 mg/dL</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Collapsible Card 3: Medical History -->
+            <div class="bg-surface-container-lowest rounded-2xl border border-outline-variant shadow-sm overflow-hidden">
+                <div class="p-md sm:p-lg border-b border-surface-variant bg-surface flex justify-between items-center cursor-pointer" onclick="toggleReviewSection('review-history-info', 'history-rev-icon')">
+                    <div class="flex items-center gap-sm">
+                        <span class="material-symbols-outlined text-primary">clinical_notes</span>
+                        <h3 class="text-title-lg font-title-lg font-bold text-on-surface">Medical History & Utilization</h3>
+                    </div>
+                    <div class="flex items-center gap-md">
+                        <button type="button" class="text-primary text-label-lg font-bold flex items-center gap-1 hover:underline" onclick="event.stopPropagation(); goToStep(3)">
+                            <span class="material-symbols-outlined text-[16px]">edit</span> Edit
+                        </button>
+                        <span class="material-symbols-outlined text-secondary transition-transform duration-300 transform rotate-180" id="history-rev-icon">expand_more</span>
+                    </div>
+                </div>
+                <div id="review-history-info" class="p-md sm:p-lg grid grid-cols-1 md:grid-cols-2 gap-y-md gap-x-lg">
+                    <div>
+                        <p class="text-label-lg text-secondary uppercase tracking-wider mb-1">Admissions (12mo / 30d)</p>
+                        <p id="rev-admissions" class="text-body-lg font-bold text-on-surface">2 in last 12mo (1 in 30d)</p>
+                    </div>
+                    <div>
+                        <p class="text-label-lg text-secondary uppercase tracking-wider mb-1">Active Prescription Count</p>
+                        <p id="rev-med-count" class="text-body-lg font-bold text-on-surface">8 Medications</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Action Area -->
+            <div class="mt-xl flex flex-col md:flex-row justify-between items-center bg-surface-container-lowest p-lg rounded-2xl border border-outline-variant shadow-md">
+                <p class="text-body-md text-secondary mb-4 md:mb-0 flex items-center gap-2">
+                    <span class="material-symbols-outlined text-primary">info</span>
+                    Model ready to compute 30-day readmission probability and XAI factor impacts.
+                </p>
+                <div class="flex gap-md w-full md:w-auto">
+                    <button type="button" onclick="goToStep(3)" class="px-6 py-2.5 rounded-full border border-outline-variant text-secondary hover:text-on-surface font-bold transition-colors">
+                        Back
+                    </button>
+                    <button id="submit-predict-btn" type="submit" class="px-8 py-3 rounded-full bg-primary text-on-primary font-bold hover:bg-on-primary-fixed-variant shadow-lg flex items-center justify-center gap-2 text-base transition-transform active:scale-95">
+                        <span>Generate Prediction</span>
+                        <span class="material-symbols-outlined text-[20px]">magic_button</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    let currentStep = 1;
+
+    function goToStep(step) {
+        if (step < 1 || step > 4) return;
+        currentStep = step;
+
+        // Hide all steps
+        for (let i = 1; i <= 4; i++) {
+            const el = document.getElementById(`step-${i}-content`);
+            if (el) el.classList.add('hidden');
+        }
+
+        // Show target step
+        const activeEl = document.getElementById(`step-${step}-content`);
+        if (activeEl) activeEl.classList.remove('hidden');
+
+        // Update progress bar
+        const progressBar = document.getElementById('stepper-progress-bar');
+        const percentages = { 1: '0%', 2: '33%', 3: '66%', 4: '100%' };
+        if (progressBar) progressBar.style.width = percentages[step];
+
+        // Update subtitles
+        const subtitles = {
+            1: 'Step 1 of 4: Patient Demographics & Profile',
+            2: 'Step 2 of 4: Physiological Vitals & Biomarkers',
+            3: 'Step 3 of 4: Comprehensive Medical History & Social Factors',
+            4: 'Step 4 of 4: Review Information & Live Inference'
+        };
+        const subEl = document.getElementById('step-subtitle');
+        if (subEl) subEl.textContent = subtitles[step];
+
+        // Update step circles styling
+        for (let i = 1; i <= 4; i++) {
+            const circle = document.getElementById(`step-circle-${i}`);
+            const label = document.getElementById(`step-label-${i}`);
+            if (!circle) continue;
+
+            if (i < step) {
+                // Completed
+                circle.className = "w-10 h-10 rounded-full bg-primary text-on-primary flex items-center justify-center font-bold shadow-md";
+                circle.innerHTML = '<span class="material-symbols-outlined text-[18px]">check</span>';
+                if (label) label.className = "text-label-lg font-label-lg text-primary font-bold hidden sm:block";
+            } else if (i === step) {
+                // Active
+                circle.className = "w-10 h-10 rounded-full bg-primary-container text-on-primary-container border-2 border-primary flex items-center justify-center font-bold shadow-md ring-4 ring-primary-fixed";
+                circle.innerHTML = `${i}`;
+                if (label) label.className = "text-label-lg font-label-lg text-primary font-bold hidden sm:block";
+            } else {
+                // Pending
+                circle.className = "w-10 h-10 rounded-full bg-surface text-secondary border-2 border-outline-variant flex items-center justify-center font-bold shadow-sm";
+                circle.innerHTML = `${i}`;
+                if (label) label.className = "text-label-lg font-label-lg text-secondary hidden sm:block";
+            }
+        }
+
+        if (step === 4) {
+            updateReviewData();
+        }
+
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function calcAge() {
+        const dobVal = document.getElementById('input_dob').value;
+        if (!dobVal) return;
+        const dob = new Date(dobVal);
+        const diff = Date.now() - dob.getTime();
+        const ageDate = new Date(diff);
+        const age = Math.abs(ageDate.getUTCFullYear() - 1970);
+        if (age >= 0) {
+            document.getElementById('input_age').value = age;
+            updateReviewData();
+        }
+    }
+
+    function updateReviewData() {
+        const pId = document.getElementById('input_patient_id')?.value || 'PT-84729-A';
+        const name = document.getElementById('input_full_name')?.value || 'Eleanor Vance';
+        const age = document.getElementById('input_age')?.value || '71';
+        const gender = document.getElementById('input_gender')?.value || 'Female';
+        const diag = document.getElementById('input_primary_diagnosis')?.value || 'Congestive Heart Failure';
+        const dept = document.getElementById('input_department')?.value || 'Cardiology';
+        const los = document.getElementById('input_los')?.value || '9';
+
+        const hr = document.getElementById('input_hr')?.value || '88';
+        const sys = document.getElementById('input_sys_bp')?.value || '135';
+        const dia = document.getElementById('input_dia_bp')?.value || '85';
+        const spo2 = document.getElementById('input_spo2')?.value || '94';
+        const creat = document.getElementById('input_creat')?.value || '1.60';
+
+        const p30 = document.getElementById('input_prev_30d')?.value || '1';
+        const p12 = document.getElementById('input_prev_12m')?.value || '2';
+        const meds = document.getElementById('input_med_count')?.value || '8';
+
+        if (document.getElementById('badge-patient-id')) document.getElementById('badge-patient-id').textContent = `ID: ${pId}`;
+        if (document.getElementById('rev-patient-id')) document.getElementById('rev-patient-id').textContent = pId;
+        if (document.getElementById('rev-full-name')) document.getElementById('rev-full-name').textContent = name;
+        if (document.getElementById('rev-age-gender')) document.getElementById('rev-age-gender').textContent = `${age} yrs / ${gender}`;
+        if (document.getElementById('rev-diagnosis')) document.getElementById('rev-diagnosis').textContent = diag;
+        if (document.getElementById('rev-department')) document.getElementById('rev-department').textContent = dept;
+        if (document.getElementById('rev-los')) document.getElementById('rev-los').textContent = `${los} Days`;
+
+        if (document.getElementById('rev-hr')) document.getElementById('rev-hr').textContent = `${hr} bpm`;
+        if (document.getElementById('rev-bp')) document.getElementById('rev-bp').textContent = `${sys}/${dia} mmHg`;
+        if (document.getElementById('rev-spo2')) document.getElementById('rev-spo2').textContent = `${spo2}%`;
+        if (document.getElementById('rev-creat')) document.getElementById('rev-creat').textContent = `${parseFloat(creat).toFixed(2)} mg/dL`;
+
+        if (document.getElementById('rev-admissions')) document.getElementById('rev-admissions').textContent = `${p12} in last 12mo (${p30} in 30d)`;
+        if (document.getElementById('rev-med-count')) document.getElementById('rev-med-count').textContent = `${meds} Active Medications`;
+    }
+
+    function toggleReviewSection(sectionId, iconId) {
+        const sec = document.getElementById(sectionId);
+        const icon = document.getElementById(iconId);
+        if (!sec) return;
+
+        if (sec.classList.contains('hidden')) {
+            sec.classList.remove('hidden');
+            if (icon) icon.style.transform = 'rotate(180deg)';
+        } else {
+            sec.classList.add('hidden');
+            if (icon) icon.style.transform = 'rotate(0deg)';
+        }
+    }
+
+    async function submitPrediction(e) {
+        e.preventDefault();
+        const btn = document.getElementById('submit-predict-btn');
+        if (btn) {
+            btn.disabled = true;
+            btn.innerHTML = `
+                <svg class="animate-spin -ml-1 mr-2 h-5 w-5 text-white" fill="none" viewBox="0 0 24 24">
+                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+                Evaluating Risk Factors...
+            `;
+        }
+
+        const formData = new FormData(document.getElementById('prediction-form'));
+        const payload = Object.fromEntries(formData.entries());
+
+        // Comorbidities multi-select
+        const checkedComorbs = Array.from(document.querySelectorAll('input[name="comorbidities"]:checked')).map(c => c.value);
+        payload.comorbidities = checkedComorbs;
+
+        try {
+            const response = await fetch('/api/predict', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+
+            if (response.ok) {
+                const res = await response.json();
+                window.location.href = `/prediction/${res.id}`;
+            } else {
+                alert('Prediction failed. Please check inputs and try again.');
+                if (btn) {
+                    btn.disabled = false;
+                    btn.innerHTML = `<span>Generate Prediction</span><span class="material-symbols-outlined text-[20px]">magic_button</span>`;
+                }
+            }
+        } catch (err) {
+            console.error(err);
+            alert('Error connecting to ML inference engine.');
+            if (btn) {
+                btn.disabled = false;
+                btn.innerHTML = `<span>Generate Prediction</span><span class="material-symbols-outlined text-[20px]">magic_button</span>`;
+            }
+        }
+    }
+</script>
+{% endblock %}

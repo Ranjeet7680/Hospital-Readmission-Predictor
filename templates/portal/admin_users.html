@@ -1,0 +1,96 @@
+{% extends "base.html" %}
+
+{% block title %}User Management - Hospital Readmission Predictor{% endblock %}
+{% block header_title %}User Management & Identity Controls{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto space-y-6">
+    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+        <div>
+            <h1 class="text-2xl font-bold text-on-surface">Institutional User Management</h1>
+            <p class="text-sm text-secondary">Manage user accounts, assign role permissions, reset MFA, and oversee organizational access.</p>
+        </div>
+        <div class="flex items-center gap-2">
+            <a href="/admin/doctor-verification" class="px-4 py-2 bg-surface-container-low border border-outline-variant text-secondary hover:text-on-surface rounded-xl font-bold text-xs transition-colors flex items-center gap-1.5">
+                <span class="material-symbols-outlined text-[16px]">verified_user</span>
+                Doctor Verification Queue (1)
+            </a>
+        </div>
+    </div>
+
+    <!-- Users Table -->
+    <div class="bg-surface-container-lowest border border-outline-variant rounded-2xl overflow-hidden shadow-xs">
+        <div class="overflow-x-auto">
+            <table class="w-full text-left text-xs">
+                <thead class="bg-surface-container-low border-b border-outline-variant text-secondary uppercase font-semibold">
+                    <tr>
+                        <th class="py-3 px-4">Name / ID</th>
+                        <th class="py-3 px-4">Email</th>
+                        <th class="py-3 px-4">Role (RBAC)</th>
+                        <th class="py-3 px-4">Organization / Dept</th>
+                        <th class="py-3 px-4">MFA Status</th>
+                        <th class="py-3 px-4">Status</th>
+                        <th class="py-3 px-4 text-right">Actions</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-surface-variant">
+                    <tr class="hover:bg-surface-container-low transition-colors">
+                        <td class="py-3.5 px-4 font-bold text-on-surface">Dr. Smith</td>
+                        <td class="py-3.5 px-4 font-mono text-secondary">dr.smith@hospital.org</td>
+                        <td class="py-3.5 px-4">
+                            <span class="px-2.5 py-0.5 bg-primary-fixed text-primary font-bold rounded-full text-[10px]">Doctor</span>
+                        </td>
+                        <td class="py-3.5 px-4 text-secondary">St. Jude Medical • Cardiology</td>
+                        <td class="py-3.5 px-4">
+                            <span class="px-2 py-0.5 bg-green-100 text-[#146c2e] font-bold text-[10px] rounded-full">MFA Active</span>
+                        </td>
+                        <td class="py-3.5 px-4">
+                            <span class="px-2 py-0.5 bg-surface-variant text-on-surface font-semibold text-[10px] rounded-full">Active</span>
+                        </td>
+                        <td class="py-3.5 px-4 text-right space-x-2">
+                            <button onclick="window.soundEngine?.click(); alert('Role editor opened for Dr. Smith');" class="text-primary font-bold hover:underline">Edit Role</button>
+                            <button onclick="window.soundEngine?.click(); alert('MFA reset link dispatched to user.');" class="text-secondary hover:text-on-surface font-semibold">Reset MFA</button>
+                        </td>
+                    </tr>
+
+                    <tr class="hover:bg-surface-container-low transition-colors">
+                        <td class="py-3.5 px-4 font-bold text-on-surface">Eleanor Vance</td>
+                        <td class="py-3.5 px-4 font-mono text-secondary">eleanor.vance@patient.org</td>
+                        <td class="py-3.5 px-4">
+                            <span class="px-2.5 py-0.5 bg-secondary-container text-secondary font-bold rounded-full text-[10px]">Patient</span>
+                        </td>
+                        <td class="py-3.5 px-4 text-secondary">St. Jude Medical • Inpatient</td>
+                        <td class="py-3.5 px-4">
+                            <span class="px-2 py-0.5 bg-surface-variant text-secondary font-semibold text-[10px] rounded-full">SMS/Email OTP</span>
+                        </td>
+                        <td class="py-3.5 px-4">
+                            <span class="px-2 py-0.5 bg-surface-variant text-on-surface font-semibold text-[10px] rounded-full">Active</span>
+                        </td>
+                        <td class="py-3.5 px-4 text-right space-x-2">
+                            <a href="/patient/PT-84729" class="text-primary font-bold hover:underline">View Record</a>
+                        </td>
+                    </tr>
+
+                    <tr class="hover:bg-surface-container-low transition-colors">
+                        <td class="py-3.5 px-4 font-bold text-on-surface">Sarah Jenkins, RN</td>
+                        <td class="py-3.5 px-4 font-mono text-secondary">sarah.coordinator@hospital.org</td>
+                        <td class="py-3.5 px-4">
+                            <span class="px-2.5 py-0.5 bg-amber-100 text-amber-900 font-bold rounded-full text-[10px]">CareCoordinator</span>
+                        </td>
+                        <td class="py-3.5 px-4 text-secondary">St. Jude Medical • Transitions</td>
+                        <td class="py-3.5 px-4">
+                            <span class="px-2 py-0.5 bg-green-100 text-[#146c2e] font-bold text-[10px] rounded-full">MFA Active</span>
+                        </td>
+                        <td class="py-3.5 px-4">
+                            <span class="px-2 py-0.5 bg-surface-variant text-on-surface font-semibold text-[10px] rounded-full">Active</span>
+                        </td>
+                        <td class="py-3.5 px-4 text-right space-x-2">
+                            <a href="/portal/coordinator" class="text-primary font-bold hover:underline">View Tasks</a>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

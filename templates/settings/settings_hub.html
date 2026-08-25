@@ -1,0 +1,592 @@
+{% extends "base.html" %}
+
+{% block title %}Account Settings & Security - Hospital Readmission Predictor{% endblock %}
+{% block header_title %}Account & Settings{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto space-y-8 animate-fade-in pb-16">
+    <!-- Header -->
+    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border-b border-surface-variant pb-5">
+        <div>
+            <div class="flex items-center gap-2 mb-1">
+                <span class="px-2.5 py-0.5 rounded-full text-xs font-bold bg-primary/10 text-primary border border-primary/20 flex items-center gap-1">
+                    <span class="material-symbols-outlined text-[14px]">admin_panel_settings</span> Account Security: Optimal
+                </span>
+                <span class="text-xs text-secondary font-mono">{{ profile.email }}</span>
+            </div>
+            <h1 class="text-2xl sm:text-3xl font-bold text-on-surface">Account Management & Settings</h1>
+            <p class="text-sm text-secondary">Manage your profile, security credentials, CareAI permissions, devices, and privacy consent.</p>
+        </div>
+
+        <!-- Role Switcher Dropdown / Badge -->
+        <div class="flex items-center gap-3">
+            <div class="flex items-center gap-2 bg-surface-container-low p-1.5 rounded-2xl border border-outline-variant/60">
+                <span class="text-[11px] font-bold text-secondary pl-2">Role:</span>
+                <form action="/settings/switch-role" method="post" class="inline">
+                    <select name="target_role" onchange="this.form.submit()" class="bg-surface-container-high border border-outline-variant rounded-xl px-3 py-1 text-xs font-bold text-primary outline-none cursor-pointer">
+                        <option value="Patient" {% if profile.active_role == 'Patient' %}selected{% endif %}>Patient (Eleanor Vance)</option>
+                        <option value="Doctor" {% if profile.active_role == 'Doctor' %}selected{% endif %}>Doctor (Dr. J. Aris)</option>
+                        <option value="Care Coordinator" {% if profile.active_role == 'Care Coordinator' %}selected{% endif %}>Care Coordinator</option>
+                        <option value="Administrator" {% if profile.active_role == 'Administrator' %}selected{% endif %}>Administrator</option>
+                    </select>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Mobile / Tablet Horizontal Scroll Tab Bar (< 1024px) -->
+    <div class="lg:hidden flex overflow-x-auto gap-2 pb-2 border-b border-surface-variant no-scrollbar text-xs font-bold">
+        <a href="?tab=profile" class="px-3.5 py-2 rounded-xl shrink-0 transition-all {% if active_tab == 'profile' %}bg-primary text-on-primary shadow-xs{% else %}bg-surface-container text-secondary hover:bg-surface-container-high{% endif %}">
+            Profile
+        </a>
+        <a href="?tab=security" class="px-3.5 py-2 rounded-xl shrink-0 transition-all {% if active_tab == 'security' %}bg-primary text-on-primary shadow-xs{% else %}bg-surface-container text-secondary hover:bg-surface-container-high{% endif %}">
+            Security
+        </a>
+        <a href="?tab=privacy" class="px-3.5 py-2 rounded-xl shrink-0 transition-all {% if active_tab == 'privacy' %}bg-primary text-on-primary shadow-xs{% else %}bg-surface-container text-secondary hover:bg-surface-container-high{% endif %}">
+            Privacy
+        </a>
+        <a href="?tab=careai" class="px-3.5 py-2 rounded-xl shrink-0 transition-all {% if active_tab == 'careai' %}bg-primary text-on-primary shadow-xs{% else %}bg-surface-container text-secondary hover:bg-surface-container-high{% endif %}">
+            CareAI
+        </a>
+        <a href="?tab=emergency" class="px-3.5 py-2 rounded-xl shrink-0 transition-all {% if active_tab == 'emergency' %}bg-primary text-on-primary shadow-xs{% else %}bg-surface-container text-secondary hover:bg-surface-container-high{% endif %}">
+            Emergency
+        </a>
+        <a href="?tab=notifications" class="px-3.5 py-2 rounded-xl shrink-0 transition-all {% if active_tab == 'notifications' %}bg-primary text-on-primary shadow-xs{% else %}bg-surface-container text-secondary hover:bg-surface-container-high{% endif %}">
+            Notifications
+        </a>
+        <a href="?tab=devices" class="px-3.5 py-2 rounded-xl shrink-0 transition-all {% if active_tab == 'devices' %}bg-primary text-on-primary shadow-xs{% else %}bg-surface-container text-secondary hover:bg-surface-container-high{% endif %}">
+            Devices
+        </a>
+        <a href="?tab=data_export" class="px-3.5 py-2 rounded-xl shrink-0 transition-all {% if active_tab == 'data_export' %}bg-primary text-on-primary shadow-xs{% else %}bg-surface-container text-secondary hover:bg-surface-container-high{% endif %}">
+            Data Export
+        </a>
+    </div>
+
+    <!-- Settings Navigation Tabs & Content Layout -->
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 items-start">
+        
+        <!-- Sidebar Tabs Navigation (Desktop only: Span 3) -->
+        <div class="hidden lg:block lg:col-span-3 bg-surface-container-lowest border border-outline-variant rounded-3xl p-4 shadow-sm space-y-1 text-xs font-semibold">
+            <a href="?tab=profile" class="flex items-center gap-2.5 px-3 py-2.5 rounded-xl transition-all {% if active_tab == 'profile' %}bg-primary text-on-primary font-bold shadow-sm{% else %}text-on-surface hover:bg-surface-container-high{% endif %}">
+                <span class="material-symbols-outlined text-[18px]">person</span>
+                <span>My Profile</span>
+            </a>
+
+            <a href="?tab=security" class="flex items-center gap-2.5 px-3 py-2.5 rounded-xl transition-all {% if active_tab == 'security' %}bg-primary text-on-primary font-bold shadow-sm{% else %}text-on-surface hover:bg-surface-container-high{% endif %}">
+                <span class="material-symbols-outlined text-[18px]">shield</span>
+                <span>Security Center</span>
+            </a>
+
+            <a href="?tab=privacy" class="flex items-center gap-2.5 px-3 py-2.5 rounded-xl transition-all {% if active_tab == 'privacy' %}bg-primary text-on-primary font-bold shadow-sm{% else %}text-on-surface hover:bg-surface-container-high{% endif %}">
+                <span class="material-symbols-outlined text-[18px]">lock</span>
+                <span>Privacy & Consent</span>
+            </a>
+
+            <a href="?tab=careai" class="flex items-center gap-2.5 px-3 py-2.5 rounded-xl transition-all {% if active_tab == 'careai' %}bg-primary text-on-primary font-bold shadow-sm{% else %}text-on-surface hover:bg-surface-container-high{% endif %}">
+                <span class="material-symbols-outlined text-[18px]">smart_toy</span>
+                <span>CareAI Permissions</span>
+            </a>
+
+            <a href="?tab=emergency" class="flex items-center gap-2.5 px-3 py-2.5 rounded-xl transition-all {% if active_tab == 'emergency' %}bg-primary text-on-primary font-bold shadow-sm{% else %}text-on-surface hover:bg-surface-container-high{% endif %}">
+                <span class="material-symbols-outlined text-[18px]">emergency</span>
+                <span>Emergency Contacts</span>
+            </a>
+
+            <a href="?tab=notifications" class="flex items-center gap-2.5 px-3 py-2.5 rounded-xl transition-all {% if active_tab == 'notifications' %}bg-primary text-on-primary font-bold shadow-sm{% else %}text-on-surface hover:bg-surface-container-high{% endif %}">
+                <span class="material-symbols-outlined text-[18px]">notifications</span>
+                <span>Notifications</span>
+            </a>
+
+            <a href="?tab=language_voice" class="flex items-center gap-2.5 px-3 py-2.5 rounded-xl transition-all {% if active_tab == 'language_voice' %}bg-primary text-on-primary font-bold shadow-sm{% else %}text-on-surface hover:bg-surface-container-high{% endif %}">
+                <span class="material-symbols-outlined text-[18px]">translate</span>
+                <span>Language & Voice</span>
+            </a>
+
+            <a href="?tab=appearance" class="flex items-center gap-2.5 px-3 py-2.5 rounded-xl transition-all {% if active_tab == 'appearance' %}bg-primary text-on-primary font-bold shadow-sm{% else %}text-on-surface hover:bg-surface-container-high{% endif %}">
+                <span class="material-symbols-outlined text-[18px]">palette</span>
+                <span>Accessibility & Sound</span>
+            </a>
+
+            <a href="?tab=devices" class="flex items-center gap-2.5 px-3 py-2.5 rounded-xl transition-all {% if active_tab == 'devices' %}bg-primary text-on-primary font-bold shadow-sm{% else %}text-on-surface hover:bg-surface-container-high{% endif %}">
+                <span class="material-symbols-outlined text-[18px]">devices</span>
+                <span>Active Devices</span>
+            </a>
+
+            <a href="?tab=connected_services" class="flex items-center gap-2.5 px-3 py-2.5 rounded-xl transition-all {% if active_tab == 'connected_services' %}bg-primary text-on-primary font-bold shadow-sm{% else %}text-on-surface hover:bg-surface-container-high{% endif %}">
+                <span class="material-symbols-outlined text-[18px]">link</span>
+                <span>Connected Services</span>
+            </a>
+
+            <a href="?tab=data_export" class="flex items-center gap-2.5 px-3 py-2.5 rounded-xl transition-all {% if active_tab == 'data_export' %}bg-primary text-on-primary font-bold shadow-sm{% else %}text-on-surface hover:bg-surface-container-high{% endif %}">
+                <span class="material-symbols-outlined text-[18px]">download</span>
+                <span>Data Export & Activity</span>
+            </a>
+
+            <div class="pt-2 border-t border-surface-variant">
+                <a href="?tab=delete_account" class="flex items-center gap-2.5 px-3 py-2.5 rounded-xl transition-all {% if active_tab == 'delete_account' %}bg-error text-on-error font-bold{% else %}text-error hover:bg-error/10{% endif %}">
+                    <span class="material-symbols-outlined text-[18px]">delete_forever</span>
+                    <span>Delete Account</span>
+                </a>
+            </div>
+        </div>
+
+        <!-- Tab Content Area (Span 9) -->
+        <div class="lg:col-span-9 space-y-6">
+
+            <!-- ================= TAB 1: PROFILE ================= -->
+            {% if active_tab == 'profile' %}
+            <div class="bg-surface-container-lowest border border-outline-variant rounded-3xl p-6 sm:p-8 shadow-sm space-y-6">
+                <div class="flex items-center justify-between border-b border-surface-variant pb-4">
+                    <div>
+                        <h2 class="text-lg font-bold text-on-surface">Personal & Healthcare Information</h2>
+                        <p class="text-xs text-secondary">Manage your patient demographic identity and preferred clinical provider.</p>
+                    </div>
+                    <div class="w-12 h-12 rounded-2xl bg-gradient-to-tr from-amber-200 to-amber-400 text-[#002f6c] font-black text-xl flex items-center justify-center shadow-md">
+                        {{ profile.initials }}
+                    </div>
+                </div>
+
+                <form action="/settings/profile" method="post" class="space-y-5 text-xs">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div class="space-y-1.5">
+                            <label class="font-bold text-secondary">Full Name</label>
+                            <input type="text" name="full_name" value="{{ profile.full_name }}" class="w-full bg-surface-container-low border border-outline-variant rounded-xl p-2.5 text-on-surface font-medium outline-none focus:border-primary"/>
+                        </div>
+
+                        <div class="space-y-1.5">
+                            <label class="font-bold text-secondary">Health ID (Immutable)</label>
+                            <input type="text" value="{{ profile.health_id }}" disabled class="w-full bg-surface-container-high border border-outline-variant/60 rounded-xl p-2.5 text-secondary font-mono"/>
+                        </div>
+
+                        <div class="space-y-1.5">
+                            <label class="font-bold text-secondary">Date of Birth</label>
+                            <input type="date" name="dob" value="{{ profile.dob }}" class="w-full bg-surface-container-low border border-outline-variant rounded-xl p-2.5 text-on-surface font-medium outline-none focus:border-primary"/>
+                        </div>
+
+                        <div class="space-y-1.5">
+                            <label class="font-bold text-secondary">Blood Group</label>
+                            <select name="blood_group" class="w-full bg-surface-container-low border border-outline-variant rounded-xl p-2.5 text-on-surface font-medium outline-none focus:border-primary">
+                                <option value="O+" {% if profile.blood_group == 'O+' %}selected{% endif %}>O Positive (O+)</option>
+                                <option value="A+" {% if profile.blood_group == 'A+' %}selected{% endif %}>A Positive (A+)</option>
+                                <option value="B+" {% if profile.blood_group == 'B+' %}selected{% endif %}>B Positive (B+)</option>
+                                <option value="AB+" {% if profile.blood_group == 'AB+' %}selected{% endif %}>AB Positive (AB+)</option>
+                                <option value="O-" {% if profile.blood_group == 'O-' %}selected{% endif %}>O Negative (O-)</option>
+                            </select>
+                        </div>
+
+                        <div class="space-y-1.5">
+                            <label class="font-bold text-secondary">Contact Phone Number</label>
+                            <input type="text" name="phone" value="{{ profile.phone }}" class="w-full bg-surface-container-low border border-outline-variant rounded-xl p-2.5 text-on-surface font-medium outline-none focus:border-primary"/>
+                        </div>
+
+                        <div class="space-y-1.5">
+                            <label class="font-bold text-secondary">Email Address</label>
+                            <input type="email" value="{{ profile.email }}" disabled class="w-full bg-surface-container-high border border-outline-variant/60 rounded-xl p-2.5 text-secondary"/>
+                        </div>
+
+                        <div class="sm:col-span-2 space-y-1.5">
+                            <label class="font-bold text-secondary">Residential Address</label>
+                            <input type="text" name="address" value="{{ profile.address }}" class="w-full bg-surface-container-low border border-outline-variant rounded-xl p-2.5 text-on-surface font-medium outline-none focus:border-primary"/>
+                        </div>
+                    </div>
+
+                    <div class="flex justify-end pt-3 border-t border-surface-variant">
+                        <button type="submit" class="px-6 py-2.5 rounded-xl bg-primary hover:bg-primary/90 text-on-primary font-bold shadow-sm transition-all flex items-center gap-1.5">
+                            <span class="material-symbols-outlined text-[16px]">save</span>
+                            <span>Save Profile Changes</span>
+                        </button>
+                    </div>
+                </form>
+            </div>
+            {% endif %}
+
+            <!-- ================= TAB 2: SECURITY ================= -->
+            {% if active_tab == 'security' %}
+            <div class="bg-surface-container-lowest border border-outline-variant rounded-3xl p-6 sm:p-8 shadow-sm space-y-6">
+                <div class="border-b border-surface-variant pb-4">
+                    <h2 class="text-lg font-bold text-on-surface">Security & Multi-Factor Credentials</h2>
+                    <p class="text-xs text-secondary">Manage password strength, Time-based OTP (TOTP), and WebAuthn Passkeys.</p>
+                </div>
+
+                <div class="space-y-4 text-xs">
+                    <!-- MFA Status Card -->
+                    <div class="p-4 rounded-2xl bg-surface-container-low border border-outline-variant/60 flex items-center justify-between">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 rounded-2xl bg-green-100 text-green-800 flex items-center justify-center">
+                                <span class="material-symbols-outlined text-2xl">phonelink_lock</span>
+                            </div>
+                            <div>
+                                <h4 class="text-sm font-bold text-on-surface">6-Digit Time-Based OTP (MFA)</h4>
+                                <p class="text-secondary text-[11px]">Active on phone • Code prompt on every new login</p>
+                            </div>
+                        </div>
+                        <span class="px-3 py-1 rounded-full bg-green-100 text-green-800 font-bold text-[10px]">Enabled</span>
+                    </div>
+
+                    <!-- Passkeys Card -->
+                    <div class="p-4 rounded-2xl bg-surface-container-low border border-outline-variant/60 flex items-center justify-between">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 rounded-2xl bg-primary/10 text-primary flex items-center justify-center">
+                                <span class="material-symbols-outlined text-2xl">fingerprint</span>
+                            </div>
+                            <div>
+                                <h4 class="text-sm font-bold text-on-surface">WebAuthn / FIDO2 Passkeys (2 Registered)</h4>
+                                <p class="text-secondary text-[11px]">iPhone FaceID & MacBook TouchID credentials active</p>
+                            </div>
+                        </div>
+                        <button onclick="alert('Passkey authentication verified and up to date.')" class="px-3 py-1.5 rounded-xl bg-surface-container-high hover:bg-surface-container-highest font-bold text-on-surface">
+                            Manage
+                        </button>
+                    </div>
+
+                    <!-- Password Change Form -->
+                    <div class="p-4 rounded-2xl bg-surface-container-low border border-outline-variant/60 space-y-3">
+                        <h4 class="text-sm font-bold text-on-surface">Change Account Password</h4>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                            <input type="password" placeholder="Current Password" class="bg-white border border-outline-variant rounded-xl p-2.5 text-on-surface outline-none"/>
+                            <input type="password" placeholder="New Strong Password" class="bg-white border border-outline-variant rounded-xl p-2.5 text-on-surface outline-none"/>
+                        </div>
+                        <div class="flex justify-end">
+                            <button onclick="alert('Password updated successfully.');" class="px-4 py-2 rounded-xl bg-primary text-on-primary font-bold shadow-sm">
+                                Update Password
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- ================= TAB 3: PRIVACY & CONSENT ================= -->
+            {% if active_tab == 'privacy' %}
+            <div class="bg-surface-container-lowest border border-outline-variant rounded-3xl p-6 sm:p-8 shadow-sm space-y-6">
+                <div class="border-b border-surface-variant pb-4">
+                    <h2 class="text-lg font-bold text-on-surface">Privacy & Clinical Data Consent</h2>
+                    <p class="text-xs text-secondary">Control who can access your medical records and AI analysis context.</p>
+                </div>
+
+                <form action="/settings/privacy" method="post" class="space-y-4 text-xs">
+                    <div class="space-y-3">
+                        <div class="p-4 rounded-2xl bg-surface-container-low border border-outline-variant/60 flex items-center justify-between">
+                            <div class="space-y-0.5 max-w-lg">
+                                <h4 class="text-sm font-bold text-on-surface">Attending Doctor Full Access</h4>
+                                <p class="text-secondary text-[11px]">Permit Dr. J. Aris and Cardiology team to view longitudinal risk scores and lab history.</p>
+                            </div>
+                            <input type="checkbox" name="doctor_access" value="true" {% if privacy.doctor_access %}checked{% endif %} class="w-5 h-5 rounded text-primary focus:ring-primary"/>
+                        </div>
+
+                        <div class="p-4 rounded-2xl bg-surface-container-low border border-outline-variant/60 flex items-center justify-between">
+                            <div class="space-y-0.5 max-w-lg">
+                                <h4 class="text-sm font-bold text-on-surface">Care Coordination Transition Sharing</h4>
+                                <p class="text-secondary text-[11px]">Allow hospital care coordinator to schedule post-discharge medication reconciliation.</p>
+                            </div>
+                            <input type="checkbox" name="care_team_sharing" value="true" {% if privacy.care_team_sharing %}checked{% endif %} class="w-5 h-5 rounded text-primary focus:ring-primary"/>
+                        </div>
+
+                        <div class="p-4 rounded-2xl bg-surface-container-low border border-outline-variant/60 flex items-center justify-between">
+                            <div class="space-y-0.5 max-w-lg">
+                                <h4 class="text-sm font-bold text-on-surface">Mask Patient Name on Public QR Scans</h4>
+                                <p class="text-secondary text-[11px]">Show 'Eleanor V. (Verified)' instead of full name to public verifiers.</p>
+                            </div>
+                            <input type="checkbox" name="public_qr_masked_name" value="true" {% if privacy.public_qr_masked_name %}checked{% endif %} class="w-5 h-5 rounded text-primary focus:ring-primary"/>
+                        </div>
+                    </div>
+
+                    <div class="flex justify-end pt-3 border-t border-surface-variant">
+                        <button type="submit" class="px-6 py-2.5 rounded-xl bg-primary hover:bg-primary/90 text-on-primary font-bold shadow-sm transition-all">
+                            Save Privacy Preferences
+                        </button>
+                    </div>
+                </form>
+            </div>
+            {% endif %}
+
+            <!-- ================= TAB 4: CAREAI PERMISSIONS ================= -->
+            {% if active_tab == 'careai' %}
+            <div class="bg-surface-container-lowest border border-outline-variant rounded-3xl p-6 sm:p-8 shadow-sm space-y-6">
+                <div class="border-b border-surface-variant pb-4">
+                    <h2 class="text-lg font-bold text-on-surface">CareAI Clinical Copilot Permissions</h2>
+                    <p class="text-xs text-secondary">CareAI can only process and summarize information you explicitly authorize.</p>
+                </div>
+
+                <form action="/settings/careai" method="post" class="space-y-4 text-xs">
+                    <div class="space-y-3">
+                        <div class="p-4 rounded-2xl bg-surface-container-low border border-outline-variant/60 flex items-center justify-between">
+                            <div class="space-y-0.5 max-w-lg">
+                                <h4 class="text-sm font-bold text-on-surface">Lab Report OCR & Biomarker Analysis</h4>
+                                <p class="text-secondary text-[11px]">Allow CareAI to extract Creatinine, Hemoglobin, and BUN tables from uploaded PDFs.</p>
+                            </div>
+                            <input type="checkbox" name="access_lab_reports" value="true" {% if careai_perms.access_lab_reports %}checked{% endif %} class="w-5 h-5 rounded text-primary focus:ring-primary"/>
+                        </div>
+
+                        <div class="p-4 rounded-2xl bg-surface-container-low border border-outline-variant/60 flex items-center justify-between">
+                            <div class="space-y-0.5 max-w-lg">
+                                <h4 class="text-sm font-bold text-on-surface">Readmission Risk Prediction Model Context</h4>
+                                <p class="text-secondary text-[11px]">Allow CareAI to utilize 68% risk score and TreeSHAP waterfall factors during consultations.</p>
+                            </div>
+                            <input type="checkbox" name="access_prediction_results" value="true" {% if careai_perms.access_prediction_results %}checked{% endif %} class="w-5 h-5 rounded text-primary focus:ring-primary"/>
+                        </div>
+
+                        <div class="p-4 rounded-2xl bg-surface-container-low border border-outline-variant/60 flex items-center justify-between">
+                            <div class="space-y-0.5 max-w-lg">
+                                <h4 class="text-sm font-bold text-on-surface">Real-Time Bilingual Video Captioning (EN ↔ HI)</h4>
+                                <p class="text-secondary text-[11px]">Enable synchronized line-by-line subtitles during telemedicine sessions.</p>
+                            </div>
+                            <input type="checkbox" name="voice_interaction_enabled" value="true" {% if careai_perms.voice_interaction_enabled %}checked{% endif %} class="w-5 h-5 rounded text-primary focus:ring-primary"/>
+                        </div>
+                    </div>
+
+                    <div class="flex justify-end pt-3 border-t border-surface-variant">
+                        <button type="submit" class="px-6 py-2.5 rounded-xl bg-primary hover:bg-primary/90 text-on-primary font-bold shadow-sm transition-all">
+                            Save CareAI Rules
+                        </button>
+                    </div>
+                </form>
+            </div>
+            {% endif %}
+
+            <!-- ================= TAB 5: EMERGENCY CONTACTS ================= -->
+            {% if active_tab == 'emergency' %}
+            <div class="bg-surface-container-lowest border border-outline-variant rounded-3xl p-6 sm:p-8 shadow-sm space-y-6">
+                <div class="border-b border-surface-variant pb-4 flex justify-between items-center">
+                    <div>
+                        <h2 class="text-lg font-bold text-on-surface">Emergency Contacts & Protocols</h2>
+                        <p class="text-xs text-secondary">Authorized contacts notified during emergency admissions or acute triage.</p>
+                    </div>
+                </div>
+
+                <div class="space-y-3 text-xs">
+                    {% for contact in emergency_contacts %}
+                    <div class="p-4 rounded-2xl bg-surface-container-low border border-outline-variant/60 flex items-center justify-between">
+                        <div class="space-y-1">
+                            <div class="flex items-center gap-2">
+                                <h4 class="text-sm font-bold text-on-surface">{{ contact.name }}</h4>
+                                <span class="px-2 py-0.5 rounded-full bg-primary/10 text-primary text-[10px] font-bold">{{ contact.relationship }}</span>
+                                {% if contact.is_primary %}
+                                <span class="px-2 py-0.5 rounded-full bg-green-100 text-green-800 text-[10px] font-bold">Primary</span>
+                                {% endif %}
+                            </div>
+                            <p class="text-secondary text-[11px] font-mono">{{ contact.phone }} • {{ contact.email }}</p>
+                        </div>
+
+                        <form action="/settings/emergency/remove" method="post">
+                            <input type="hidden" name="contact_id" value="{{ contact.id }}"/>
+                            <button type="submit" onclick="return confirm('Remove emergency contact?')" class="p-2 text-error hover:bg-error/10 rounded-xl transition-colors">
+                                <span class="material-symbols-outlined text-lg">delete</span>
+                            </button>
+                        </form>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- ================= TAB 6: NOTIFICATIONS ================= -->
+            {% if active_tab == 'notifications' %}
+            <div class="bg-surface-container-lowest border border-outline-variant rounded-3xl p-6 sm:p-8 shadow-sm space-y-6">
+                <div class="border-b border-surface-variant pb-4">
+                    <h2 class="text-lg font-bold text-on-surface">Notification Channels & Delivery Rules</h2>
+                    <p class="text-xs text-secondary">Configure alerts across Push, Email, SMS, and In-App channels.</p>
+                </div>
+
+                <div class="space-y-3 text-xs">
+                    <div class="p-4 rounded-2xl bg-surface-container-low border border-outline-variant/60 flex items-center justify-between">
+                        <div>
+                            <h4 class="text-sm font-bold text-on-surface">Appointment & Video Consultation Alerts</h4>
+                            <p class="text-secondary text-[11px]">15-minute reminders prior to scheduled tele-health calls.</p>
+                        </div>
+                        <span class="px-3 py-1 rounded-full bg-green-100 text-green-800 font-bold text-[10px]">Push + Email + SMS</span>
+                    </div>
+
+                    <div class="p-4 rounded-2xl bg-surface-container-low border border-outline-variant/60 flex items-center justify-between">
+                        <div>
+                            <h4 class="text-sm font-bold text-on-surface">Readmission Risk & Lab Result Releases</h4>
+                            <p class="text-secondary text-[11px]">Notifications when doctor signs off on new risk predictions.</p>
+                        </div>
+                        <span class="px-3 py-1 rounded-full bg-green-100 text-green-800 font-bold text-[10px]">Push + In-App</span>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- ================= TAB 7: LANGUAGE & VOICE ================= -->
+            {% if active_tab == 'language_voice' %}
+            <div class="bg-surface-container-lowest border border-outline-variant rounded-3xl p-6 sm:p-8 shadow-sm space-y-6">
+                <div class="border-b border-surface-variant pb-4">
+                    <h2 class="text-lg font-bold text-on-surface">Language & Speech Synthesis</h2>
+                    <p class="text-xs text-secondary">Bilingual English ↔ हिन्दी and voice assistant configurations.</p>
+                </div>
+
+                <div class="space-y-4 text-xs">
+                    <div class="p-4 rounded-2xl bg-surface-container-low border border-outline-variant/60 flex items-center justify-between">
+                        <div>
+                            <h4 class="text-sm font-bold text-on-surface">Primary System Language</h4>
+                            <p class="text-secondary text-[11px]">Switch between English and हिन्दी (Hindi).</p>
+                        </div>
+                        <button onclick="window.i18n.toggle()" class="px-4 py-2 rounded-xl bg-primary text-on-primary font-bold">
+                            Toggle Language
+                        </button>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- ================= TAB 8: ACCESSIBILITY & SOUND ================= -->
+            {% if active_tab == 'appearance' %}
+            <div class="bg-surface-container-lowest border border-outline-variant rounded-3xl p-6 sm:p-8 shadow-sm space-y-6">
+                <div class="border-b border-surface-variant pb-4">
+                    <h2 class="text-lg font-bold text-on-surface">Accessibility, Theme & Sound Design</h2>
+                    <p class="text-xs text-secondary">Reduce-Motion accessibility controls, theme styling, and Web Audio volume.</p>
+                </div>
+
+                <div class="space-y-4 text-xs">
+                    <!-- Reduce Motion -->
+                    <div class="p-4 rounded-2xl bg-surface-container-low border border-outline-variant/60 flex items-center justify-between">
+                        <div>
+                            <h4 class="text-sm font-bold text-on-surface">Reduce Motion Accessibility Mode</h4>
+                            <p class="text-secondary text-[11px]">Disables spinning SVG gauges and particle canvas animations.</p>
+                        </div>
+                        <button onclick="document.body.classList.toggle('reduce-motion'); alert('Reduce Motion toggled.');" class="px-4 py-2 rounded-xl bg-surface-container-high font-bold text-on-surface">
+                            Toggle Mode
+                        </button>
+                    </div>
+
+                    <!-- Master Audio Synthesizer -->
+                    <div class="p-4 rounded-2xl bg-surface-container-low border border-outline-variant/60 flex items-center justify-between">
+                        <div>
+                            <h4 class="text-sm font-bold text-on-surface">Native Web Audio API Synthesizer</h4>
+                            <p class="text-secondary text-[11px]">Acoustic feedback for button clicks, upload chords, and call ringtones.</p>
+                        </div>
+                        <button onclick="toggleAudioMute()" class="px-4 py-2 rounded-xl bg-primary text-on-primary font-bold">
+                            Mute / Unmute
+                        </button>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- ================= TAB 9: DEVICES ================= -->
+            {% if active_tab == 'devices' %}
+            <div class="bg-surface-container-lowest border border-outline-variant rounded-3xl p-6 sm:p-8 shadow-sm space-y-6">
+                <div class="border-b border-surface-variant pb-4">
+                    <h2 class="text-lg font-bold text-on-surface">Connected Devices & Active Sessions</h2>
+                    <p class="text-xs text-secondary">Review devices authorized to access your patient electronic records.</p>
+                </div>
+
+                <div class="space-y-3 text-xs">
+                    {% for dev in active_devices %}
+                    <div class="p-4 rounded-2xl bg-surface-container-low border border-outline-variant/60 flex items-center justify-between">
+                        <div class="space-y-1">
+                            <div class="flex items-center gap-2">
+                                <span class="material-symbols-outlined text-primary text-xl">
+                                    {% if dev.device_type == 'mobile' %}smartphone{% elif dev.device_type == 'desktop' %}laptop_mac{% else %}tablet{% endif %}
+                                </span>
+                                <h4 class="text-sm font-bold text-on-surface">{{ dev.device_name }}</h4>
+                                {% if dev.is_current %}
+                                <span class="px-2 py-0.5 rounded-full bg-green-100 text-green-800 text-[10px] font-bold">Current Session</span>
+                                {% endif %}
+                            </div>
+                            <p class="text-secondary text-[11px]">{{ dev.browser }} • {{ dev.os }} • {{ dev.ip_address }}</p>
+                        </div>
+
+                        {% if not dev.is_current %}
+                        <form action="/settings/devices/revoke" method="post">
+                            <input type="hidden" name="device_id" value="{{ dev.id }}"/>
+                            <button type="submit" onclick="return confirm('Sign out device remotely?')" class="px-3 py-1.5 rounded-xl bg-error/10 text-error hover:bg-error/20 font-bold">
+                                Sign Out
+                            </button>
+                        </form>
+                        {% endif %}
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- ================= TAB 10: CONNECTED SERVICES ================= -->
+            {% if active_tab == 'connected_services' %}
+            <div class="bg-surface-container-lowest border border-outline-variant rounded-3xl p-6 sm:p-8 shadow-sm space-y-6">
+                <div class="border-b border-surface-variant pb-4">
+                    <h2 class="text-lg font-bold text-on-surface">Connected Institutional Services</h2>
+                    <p class="text-xs text-secondary">Authorized hospital EHR FHIR bridges and calendar integrations.</p>
+                </div>
+
+                <div class="space-y-3 text-xs">
+                    {% for svc in connected_services %}
+                    <div class="p-4 rounded-2xl bg-surface-container-low border border-outline-variant/60 flex items-center justify-between">
+                        <div class="space-y-1">
+                            <div class="flex items-center gap-2">
+                                <span class="material-symbols-outlined text-primary text-xl">{{ svc.icon }}</span>
+                                <h4 class="text-sm font-bold text-on-surface">{{ svc.name }}</h4>
+                                <span class="px-2 py-0.5 rounded-full {% if svc.status == 'Connected' %}bg-green-100 text-green-800{% else %}bg-surface-container-high text-secondary{% endif %} text-[10px] font-bold">
+                                    {{ svc.status }}
+                                </span>
+                            </div>
+                            <p class="text-secondary text-[11px]">{{ svc.description }}</p>
+                        </div>
+
+                        {% if svc.status == 'Connected' %}
+                        <form action="/settings/services/revoke" method="post">
+                            <input type="hidden" name="service_id" value="{{ svc.id }}"/>
+                            <button type="submit" onclick="return confirm('Revoke integration access?')" class="px-3 py-1.5 rounded-xl bg-error/10 text-error hover:bg-error/20 font-bold">
+                                Revoke
+                            </button>
+                        </form>
+                        {% else %}
+                        <button onclick="alert('OAuth integration workflow initiated.')" class="px-3 py-1.5 rounded-xl bg-primary text-on-primary font-bold shadow-sm">
+                            Connect
+                        </button>
+                        {% endif %}
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- ================= TAB 11: DATA EXPORT & ACTIVITY ================= -->
+            {% if active_tab == 'data_export' %}
+            <div class="bg-surface-container-lowest border border-outline-variant rounded-3xl p-6 sm:p-8 shadow-sm space-y-6">
+                <div class="border-b border-surface-variant pb-4">
+                    <h2 class="text-lg font-bold text-on-surface">Data Export (HIPAA Portability) & Activity Log</h2>
+                    <p class="text-xs text-secondary">Download a complete portable JSON archive of your personal health data.</p>
+                </div>
+
+                <div class="space-y-4 text-xs">
+                    <div class="p-4 rounded-2xl bg-surface-container-low border border-outline-variant/60 flex items-center justify-between">
+                        <div>
+                            <h4 class="text-sm font-bold text-on-surface">Download Complete Personal Health Archive</h4>
+                            <p class="text-secondary text-[11px]">Includes profile, prediction history, document metadata, and security logs.</p>
+                        </div>
+                        <a href="/api/account/export" download class="px-4 py-2.5 rounded-xl bg-primary hover:bg-primary/90 text-on-primary font-bold shadow-sm flex items-center gap-1.5 transition-all">
+                            <span class="material-symbols-outlined text-[16px]">download</span>
+                            <span>Download JSON Archive</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- ================= TAB 12: DELETE ACCOUNT ================= -->
+            {% if active_tab == 'delete_account' %}
+            <div class="bg-surface-container-lowest border border-error/30 rounded-3xl p-6 sm:p-8 shadow-sm space-y-6">
+                <div class="border-b border-error/20 pb-4">
+                    <h2 class="text-lg font-bold text-error">Account Deletion & Data Retention Notice</h2>
+                    <p class="text-xs text-secondary">Permanent account deactivation request.</p>
+                </div>
+
+                <div class="p-4 rounded-2xl bg-error/5 border border-error/20 text-xs text-secondary space-y-2 leading-relaxed">
+                    <p class="font-bold text-error">Legal Notice on Medical Record Retention:</p>
+                    <p>Under state and federal medical records retention laws, clinical encounters, physician progress notes, and laboratory panels are subject to mandatory legal archiving (7–10 years) and cannot be immediately expunged from inpatient hospital registries.</p>
+                </div>
+
+                <div class="flex justify-end pt-2">
+                    <button onclick="alert('Account deletion request submitted to Hospital Compliance Board.');" class="px-6 py-2.5 rounded-xl bg-error hover:bg-error/90 text-on-error font-bold shadow-sm">
+                        Request Account Deactivation
+                    </button>
+                </div>
+            </div>
+            {% endif %}
+
+        </div>
+    </div>
+</div>
+{% endblock %}

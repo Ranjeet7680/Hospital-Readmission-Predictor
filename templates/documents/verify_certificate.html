@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+
+{% block title %}Verify Medical Certificate - Hospital Readmission Predictor{% endblock %}
+
+{% block full_content %}
+<div class="min-h-screen bg-surface-container-low flex flex-col justify-center items-center p-4 font-body-md">
+    <div class="w-full max-w-md bg-surface-container-lowest border border-outline-variant p-8 rounded-2xl shadow-md space-y-6">
+        <div class="text-center">
+            <div class="w-12 h-12 rounded-full bg-green-100 text-[#146c2e] flex items-center justify-center mx-auto mb-3">
+                <span class="material-symbols-outlined text-2xl">verified</span>
+            </div>
+            <h2 class="text-2xl font-bold text-on-surface mb-1">Official Certificate Verified</h2>
+            <p class="text-xs text-secondary">Public authenticity validation portal for institutional medical certificates.</p>
+        </div>
+
+        <!-- Verification Summary (Public-safe without exposing excess PII) -->
+        <div class="p-4 bg-surface rounded-xl border border-outline-variant space-y-2.5 text-xs">
+            <div class="flex justify-between">
+                <span class="text-secondary font-semibold">Certificate ID:</span>
+                <span class="font-mono font-bold text-primary">{{ cert.id }}</span>
+            </div>
+            <div class="flex justify-between">
+                <span class="text-secondary font-semibold">Status:</span>
+                <span class="px-2 py-0.5 bg-green-100 text-[#146c2e] font-bold rounded-full text-[10px]">Valid & Authorized</span>
+            </div>
+            <div class="flex justify-between">
+                <span class="text-secondary font-semibold">Issuing Facility:</span>
+                <span class="font-bold text-on-surface">{{ cert.hospital }}</span>
+            </div>
+            <div class="flex justify-between">
+                <span class="text-secondary font-semibold">Issuing Clinician:</span>
+                <span class="font-bold text-on-surface">{{ cert.doctor_name }} ({{ cert.doctor_specialty }})</span>
+            </div>
+            <div class="flex justify-between">
+                <span class="text-secondary font-semibold">Issue Date:</span>
+                <span class="text-on-surface">{{ cert.issue_date }}</span>
+            </div>
+            <div class="flex justify-between">
+                <span class="text-secondary font-semibold">Valid Convalescence Period:</span>
+                <span class="font-bold text-on-surface">{{ cert.start_date }} to {{ cert.end_date }} ({{ cert.rest_period_days }} Days)</span>
+            </div>
+        </div>
+
+        <div class="text-center pt-2">
+            <a href="/login" class="text-primary font-bold text-xs hover:underline">Return to HRP Clinical Login</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

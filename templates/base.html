@@ -1,0 +1,739 @@
+<!DOCTYPE html>
+<html lang="en" class="light">
+<head>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>{% block title %}Hospital Readmission Predictor - HRP Clinical{% endblock %}</title>
+    
+    <!-- Google Fonts & Tailwind CDN -->
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com"/>
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300..800;1,300..800&display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#005bbf",
+                        "primary-container": "#1a73e8",
+                        "on-primary": "#ffffff",
+                        "on-primary-container": "#ffffff",
+                        "primary-fixed": "#d8e2ff",
+                        "primary-fixed-dim": "#adc7ff",
+                        "on-primary-fixed": "#001a41",
+                        "on-primary-fixed-variant": "#004493",
+                        "secondary": "#5b5f64",
+                        "secondary-container": "#dde0e6",
+                        "on-secondary": "#ffffff",
+                        "on-secondary-container": "#5f6368",
+                        "secondary-fixed": "#dfe3e8",
+                        "secondary-fixed-dim": "#c3c7cc",
+                        "tertiary": "#195abc",
+                        "tertiary-container": "#3d74d7",
+                        "on-tertiary": "#ffffff",
+                        "on-tertiary-container": "#000414",
+                        "tertiary-fixed": "#d8e2ff",
+                        "tertiary-fixed-dim": "#aec6ff",
+                        "error": "#ba1a1a",
+                        "error-container": "#ffdad6",
+                        "on-error": "#ffffff",
+                        "on-error-container": "#93000a",
+                        "surface": "#f8f9fa",
+                        "surface-bright": "#f8f9fa",
+                        "surface-dim": "#d9dadb",
+                        "surface-variant": "#e1e3e4",
+                        "surface-tint": "#005bc0",
+                        "surface-container-lowest": "#ffffff",
+                        "surface-container-low": "#f3f4f5",
+                        "surface-container": "#edeeef",
+                        "surface-container-high": "#e7e8e9",
+                        "surface-container-highest": "#e1e3e4",
+                        "on-surface": "#191c1d",
+                        "on-surface-variant": "#414754",
+                        "outline": "#727785",
+                        "outline-variant": "#c1c6d6",
+                        "background": "#f8f9fa",
+                        "on-background": "#191c1d",
+                        "inverse-surface": "#2e3132",
+                        "inverse-on-surface": "#f0f1f2",
+                        "inverse-primary": "#adc7ff"
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    fontFamily: {
+                        "headline-lg": ["Open Sans", "sans-serif"],
+                        "headline-md": ["Open Sans", "sans-serif"],
+                        "headline-sm": ["Open Sans", "sans-serif"],
+                        "title-lg": ["Open Sans", "sans-serif"],
+                        "title-md": ["Open Sans", "sans-serif"],
+                        "body-lg": ["Open Sans", "sans-serif"],
+                        "body-md": ["Open Sans", "sans-serif"],
+                        "label-lg": ["Open Sans", "sans-serif"],
+                        "label-sm": ["Open Sans", "sans-serif"],
+                        "display-lg": ["Open Sans", "sans-serif"]
+                    }
+                }
+            }
+        };
+    </script>
+    <style>
+        body { font-family: 'Open Sans', sans-serif; }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .material-symbols-outlined[data-weight="fill"], .fill-icon {
+            font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        /* Custom scrollbar */
+        ::-webkit-scrollbar { width: 5px; height: 5px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #c1c6d6; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #727785; }
+
+        .gauge-ring {
+            stroke-dasharray: 283;
+            stroke-dashoffset: 283;
+            transition: stroke-dashoffset 1.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        /* Reduce Motion accessibility */
+        .reduce-motion *, .reduce-motion *::before, .reduce-motion *::after {
+            animation-duration: 0.001ms !important;
+            animation-iteration-count: 1 !important;
+            transition-duration: 0.001ms !important;
+        }
+    </style>
+    <!-- Include Sound Engine, i18n & Animation Utilities -->
+    <script src="/static/js/sound_engine.js"></script>
+    <script src="/static/js/i18n.js"></script>
+    <script src="/static/js/animations.js"></script>
+    {% block extra_head %}{% endblock %}
+</head>
+<body class="bg-background text-on-background min-h-screen flex flex-col font-body-md antialiased transition-colors duration-200">
+    
+    {% if not hide_nav %}
+    <div class="flex min-h-screen">
+        <!-- Desktop Side Navigation -->
+        <nav class="hidden md:flex flex-col h-screen p-3 space-y-1 bg-surface-container-low w-64 flex-shrink-0 sticky top-0 border-r border-surface-variant z-40 overflow-y-auto">
+            <!-- Brand Header -->
+            <a href="/dashboard" class="flex items-center gap-2 mb-4 px-2 pt-2 group">
+                <div class="w-10 h-10 rounded-xl bg-primary-container flex items-center justify-center text-on-primary-container shadow-sm group-hover:scale-105 transition-transform">
+                    <span class="material-symbols-outlined fill-icon text-2xl">local_hospital</span>
+                </div>
+                <div>
+                    <h1 class="text-sm font-bold text-primary" data-i18n="brand_name">HRP Clinical</h1>
+                    <p class="text-[11px] text-secondary font-medium" data-i18n="brand_subtitle">Precision Care & AI</p>
+                </div>
+            </a>
+
+            <!-- Scrollable Nav Groups -->
+            <div class="flex-1 space-y-4 pr-1 text-xs">
+                
+                <!-- SECTION 1: CLINICAL CORE -->
+                <div>
+                    <span class="px-3 text-[10px] font-bold uppercase tracking-wider text-secondary/80 block mb-1">Clinical Care</span>
+                    <div class="space-y-0.5">
+                        <a href="/dashboard" class="flex items-center gap-2.5 px-3 py-2 rounded-xl transition-colors font-semibold {% if active_page == 'dashboard' %}text-primary bg-secondary-container font-bold{% else %}text-on-surface-variant hover:bg-surface-container-high{% endif %}">
+                            <span class="material-symbols-outlined text-[18px] {% if active_page == 'dashboard' %}fill-icon{% endif %}">dashboard</span>
+                            <span data-i18n="dashboard">Dashboard</span>
+                        </a>
+
+                        <a href="/prediction/new" class="flex items-center gap-2.5 px-3 py-2 rounded-xl transition-colors font-semibold {% if active_page == 'new_prediction' %}text-primary bg-secondary-container font-bold{% else %}text-on-surface-variant hover:bg-surface-container-high{% endif %}">
+                            <span class="material-symbols-outlined text-[18px] {% if active_page == 'new_prediction' %}fill-icon{% endif %}">add_circle</span>
+                            <span data-i18n="new_prediction">New Prediction</span>
+                        </a>
+
+                        <a href="/patients" class="flex items-center gap-2.5 px-3 py-2 rounded-xl transition-colors font-semibold {% if active_page == 'patients' %}text-primary bg-secondary-container font-bold{% else %}text-on-surface-variant hover:bg-surface-container-high{% endif %}">
+                            <span class="material-symbols-outlined text-[18px] {% if active_page == 'patients' %}fill-icon{% endif %}">person</span>
+                            <span data-i18n="patients">Patients</span>
+                        </a>
+
+                        <a href="/history" class="flex items-center gap-2.5 px-3 py-2 rounded-xl transition-colors font-semibold {% if active_page == 'history' %}text-primary bg-secondary-container font-bold{% else %}text-on-surface-variant hover:bg-surface-container-high{% endif %}">
+                            <span class="material-symbols-outlined text-[18px] {% if active_page == 'history' %}fill-icon{% endif %}">history</span>
+                            <span data-i18n="prediction_history">Prediction History</span>
+                        </a>
+
+                        <a href="/analytics" class="flex items-center gap-2.5 px-3 py-2 rounded-xl transition-colors font-semibold {% if active_page == 'analytics' %}text-primary bg-secondary-container font-bold{% else %}text-on-surface-variant hover:bg-surface-container-high{% endif %}">
+                            <span class="material-symbols-outlined text-[18px] {% if active_page == 'analytics' %}fill-icon{% endif %}">analytics</span>
+                            <span data-i18n="analytics">Analytics</span>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- SECTION 2: MEDICAL DOCUMENTS & CERTIFICATES -->
+                <div>
+                    <span class="px-3 text-[10px] font-bold uppercase tracking-wider text-secondary/80 block mb-1" data-i18n="medical_documents">Medical Documents</span>
+                    <div class="space-y-0.5">
+                        <a href="/documents" class="flex items-center gap-2.5 px-3 py-2 rounded-xl transition-colors font-semibold {% if active_page == 'documents' %}text-primary bg-secondary-container font-bold{% else %}text-on-surface-variant hover:bg-surface-container-high{% endif %}">
+                            <span class="material-symbols-outlined text-[18px]">folder</span>
+                            <span data-i18n="my_documents">My Documents</span>
+                        </a>
+
+                        <a href="/documents/analyze/DOC-84729-LAB" class="flex items-center gap-2.5 px-3 py-2 rounded-xl transition-colors font-semibold {% if active_page == 'analyze_report' %}text-primary bg-secondary-container font-bold{% else %}text-on-surface-variant hover:bg-surface-container-high{% endif %}">
+                            <span class="material-symbols-outlined text-[18px]">document_scanner</span>
+                            <span data-i18n="lab_reports">Lab & Report Analysis</span>
+                        </a>
+
+                        <a href="/certificates" class="flex items-center gap-2.5 px-3 py-2 rounded-xl transition-colors font-semibold {% if active_page == 'certificates' %}text-primary bg-secondary-container font-bold{% else %}text-on-surface-variant hover:bg-surface-container-high{% endif %}">
+                            <span class="material-symbols-outlined text-[18px]">verified</span>
+                            <span data-i18n="medical_certificates">Medical Certificates</span>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- SECTION 3: AI & MACHINE LEARNING -->
+                <div>
+                    <span class="px-3 text-[10px] font-bold uppercase tracking-wider text-secondary/80 block mb-1" data-i18n="ai_and_ml">AI & ML Intelligence</span>
+                    <div class="space-y-0.5">
+                        <a href="/ml-dashboard" class="flex items-center gap-2.5 px-3 py-2 rounded-xl transition-colors font-semibold {% if active_page == 'ml_dashboard' %}text-primary bg-secondary-container font-bold{% else %}text-on-surface-variant hover:bg-surface-container-high{% endif %}">
+                            <span class="material-symbols-outlined text-[18px]">psychology</span>
+                            <span data-i18n="ml_dashboard">ML Dashboard</span>
+                        </a>
+
+                        <a href="/ml/dataset" class="flex items-center gap-2.5 px-3 py-2 rounded-xl transition-colors font-semibold {% if active_page == 'dataset' %}text-primary bg-secondary-container font-bold{% else %}text-on-surface-variant hover:bg-surface-container-high{% endif %}">
+                            <span class="material-symbols-outlined text-[18px]">dataset</span>
+                            <span data-i18n="dataset_workspace">Dataset Workspace</span>
+                        </a>
+
+                        <a href="/ml/preprocessing" class="flex items-center gap-2.5 px-3 py-2 rounded-xl transition-colors font-semibold {% if active_page == 'preprocessing' %}text-primary bg-secondary-container font-bold{% else %}text-on-surface-variant hover:bg-surface-container-high{% endif %}">
+                            <span class="material-symbols-outlined text-[18px]">account_tree</span>
+                            <span data-i18n="preprocessing">Preprocessing (10-Stage)</span>
+                        </a>
+
+                        <a href="/ml/training" class="flex items-center gap-2.5 px-3 py-2 rounded-xl transition-colors font-semibold {% if active_page == 'training_studio' %}text-primary bg-secondary-container font-bold{% else %}text-on-surface-variant hover:bg-surface-container-high{% endif %}">
+                            <span class="material-symbols-outlined text-[18px]">model_training</span>
+                            <span data-i18n="model_training">Training Studio</span>
+                        </a>
+
+                        <a href="/ml/deep-learning" class="flex items-center gap-2.5 px-3 py-2 rounded-xl transition-colors font-semibold {% if active_page == 'dl_lab' %}text-primary bg-secondary-container font-bold{% else %}text-on-surface-variant hover:bg-surface-container-high{% endif %}">
+                            <span class="material-symbols-outlined text-[18px]">hub</span>
+                            <span>Deep Learning Lab</span>
+                        </a>
+
+                        <a href="/ml/comparison" class="flex items-center gap-2.5 px-3 py-2 rounded-xl transition-colors font-semibold {% if active_page == 'comparison' %}text-primary bg-secondary-container font-bold{% else %}text-on-surface-variant hover:bg-surface-container-high{% endif %}">
+                            <span class="material-symbols-outlined text-[18px]">compare_arrows</span>
+                            <span data-i18n="model_comparison">Model Comparison</span>
+                        </a>
+
+                        <a href="/ml/xai" class="flex items-center gap-2.5 px-3 py-2 rounded-xl transition-colors font-semibold {% if active_page == 'xai' %}text-primary bg-secondary-container font-bold{% else %}text-on-surface-variant hover:bg-surface-container-high{% endif %}">
+                            <span class="material-symbols-outlined text-[18px]">waterfall_chart</span>
+                            <span data-i18n="explainable_ai">Explainable AI (SHAP)</span>
+                        </a>
+
+                        <a href="/ml/embeddings" class="flex items-center gap-2.5 px-3 py-2 rounded-xl transition-colors font-semibold {% if active_page == 'embeddings' %}text-primary bg-secondary-container font-bold{% else %}text-on-surface-variant hover:bg-surface-container-high{% endif %}">
+                            <span class="material-symbols-outlined text-[18px]">bubble_chart</span>
+                            <span data-i18n="patient_embeddings">Patient Embeddings (2D)</span>
+                        </a>
+
+                        <a href="/ml/ensemble" class="flex items-center gap-2.5 px-3 py-2 rounded-xl transition-colors font-semibold {% if active_page == 'ensemble' %}text-primary bg-secondary-container font-bold{% else %}text-on-surface-variant hover:bg-surface-container-high{% endif %}">
+                            <span class="material-symbols-outlined text-[18px]">join</span>
+                            <span data-i18n="ensemble_uncertainty">Ensemble & Uncertainty</span>
+                        </a>
+
+                        <a href="/ml/monitoring" class="flex items-center gap-2.5 px-3 py-2 rounded-xl transition-colors font-semibold {% if active_page == 'monitoring' %}text-primary bg-secondary-container font-bold{% else %}text-on-surface-variant hover:bg-surface-container-high{% endif %}">
+                            <span class="material-symbols-outlined text-[18px]">monitoring</span>
+                            <span data-i18n="model_monitoring">Model Drift Monitoring</span>
+                        </a>
+
+                        <a href="/ml/registry" class="flex items-center gap-2.5 px-3 py-2 rounded-xl transition-colors font-semibold {% if active_page == 'registry' %}text-primary bg-secondary-container font-bold{% else %}text-on-surface-variant hover:bg-surface-container-high{% endif %}">
+                            <span class="material-symbols-outlined text-[18px]">app_registration</span>
+                            <span data-i18n="model_registry">Model Registry</span>
+                        </a>
+
+                        <a href="/ml/chat" class="flex items-center gap-2.5 px-3 py-2 rounded-xl transition-colors font-semibold {% if active_page == 'model_chat' %}text-primary bg-secondary-container font-bold{% else %}text-on-surface-variant hover:bg-surface-container-high{% endif %}">
+                            <span class="material-symbols-outlined text-[18px]">chat</span>
+                            <span data-i18n="ask_the_model">Ask the Model</span>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- SECTION 4: REINFORCEMENT LEARNING -->
+                <div>
+                    <span class="px-3 text-[10px] font-bold uppercase tracking-wider text-secondary/80 block mb-1" data-i18n="reinforcement_learning">Reinforcement Learning</span>
+                    <div class="space-y-0.5">
+                        <a href="/rl/dashboard" class="flex items-center gap-2.5 px-3 py-2 rounded-xl transition-colors font-semibold {% if active_page == 'rl_dashboard' %}text-primary bg-secondary-container font-bold{% else %}text-on-surface-variant hover:bg-surface-container-high{% endif %}">
+                            <span class="material-symbols-outlined text-[18px]">smart_toy</span>
+                            <span data-i18n="rl_dashboard">RL Dashboard</span>
+                        </a>
+
+                        <a href="/rl/environment" class="flex items-center gap-2.5 px-3 py-2 rounded-xl transition-colors font-semibold {% if active_page == 'rl_env' %}text-primary bg-secondary-container font-bold{% else %}text-on-surface-variant hover:bg-surface-container-high{% endif %}">
+                            <span class="material-symbols-outlined text-[18px]">view_timeline</span>
+                            <span data-i18n="patient_environment">Care Journey Env</span>
+                        </a>
+
+                        <a href="/rl/care-pathway" class="flex items-center gap-2.5 px-3 py-2 rounded-xl transition-colors font-semibold {% if active_page == 'care_pathway' %}text-primary bg-secondary-container font-bold{% else %}text-on-surface-variant hover:bg-surface-container-high{% endif %}">
+                            <span class="material-symbols-outlined text-[18px]">route</span>
+                            <span data-i18n="care_pathway_opt">Care Pathway Optimizer</span>
+                        </a>
+
+                        <a href="/rl/simulation" class="flex items-center gap-2.5 px-3 py-2 rounded-xl transition-colors font-semibold {% if active_page == 'simulation_twin' %}text-primary bg-secondary-container font-bold{% else %}text-on-surface-variant hover:bg-surface-container-high{% endif %}">
+                            <span class="material-symbols-outlined text-[18px]">tune</span>
+                            <span data-i18n="digital_twin_sim">Digital Twin Sim (What-If)</span>
+                        </a>
+
+                        <a href="/rl/safety" class="flex items-center gap-2.5 px-3 py-2 rounded-xl transition-colors font-semibold {% if active_page == 'safety_constraints' %}text-primary bg-secondary-container font-bold{% else %}text-on-surface-variant hover:bg-surface-container-high{% endif %}">
+                            <span class="material-symbols-outlined text-[18px]">shield</span>
+                            <span data-i18n="safety_constraints">Safety Constraint Engine</span>
+                        </a>
+
+                        <a href="/rl/human-review" class="flex items-center gap-2.5 px-3 py-2 rounded-xl transition-colors font-semibold {% if active_page == 'human_review' %}text-primary bg-secondary-container font-bold{% else %}text-on-surface-variant hover:bg-surface-container-high{% endif %}">
+                            <span class="material-symbols-outlined text-[18px]">how_to_reg</span>
+                            <span data-i18n="human_review">Human-in-the-Loop</span>
+                        </a>
+
+                        <a href="/rl/architecture" class="flex items-center gap-2.5 px-3 py-2 rounded-xl transition-colors font-semibold {% if active_page == 'rl_arch' %}text-primary bg-secondary-container font-bold{% else %}text-on-surface-variant hover:bg-surface-container-high{% endif %}">
+                            <span class="material-symbols-outlined text-[18px]">layers</span>
+                            <span data-i18n="stack_architecture">8-Layer AI Stack</span>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- SECTION 5: PORTALS & TELEMEDICINE -->
+                <div>
+                    <span class="px-3 text-[10px] font-bold uppercase tracking-wider text-secondary/80 block mb-1">Portals & Telehealth</span>
+                    <div class="space-y-0.5">
+                        <a href="/consultation/careai" class="flex items-center gap-2.5 px-3 py-2 rounded-xl transition-colors font-semibold {% if active_page == 'video_consult' %}text-primary bg-secondary-container font-bold{% else %}text-on-surface-variant hover:bg-surface-container-high{% endif %}">
+                            <span class="material-symbols-outlined text-[18px]">videocam</span>
+                            <span data-i18n="video_consultation">CareAI Video Call</span>
+                        </a>
+
+                        <a href="/portal/patient" class="flex items-center gap-2.5 px-3 py-2 rounded-xl transition-colors font-semibold {% if active_page == 'patient_portal' %}text-primary bg-secondary-container font-bold{% else %}text-on-surface-variant hover:bg-surface-container-high{% endif %}">
+                            <span class="material-symbols-outlined text-[18px]">badge</span>
+                            <span data-i18n="patient_portal">Patient Portal</span>
+                        </a>
+
+                        <a href="/portal/coordinator" class="flex items-center gap-2.5 px-3 py-2 rounded-xl transition-colors font-semibold {% if active_page == 'care_coordinator' %}text-primary bg-secondary-container font-bold{% else %}text-on-surface-variant hover:bg-surface-container-high{% endif %}">
+                            <span class="material-symbols-outlined text-[18px]">checklist</span>
+                            <span data-i18n="care_coordinator">Care Coordinator</span>
+                        </a>
+
+                        <a href="/admin/users" class="flex items-center gap-2.5 px-3 py-2 rounded-xl transition-colors font-semibold {% if active_page == 'admin_users' %}text-primary bg-secondary-container font-bold{% else %}text-on-surface-variant hover:bg-surface-container-high{% endif %}">
+                            <span class="material-symbols-outlined text-[18px]">manage_accounts</span>
+                            <span data-i18n="user_management">User Management</span>
+                        </a>
+
+                        <a href="/admin/doctor-verification" class="flex items-center gap-2.5 px-3 py-2 rounded-xl transition-colors font-semibold {% if active_page == 'dr_verification' %}text-primary bg-secondary-container font-bold{% else %}text-on-surface-variant hover:bg-surface-container-high{% endif %}">
+                            <span class="material-symbols-outlined text-[18px]">verified_user</span>
+                            <span data-i18n="doctor_verification">Doctor Verification</span>
+                        </a>
+
+                        <a href="/admin/audit-logs" class="flex items-center gap-2.5 px-3 py-2 rounded-xl transition-colors font-semibold {% if active_page == 'audit_logs' %}text-primary bg-secondary-container font-bold{% else %}text-on-surface-variant hover:bg-surface-container-high{% endif %}">
+                            <span class="material-symbols-outlined text-[18px]">security_update_good</span>
+                            <span data-i18n="security_audit_logs">Security Audit Logs</span>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- SECTION 6: DIGITAL HEALTH ID & PASSES -->
+                <div>
+                    <span class="px-3 text-[10px] font-bold uppercase tracking-wider text-secondary/80 block mb-1">Health ID & Passes</span>
+                    <div class="space-y-0.5">
+                        <a href="/health-id" class="flex items-center gap-2.5 px-3 py-2 rounded-xl transition-colors font-semibold {% if active_page == 'health_id' %}text-primary bg-secondary-container font-bold{% else %}text-on-surface-variant hover:bg-surface-container-high{% endif %}">
+                            <span class="material-symbols-outlined text-[18px]">badge</span>
+                            <span>My Health ID</span>
+                        </a>
+
+                        <a href="/doctor-id" class="flex items-center gap-2.5 px-3 py-2 rounded-xl transition-colors font-semibold {% if active_page == 'doctor_id' %}text-primary bg-secondary-container font-bold{% else %}text-on-surface-variant hover:bg-surface-container-high{% endif %}">
+                            <span class="material-symbols-outlined text-[18px]">medical_information</span>
+                            <span>Doctor ID Card</span>
+                        </a>
+
+                        <a href="/wallet" class="flex items-center gap-2.5 px-3 py-2 rounded-xl transition-colors font-semibold {% if active_page == 'wallet' %}text-primary bg-secondary-container font-bold{% else %}text-on-surface-variant hover:bg-surface-container-high{% endif %}">
+                            <span class="material-symbols-outlined text-[18px]">account_balance_wallet</span>
+                            <span>Digital Wallet</span>
+                        </a>
+
+                        <a href="/qr/scanner" class="flex items-center gap-2.5 px-3 py-2 rounded-xl transition-colors font-semibold {% if active_page == 'qr_scanner' %}text-primary bg-secondary-container font-bold{% else %}text-on-surface-variant hover:bg-surface-container-high{% endif %}">
+                            <span class="material-symbols-outlined text-[18px]">qr_code_scanner</span>
+                            <span>Scan QR Code</span>
+                        </a>
+
+                        <a href="/qr/temporary-share" class="flex items-center gap-2.5 px-3 py-2 rounded-xl transition-colors font-semibold {% if active_page == 'temporary_share' %}text-primary bg-secondary-container font-bold{% else %}text-on-surface-variant hover:bg-surface-container-high{% endif %}">
+                            <span class="material-symbols-outlined text-[18px]">share</span>
+                            <span>Temporary Sharing</span>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- SECTION 7: SETTINGS & GOVERNANCE -->
+                <div>
+                    <span class="px-3 text-[10px] font-bold uppercase tracking-wider text-secondary/80 block mb-1">System & Account</span>
+                    <div class="space-y-0.5">
+                        <a href="/settings" class="flex items-center gap-2.5 px-3 py-2 rounded-xl transition-colors font-semibold {% if active_page == 'settings' %}text-primary bg-secondary-container font-bold{% else %}text-on-surface-variant hover:bg-surface-container-high{% endif %}">
+                            <span class="material-symbols-outlined text-[18px]">settings</span>
+                            <span data-i18n="settings">Account & Settings</span>
+                        </a>
+
+                        <a href="/auth/sessions" class="flex items-center gap-2.5 px-3 py-2 rounded-xl transition-colors font-semibold {% if active_page == 'sessions' %}text-primary bg-secondary-container font-bold{% else %}text-on-surface-variant hover:bg-surface-container-high{% endif %}">
+                            <span class="material-symbols-outlined text-[18px]">devices</span>
+                            <span>Active Sessions</span>
+                        </a>
+
+                        <a href="/help" class="flex items-center gap-2.5 px-3 py-2 rounded-xl transition-colors font-semibold {% if active_page == 'help' %}text-primary bg-secondary-container font-bold{% else %}text-on-surface-variant hover:bg-surface-container-high{% endif %}">
+                            <span class="material-symbols-outlined text-[18px]">help</span>
+                            <span data-i18n="help">Help & Support</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Bottom User & Logout -->
+            <div class="pt-3 border-t border-surface-variant">
+                <a href="/auth/landing" class="flex items-center gap-2.5 px-3 py-2 rounded-xl text-error hover:bg-error-container/30 transition-colors font-bold text-xs">
+                    <span class="material-symbols-outlined text-[18px]">logout</span>
+                    <span data-i18n="logout">Sign Out / Switch Role</span>
+                </a>
+            </div>
+        </nav>
+
+        <!-- Main Content Area -->
+        <div class="flex-1 flex flex-col min-h-screen relative w-full overflow-x-hidden">
+            <!-- Offline & Low-Connectivity Alert Bar -->
+            <div id="network-offline-banner" class="bg-amber-500 text-slate-950 px-4 py-2 text-xs font-bold flex items-center justify-between hidden z-50 sticky top-0 shadow-md">
+                <div class="flex items-center gap-2">
+                    <span class="material-symbols-outlined text-[18px]">wifi_off</span>
+                    <span>Offline Mode Active — Live AI and Video calls paused. Local records available.</span>
+                </div>
+                <button onclick="checkNetworkStatus()" class="px-2.5 py-1 bg-slate-950 text-white rounded-lg text-[10px] uppercase font-mono tracking-wider hover:bg-slate-900 transition-colors">
+                    Reconnect
+                </button>
+            </div>
+
+            <!-- Top App Bar (Responsive for Desktop, Tablet, and Mobile) -->
+            <header class="bg-surface flex justify-between items-center w-full px-3 sm:px-6 py-2.5 sticky top-0 z-30 border-b border-surface-variant shadow-xs">
+                <!-- Left: Hamburger (Mobile/Tablet) + Title/Brand -->
+                <div class="flex items-center gap-2 sm:gap-3">
+                    <!-- Mobile / Tablet Hamburger Toggle Button -->
+                    <button onclick="openMobileDrawer()" class="md:hidden p-2 text-secondary hover:text-on-surface hover:bg-surface-container-low rounded-xl transition-colors" aria-label="Open Navigation Menu">
+                        <span class="material-symbols-outlined text-2xl">menu</span>
+                    </button>
+
+                    <!-- Mobile Brand Logo -->
+                    <div class="md:hidden flex items-center gap-1.5">
+                        <div class="w-8 h-8 rounded-xl bg-primary flex items-center justify-center text-white shadow-xs">
+                            <span class="material-symbols-outlined text-lg fill-icon">local_hospital</span>
+                        </div>
+                        <a href="/dashboard" class="text-sm font-bold text-primary tracking-tight">HRP Clinical</a>
+                    </div>
+
+                    <!-- Desktop & Tablet Header Title -->
+                    <div class="hidden md:block">
+                        <span class="text-sm sm:text-base font-bold text-on-surface">{% block header_title %}Hospital Readmission Predictor{% endblock %}</span>
+                    </div>
+                </div>
+
+                <!-- Right Controls: Audio, Language, Search, Notifications & Profile -->
+                <div class="flex items-center gap-1.5 sm:gap-3">
+                    <!-- Audio Sound Feedback Toggle -->
+                    <button id="sound-toggle-btn" onclick="toggleAudioMute()" aria-label="Toggle Sound" class="p-2 text-secondary hover:bg-surface-container-low rounded-full transition-colors relative" title="Toggle Sound Feedback">
+                        <span class="material-symbols-outlined text-[20px]" id="sound-icon">volume_up</span>
+                    </button>
+
+                    <!-- Language Switcher (English ↔ हिन्दी) -->
+                    <button onclick="window.i18n.toggle()" class="flex items-center gap-1 px-2.5 py-1 bg-surface-container-low hover:bg-surface-container-high rounded-full border border-outline-variant/50 text-xs font-bold text-primary transition-all">
+                        <span class="material-symbols-outlined text-[15px]">translate</span>
+                        <span class="lang-indicator-text hidden sm:inline">English</span>
+                        <span class="lang-indicator-text sm:hidden">EN/HI</span>
+                    </button>
+
+                    <!-- Search (Desktop & Tablet) -->
+                    <div class="relative hidden sm:block">
+                        <form action="/history" method="get" class="flex items-center">
+                            <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-secondary text-[16px]">search</span>
+                            <input name="search" class="pl-8 pr-3 py-1.5 bg-surface-container-low border border-outline-variant rounded-full text-xs focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all w-36 md:w-52" placeholder="Search patient, doc..." type="text"/>
+                        </form>
+                    </div>
+
+                    <!-- Notification Button with Sound Tone -->
+                    <button onclick="window.soundEngine?.message(); alert('Notification: ML Model v2.4.1 & RL PPO Policy Active.');" aria-label="Notifications" class="p-2 text-secondary hover:bg-surface-container-low rounded-full transition-colors relative">
+                        <span class="material-symbols-outlined text-[20px]">notifications</span>
+                        <span class="absolute top-1.5 right-1.5 w-2 h-2 bg-error rounded-full animate-pulse"></span>
+                    </button>
+
+                    <!-- Profile Avatar -->
+                    <a href="/patient/PT-84729" class="flex items-center gap-2 p-1 pr-2.5 bg-surface-container-low rounded-full hover:bg-surface-container-high transition-colors cursor-pointer border border-outline-variant/40">
+                        <div class="w-7 h-7 rounded-full bg-primary text-white flex items-center justify-center font-bold text-[10px]">
+                            EV
+                        </div>
+                        <span class="text-xs font-bold text-on-surface hidden lg:block">Eleanor Vance</span>
+                    </a>
+                </div>
+            </header>
+
+            <!-- Scrollable Content Canvas (Responsive Bottom Padding on Mobile) -->
+            <main class="flex-1 overflow-y-auto bg-background p-3 sm:p-6 md:p-8 pb-24 md:pb-12">
+                {% block content %}{% endblock %}
+            </main>
+
+            <!-- Footer Component (Desktop & Tablet) -->
+            <footer class="w-full py-3 px-4 sm:px-6 flex flex-col md:flex-row justify-between items-center text-center bg-surface-container-lowest border-t border-surface-variant text-secondary text-xs">
+                <div class="flex items-center gap-2 mb-2 md:mb-0">
+                    <span class="font-bold text-primary">HRP Clinical v2.4.1</span>
+                    <span class="hidden sm:inline">|</span>
+                    <span class="hidden sm:inline">Diabetes 130-US Hospitals (1999-2008) Dataset • PPO RL Lab • CareAI</span>
+                </div>
+                <div class="flex flex-wrap justify-center gap-3 sm:gap-4 text-[11px]">
+                    <a class="text-secondary hover:text-primary underline transition-colors" href="/help">Privacy</a>
+                    <a class="text-secondary hover:text-primary underline transition-colors" href="/help">Terms</a>
+                    <a class="text-secondary hover:text-primary underline transition-colors" href="/rl/safety">Safety</a>
+                    <a class="text-secondary hover:text-primary underline transition-colors" href="/admin/audit-logs">Audit Log</a>
+                </div>
+            </footer>
+        </div>
+
+        <!-- ========================================================================= -->
+        <!-- MOBILE SLIDING DRAWER NAVIGATION OVERLAY (< 768px)                       -->
+        <!-- ========================================================================= -->
+        <div id="mobile-drawer-overlay" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 hidden transition-opacity" onclick="closeMobileDrawer()">
+            <div id="mobile-drawer" class="w-72 max-w-[85vw] h-full bg-surface-container-lowest shadow-2xl p-4 overflow-y-auto transform -translate-x-full transition-transform duration-300 flex flex-col justify-between" onclick="event.stopPropagation()">
+                
+                <!-- Drawer Header -->
+                <div>
+                    <div class="flex items-center justify-between border-b border-surface-variant pb-3 mb-3">
+                        <div class="flex items-center gap-2">
+                            <div class="w-8 h-8 rounded-xl bg-primary flex items-center justify-center text-white">
+                                <span class="material-symbols-outlined text-lg fill-icon">local_hospital</span>
+                            </div>
+                            <div>
+                                <h3 class="text-xs font-extrabold text-primary">HRP Clinical</h3>
+                                <p class="text-[10px] text-secondary">Healthcare Suite</p>
+                            </div>
+                        </div>
+                        <button onclick="closeMobileDrawer()" class="p-1.5 rounded-full hover:bg-surface-container text-secondary hover:text-on-surface">
+                            <span class="material-symbols-outlined text-xl">close</span>
+                        </button>
+                    </div>
+
+                    <!-- Categorized Drawer Links -->
+                    <div class="space-y-4 text-xs font-semibold">
+                        <!-- Group 1: Clinical Core -->
+                        <div>
+                            <span class="text-[10px] uppercase font-bold text-secondary tracking-wider block px-2 mb-1">Clinical Care</span>
+                            <div class="space-y-0.5">
+                                <a href="/dashboard" class="flex items-center gap-2.5 px-3 py-2 rounded-xl text-on-surface hover:bg-surface-container">
+                                    <span class="material-symbols-outlined text-[18px] text-primary">dashboard</span>
+                                    <span>Dashboard</span>
+                                </a>
+                                <a href="/patients" class="flex items-center gap-2.5 px-3 py-2 rounded-xl text-on-surface hover:bg-surface-container">
+                                    <span class="material-symbols-outlined text-[18px] text-primary">group</span>
+                                    <span>Patients</span>
+                                </a>
+                                <a href="/prediction/new" class="flex items-center gap-2.5 px-3 py-2 rounded-xl text-on-surface hover:bg-surface-container">
+                                    <span class="material-symbols-outlined text-[18px] text-primary">add_box</span>
+                                    <span>New Prediction</span>
+                                </a>
+                                <a href="/history" class="flex items-center gap-2.5 px-3 py-2 rounded-xl text-on-surface hover:bg-surface-container">
+                                    <span class="material-symbols-outlined text-[18px] text-primary">history</span>
+                                    <span>History</span>
+                                </a>
+                            </div>
+                        </div>
+
+                        <!-- Group 2: AI & ML -->
+                        <div>
+                            <span class="text-[10px] uppercase font-bold text-secondary tracking-wider block px-2 mb-1">AI & Deep Learning</span>
+                            <div class="space-y-0.5">
+                                <a href="/ml-dashboard" class="flex items-center gap-2.5 px-3 py-2 rounded-xl text-on-surface hover:bg-surface-container">
+                                    <span class="material-symbols-outlined text-[18px] text-cyan-600">model_training</span>
+                                    <span>ML Dashboard</span>
+                                </a>
+                                <a href="/ml/deep-learning" class="flex items-center gap-2.5 px-3 py-2 rounded-xl text-on-surface hover:bg-surface-container">
+                                    <span class="material-symbols-outlined text-[18px] text-cyan-600">hub</span>
+                                    <span>Deep Learning Lab</span>
+                                </a>
+                                <a href="/ml/xai" class="flex items-center gap-2.5 px-3 py-2 rounded-xl text-on-surface hover:bg-surface-container">
+                                    <span class="material-symbols-outlined text-[18px] text-amber-600">waterfall_chart</span>
+                                    <span>Explainable AI (SHAP)</span>
+                                </a>
+                                <a href="/rl/dashboard" class="flex items-center gap-2.5 px-3 py-2 rounded-xl text-on-surface hover:bg-surface-container">
+                                    <span class="material-symbols-outlined text-[18px] text-green-700">smart_toy</span>
+                                    <span>RL Care Pathway</span>
+                                </a>
+                            </div>
+                        </div>
+
+                        <!-- Group 3: Documents & Telemedicine -->
+                        <div>
+                            <span class="text-[10px] uppercase font-bold text-secondary tracking-wider block px-2 mb-1">Telemedicine & Docs</span>
+                            <div class="space-y-0.5">
+                                <a href="/consultation/careai" class="flex items-center gap-2.5 px-3 py-2 rounded-xl text-on-surface hover:bg-surface-container">
+                                    <span class="material-symbols-outlined text-[18px] text-primary">videocam</span>
+                                    <span>Video Consultation</span>
+                                </a>
+                                <a href="/documents" class="flex items-center gap-2.5 px-3 py-2 rounded-xl text-on-surface hover:bg-surface-container">
+                                    <span class="material-symbols-outlined text-[18px] text-primary">description</span>
+                                    <span>Medical Documents</span>
+                                </a>
+                                <a href="/certificates" class="flex items-center gap-2.5 px-3 py-2 rounded-xl text-on-surface hover:bg-surface-container">
+                                    <span class="material-symbols-outlined text-[18px] text-primary">verified</span>
+                                    <span>Certificates</span>
+                                </a>
+                            </div>
+                        </div>
+
+                        <!-- Group 4: Health ID & Wallet -->
+                        <div>
+                            <span class="text-[10px] uppercase font-bold text-secondary tracking-wider block px-2 mb-1">Health ID & Passes</span>
+                            <div class="space-y-0.5">
+                                <a href="/health-id" class="flex items-center gap-2.5 px-3 py-2 rounded-xl text-on-surface hover:bg-surface-container">
+                                    <span class="material-symbols-outlined text-[18px] text-primary">badge</span>
+                                    <span>My Health ID</span>
+                                </a>
+                                <a href="/wallet" class="flex items-center gap-2.5 px-3 py-2 rounded-xl text-on-surface hover:bg-surface-container">
+                                    <span class="material-symbols-outlined text-[18px] text-primary">account_balance_wallet</span>
+                                    <span>Digital Wallet</span>
+                                </a>
+                                <a href="/qr/scanner" class="flex items-center gap-2.5 px-3 py-2 rounded-xl text-on-surface hover:bg-surface-container">
+                                    <span class="material-symbols-outlined text-[18px] text-primary">qr_code_scanner</span>
+                                    <span>Scan QR Code</span>
+                                </a>
+                            </div>
+                        </div>
+
+                        <!-- Group 5: Settings -->
+                        <div>
+                            <span class="text-[10px] uppercase font-bold text-secondary tracking-wider block px-2 mb-1">System</span>
+                            <div class="space-y-0.5">
+                                <a href="/settings" class="flex items-center gap-2.5 px-3 py-2 rounded-xl text-on-surface hover:bg-surface-container">
+                                    <span class="material-symbols-outlined text-[18px] text-secondary">settings</span>
+                                    <span>Account & Settings</span>
+                                </a>
+                                <a href="/help" class="flex items-center gap-2.5 px-3 py-2 rounded-xl text-on-surface hover:bg-surface-container">
+                                    <span class="material-symbols-outlined text-[18px] text-secondary">help</span>
+                                    <span>Help & Support</span>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Drawer Logout -->
+                <div class="pt-3 border-t border-surface-variant mt-4">
+                    <a href="/auth/landing" class="flex items-center gap-2 px-3 py-2 text-error font-bold text-xs hover:bg-error/10 rounded-xl">
+                        <span class="material-symbols-outlined text-base">logout</span>
+                        <span>Sign Out / Switch Role</span>
+                    </a>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- ========================================================================= -->
+        <!-- MOBILE BOTTOM NAVIGATION (Fixed above safe-area)                          -->
+        <!-- ========================================================================= -->
+        <nav class="fixed bottom-0 left-0 w-full z-40 flex justify-around items-center px-2 pb-[calc(env(safe-area-inset-bottom,0px)+6px)] pt-2 md:hidden bg-white/95 backdrop-blur-md shadow-[0_-4px_16px_rgba(0,0,0,0.08)] border-t border-surface-variant">
+            <!-- 1. Home -->
+            <a href="/dashboard" class="flex flex-col items-center justify-center w-14 py-1 {% if active_page == 'dashboard' %}text-primary font-bold{% else %}text-secondary{% endif %}">
+                <span class="material-symbols-outlined text-[22px] {% if active_page == 'dashboard' %}fill-icon{% endif %}">dashboard</span>
+                <span class="text-[10px] mt-0.5">Home</span>
+            </a>
+
+            <!-- 2. Patients -->
+            <a href="/patients" class="flex flex-col items-center justify-center w-14 py-1 {% if active_page == 'patients' %}text-primary font-bold{% else %}text-secondary{% endif %}">
+                <span class="material-symbols-outlined text-[22px]">group</span>
+                <span class="text-[10px] mt-0.5">Patients</span>
+            </a>
+
+            <!-- 3. Elevated Predict Button -->
+            <a href="/prediction/new" class="flex flex-col items-center justify-center -mt-5 group">
+                <div class="w-12 h-12 rounded-full bg-primary text-white shadow-lg flex items-center justify-center group-hover:scale-105 transition-transform border-2 border-white ring-4 ring-primary/20">
+                    <span class="material-symbols-outlined text-2xl">add</span>
+                </div>
+                <span class="text-[10px] font-bold text-primary mt-0.5">Predict</span>
+            </a>
+
+            <!-- 4. Consult -->
+            <a href="/consultation/careai" class="flex flex-col items-center justify-center w-14 py-1 {% if active_page == 'video_consult' %}text-primary font-bold{% else %}text-secondary{% endif %}">
+                <span class="material-symbols-outlined text-[22px]">videocam</span>
+                <span class="text-[10px] mt-0.5">Consult</span>
+            </a>
+
+            <!-- 5. More / Menu -->
+            <button onclick="openMobileDrawer()" class="flex flex-col items-center justify-center w-14 py-1 text-secondary hover:text-on-surface">
+                <span class="material-symbols-outlined text-[22px]">menu</span>
+                <span class="text-[10px] mt-0.5">More</span>
+            </button>
+        </nav>
+    </div>
+    {% else %}
+        {% block full_content %}{% endblock %}
+    {% endif %}
+
+    <script>
+        // Sound Engine Mute Toggle
+        function toggleAudioMute() {
+            const isMuted = !window.soundEngine.muted;
+            window.soundEngine.setMuted(isMuted);
+            const icon = document.getElementById('sound-icon');
+            if (icon) {
+                icon.textContent = isMuted ? 'volume_off' : 'volume_up';
+            }
+            if (!isMuted) window.soundEngine.success();
+        }
+
+        // Mobile Navigation Drawer Controls
+        function openMobileDrawer() {
+            const overlay = document.getElementById('mobile-drawer-overlay');
+            const drawer = document.getElementById('mobile-drawer');
+            if (overlay && drawer) {
+                overlay.classList.remove('hidden');
+                setTimeout(() => {
+                    drawer.classList.remove('-translate-x-full');
+                    drawer.classList.add('translate-x-0');
+                }, 10);
+                window.soundEngine?.click();
+            }
+        }
+
+        function closeMobileDrawer() {
+            const overlay = document.getElementById('mobile-drawer-overlay');
+            const drawer = document.getElementById('mobile-drawer');
+            if (overlay && drawer) {
+                drawer.classList.remove('translate-x-0');
+                drawer.classList.add('-translate-x-full');
+                setTimeout(() => {
+                    overlay.classList.add('hidden');
+                }, 300);
+            }
+        }
+
+        // Offline & Network Connectivity Monitor
+        function checkNetworkStatus() {
+            const banner = document.getElementById('network-offline-banner');
+            if (!navigator.onLine) {
+                if (banner) banner.classList.remove('hidden');
+            } else {
+                if (banner) banner.classList.add('hidden');
+                window.soundEngine?.success();
+            }
+        }
+        window.addEventListener('online', checkNetworkStatus);
+        window.addEventListener('offline', checkNetworkStatus);
+        checkNetworkStatus();
+
+        // Reusable Mobile Bottom Sheet API
+        window.openBottomSheet = function(sheetId) {
+            const sheet = document.getElementById(sheetId);
+            if (sheet) {
+                sheet.classList.remove('hidden');
+                window.soundEngine?.click();
+            }
+        };
+        window.closeBottomSheet = function(sheetId) {
+            const sheet = document.getElementById(sheetId);
+            if (sheet) {
+                sheet.classList.add('hidden');
+            }
+        };
+    </script>
+    {% block scripts %}{% endblock %}
+</body>
+</html>

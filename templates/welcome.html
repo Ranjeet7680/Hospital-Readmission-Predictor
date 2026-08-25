@@ -1,0 +1,1128 @@
+{% extends "base.html" %}
+
+{% block title %}Hospital Readmission Predictor - AI Healthcare Intelligence Platform{% endblock %}
+
+{% block full_content %}
+<div class="bg-[#f8f9fd] text-[#1b1b1f] min-h-screen flex flex-col font-sans antialiased selection:bg-primary selection:text-white relative overflow-x-hidden">
+
+    <!-- ========================================================================= -->
+    <!-- 1. FULL-SCREEN ANIMATED SPLASH / WELCOME SCREEN (0–2500ms auto/skip)      -->
+    <!-- ========================================================================= -->
+    <div id="splash-screen" class="fixed inset-0 z-[100] bg-white flex flex-col justify-between items-center p-6 sm:p-10 transition-all duration-700 select-none">
+        <!-- Top Controls: Language & Skip -->
+        <div class="w-full flex justify-between items-center max-w-6xl">
+            <div class="flex items-center gap-2">
+                <span class="w-2 h-2 rounded-full bg-primary animate-ping"></span>
+                <span class="text-xs font-mono font-bold text-primary uppercase tracking-wider">HRP Clinical Suite</span>
+            </div>
+
+            <div class="flex items-center gap-3">
+                <button onclick="window.i18n.toggle()" class="px-3 py-1 rounded-full bg-surface-container-low hover:bg-surface-container-high border border-outline-variant/60 text-xs font-bold text-primary transition-all flex items-center gap-1">
+                    <span class="material-symbols-outlined text-[14px]">translate</span>
+                    <span class="lang-indicator-text">English | हिन्दी</span>
+                </button>
+                <button onclick="skipSplash()" class="px-3.5 py-1 rounded-full bg-surface-container-high hover:bg-surface-container-highest text-secondary hover:text-on-surface text-xs font-semibold transition-all">
+                    Skip Intro &rarr;
+                </button>
+            </div>
+        </div>
+
+        <!-- Center Animated Logo & Data Sequence -->
+        <div class="flex flex-col items-center text-center max-w-md space-y-6 animate-fade-in">
+            <!-- Modern Combined Logo: Cross + AI Nodes + Shield -->
+            <div class="relative w-24 h-24 sm:w-28 sm:h-28 flex items-center justify-center">
+                <!-- Pulsing Outer Data Halo -->
+                <div class="absolute inset-0 rounded-3xl bg-primary/15 animate-ping opacity-60"></div>
+                <div class="absolute -inset-2 rounded-3xl bg-gradient-to-tr from-primary/30 to-cyan-400/30 blur-lg animate-pulse"></div>
+
+                <!-- Main Emblem Container -->
+                <div class="relative w-full h-full rounded-3xl bg-gradient-to-br from-[#005bbf] via-[#004a9e] to-[#002f6c] p-1 shadow-2xl flex items-center justify-center border-2 border-white/40">
+                    <svg viewBox="0 0 100 100" class="w-16 h-16 text-white" fill="none" stroke="currentColor" stroke-width="2.5">
+                        <!-- Shield Outline -->
+                        <path d="M50 12 L82 24 V52 C82 72 50 88 50 88 C50 88 18 72 18 52 V24 Z" stroke="#ffffff" stroke-width="3" fill="rgba(255,255,255,0.1)"/>
+                        <!-- Medical Cross Inside -->
+                        <path d="M50 30 V58 M36 44 H64" stroke="#ffffff" stroke-width="5" stroke-linecap="round"/>
+                        <!-- AI Nodes Interconnected -->
+                        <circle cx="50" cy="30" r="3.5" fill="#22d3ee" stroke="#ffffff" stroke-width="1.5"/>
+                        <circle cx="50" cy="58" r="3.5" fill="#22d3ee" stroke="#ffffff" stroke-width="1.5"/>
+                        <circle cx="36" cy="44" r="3.5" fill="#22d3ee" stroke="#ffffff" stroke-width="1.5"/>
+                        <circle cx="64" cy="44" r="3.5" fill="#22d3ee" stroke="#ffffff" stroke-width="1.5"/>
+                    </svg>
+                </div>
+            </div>
+
+            <!-- Title & Subtitle -->
+            <div class="space-y-1.5">
+                <h1 class="text-2xl sm:text-3xl font-extrabold tracking-tight text-[#002f6c]">
+                    Hospital Readmission Predictor
+                </h1>
+                <p class="text-xs sm:text-sm font-semibold text-secondary">
+                    AI-Powered Healthcare Intelligence Platform
+                </p>
+            </div>
+
+            <!-- Animated Sequence Dots: Health Data -> AI -> Risk Prediction -> Care -->
+            <div class="flex items-center justify-center gap-2 pt-2">
+                <div class="flex items-center gap-1.5 px-3 py-1 bg-surface-container-low rounded-full border border-outline-variant/50 text-[11px] font-bold text-secondary">
+                    <span class="w-1.5 h-1.5 rounded-full bg-primary animate-pulse"></span>
+                    <span id="splash-sequence-label">Health Data</span>
+                </div>
+                <span class="text-secondary text-xs">&rarr;</span>
+                <div class="flex items-center gap-1.5 px-3 py-1 bg-surface-container-low rounded-full border border-outline-variant/50 text-[11px] font-bold text-secondary">
+                    <span class="w-1.5 h-1.5 rounded-full bg-cyan-500 animate-pulse"></span>
+                    <span>AI & ML</span>
+                </div>
+                <span class="text-secondary text-xs">&rarr;</span>
+                <div class="flex items-center gap-1.5 px-3 py-1 bg-surface-container-low rounded-full border border-outline-variant/50 text-[11px] font-bold text-secondary">
+                    <span class="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse"></span>
+                    <span>Risk Prediction</span>
+                </div>
+                <span class="text-secondary text-xs">&rarr;</span>
+                <div class="flex items-center gap-1.5 px-3 py-1 bg-green-50 rounded-full border border-green-200 text-[11px] font-bold text-green-700">
+                    <span class="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse"></span>
+                    <span>Connected Care</span>
+                </div>
+            </div>
+
+            <!-- Progress Bar -->
+            <div class="w-48 h-1.5 bg-surface-container-high rounded-full overflow-hidden">
+                <div id="splash-progress-bar" class="h-full bg-primary rounded-full transition-all duration-300 w-0"></div>
+            </div>
+        </div>
+
+        <!-- Bottom Tagline & Disclaimer -->
+        <div class="w-full flex flex-col sm:flex-row justify-between items-center text-center sm:text-left gap-2 text-xs text-secondary max-w-6xl border-t border-surface-variant pt-4">
+            <div>
+                <p class="font-bold text-on-surface">Predict risk. Explain insights. Connect care.</p>
+                <p class="text-[10px] text-secondary/80">AI-assisted healthcare decision support</p>
+            </div>
+            <div class="font-mono text-[10px] text-secondary">
+                Clinical Release v2.4.1
+            </div>
+        </div>
+    </div>
+
+    <!-- ========================================================================= -->
+    <!-- 2. REUSABLE INTELLIGENT LOADING OVERLAY (Modal triggerable for AI work)    -->
+    <!-- ========================================================================= -->
+    <div id="intelligent-loading-overlay" class="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm hidden flex items-center justify-center p-4">
+        <div class="bg-white border border-outline-variant rounded-3xl max-w-md w-full p-8 shadow-2xl space-y-6 text-center animate-scale-up">
+            <!-- Spinner Ring with Neural Pulse -->
+            <div class="relative w-20 h-20 mx-auto flex items-center justify-center">
+                <svg class="w-20 h-20 animate-spin text-primary" viewBox="0 0 100 100">
+                    <circle cx="50" cy="50" r="42" stroke="currentColor" stroke-width="6" class="opacity-20" fill="none"/>
+                    <circle cx="50" cy="50" r="42" stroke="currentColor" stroke-width="6" stroke-dasharray="264" stroke-dashoffset="80" stroke-linecap="round" fill="none"/>
+                </svg>
+                <span class="material-symbols-outlined text-primary text-2xl absolute inset-0 flex items-center justify-center">neurology</span>
+            </div>
+
+            <div class="space-y-1.5">
+                <h3 class="text-lg font-bold text-on-surface">Preparing your healthcare workspace…</h3>
+                <p id="loading-status-text" class="text-xs text-secondary font-medium">Checking secure connection…</p>
+            </div>
+
+            <div class="w-full bg-surface-container-high h-2 rounded-full overflow-hidden">
+                <div id="loading-bar-fill" class="bg-primary h-full rounded-full transition-all duration-300 w-15%"></div>
+            </div>
+
+            <p class="text-[10px] text-secondary/70">
+                Encrypted with HIPAA-aligned zero-trust security architecture.
+            </p>
+        </div>
+    </div>
+
+    <!-- ========================================================================= -->
+    <!-- 3. SMART RETURN BANNER (Shows for returning sessions)                     -->
+    <!-- ========================================================================= -->
+    <div id="smart-return-banner" class="bg-gradient-to-r from-primary/10 via-cyan-50 to-primary/5 border-b border-primary/20 px-4 py-2.5 hidden">
+        <div class="max-w-7xl mx-auto flex flex-col sm:flex-row justify-between items-center gap-2 text-xs">
+            <div class="flex items-center gap-2">
+                <span class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
+                <span class="text-secondary font-medium">Welcome back, <strong class="text-on-surface font-bold">Eleanor Vance</strong> (Patient ID #PT-84729)</span>
+            </div>
+            <div class="flex items-center gap-2">
+                <a href="/dashboard" class="px-3 py-1 rounded-full bg-primary hover:bg-primary/90 text-white font-bold text-xs shadow-xs transition-all flex items-center gap-1">
+                    <span>Continue to Dashboard</span>
+                    <span class="material-symbols-outlined text-[14px]">arrow_forward</span>
+                </a>
+                <button onclick="document.getElementById('smart-return-banner').classList.add('hidden')" class="text-secondary hover:text-on-surface p-1">
+                    <span class="material-symbols-outlined text-base">close</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ========================================================================= -->
+    <!-- 4. LANDING PAGE NAVIGATION BAR                                            -->
+    <!-- ========================================================================= -->
+    <header class="bg-white/90 backdrop-blur-md border-b border-outline-variant/60 sticky top-0 z-40 px-4 sm:px-8 py-3 shadow-xs">
+        <div class="max-w-7xl mx-auto flex justify-between items-center">
+            <!-- Brand Logo -->
+            <a href="/" class="flex items-center gap-2.5 group">
+                <div class="w-10 h-10 rounded-2xl bg-gradient-to-br from-primary to-[#002f6c] text-white flex items-center justify-center shadow-md group-hover:scale-105 transition-transform">
+                    <span class="material-symbols-outlined text-2xl fill-icon">local_hospital</span>
+                </div>
+                <div>
+                    <h2 class="text-base font-extrabold text-[#002f6c] tracking-tight">HRP Clinical</h2>
+                    <p class="text-[10px] text-secondary font-semibold">Healthcare Intelligence</p>
+                </div>
+            </a>
+
+            <!-- Desktop Nav Links -->
+            <nav class="hidden lg:flex items-center gap-6 text-xs font-bold text-secondary">
+                <a href="#platform" class="hover:text-primary transition-colors">Platform</a>
+                <a href="#ai-tech" class="hover:text-primary transition-colors">AI & ML Layers</a>
+                <a href="#how-it-works" class="hover:text-primary transition-colors">How It Works</a>
+                <a href="#telemedicine" class="hover:text-primary transition-colors">Doctor Video Call</a>
+                <a href="#reports" class="hover:text-primary transition-colors">Lab OCR Analysis</a>
+                <a href="#health-id-section" class="hover:text-primary transition-colors">Digital Health ID</a>
+                <a href="#dataset" class="hover:text-primary transition-colors">Dataset (101k)</a>
+                <a href="#responsible-ai" class="hover:text-primary transition-colors">Responsible AI</a>
+            </nav>
+
+            <!-- Right Controls: Audio, Language & CTAs -->
+            <div class="flex items-center gap-3">
+                <!-- Sound Toggle -->
+                <button onclick="toggleAudioMute()" class="p-2 text-secondary hover:bg-surface-container-low rounded-full transition-colors hidden sm:block" title="Toggle Sound Feedback">
+                    <span class="material-symbols-outlined text-[20px]" id="sound-icon">volume_up</span>
+                </button>
+
+                <!-- Language Switcher -->
+                <button onclick="window.i18n.toggle()" class="flex items-center gap-1 px-2.5 py-1 bg-surface-container-low hover:bg-surface-container-high rounded-full border border-outline-variant/60 text-xs font-bold text-primary transition-all">
+                    <span class="material-symbols-outlined text-[16px]">translate</span>
+                    <span class="lang-indicator-text">EN | हिन्दी</span>
+                </button>
+
+                <!-- Sign In & Get Started -->
+                <a href="/login" class="px-3.5 py-1.5 rounded-full text-xs font-bold text-secondary hover:text-primary hover:bg-surface-container-low transition-colors hidden md:block">
+                    Sign In
+                </a>
+
+                <a href="/dashboard" class="px-4 py-2 rounded-full bg-primary hover:bg-primary/90 text-white font-bold text-xs shadow-sm flex items-center gap-1.5 transition-all">
+                    <span>Get Started</span>
+                    <span class="material-symbols-outlined text-[16px]">arrow_forward</span>
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <!-- ========================================================================= -->
+    <!-- 5. HERO SECTION & INTERACTIVE FLOATING VISUALIZATION                      -->
+    <!-- ========================================================================= -->
+    <section class="py-12 sm:py-20 px-4 sm:px-8 bg-gradient-to-b from-white via-surface-container-lowest to-[#f4f6fb] border-b border-outline-variant/40">
+        <div class="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+            
+            <!-- Left Hero Text (Span 6) -->
+            <div class="lg:col-span-6 space-y-6">
+                <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 text-primary border border-primary/20 text-xs font-bold shadow-xs">
+                    <span class="material-symbols-outlined text-[16px]">verified</span>
+                    <span>Precision AI & Clinical Workflow Platform v2.4.1</span>
+                </div>
+
+                <div class="space-y-2">
+                    <h1 class="text-3xl sm:text-5xl font-black text-on-surface tracking-tight leading-[1.15]">
+                        Predict Hospital Readmission Risk.
+                    </h1>
+                    <h2 class="text-2xl sm:text-4xl font-extrabold text-primary tracking-tight">
+                        Understand. Connect. Care.
+                    </h2>
+                </div>
+
+                <p class="text-sm sm:text-base text-secondary leading-relaxed max-w-xl">
+                    An AI-powered healthcare platform combining machine learning, deep learning, explainable AI, and intelligent care workflows to support better clinical decision-making.
+                </p>
+
+                <!-- CTA Buttons -->
+                <div class="flex flex-wrap items-center gap-3 pt-2">
+                    <a href="/prediction/new" class="px-6 py-3 rounded-2xl bg-primary hover:bg-primary/90 text-white font-bold text-xs sm:text-sm shadow-md flex items-center gap-2 transition-all group">
+                        <span>Get Started</span>
+                        <span class="material-symbols-outlined text-lg group-hover:translate-x-1 transition-transform">arrow_forward</span>
+                    </a>
+
+                    <a href="/dashboard" class="px-6 py-3 rounded-2xl bg-surface-container-high hover:bg-surface-container-highest text-on-surface font-bold text-xs sm:text-sm border border-outline-variant/60 shadow-xs flex items-center gap-2 transition-all">
+                        <span class="material-symbols-outlined text-lg text-primary">dashboard</span>
+                        <span>Explore Platform</span>
+                    </a>
+
+                    <button onclick="openProductTour()" class="px-4 py-3 rounded-2xl bg-white hover:bg-surface-container-low text-secondary hover:text-primary font-bold text-xs sm:text-sm border border-outline-variant/60 shadow-xs flex items-center gap-2 transition-all">
+                        <span class="material-symbols-outlined text-primary text-xl">play_circle</span>
+                        <span>Interactive Product Tour</span>
+                    </button>
+                </div>
+
+                <!-- Verified Stats Strip -->
+                <div class="grid grid-cols-3 gap-3 pt-4 border-t border-surface-variant">
+                    <div>
+                        <span class="text-xl sm:text-2xl font-black text-primary block">0.9794</span>
+                        <span class="text-[11px] font-semibold text-secondary">ROC-AUC Score</span>
+                    </div>
+                    <div>
+                        <span class="text-xl sm:text-2xl font-black text-on-surface block">101,766</span>
+                        <span class="text-[11px] font-semibold text-secondary">Inpatient Cohort</span>
+                    </div>
+                    <div>
+                        <span class="text-xl sm:text-2xl font-black text-[#146c2e] block">100%</span>
+                        <span class="text-[11px] font-semibold text-secondary">Human-in-the-Loop</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Hero Visual: Connected Medical AI Flow Canvas (Span 6) -->
+            <div class="lg:col-span-6 relative">
+                <!-- Floating Dashboard Card Container -->
+                <div class="relative bg-white border-2 border-primary/30 rounded-3xl p-6 shadow-2xl space-y-5 backdrop-blur-md">
+                    <!-- Top Card Header -->
+                    <div class="flex justify-between items-center border-b border-surface-variant pb-3">
+                        <div class="flex items-center gap-2.5">
+                            <div class="w-9 h-9 rounded-xl bg-error-container text-error flex items-center justify-center font-bold">
+                                <span class="material-symbols-outlined text-xl">warning</span>
+                            </div>
+                            <div>
+                                <h4 class="text-xs font-bold text-on-surface">Eleanor Vance (#PT-84729)</h4>
+                                <p class="text-[10px] text-secondary">Cardiology Ward 4B • Age 71</p>
+                            </div>
+                        </div>
+                        <span class="px-2.5 py-1 rounded-full bg-error text-white text-[10px] font-bold uppercase tracking-wider animate-pulse">
+                            68.4% High Risk
+                        </span>
+                    </div>
+
+                    <!-- Middle: SVG Risk Gauge & XAI Highlights -->
+                    <div class="grid grid-cols-12 gap-4 items-center">
+                        <!-- Gauge (Span 5) -->
+                        <div class="col-span-5 flex flex-col items-center justify-center p-2 bg-surface-container-low rounded-2xl border border-outline-variant/60">
+                            <div class="relative w-24 h-24 flex items-center justify-center">
+                                <svg class="w-24 h-24 transform -rotate-90" viewBox="0 0 100 100">
+                                    <circle cx="50" cy="50" r="42" stroke="#e8e9ee" stroke-width="8" fill="none"/>
+                                    <circle cx="50" cy="50" r="42" stroke="#ba1a1a" stroke-width="8" stroke-dasharray="264" stroke-dashoffset="84" stroke-linecap="round" fill="none" class="transition-all duration-1000"/>
+                                </svg>
+                                <div class="absolute inset-0 flex flex-col items-center justify-center">
+                                    <span class="text-lg font-black text-on-surface">68%</span>
+                                    <span class="text-[8px] font-bold uppercase text-error">High Risk</span>
+                                </div>
+                            </div>
+                            <span class="text-[9px] font-semibold text-secondary mt-1">30-Day Readmission</span>
+                        </div>
+
+                        <!-- Model Insights (Span 7) -->
+                        <div class="col-span-7 space-y-2 text-xs">
+                            <span class="text-[10px] font-bold uppercase tracking-wider text-secondary flex items-center gap-1">
+                                <span class="material-symbols-outlined text-primary text-[14px]">psychology</span>
+                                Top Model-Associated Factors
+                            </span>
+
+                            <div class="space-y-1.5">
+                                <div class="flex justify-between p-1.5 rounded-lg bg-surface-container-lowest border border-outline-variant/50">
+                                    <span class="text-secondary text-[11px]">Prior Inpatient Visits (2x)</span>
+                                    <span class="font-bold text-error font-mono">+24.0%</span>
+                                </div>
+                                <div class="flex justify-between p-1.5 rounded-lg bg-surface-container-lowest border border-outline-variant/50">
+                                    <span class="text-secondary text-[11px]">Elevated Creatinine (1.60)</span>
+                                    <span class="font-bold text-amber-600 font-mono">+16.0%</span>
+                                </div>
+                                <div class="flex justify-between p-1.5 rounded-lg bg-surface-container-lowest border border-outline-variant/50">
+                                    <span class="text-secondary text-[11px]">Polypharmacy (8 Meds)</span>
+                                    <span class="font-bold text-amber-600 font-mono">+10.2%</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Bottom Connected Flow: Patient Data -> AI -> Risk -> Doctor -> Care -->
+                    <div class="p-3 bg-surface-container-low rounded-2xl border border-outline-variant/60 space-y-1.5">
+                        <div class="flex justify-between items-center text-[10px] font-bold text-secondary">
+                            <span>Clinical Closed-Loop Workflow</span>
+                            <span class="text-primary font-mono">PPO RL Policy Active</span>
+                        </div>
+                        <div class="flex items-center justify-between text-[9px] font-bold text-on-surface">
+                            <span class="p-1 bg-white rounded border border-outline-variant">1. Inpatient Data</span>
+                            <span class="text-primary">&rarr;</span>
+                            <span class="p-1 bg-white rounded border border-outline-variant">2. ML / DL Risk</span>
+                            <span class="text-primary">&rarr;</span>
+                            <span class="p-1 bg-white rounded border border-outline-variant">3. XAI Factors</span>
+                            <span class="text-primary">&rarr;</span>
+                            <span class="p-1 bg-white rounded border border-primary text-primary font-bold">4. Dr. Review</span>
+                            <span class="text-primary">&rarr;</span>
+                            <span class="p-1 bg-green-100 text-green-800 rounded border border-green-300">5. Follow-up</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+    <!-- ========================================================================= -->
+    <!-- 6. TRUST STRIP SECTION (6 Minimal Line Cards)                             -->
+    <!-- ========================================================================= -->
+    <section class="py-6 bg-white border-b border-outline-variant/40 px-4 sm:px-8">
+        <div class="max-w-7xl mx-auto grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
+            <div class="p-3 rounded-2xl bg-surface-container-low border border-outline-variant/40 flex items-center gap-2.5">
+                <span class="material-symbols-outlined text-primary text-xl">analytics</span>
+                <span class="text-xs font-bold text-on-surface">AI Risk Prediction</span>
+            </div>
+            <div class="p-3 rounded-2xl bg-surface-container-low border border-outline-variant/40 flex items-center gap-2.5">
+                <span class="material-symbols-outlined text-primary text-xl">waterfall_chart</span>
+                <span class="text-xs font-bold text-on-surface">Explainable AI</span>
+            </div>
+            <div class="p-3 rounded-2xl bg-surface-container-low border border-outline-variant/40 flex items-center gap-2.5">
+                <span class="material-symbols-outlined text-primary text-xl">videocam</span>
+                <span class="text-xs font-bold text-on-surface">Doctor Video Call</span>
+            </div>
+            <div class="p-3 rounded-2xl bg-surface-container-low border border-outline-variant/40 flex items-center gap-2.5">
+                <span class="material-symbols-outlined text-primary text-xl">document_scanner</span>
+                <span class="text-xs font-bold text-on-surface">Medical Report OCR</span>
+            </div>
+            <div class="p-3 rounded-2xl bg-surface-container-low border border-outline-variant/40 flex items-center gap-2.5">
+                <span class="material-symbols-outlined text-primary text-xl">translate</span>
+                <span class="text-xs font-bold text-on-surface">English + हिन्दी</span>
+            </div>
+            <div class="p-3 rounded-2xl bg-surface-container-low border border-outline-variant/40 flex items-center gap-2.5">
+                <span class="material-symbols-outlined text-primary text-xl">security</span>
+                <span class="text-xs font-bold text-on-surface">Secure Healthcare</span>
+            </div>
+        </div>
+    </section>
+
+    <!-- ========================================================================= -->
+    <!-- 7. PRODUCT INTRODUCTION (Predict, Understand, Connect)                    -->
+    <!-- ========================================================================= -->
+    <section id="platform" class="py-16 px-4 sm:px-8 bg-surface-container-lowest border-b border-outline-variant/40">
+        <div class="max-w-7xl mx-auto space-y-12">
+            <div class="text-center max-w-2xl mx-auto space-y-2">
+                <span class="text-xs font-bold uppercase tracking-widest text-primary">Unified Healthcare Architecture</span>
+                <h2 class="text-2xl sm:text-3xl font-extrabold text-on-surface">One Platform for Smarter Healthcare Workflows</h2>
+                <p class="text-xs sm:text-sm text-secondary">
+                    Bring prediction, patient engagement, clinical review and care coordination into one connected experience.
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <!-- Card 1: Predict -->
+                <div class="bg-surface-container-low border border-outline-variant/60 rounded-3xl p-6 shadow-sm space-y-4 hover:border-primary transition-all group">
+                    <div class="w-12 h-12 rounded-2xl bg-primary/10 text-primary flex items-center justify-center group-hover:scale-110 transition-transform">
+                        <span class="material-symbols-outlined text-2xl">insights</span>
+                    </div>
+                    <h3 class="text-base font-bold text-on-surface">1. Predict</h3>
+                    <p class="text-xs text-secondary leading-relaxed">
+                        Use machine learning and PyTorch tabular deep learning to estimate 30-day readmission risk from available structured EHR information.
+                    </p>
+                    <a href="/prediction/new" class="text-xs font-bold text-primary flex items-center gap-1 hover:underline pt-2">
+                        <span>Launch Prediction Wizard</span>
+                        <span class="material-symbols-outlined text-[14px]">arrow_forward</span>
+                    </a>
+                </div>
+
+                <!-- Card 2: Understand -->
+                <div class="bg-surface-container-low border border-outline-variant/60 rounded-3xl p-6 shadow-sm space-y-4 hover:border-primary transition-all group">
+                    <div class="w-12 h-12 rounded-2xl bg-cyan-500/10 text-cyan-600 flex items-center justify-center group-hover:scale-110 transition-transform">
+                        <span class="material-symbols-outlined text-2xl">account_tree</span>
+                    </div>
+                    <h3 class="text-base font-bold text-on-surface">2. Understand</h3>
+                    <p class="text-xs text-secondary leading-relaxed">
+                        Explain model-associated factors with TreeSHAP waterfall charts and 2D patient risk embeddings, making AI outputs easy to clinically review.
+                    </p>
+                    <a href="/ml/xai" class="text-xs font-bold text-primary flex items-center gap-1 hover:underline pt-2">
+                        <span>Explore SHAP Waterfall</span>
+                        <span class="material-symbols-outlined text-[14px]">arrow_forward</span>
+                    </a>
+                </div>
+
+                <!-- Card 3: Connect -->
+                <div class="bg-surface-container-low border border-outline-variant/60 rounded-3xl p-6 shadow-sm space-y-4 hover:border-primary transition-all group">
+                    <div class="w-12 h-12 rounded-2xl bg-[#146c2e]/10 text-[#146c2e] flex items-center justify-center group-hover:scale-110 transition-transform">
+                        <span class="material-symbols-outlined text-2xl">support_agent</span>
+                    </div>
+                    <h3 class="text-base font-bold text-on-surface">3. Connect</h3>
+                    <p class="text-xs text-secondary leading-relaxed">
+                        Connect patients, doctors, and care teams through encrypted video consultations, CareAI copilot, and automated follow-up pathways.
+                    </p>
+                    <a href="/consultation/careai" class="text-xs font-bold text-primary flex items-center gap-1 hover:underline pt-2">
+                        <span>Join Video Consultation</span>
+                        <span class="material-symbols-outlined text-[14px]">arrow_forward</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ========================================================================= -->
+    <!-- 8. HOW IT WORKS SECTION (5-Step Animated Workflow)                        -->
+    <!-- ========================================================================= -->
+    <section id="how-it-works" class="py-16 px-4 sm:px-8 bg-white border-b border-outline-variant/40">
+        <div class="max-w-7xl mx-auto space-y-12">
+            <div class="text-center max-w-2xl mx-auto space-y-2">
+                <span class="text-xs font-bold uppercase tracking-widest text-primary">5-Stage Closed-Loop Care</span>
+                <h2 class="text-2xl sm:text-3xl font-extrabold text-on-surface">How the Platform Works</h2>
+                <p class="text-xs sm:text-sm text-secondary">
+                    From initial hospitalization records to post-discharge care coordination.
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-5 gap-4">
+                <div class="p-5 rounded-3xl bg-surface-container-low border border-outline-variant/60 space-y-2">
+                    <span class="text-xl font-black text-primary">01</span>
+                    <h4 class="text-sm font-bold text-on-surface">Patient Data</h4>
+                    <p class="text-xs text-secondary">Collect structured clinical, laboratory, and hospitalization history.</p>
+                </div>
+
+                <div class="p-5 rounded-3xl bg-surface-container-low border border-outline-variant/60 space-y-2">
+                    <span class="text-xl font-black text-primary">02</span>
+                    <h4 class="text-sm font-bold text-on-surface">AI Analysis</h4>
+                    <p class="text-xs text-secondary">ML and PyTorch Deep Learning models evaluate biomarkers and comorbidities.</p>
+                </div>
+
+                <div class="p-5 rounded-3xl bg-surface-container-low border border-outline-variant/60 space-y-2">
+                    <span class="text-xl font-black text-primary">03</span>
+                    <h4 class="text-sm font-bold text-on-surface">Risk Prediction</h4>
+                    <p class="text-xs text-secondary">Generate an calibrated 30-day readmission risk estimate with SHAP drivers.</p>
+                </div>
+
+                <div class="p-5 rounded-3xl bg-surface-container-low border border-primary/50 bg-primary/5 space-y-2">
+                    <span class="text-xl font-black text-primary">04</span>
+                    <h4 class="text-sm font-bold text-on-surface">Human Review</h4>
+                    <p class="text-xs text-secondary">Attending clinician reviews risk score and validates recommendations.</p>
+                </div>
+
+                <div class="p-5 rounded-3xl bg-surface-container-low border border-outline-variant/60 space-y-2">
+                    <span class="text-xl font-black text-green-700">05</span>
+                    <h4 class="text-sm font-bold text-on-surface">Care Coordination</h4>
+                    <p class="text-xs text-secondary">Coordinate 72-hour PCP visits, telemedicine check-ins, and medication reviews.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ========================================================================= -->
+    <!-- 9. AI TECHNOLOGY SECTION (4 Interconnected AI Layers)                     -->
+    <!-- ========================================================================= -->
+    <section id="ai-tech" class="py-16 px-4 sm:px-8 bg-surface-container-lowest border-b border-outline-variant/40">
+        <div class="max-w-7xl mx-auto space-y-12">
+            <div class="text-center max-w-2xl mx-auto space-y-2">
+                <span class="text-xs font-bold uppercase tracking-widest text-primary">Multi-Modal Intelligence</span>
+                <h2 class="text-2xl sm:text-3xl font-extrabold text-on-surface">Built With Multiple Layers of AI</h2>
+                <p class="text-xs sm:text-sm text-secondary">
+                    Combining classical ensemble methods, self-attention neural networks, and reinforcement learning.
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                <!-- ML Layer -->
+                <div class="p-6 rounded-3xl bg-surface-container-low border border-outline-variant/60 space-y-3">
+                    <span class="material-symbols-outlined text-primary text-2xl">model_training</span>
+                    <h3 class="text-sm font-bold text-on-surface">Machine Learning</h3>
+                    <ul class="text-xs text-secondary space-y-1">
+                        <li>• XGBoost Classifier v2.4.1 (Champion)</li>
+                        <li>• Random Forest (200 Trees)</li>
+                        <li>• LightGBM Gradient Boosting</li>
+                        <li>• Logistic Regression Baseline</li>
+                    </ul>
+                </div>
+
+                <!-- Deep Learning Layer -->
+                <div class="p-6 rounded-3xl bg-surface-container-low border border-outline-variant/60 space-y-3">
+                    <span class="material-symbols-outlined text-cyan-600 text-2xl">hub</span>
+                    <h3 class="text-sm font-bold text-on-surface">Deep Learning Lab</h3>
+                    <ul class="text-xs text-secondary space-y-1">
+                        <li>• PyTorch Tabular Transformer</li>
+                        <li>• Multi-Layer Perceptron (ANN)</li>
+                        <li>• Patient Autoencoder (8D Latent)</li>
+                        <li>• Temporal Sequence LSTM</li>
+                    </ul>
+                </div>
+
+                <!-- Explainable AI -->
+                <div class="p-6 rounded-3xl bg-surface-container-low border border-outline-variant/60 space-y-3">
+                    <span class="material-symbols-outlined text-amber-600 text-2xl">waterfall_chart</span>
+                    <h3 class="text-sm font-bold text-on-surface">Explainable AI (XAI)</h3>
+                    <ul class="text-xs text-secondary space-y-1">
+                        <li>• Local TreeSHAP Factor Waterfall</li>
+                        <li>• Global Feature Gain Rankings</li>
+                        <li>• 2D PCA Patient Risk Clusters</li>
+                        <li>• Epistemic Uncertainty Estimation</li>
+                    </ul>
+                </div>
+
+                <!-- Reinforcement Learning -->
+                <div class="p-6 rounded-3xl bg-surface-container-low border border-outline-variant/60 space-y-3">
+                    <span class="material-symbols-outlined text-green-700 text-2xl">smart_toy</span>
+                    <h3 class="text-sm font-bold text-on-surface">Reinforcement Learning</h3>
+                    <ul class="text-xs text-secondary space-y-1">
+                        <li>• 6-Stage Care Journey MDP ($t_0 \to t_5$)</li>
+                        <li>• Proximal Policy Optimization (PPO)</li>
+                        <li>• Safety Constraint Engine</li>
+                        <li>• Digital Twin What-If Simulator</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ========================================================================= -->
+    <!-- 10. CAREAI & TELEMEDICINE SECTION                                         -->
+    <!-- ========================================================================= -->
+    <section id="telemedicine" class="py-16 px-4 sm:px-8 bg-white border-b border-outline-variant/40">
+        <div class="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+            
+            <div class="lg:col-span-6 space-y-6">
+                <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 text-primary text-xs font-bold">
+                    <span class="material-symbols-outlined text-[16px]">videocam</span>
+                    <span>CareAI Telemedicine & Virtual Clinic</span>
+                </div>
+
+                <h2 class="text-2xl sm:text-3xl font-extrabold text-on-surface">
+                    Connect With a Doctor & CareAI Copilot
+                </h2>
+
+                <p class="text-xs sm:text-sm text-secondary leading-relaxed">
+                    Encrypted video consultations with real-time CareAI clinical summaries, live readmission risk telemetry, and synchronized English & हिन्दी live subtitles.
+                </p>
+
+                <div class="space-y-2 text-xs">
+                    <div class="flex items-center gap-2">
+                        <span class="material-symbols-outlined text-[#146c2e] text-base">check_circle</span>
+                        <span>High-definition video with Web Audio synthesized ringtones</span>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <span class="material-symbols-outlined text-[#146c2e] text-base">check_circle</span>
+                        <span>Dual live captions in English and हिन्दी</span>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <span class="material-symbols-outlined text-[#146c2e] text-base">check_circle</span>
+                        <span>AI-generated progress notes draft for attending doctor</span>
+                    </div>
+                </div>
+
+                <div class="flex items-center gap-3 pt-2">
+                    <a href="/consultation/careai" class="px-5 py-2.5 rounded-xl bg-primary hover:bg-primary/90 text-white font-bold text-xs shadow-sm flex items-center gap-1.5">
+                        <span class="material-symbols-outlined text-[16px]">videocam</span>
+                        <span>Launch Video Consultation</span>
+                    </a>
+                    <a href="/portal/patient" class="px-4 py-2.5 rounded-xl bg-surface-container-high hover:bg-surface-container-highest text-on-surface font-semibold text-xs border border-outline-variant/60">
+                        Patient Portal
+                    </a>
+                </div>
+            </div>
+
+            <!-- CareAI Interactive Chat Preview -->
+            <div class="lg:col-span-6 bg-surface-container-low border border-outline-variant/60 rounded-3xl p-6 shadow-md space-y-4">
+                <div class="flex items-center justify-between border-b border-surface-variant pb-3">
+                    <div class="flex items-center gap-2">
+                        <span class="material-symbols-outlined text-primary text-xl">smart_toy</span>
+                        <h4 class="text-xs font-bold text-on-surface">CareAI Assistant (Live Bilingual Demo)</h4>
+                    </div>
+                    <span class="px-2 py-0.5 rounded-full bg-green-100 text-green-800 text-[10px] font-bold">Active</span>
+                </div>
+
+                <!-- Chat Messages -->
+                <div class="space-y-3 text-xs">
+                    <div class="p-3 bg-white rounded-2xl rounded-tr-none border border-outline-variant/50 max-w-sm ml-auto text-right">
+                        <p class="font-medium text-on-surface">"Explain Eleanor's readmission risk in simple Hindi."</p>
+                        <span class="text-[9px] text-secondary">User Query</span>
+                    </div>
+
+                    <div class="p-3.5 bg-primary/10 rounded-2xl rounded-tl-none border border-primary/20 max-w-md space-y-1">
+                        <div class="flex items-center gap-1 text-[10px] font-bold text-primary">
+                            <span class="material-symbols-outlined text-[12px]">translate</span>
+                            <span>CareAI (हिन्दी अनुवाद)</span>
+                        </div>
+                        <p class="text-on-surface text-[11px] leading-relaxed">
+                            "मरीज का 30-दिन में दोबारा भर्ती होने का जोखिम 68% (उच्च) है। मुख्य कारण पहले के अस्पताल दौरे और सीरम क्रिएटिनिन (1.60 mg/dL) में वृद्धि है। डॉक्टर से 72 घंटों के भीतर परामर्श की सलाह दी जाती है।"
+                        </p>
+                        <span class="text-[9px] text-secondary block pt-1">
+                            ⚠️ AI-generated assistive analysis — verify with attending clinician.
+                        </span>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+    <!-- ========================================================================= -->
+    <!-- 11. MEDICAL REPORT OCR & DIGITAL HEALTH ID CARDS                          -->
+    <!-- ========================================================================= -->
+    <section id="reports" class="py-16 px-4 sm:px-8 bg-surface-container-lowest border-b border-outline-variant/40">
+        <div class="max-w-7xl mx-auto space-y-12">
+            <div class="text-center max-w-2xl mx-auto space-y-2">
+                <span class="text-xs font-bold uppercase tracking-widest text-primary">Document & Identity Intelligence</span>
+                <h2 class="text-2xl sm:text-3xl font-extrabold text-on-surface">Understand Reports & Manage Health ID</h2>
+                <p class="text-xs sm:text-sm text-secondary">
+                    OCR laboratory extraction with reported reference ranges and 3D digital healthcare ID cards.
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <!-- Lab Report OCR Card -->
+                <div class="p-6 rounded-3xl bg-white border border-outline-variant/60 shadow-sm space-y-4">
+                    <div class="flex justify-between items-center border-b border-surface-variant pb-3">
+                        <div class="flex items-center gap-2">
+                            <span class="material-symbols-outlined text-primary text-xl">description</span>
+                            <h3 class="text-sm font-bold text-on-surface">Structured Lab Extraction (OCR)</h3>
+                        </div>
+                        <span class="text-[10px] text-secondary font-mono">DOC-84729-LAB</span>
+                    </div>
+
+                    <table class="w-full text-xs text-left">
+                        <thead>
+                            <tr class="text-secondary border-b border-surface-variant text-[10px] uppercase">
+                                <th class="pb-1.5 font-bold">Biomarker</th>
+                                <th class="pb-1.5 font-bold">Result</th>
+                                <th class="pb-1.5 font-bold">Reference Range</th>
+                                <th class="pb-1.5 font-bold">Status</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-surface-variant/40">
+                            <tr>
+                                <td class="py-2 font-semibold">Serum Creatinine</td>
+                                <td class="py-2 font-bold text-error">1.60 mg/dL</td>
+                                <td class="py-2 text-secondary">0.50 – 1.10</td>
+                                <td class="py-2"><span class="px-2 py-0.5 rounded-full bg-red-100 text-red-800 text-[9px] font-bold">High</span></td>
+                            </tr>
+                            <tr>
+                                <td class="py-2 font-semibold">Hemoglobin</td>
+                                <td class="py-2 font-bold text-amber-600">11.2 g/dL</td>
+                                <td class="py-2 text-secondary">12.0 – 16.0</td>
+                                <td class="py-2"><span class="px-2 py-0.5 rounded-full bg-amber-100 text-amber-800 text-[9px] font-bold">Low</span></td>
+                            </tr>
+                            <tr>
+                                <td class="py-2 font-semibold">HbA1c</td>
+                                <td class="py-2 font-bold text-error">7.4 %</td>
+                                <td class="py-2 text-secondary">4.0 – 5.6</td>
+                                <td class="py-2"><span class="px-2 py-0.5 rounded-full bg-red-100 text-red-800 text-[9px] font-bold">High</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <div class="pt-2">
+                        <a href="/documents/analyze/DOC-84729-LAB" class="text-xs font-bold text-primary hover:underline flex items-center gap-1">
+                            <span>Open Full Document Analysis & Q&A</span>
+                            <span class="material-symbols-outlined text-[14px]">arrow_forward</span>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Digital Health ID Preview -->
+                <div id="health-id-section" class="p-6 rounded-3xl bg-white border border-outline-variant/60 shadow-sm space-y-4">
+                    <div class="flex justify-between items-center border-b border-surface-variant pb-3">
+                        <div class="flex items-center gap-2">
+                            <span class="material-symbols-outlined text-primary text-xl">badge</span>
+                            <h3 class="text-sm font-bold text-on-surface">Digital Health ID & QR Verification</h3>
+                        </div>
+                        <span class="px-2 py-0.5 rounded-full bg-green-100 text-green-800 text-[10px] font-bold">Verified Level 3</span>
+                    </div>
+
+                    <div class="p-4 rounded-2xl bg-gradient-to-br from-[#005bbf] to-[#002f6c] text-white flex justify-between items-center">
+                        <div class="space-y-1">
+                            <span class="text-[9px] uppercase tracking-wider text-white/70">Metro General Hospital</span>
+                            <h4 class="text-base font-bold text-white">Eleanor Vance</h4>
+                            <p class="text-xs font-mono text-white/80">HRP-2026-0001042</p>
+                        </div>
+                        <div class="w-14 h-14 bg-white p-1 rounded-xl flex items-center justify-center">
+                            <span class="material-symbols-outlined text-primary text-3xl">qr_code_2</span>
+                        </div>
+                    </div>
+
+                    <div class="flex items-center justify-between pt-1 text-xs">
+                        <a href="/health-id" class="font-bold text-primary hover:underline flex items-center gap-1">
+                            <span>View Interactive 3D Card</span>
+                            <span class="material-symbols-outlined text-[14px]">arrow_forward</span>
+                        </a>
+                        <a href="/verify-id/QRT-EV-HEALTHID-1042" target="_blank" class="text-secondary hover:text-primary flex items-center gap-1">
+                            <span>Public Verifier</span>
+                            <span class="material-symbols-outlined text-[12px]">open_in_new</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ========================================================================= -->
+    <!-- 12. DATASET & RESEARCH SECTION (Diabetes 130-US Hospitals)                 -->
+    <!-- ========================================================================= -->
+    <section id="dataset" class="py-16 px-4 sm:px-8 bg-white border-b border-outline-variant/40">
+        <div class="max-w-7xl mx-auto space-y-10">
+            <div class="text-center max-w-2xl mx-auto space-y-2">
+                <span class="text-xs font-bold uppercase tracking-widest text-primary">Benchmark Data Foundation</span>
+                <h2 class="text-2xl sm:text-3xl font-extrabold text-on-surface">Built for Healthcare AI Research</h2>
+                <p class="text-xs sm:text-sm text-secondary">
+                    Diabetes 130-US Hospitals for Years 1999–2008 (UCI Repository #296).
+                </p>
+            </div>
+
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
+                <div class="p-5 rounded-3xl bg-surface-container-low border border-outline-variant/60">
+                    <span class="text-2xl sm:text-3xl font-black text-primary block">101,766</span>
+                    <span class="text-xs font-semibold text-secondary">Inpatient Encounters</span>
+                </div>
+                <div class="p-5 rounded-3xl bg-surface-container-low border border-outline-variant/60">
+                    <span class="text-2xl sm:text-3xl font-black text-on-surface block">130</span>
+                    <span class="text-xs font-semibold text-secondary">Hospital Facilities</span>
+                </div>
+                <div class="p-5 rounded-3xl bg-surface-container-low border border-outline-variant/60">
+                    <span class="text-2xl sm:text-3xl font-black text-cyan-600 block">10 Years</span>
+                    <span class="text-xs font-semibold text-secondary">Historical Range</span>
+                </div>
+                <div class="p-5 rounded-3xl bg-surface-container-low border border-outline-variant/60">
+                    <span class="text-2xl sm:text-3xl font-black text-amber-600 block">50</span>
+                    <span class="text-xs font-semibold text-secondary">Clinical Features</span>
+                </div>
+            </div>
+
+            <div class="p-4 rounded-2xl bg-blue-50/70 border border-blue-100 text-xs text-blue-900 text-center max-w-2xl mx-auto">
+                <span class="font-bold">Historical Research Dataset Notice:</span> This dataset is used for algorithmic benchmarking and educational prototyping, representing historical practice patterns.
+            </div>
+        </div>
+    </section>
+
+    <!-- ========================================================================= -->
+    <!-- 13. RESPONSIBLE AI & SECURITY SECTION                                     -->
+    <!-- ========================================================================= -->
+    <section id="responsible-ai" class="py-16 px-4 sm:px-8 bg-surface-container-lowest border-b border-outline-variant/40">
+        <div class="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-10 items-center">
+            
+            <div class="lg:col-span-6 space-y-4">
+                <span class="text-xs font-bold uppercase tracking-widest text-primary">Governance & Ethics</span>
+                <h2 class="text-2xl sm:text-3xl font-extrabold text-on-surface">AI With Human Oversight</h2>
+                <p class="text-xs sm:text-sm text-secondary leading-relaxed">
+                    Hospital Readmission Predictor provides AI-assisted risk estimates and workflow support. It does not replace professional medical judgment, diagnose patients, prescribe treatment, or guarantee clinical outcomes.
+                </p>
+
+                <div class="grid grid-cols-2 gap-3 pt-2 text-xs">
+                    <div class="p-3 bg-white rounded-xl border border-outline-variant/50">
+                        <span class="font-bold text-on-surface block">Decision Support Only</span>
+                        <span class="text-secondary text-[11px]">Strictly assistive clinical analytics.</span>
+                    </div>
+                    <div class="p-3 bg-white rounded-xl border border-outline-variant/50">
+                        <span class="font-bold text-on-surface block">Mandatory Review</span>
+                        <span class="text-secondary text-[11px]">Doctor sign-off for all actions.</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="lg:col-span-6 space-y-4">
+                <span class="text-xs font-bold uppercase tracking-widest text-primary">Security Architecture</span>
+                <h2 class="text-2xl sm:text-3xl font-extrabold text-on-surface">Designed With Secure Access</h2>
+                <p class="text-xs sm:text-sm text-secondary leading-relaxed">
+                    Role-Based Access Control (RBAC), 6-digit Time-based OTP (MFA), Passkeys, Active Session revocation, and immutable institutional audit logging.
+                </p>
+
+                <div class="flex items-center gap-3 pt-2">
+                    <a href="/auth/landing" class="px-5 py-2.5 rounded-xl bg-primary text-white font-bold text-xs shadow-sm">
+                        Authentication Center
+                    </a>
+                    <a href="/admin/audit-logs" class="px-4 py-2.5 rounded-xl bg-surface-container-high text-on-surface font-semibold text-xs border border-outline-variant/60">
+                        Audit Log Explorer
+                    </a>
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+    <!-- ========================================================================= -->
+    <!-- 14. FINAL CALL TO ACTION & FOOTER                                         -->
+    <!-- ========================================================================= -->
+    <section class="py-16 px-4 sm:px-8 bg-gradient-to-br from-[#002f6c] via-[#004a9e] to-[#005bbf] text-white text-center">
+        <div class="max-w-4xl mx-auto space-y-6">
+            <h2 class="text-2xl sm:text-4xl font-extrabold text-white tracking-tight">
+                Ready to Transform Healthcare Intelligence?
+            </h2>
+            <p class="text-xs sm:text-sm text-white/80 max-w-xl mx-auto leading-relaxed">
+                Explore AI-powered readmission prediction, explainable insights, and connected care workflows today.
+            </p>
+            <div class="flex flex-wrap justify-center gap-3 pt-2">
+                <a href="/dashboard" class="px-6 py-3 rounded-full bg-white text-primary font-bold text-xs sm:text-sm shadow-lg hover:bg-white/90 transition-all">
+                    Get Started Now
+                </a>
+                <a href="/login" class="px-6 py-3 rounded-full bg-white/20 hover:bg-white/30 text-white font-bold text-xs sm:text-sm border border-white/40 transition-all">
+                    Sign In
+                </a>
+                <a href="/consultation/careai" class="px-6 py-3 rounded-full bg-cyan-400 text-[#002f6c] font-bold text-xs sm:text-sm shadow-md hover:bg-cyan-300 transition-all">
+                    Book a Consultation
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Multi-Column Footer -->
+    <footer class="bg-white border-t border-outline-variant py-12 px-4 sm:px-8 text-xs text-secondary">
+        <div class="max-w-7xl mx-auto grid grid-cols-2 md:grid-cols-5 gap-8 pb-8 border-b border-surface-variant">
+            <div class="space-y-2 col-span-2 md:col-span-1">
+                <div class="flex items-center gap-2">
+                    <span class="material-symbols-outlined text-primary text-xl fill-icon">local_hospital</span>
+                    <span class="font-bold text-on-surface">HRP Clinical</span>
+                </div>
+                <p class="text-[11px] text-secondary leading-relaxed">
+                    AI-assisted healthcare decision support and clinical workflow platform.
+                </p>
+            </div>
+
+            <div class="space-y-2">
+                <h4 class="font-bold text-on-surface uppercase text-[10px] tracking-wider">Product</h4>
+                <ul class="space-y-1.5 text-[11px]">
+                    <li><a href="/dashboard" class="hover:text-primary">Dashboard</a></li>
+                    <li><a href="/prediction/new" class="hover:text-primary">Predictions</a></li>
+                    <li><a href="/consultation/careai" class="hover:text-primary">CareAI Video Call</a></li>
+                    <li><a href="/documents" class="hover:text-primary">Medical Reports</a></li>
+                    <li><a href="/analytics" class="hover:text-primary">Analytics</a></li>
+                </ul>
+            </div>
+
+            <div class="space-y-2">
+                <h4 class="font-bold text-on-surface uppercase text-[10px] tracking-wider">Platform & AI</h4>
+                <ul class="space-y-1.5 text-[11px]">
+                    <li><a href="/ml-dashboard" class="hover:text-primary">ML Dashboard</a></li>
+                    <li><a href="/ml/deep-learning" class="hover:text-primary">Deep Learning Lab</a></li>
+                    <li><a href="/rl/dashboard" class="hover:text-primary">RL PPO Simulation</a></li>
+                    <li><a href="/ml/xai" class="hover:text-primary">Explainable AI (SHAP)</a></li>
+                    <li><a href="/ml/dataset" class="hover:text-primary">Diabetes 101k Cohort</a></li>
+                </ul>
+            </div>
+
+            <div class="space-y-2">
+                <h4 class="font-bold text-on-surface uppercase text-[10px] tracking-wider">Identity & Passes</h4>
+                <ul class="space-y-1.5 text-[11px]">
+                    <li><a href="/health-id" class="hover:text-primary">My Health ID</a></li>
+                    <li><a href="/doctor-id" class="hover:text-primary">Doctor ID Badge</a></li>
+                    <li><a href="/wallet" class="hover:text-primary">Digital Wallet</a></li>
+                    <li><a href="/qr/scanner" class="hover:text-primary">QR Scanner</a></li>
+                    <li><a href="/certificates" class="hover:text-primary">Certificates</a></li>
+                </ul>
+            </div>
+
+            <div class="space-y-2">
+                <h4 class="font-bold text-on-surface uppercase text-[10px] tracking-wider">Security & Help</h4>
+                <ul class="space-y-1.5 text-[11px]">
+                    <li><a href="/settings" class="hover:text-primary">Account Settings</a></li>
+                    <li><a href="/admin/audit-logs" class="hover:text-primary">Security Audit Logs</a></li>
+                    <li><a href="/rl/safety" class="hover:text-primary">Safety Constraints</a></li>
+                    <li><a href="/help" class="hover:text-primary">Help & FAQ</a></li>
+                    <li><a href="/auth/landing" class="hover:text-primary">Switch Role</a></li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="max-w-7xl mx-auto flex flex-col sm:flex-row justify-between items-center pt-6 gap-2 text-[10px] text-secondary">
+            <div>
+                © 2026 Hospital Readmission Predictor (HRP Clinical). All rights reserved.
+            </div>
+            <div>
+                Clinical Decision Support Platform • Precision Healthcare Architecture
+            </div>
+        </div>
+    </footer>
+
+</div>
+
+<!-- ========================================================================= -->
+    <!-- 15. INTERACTIVE 7-STEP PRODUCT ONBOARDING TOUR MODAL                      -->
+    <!-- ========================================================================= -->
+    <div id="product-tour-modal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white border border-outline-variant rounded-3xl max-w-lg w-full p-6 sm:p-8 shadow-2xl space-y-5 animate-scale-up relative">
+            <button onclick="closeProductTour()" class="absolute top-4 right-4 text-secondary hover:text-on-surface p-1 rounded-full hover:bg-surface-container">
+                <span class="material-symbols-outlined text-xl">close</span>
+            </button>
+
+            <div class="flex items-center justify-between border-b border-surface-variant pb-3">
+                <span id="tour-step-badge" class="px-2.5 py-0.5 rounded-full bg-primary/10 text-primary text-[10px] font-bold">
+                    Step 1 of 7: AI Risk Prediction
+                </span>
+                <span class="text-xs text-secondary font-mono">Interactive Tour</span>
+            </div>
+
+            <div class="space-y-2">
+                <div id="tour-step-icon" class="w-12 h-12 rounded-2xl bg-primary/10 text-primary flex items-center justify-center mb-2">
+                    <span class="material-symbols-outlined text-2xl">analytics</span>
+                </div>
+                <h3 id="tour-step-title" class="text-lg font-bold text-on-surface">1. AI Readmission Risk Prediction</h3>
+                <p id="tour-step-desc" class="text-xs text-secondary leading-relaxed">
+                    Evaluates patient electronic health records using an XGBoost classifier (0.9794 ROC-AUC) trained on 101k diabetic inpatient encounters to estimate 30-day readmission risk.
+                </p>
+            </div>
+
+            <div class="flex justify-between items-center pt-4 border-t border-surface-variant">
+                <button id="tour-prev-btn" onclick="prevTourStep()" class="px-4 py-2 rounded-xl bg-surface-container hover:bg-surface-container-high text-xs font-semibold text-secondary hidden">
+                    &larr; Back
+                </button>
+                <div class="flex items-center gap-2 ml-auto">
+                    <button onclick="closeProductTour()" class="px-3 py-2 rounded-xl text-xs font-semibold text-secondary hover:text-on-surface">
+                        Skip Tour
+                    </button>
+                    <button id="tour-next-btn" onclick="nextTourStep()" class="px-5 py-2 rounded-xl bg-primary hover:bg-primary/90 text-white text-xs font-bold shadow-sm">
+                        Next &rarr;
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+<script>
+// 1. Splash Screen Auto-Advance (2500ms)
+let splashProgress = 0;
+const splashInterval = setInterval(() => {
+    splashProgress += 10;
+    const bar = document.getElementById('splash-progress-bar');
+    if (bar) bar.style.width = splashProgress + '%';
+    
+    if (splashProgress === 40) {
+        const label = document.getElementById('splash-sequence-label');
+        if (label) label.innerText = 'AI & Deep Learning';
+    } else if (splashProgress === 70) {
+        const label = document.getElementById('splash-sequence-label');
+        if (label) label.innerText = 'Risk Scoring';
+    }
+
+    if (splashProgress >= 100) {
+        clearInterval(splashInterval);
+        skipSplash();
+    }
+}, 180);
+
+function skipSplash() {
+    clearInterval(splashInterval);
+    const splash = document.getElementById('splash-screen');
+    if (splash) {
+        splash.classList.add('opacity-0', 'pointer-events-none');
+        setTimeout(() => splash.remove(), 700);
+    }
+    // Show Smart Return if previously visited
+    if (localStorage.getItem('hrp_visited')) {
+        document.getElementById('smart-return-banner')?.classList.remove('hidden');
+    }
+    localStorage.setItem('hrp_visited', 'true');
+}
+
+// 2. Intelligent Loading Overlay Simulation
+function showLoadingOverlay(targetUrl) {
+    const overlay = document.getElementById('intelligent-loading-overlay');
+    overlay.classList.remove('hidden');
+    window.soundEngine?.click();
+    
+    const messages = [
+        "Checking secure connection…",
+        "Loading patient services…",
+        "Preparing AI services…",
+        "Loading analytics…",
+        "Ready"
+    ];
+    
+    let step = 0;
+    const bar = document.getElementById('loading-bar-fill');
+    const txt = document.getElementById('loading-status-text');
+    
+    const intv = setInterval(() => {
+        step++;
+        if (step < messages.length) {
+            txt.innerText = messages[step];
+            bar.style.width = (step * 25) + '%';
+        } else {
+            clearInterval(intv);
+            window.location.href = targetUrl;
+        }
+    }, 300);
+}
+
+// 3. Product Onboarding Tour (7 Steps)
+const tourSteps = [
+    {
+        step: "Step 1 of 7: AI Risk Prediction",
+        icon: "analytics",
+        title: "1. AI Readmission Risk Prediction",
+        desc: "Evaluates patient electronic health records using an XGBoost classifier (0.9794 ROC-AUC) trained on 101k diabetic inpatient encounters to estimate 30-day readmission risk."
+    },
+    {
+        step: "Step 2 of 7: Explainable AI (SHAP)",
+        icon: "waterfall_chart",
+        title: "2. Explainable AI & SHAP Waterfalls",
+        desc: "Breaks down individual patient risk shifts relative to hospital baselines, identifying prior admissions, elevated serum creatinine, and medication burden as contributing factors."
+    },
+    {
+        step: "Step 3 of 7: Medical Report OCR",
+        icon: "document_scanner",
+        title: "3. Medical Report OCR & Lab Extraction",
+        desc: "Ingests lab panels, matches reported reference ranges, flags abnormal values, and offers patient-friendly summaries with one-click Hindi translation."
+    },
+    {
+        step: "Step 4 of 7: Doctor Video Consultation",
+        icon: "videocam",
+        title: "4. Doctor Video Consultation & Captions",
+        desc: "Encrypted telemedicine calls featuring live CareAI clinical copilot summaries, real-time readmission risk telemetry, and synchronized English ↔ हिन्दी subtitles."
+    },
+    {
+        step: "Step 5 of 7: CareAI Assistant",
+        icon: "smart_toy",
+        title: "5. CareAI Conversational Assistant",
+        desc: "Ask questions about medical reports citing exact pages or query model weights and data drift in natural language."
+    },
+    {
+        step: "Step 6 of 7: Digital Health ID & QR",
+        icon: "badge",
+        title: "6. Digital Health ID & Working QR Passes",
+        desc: "Interactive 3D digital cards with cryptographic QR verification tokens for clinic check-in, doctor profile verification, and time-limited temporary document sharing."
+    },
+    {
+        step: "Step 7 of 7: Population Analytics & RL",
+        icon: "monitoring",
+        title: "7. Analytics & PPO Care Pathway",
+        desc: "Review population risk distributions, monitor statistical data drift (PSI / KS-test), and simulate optimal follow-up workflows using Reinforcement Learning."
+    }
+];
+
+let currentTourIdx = 0;
+
+function openProductTour() {
+    currentTourIdx = 0;
+    updateTourUI();
+    document.getElementById('product-tour-modal').classList.remove('hidden');
+    window.soundEngine?.click();
+}
+
+function closeProductTour() {
+    document.getElementById('product-tour-modal').classList.add('hidden');
+}
+
+function nextTourStep() {
+    if (currentTourIdx < tourSteps.length - 1) {
+        currentTourIdx++;
+        updateTourUI();
+        window.soundEngine?.click();
+    } else {
+        closeProductTour();
+        window.soundEngine?.success();
+    }
+}
+
+function prevTourStep() {
+    if (currentTourIdx > 0) {
+        currentTourIdx--;
+        updateTourUI();
+        window.soundEngine?.click();
+    }
+}
+
+function updateTourUI() {
+    const item = tourSteps[currentTourIdx];
+    document.getElementById('tour-step-badge').innerText = item.step;
+    document.getElementById('tour-step-title').innerText = item.title;
+    document.getElementById('tour-step-desc').innerText = item.desc;
+    document.getElementById('tour-step-icon').innerHTML = `<span class="material-symbols-outlined text-2xl">${item.icon}</span>`;
+    
+    const prevBtn = document.getElementById('tour-prev-btn');
+    const nextBtn = document.getElementById('tour-next-btn');
+    
+    if (currentTourIdx === 0) {
+        prevBtn.classList.add('hidden');
+    } else {
+        prevBtn.classList.remove('hidden');
+    }
+    
+    if (currentTourIdx === tourSteps.length - 1) {
+        nextBtn.innerText = "Finish Tour";
+    } else {
+        nextBtn.innerText = "Next \u2192";
+    }
+}
+</script>
+{% endblock %}

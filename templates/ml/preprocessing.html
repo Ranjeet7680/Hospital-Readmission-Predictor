@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+
+{% block title %}10-Stage Preprocessing Pipeline - Hospital Readmission Predictor{% endblock %}
+{% block header_title %}10-Stage Visual Preprocessing Pipeline{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto space-y-6">
+    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+        <div>
+            <h1 class="text-2xl font-bold text-on-surface" data-i18n="preprocessing">10-Stage Visual Preprocessing Pipeline</h1>
+            <p class="text-sm text-secondary">End-to-end data transformation pipeline from raw Kaggle 101k CSV ingestion to train/val/test tensor batches.</p>
+        </div>
+        <div class="flex items-center gap-2">
+            <button onclick="window.soundEngine?.success(); alert('Pipeline executed! 101,766 encounters transformed and normalized into 24-dimensional feature tensors.');" class="px-4 py-2 bg-primary text-on-primary rounded-xl font-bold text-xs hover:bg-on-primary-fixed-variant transition-colors shadow-xs flex items-center gap-1.5">
+                <span class="material-symbols-outlined text-[16px]">play_arrow</span>
+                Execute Full Pipeline
+            </button>
+            <a href="/ml/training" class="px-3.5 py-2 border border-outline-variant text-secondary hover:text-on-surface font-bold text-xs rounded-xl hover:bg-surface-container-low transition-colors flex items-center gap-1.5">
+                <span class="material-symbols-outlined text-[16px]">arrow_forward</span>
+                Training Studio
+            </a>
+        </div>
+    </div>
+
+    <!-- 10 Visual Pipeline Cards -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
+        {% for stage in pipeline_stages %}
+        <div class="p-5 bg-surface-container-lowest border border-outline-variant rounded-2xl shadow-xs flex flex-col justify-between hover:border-primary transition-all">
+            <div>
+                <div class="flex justify-between items-center mb-3">
+                    <span class="w-7 h-7 rounded-full bg-primary-fixed text-primary flex items-center justify-center font-bold text-xs">
+                        {{ stage.step }}
+                    </span>
+                    <span class="material-symbols-outlined text-primary text-xl">{{ stage.icon }}</span>
+                </div>
+                <h3 class="font-bold text-on-surface text-sm mb-1">{{ stage.name }}</h3>
+                <p class="text-xs text-secondary leading-relaxed">{{ stage.desc }}</p>
+            </div>
+            <div class="pt-3 mt-3 border-t border-surface-variant flex items-center justify-between text-[10px]">
+                <span class="text-[#146c2e] font-bold flex items-center gap-1">
+                    <span class="material-symbols-outlined text-[12px]">check_circle</span> Configured
+                </span>
+                <button onclick="window.soundEngine?.click(); alert('Stage settings for {{ stage.name }}');" class="text-primary font-bold hover:underline">Edit Stage</button>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,263 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard - Hospital Readmission Predictor{% endblock %}
+{% block header_title %}Clinical Dashboard{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto space-y-lg">
+    <!-- Welcome Header & Quick Action -->
+    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-surface-container-lowest p-lg rounded-2xl border border-outline-variant shadow-sm">
+        <div>
+            <div class="flex items-center gap-2 mb-1">
+                <span class="text-xs px-2.5 py-0.5 rounded-full bg-primary-fixed text-primary font-bold">HRP Clinical v2.4.1</span>
+                <span class="text-xs text-secondary">• St. Jude Medical Center</span>
+            </div>
+            <h1 class="text-headline-md font-headline-md font-bold text-on-surface">Welcome back, Dr. Smith</h1>
+            <p class="text-body-md text-secondary">Here is your daily clinical readmission risk overview and active inpatient alerts.</p>
+        </div>
+        <div class="flex items-center gap-3">
+            <a href="/history" class="px-4 py-2.5 rounded-xl border border-outline-variant text-secondary hover:text-on-surface hover:bg-surface-container-low transition-colors font-label-lg flex items-center gap-2">
+                <span class="material-symbols-outlined text-[18px]">history</span>
+                History
+            </a>
+            <a href="/prediction/new" class="px-5 py-2.5 rounded-xl bg-primary text-on-primary font-label-lg hover:bg-on-primary-fixed-variant shadow-md transition-all flex items-center gap-2">
+                <span class="material-symbols-outlined text-[18px]">add_circle</span>
+                New Prediction
+            </a>
+        </div>
+    </div>
+
+    <!-- 4 Key Performance Metrics -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-md">
+        <!-- Card 1 -->
+        <div class="bg-surface-container-lowest p-lg rounded-xl border border-outline-variant shadow-sm flex flex-col justify-between">
+            <div class="flex justify-between items-start mb-2">
+                <span class="text-label-lg font-label-lg text-secondary uppercase tracking-wider">Total Patients Screened</span>
+                <div class="w-10 h-10 rounded-lg bg-primary-fixed flex items-center justify-center text-primary">
+                    <span class="material-symbols-outlined">group</span>
+                </div>
+            </div>
+            <div>
+                <span class="text-3xl font-bold text-on-surface">30,482</span>
+                <div class="flex items-center gap-1 text-xs text-[#146c2e] mt-1 font-semibold">
+                    <span class="material-symbols-outlined text-[16px]">trending_up</span>
+                    <span>+12.4% this month</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Card 2 -->
+        <div class="bg-surface-container-lowest p-lg rounded-xl border border-outline-variant shadow-sm flex flex-col justify-between">
+            <div class="flex justify-between items-start mb-2">
+                <span class="text-label-lg font-label-lg text-secondary uppercase tracking-wider">High Risk Identified</span>
+                <div class="w-10 h-10 rounded-lg bg-error-container flex items-center justify-center text-error">
+                    <span class="material-symbols-outlined">warning</span>
+                </div>
+            </div>
+            <div>
+                <span class="text-3xl font-bold text-error">12.2%</span>
+                <div class="flex items-center gap-1 text-xs text-secondary mt-1">
+                    <span>3,674 patients flagged for care-plan review</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Card 3 -->
+        <div class="bg-surface-container-lowest p-lg rounded-xl border border-outline-variant shadow-sm flex flex-col justify-between">
+            <div class="flex justify-between items-start mb-2">
+                <span class="text-label-lg font-label-lg text-secondary uppercase tracking-wider">Model ROC-AUC</span>
+                <div class="w-10 h-10 rounded-lg bg-secondary-container flex items-center justify-center text-primary">
+                    <span class="material-symbols-outlined">insights</span>
+                </div>
+            </div>
+            <div>
+                <span class="text-3xl font-bold text-primary">0.979</span>
+                <div class="flex items-center gap-1 text-xs text-[#146c2e] mt-1 font-semibold">
+                    <span class="material-symbols-outlined text-[16px]">check_circle</span>
+                    <span>High clinical reliability</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Card 4 -->
+        <div class="bg-surface-container-lowest p-lg rounded-xl border border-outline-variant shadow-sm flex flex-col justify-between">
+            <div class="flex justify-between items-start mb-2">
+                <span class="text-label-lg font-label-lg text-secondary uppercase tracking-wider">30d Readmission Reduction</span>
+                <div class="w-10 h-10 rounded-lg bg-green-100 flex items-center justify-center text-[#146c2e]">
+                    <span class="material-symbols-outlined">trending_down</span>
+                </div>
+            </div>
+            <div>
+                <span class="text-3xl font-bold text-[#146c2e]">-18.6%</span>
+                <div class="flex items-center gap-1 text-xs text-[#146c2e] mt-1 font-semibold">
+                    <span>Post-intervention improvement</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bento Grid Section: High Risk Attention & Risk Distribution -->
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-lg">
+        <!-- High Risk Alerts (8 cols) -->
+        <div class="lg:col-span-8 bg-surface-container-lowest border border-outline-variant rounded-2xl p-lg shadow-sm">
+            <div class="flex justify-between items-center mb-md pb-3 border-b border-outline-variant">
+                <div class="flex items-center gap-2">
+                    <span class="material-symbols-outlined text-error">notification_important</span>
+                    <h3 class="text-title-lg font-title-lg font-bold text-on-surface">Urgent High-Risk Patients</h3>
+                </div>
+                <a href="/history?risk_level=high" class="text-sm font-semibold text-primary hover:underline">View All High Risk</a>
+            </div>
+
+            <div class="space-y-3">
+                <!-- Patient 1: Eleanor Vance -->
+                <div class="p-4 rounded-xl bg-surface border border-outline-variant hover:border-primary/50 transition-all flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                    <div class="flex items-center gap-3">
+                        <div class="w-12 h-12 rounded-full bg-secondary-container flex items-center justify-center text-on-secondary-container font-bold text-lg">
+                            EV
+                        </div>
+                        <div>
+                            <div class="flex items-center gap-2">
+                                <a href="/patient/PT-84729" class="font-bold text-on-surface hover:text-primary hover:underline">Eleanor Vance</a>
+                                <span class="text-xs text-secondary font-mono">#PT-84729</span>
+                            </div>
+                            <p class="text-xs text-secondary">Cardiology • Age 71 • Attending: Dr. J. Aris</p>
+                            <p class="text-xs text-error font-medium mt-0.5">Primary: Congestive Heart Failure (2 prior admissions in 90d)</p>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-3 w-full sm:w-auto justify-between sm:justify-end">
+                        <span class="px-3 py-1 bg-error text-on-error rounded-full text-xs font-bold flex items-center gap-1">
+                            <span class="material-symbols-outlined text-[14px]">warning</span> 68% High Risk
+                        </span>
+                        <a href="/prediction/PT-84729" class="px-3 py-1.5 rounded-lg bg-primary/10 text-primary font-bold text-xs hover:bg-primary hover:text-on-primary transition-colors">
+                            Assessment
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Patient 2: Arthur Pendelton -->
+                <div class="p-4 rounded-xl bg-surface border border-outline-variant hover:border-primary/50 transition-all flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                    <div class="flex items-center gap-3">
+                        <div class="w-12 h-12 rounded-full bg-secondary-container flex items-center justify-center text-on-secondary-container font-bold text-lg">
+                            AP
+                        </div>
+                        <div>
+                            <div class="flex items-center gap-2">
+                                <a href="/patient/PT-9402" class="font-bold text-on-surface hover:text-primary hover:underline">Arthur Pendelton</a>
+                                <span class="text-xs text-secondary font-mono">#PT-9402</span>
+                            </div>
+                            <p class="text-xs text-secondary">Cardiology • Age 76 • Attending: Dr. Smith</p>
+                            <p class="text-xs text-error font-medium mt-0.5">Primary: Acute Myocardial Infarction</p>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-3 w-full sm:w-auto justify-between sm:justify-end">
+                        <span class="px-3 py-1 bg-error text-on-error rounded-full text-xs font-bold flex items-center gap-1">
+                            <span class="material-symbols-outlined text-[14px]">warning</span> 82% High Risk
+                        </span>
+                        <a href="/prediction/PT-9402" class="px-3 py-1.5 rounded-lg bg-primary/10 text-primary font-bold text-xs hover:bg-primary hover:text-on-primary transition-colors">
+                            Assessment
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Patient 3: David Zhang -->
+                <div class="p-4 rounded-xl bg-surface border border-outline-variant hover:border-primary/50 transition-all flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                    <div class="flex items-center gap-3">
+                        <div class="w-12 h-12 rounded-full bg-secondary-container flex items-center justify-center text-on-secondary-container font-bold text-lg">
+                            DZ
+                        </div>
+                        <div>
+                            <div class="flex items-center gap-2">
+                                <a href="/patient/PT-6592" class="font-bold text-on-surface hover:text-primary hover:underline">David Zhang</a>
+                                <span class="text-xs text-secondary font-mono">#PT-6592</span>
+                            </div>
+                            <p class="text-xs text-secondary">Cardiology • Age 68 • Attending: Dr. Lee</p>
+                            <p class="text-xs text-error font-medium mt-0.5">Primary: Decompensated Heart Failure</p>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-3 w-full sm:w-auto justify-between sm:justify-end">
+                        <span class="px-3 py-1 bg-error text-on-error rounded-full text-xs font-bold flex items-center gap-1">
+                            <span class="material-symbols-outlined text-[14px]">warning</span> 78% High Risk
+                        </span>
+                        <a href="/prediction/PT-6592" class="px-3 py-1.5 rounded-lg bg-primary/10 text-primary font-bold text-xs hover:bg-primary hover:text-on-primary transition-colors">
+                            Assessment
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Risk Distribution & Clinical Guidance (4 cols) -->
+        <div class="lg:col-span-4 space-y-md">
+            <div class="bg-surface-container-lowest border border-outline-variant rounded-2xl p-lg shadow-sm space-y-4">
+                <h3 class="text-title-md font-title-md font-bold text-on-surface flex items-center gap-2">
+                    <span class="material-symbols-outlined text-primary">donut_large</span>
+                    Readmission Risk Breakdown
+                </h3>
+                
+                <div class="space-y-3">
+                    <div>
+                        <div class="flex justify-between text-xs font-bold mb-1">
+                            <span class="text-[#146c2e]">Low Risk (0-30%)</span>
+                            <span>64.5%</span>
+                        </div>
+                        <div class="w-full h-2 bg-surface-variant rounded-full overflow-hidden">
+                            <div class="h-full bg-[#146c2e] rounded-full w-[64.5%]"></div>
+                        </div>
+                    </div>
+
+                    <div>
+                        <div class="flex justify-between text-xs font-bold mb-1">
+                            <span class="text-[#b36b00]">Moderate Risk (31-60%)</span>
+                            <span>23.3%</span>
+                        </div>
+                        <div class="w-full h-2 bg-surface-variant rounded-full overflow-hidden">
+                            <div class="h-full bg-[#b36b00] rounded-full w-[23.3%]"></div>
+                        </div>
+                    </div>
+
+                    <div>
+                        <div class="flex justify-between text-xs font-bold mb-1">
+                            <span class="text-error">High Risk (61-100%)</span>
+                            <span>12.2%</span>
+                        </div>
+                        <div class="w-full h-2 bg-surface-variant rounded-full overflow-hidden">
+                            <div class="h-full bg-error rounded-full w-[12.2%]"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="pt-3 border-t border-outline-variant/40 text-xs text-secondary">
+                    <p class="font-semibold text-on-surface mb-1">Recommended Follow-up Rule:</p>
+                    <p>Patients with risk &gt; 60% require mandatory 72-hour primary care follow-up scheduling and pharmacy reconciliation before discharge.</p>
+                </div>
+            </div>
+
+            <!-- Quick Department Overview -->
+            <div class="bg-surface-container-lowest border border-outline-variant rounded-2xl p-lg shadow-sm">
+                <h3 class="text-title-md font-title-md font-bold text-on-surface mb-3 flex items-center gap-2">
+                    <span class="material-symbols-outlined text-primary">domain</span>
+                    Department Risk Rates
+                </h3>
+                <div class="space-y-2 text-xs">
+                    <div class="flex justify-between py-1.5 border-b border-surface-variant">
+                        <span class="font-medium text-on-surface">Cardiology</span>
+                        <span class="font-bold text-error">21.4% High Risk</span>
+                    </div>
+                    <div class="flex justify-between py-1.5 border-b border-surface-variant">
+                        <span class="font-medium text-on-surface">Neurology</span>
+                        <span class="font-bold text-[#b36b00]">11.8% High Risk</span>
+                    </div>
+                    <div class="flex justify-between py-1.5 border-b border-surface-variant">
+                        <span class="font-medium text-on-surface">General Surgery</span>
+                        <span class="font-bold text-[#146c2e]">6.2% High Risk</span>
+                    </div>
+                    <div class="flex justify-between py-1.5">
+                        <span class="font-medium text-on-surface">Internal Medicine</span>
+                        <span class="font-bold text-error">15.9% High Risk</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

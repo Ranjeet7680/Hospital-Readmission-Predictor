@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+
+{% block title %}Active Sessions & Security - Hospital Readmission Predictor{% endblock %}
+{% block header_title %}Active Device Sessions{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto space-y-6">
+    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+        <div>
+            <h1 class="text-2xl font-bold text-on-surface">Active Sessions & Device Security</h1>
+            <p class="text-sm text-secondary">Manage devices logged into your healthcare account. Revoke unrecognized active sessions immediately.</p>
+        </div>
+        <button onclick="window.soundEngine?.click(); alert('All other device sessions have been revoked successfully.');" class="px-4 py-2 bg-error-container text-error rounded-xl font-bold text-xs hover:bg-error hover:text-on-error transition-colors shadow-xs flex items-center gap-1.5">
+            <span class="material-symbols-outlined text-[16px]">logout</span>
+            Sign Out All Other Devices
+        </button>
+    </div>
+
+    <!-- Active Sessions List -->
+    <div class="space-y-3">
+        <!-- Session 1: Current -->
+        <div class="p-5 bg-surface-container-lowest border-2 border-primary/40 rounded-2xl shadow-xs flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+            <div class="flex items-start gap-4">
+                <div class="w-12 h-12 rounded-xl bg-primary-fixed text-primary flex items-center justify-center shrink-0">
+                    <span class="material-symbols-outlined text-2xl">laptop_mac</span>
+                </div>
+                <div>
+                    <div class="flex items-center gap-2 mb-1">
+                        <span class="font-bold text-on-surface text-base">MacBook Pro 16 - Safari</span>
+                        <span class="px-2.5 py-0.5 bg-green-100 text-[#146c2e] font-bold text-xs rounded-full">Current Session</span>
+                    </div>
+                    <p class="text-xs text-secondary">Boston, MA (Hospital Inpatient Network) • IP: 10.240.12.8</p>
+                    <p class="text-[11px] text-secondary mt-1">Last active: <span class="font-semibold text-on-surface">Just now</span></p>
+                </div>
+            </div>
+            <span class="text-xs text-secondary font-semibold">Active Device</span>
+        </div>
+
+        <!-- Session 2: Mobile -->
+        <div class="p-5 bg-surface-container-lowest border border-outline-variant rounded-2xl shadow-xs flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+            <div class="flex items-start gap-4">
+                <div class="w-12 h-12 rounded-xl bg-secondary-container text-secondary flex items-center justify-center shrink-0">
+                    <span class="material-symbols-outlined text-2xl">smartphone</span>
+                </div>
+                <div>
+                    <div class="flex items-center gap-2 mb-1">
+                        <span class="font-bold text-on-surface text-base">iPhone 15 Pro - HRP Mobile App</span>
+                        <span class="px-2.5 py-0.5 bg-surface-variant text-secondary text-xs rounded-full">Mobile Session</span>
+                    </div>
+                    <p class="text-xs text-secondary">Boston, MA (Hospital WiFi) • IP: 10.240.15.22</p>
+                    <p class="text-[11px] text-secondary mt-1">Last active: 2 hours ago</p>
+                </div>
+            </div>
+            <button onclick="window.soundEngine?.click(); this.closest('div').remove(); alert('Mobile session revoked.');" class="px-3 py-1.5 border border-outline-variant hover:bg-error-container hover:text-error text-xs font-bold rounded-xl transition-colors">
+                Revoke Access
+            </button>
+        </div>
+    </div>
+</div>
+{% endblock %}

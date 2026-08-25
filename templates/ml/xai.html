@@ -1,0 +1,103 @@
+{% extends "base.html" %}
+
+{% block title %}Explainable AI (SHAP Waterfall) - Hospital Readmission Predictor{% endblock %}
+{% block header_title %}Explainable AI & Feature Attribution Studio{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto space-y-6">
+    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+        <div>
+            <h1 class="text-2xl font-bold text-on-surface" data-i18n="explainable_ai">Explainable AI (SHAP Waterfall)</h1>
+            <p class="text-sm text-secondary">TreeSHAP factor decomposition explaining readmission risk predictions for Eleanor Vance (PT-84729).</p>
+        </div>
+        <div class="flex items-center gap-2">
+            <a href="/prediction/PT-84729" class="px-4 py-2 bg-primary text-on-primary rounded-xl font-bold text-xs hover:bg-on-primary-fixed-variant transition-colors shadow-xs flex items-center gap-1.5">
+                <span class="material-symbols-outlined text-[16px]">visibility</span>
+                View Assessment Gauge
+            </a>
+        </div>
+    </div>
+
+    <!-- Patient Header Summary -->
+    <div class="p-5 bg-surface-container-lowest border border-outline-variant rounded-2xl shadow-xs flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+        <div>
+            <div class="flex items-center gap-2">
+                <h3 class="text-lg font-bold text-on-surface">Eleanor Vance</h3>
+                <span class="px-2 py-0.5 rounded-full bg-error text-on-error font-bold text-xs">68.4% Readmission Risk</span>
+            </div>
+            <p class="text-xs text-secondary mt-0.5">Base Hospital Expected Value: E[f(x)] = 12.2% → Patient Model Output: f(x) = 68.4% (+56.2% Net Shift)</p>
+        </div>
+        <button onclick="replayWaterfall()" class="px-3.5 py-1.5 bg-surface-container-low border border-outline-variant rounded-xl text-xs font-bold text-primary hover:bg-surface-container-high transition-colors flex items-center gap-1">
+            <span class="material-symbols-outlined text-[16px]">replay</span>
+            Replay Attribution
+        </button>
+    </div>
+
+    <!-- SHAP Waterfall Visual Breakdown -->
+    <div class="p-6 bg-surface-container-lowest border border-outline-variant rounded-2xl shadow-xs space-y-4">
+        <h3 class="font-bold text-on-surface text-sm border-b border-surface-variant pb-2">SHAP Patient-Level Feature Contributions</h3>
+        
+        <div class="space-y-4 text-xs">
+            <!-- Factor 1: Prior Admissions -->
+            <div class="space-y-1">
+                <div class="flex justify-between font-bold">
+                    <span class="text-on-surface">Prior Inpatient Admissions within 30 Days (= 1)</span>
+                    <span class="text-error font-mono">+24.0% SHAP Value</span>
+                </div>
+                <div class="w-full h-3 bg-surface-container-high rounded-full overflow-hidden">
+                    <div class="bg-error h-full rounded-full transition-all duration-700" style="width: 48%;"></div>
+                </div>
+                <span class="text-[10px] text-secondary">Strongest statistical driver of 30-day readmission risk.</span>
+            </div>
+
+            <!-- Factor 2: Creatinine -->
+            <div class="space-y-1">
+                <div class="flex justify-between font-bold">
+                    <span class="text-on-surface">Serum Creatinine (= 1.60 mg/dL, baseline renal strain)</span>
+                    <span class="text-error font-mono">+16.0% SHAP Value</span>
+                </div>
+                <div class="w-full h-3 bg-surface-container-high rounded-full overflow-hidden">
+                    <div class="bg-error h-full rounded-full transition-all duration-700" style="width: 32%;"></div>
+                </div>
+                <span class="text-[10px] text-secondary">Elevated creatinine indicates acute renal stress complicating heart failure.</span>
+            </div>
+
+            <!-- Factor 3: Polypharmacy -->
+            <div class="space-y-1">
+                <div class="flex justify-between font-bold">
+                    <span class="text-on-surface">Medication Regimen (8 Active Inpatient Drugs)</span>
+                    <span class="text-error font-mono">+10.2% SHAP Value</span>
+                </div>
+                <div class="w-full h-3 bg-surface-container-high rounded-full overflow-hidden">
+                    <div class="bg-error h-full rounded-full transition-all duration-700" style="width: 20%;"></div>
+                </div>
+                <span class="text-[10px] text-secondary">Complex medication regimen increases medication reconciliation error risk.</span>
+            </div>
+
+            <!-- Factor 4: Normal Electrolytes Protective Factor -->
+            <div class="space-y-1">
+                <div class="flex justify-between font-bold">
+                    <span class="text-on-surface">Electrolyte Stability (Sodium 138, Potassium 4.2)</span>
+                    <span class="text-[#146c2e] font-mono">-6.0% Protective Factor</span>
+                </div>
+                <div class="w-full h-3 bg-surface-container-high rounded-full overflow-hidden">
+                    <div class="bg-[#146c2e] h-full rounded-full transition-all duration-700" style="width: 12%;"></div>
+                </div>
+                <span class="text-[10px] text-secondary">Normal electrolytes moderately mitigate arrhythmia risk.</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function replayWaterfall() {
+        window.soundEngine?.predictionReady();
+        const bars = document.querySelectorAll('.bg-error, .bg-\\[\\#146c2e\\]');
+        bars.forEach(b => {
+            const w = b.style.width;
+            b.style.width = '0%';
+            setTimeout(() => { b.style.width = w; }, 100);
+        });
+    }
+</script>
+{% endblock %}

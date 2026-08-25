@@ -1,0 +1,89 @@
+{% extends "base.html" %}
+
+{% block title %}Issue Medical Certificate - Hospital Readmission Predictor{% endblock %}
+{% block header_title %}Medical Certificate Generation & Approval{% endblock %}
+
+{% block content %}
+<div class="max-w-3xl mx-auto space-y-6">
+    <div class="flex justify-between items-center">
+        <div>
+            <h1 class="text-2xl font-bold text-on-surface">Issue Medical Certificate</h1>
+            <p class="text-sm text-secondary">Doctor verification & digital authorization workflow for official certificates.</p>
+        </div>
+    </div>
+
+    <div class="bg-surface-container-lowest border border-outline-variant p-6 rounded-2xl shadow-xs">
+        <form action="/certificates/new" method="post" class="space-y-4" onsubmit="window.soundEngine?.success();">
+            <div class="space-y-3 border-b border-surface-variant pb-4">
+                <h3 class="text-xs font-bold text-primary uppercase tracking-wider">1. Patient Details</h3>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs font-bold text-secondary mb-1">Patient Full Name</label>
+                        <input name="patient_name" type="text" value="Eleanor Vance" required class="w-full rounded-xl border border-outline-variant bg-surface px-3 py-2 text-sm focus:border-primary outline-none"/>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-secondary mb-1">Patient ID / MRN</label>
+                        <input name="patient_id" type="text" value="PT-84729" required class="w-full rounded-xl border border-outline-variant bg-surface px-3 py-2 text-sm focus:border-primary outline-none font-mono"/>
+                    </div>
+                </div>
+            </div>
+
+            <div class="space-y-3 border-b border-surface-variant pb-4">
+                <h3 class="text-xs font-bold text-primary uppercase tracking-wider">2. Certificate Type & Clinical Details</h3>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs font-bold text-secondary mb-1">Certificate Type</label>
+                        <select name="certificate_type" class="w-full rounded-xl border border-outline-variant bg-surface px-3 py-2 text-sm focus:border-primary outline-none">
+                            <option selected>Sick Leave / Convalescence Certificate</option>
+                            <option>Medical Fitness Certificate</option>
+                            <option>Hospitalization Certificate</option>
+                            <option>Consultation Certificate</option>
+                            <option>Discharge Certificate</option>
+                            <option>Follow-Up Certificate</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-secondary mb-1">Purpose</label>
+                        <select name="purpose" class="w-full rounded-xl border border-outline-variant bg-surface px-3 py-2 text-sm focus:border-primary outline-none">
+                            <option selected>Employment / Workplace Leave</option>
+                            <option>Educational Institution</option>
+                            <option>Insurance Verification</option>
+                            <option>Personal Health Record</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-secondary mb-1">Recommended Rest Period (Days)</label>
+                        <input name="rest_days" type="number" value="14" min="1" max="90" required class="w-full rounded-xl border border-outline-variant bg-surface px-3 py-2 text-sm focus:border-primary outline-none"/>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-secondary mb-1">Clinical Diagnosis</label>
+                        <input name="diagnosis" type="text" value="Congestive Heart Failure (Acute Exacerbation)" required class="w-full rounded-xl border border-outline-variant bg-surface px-3 py-2 text-sm focus:border-primary outline-none"/>
+                    </div>
+                </div>
+            </div>
+
+            <div class="space-y-3">
+                <h3 class="text-xs font-bold text-primary uppercase tracking-wider">3. Attending Physician Authorization</h3>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs font-bold text-secondary mb-1">Authorized Doctor</label>
+                        <input name="doctor_name" type="text" value="Dr. J. Aris, MD" readonly class="w-full rounded-xl border border-outline-variant bg-surface-container-low px-3 py-2 text-sm font-bold text-on-surface"/>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-secondary mb-1">Department</label>
+                        <input name="doctor_specialty" type="text" value="Cardiology" readonly class="w-full rounded-xl border border-outline-variant bg-surface-container-low px-3 py-2 text-sm font-bold text-on-surface"/>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pt-4 flex justify-end gap-3">
+                <a href="/certificates" class="px-4 py-2 border border-outline-variant text-secondary rounded-xl text-xs font-bold hover:bg-surface-container-low">Cancel</a>
+                <button type="submit" class="px-6 py-2 bg-primary text-on-primary rounded-xl font-bold text-xs hover:bg-on-primary-fixed-variant transition-colors shadow-xs flex items-center gap-1.5">
+                    <span class="material-symbols-outlined text-[16px]">verified</span>
+                    Approve & Generate Official Certificate
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,183 @@
+{% extends "base.html" %}
+
+{% block title %}My Digital Health Wallet - Hospital Readmission Predictor{% endblock %}
+{% block header_title %}Digital Health Wallet{% endblock %}
+
+{% block content %}
+<div class="max-w-6xl mx-auto space-y-8 animate-fade-in pb-12">
+    <!-- Header -->
+    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border-b border-surface-variant pb-5">
+        <div>
+            <div class="flex items-center gap-2 mb-1">
+                <span class="px-2.5 py-0.5 rounded-full text-xs font-bold bg-primary/10 text-primary border border-primary/20 flex items-center gap-1">
+                    <span class="material-symbols-outlined text-[14px]">account_balance_wallet</span> 5 Active Health Credentials
+                </span>
+                <span class="text-xs text-secondary font-mono">Holder: {{ profile.full_name }}</span>
+            </div>
+            <h1 class="text-2xl sm:text-3xl font-bold text-on-surface">Digital Health Documents & Passes</h1>
+            <p class="text-sm text-secondary">Verified credentials, appointment passes, and authorized medical certificates.</p>
+        </div>
+
+        <div class="flex items-center gap-3">
+            <a href="/qr/scanner" class="px-4 py-2 rounded-xl bg-primary hover:bg-primary/90 text-on-primary font-semibold text-xs transition-all flex items-center gap-1.5 shadow-sm">
+                <span class="material-symbols-outlined text-[18px]">qr_code_scanner</span>
+                <span>Scan a QR Code</span>
+            </a>
+            <a href="/qr/temporary-share" class="px-4 py-2 rounded-xl bg-surface-container-high hover:bg-surface-container-highest text-on-surface font-semibold text-xs transition-all flex items-center gap-1.5 border border-outline-variant/60 shadow-xs">
+                <span class="material-symbols-outlined text-[18px]">share</span>
+                <span>Create Share Pass</span>
+            </a>
+        </div>
+    </div>
+
+    <!-- Wallet Passes Grid -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        
+        <!-- 1. Digital Health ID Pass -->
+        <div class="bg-gradient-to-br from-[#005bbf] to-[#002f6c] text-white rounded-3xl p-5 shadow-lg flex flex-col justify-between h-[230px] border border-white/20 relative overflow-hidden group">
+            <div class="flex justify-between items-start">
+                <div class="flex items-center gap-2">
+                    <span class="material-symbols-outlined text-2xl text-white">badge</span>
+                    <div>
+                        <h4 class="text-xs font-bold uppercase tracking-wider text-white/80">Digital Health ID</h4>
+                        <p class="text-sm font-extrabold text-white">{{ profile.full_name }}</p>
+                    </div>
+                </div>
+                <span class="px-2 py-0.5 rounded-full bg-white/20 text-[10px] font-bold text-white uppercase">Active</span>
+            </div>
+
+            <div class="text-xs space-y-0.5">
+                <p class="font-mono text-white/90 text-[11px]">{{ profile.health_id }}</p>
+                <p class="text-[10px] text-white/70">Metro General Hospital • Level 3 Verified</p>
+            </div>
+
+            <div class="flex justify-between items-center border-t border-white/15 pt-2">
+                <a href="/health-id" class="text-xs font-bold text-white flex items-center gap-1 hover:underline">
+                    <span>Open 3D ID Card</span>
+                    <span class="material-symbols-outlined text-[14px]">arrow_forward</span>
+                </a>
+                <a href="/verify-id/QRT-EV-HEALTHID-1042" target="_blank" class="p-1.5 bg-white/20 hover:bg-white/30 rounded-lg transition-colors" title="Verify QR">
+                    <span class="material-symbols-outlined text-[16px] text-white">qr_code</span>
+                </a>
+            </div>
+        </div>
+
+        <!-- 2. Appointment Pass -->
+        <div class="bg-gradient-to-br from-[#006a6a] to-[#003737] text-white rounded-3xl p-5 shadow-lg flex flex-col justify-between h-[230px] border border-white/20 relative overflow-hidden group">
+            <div class="flex justify-between items-start">
+                <div class="flex items-center gap-2">
+                    <span class="material-symbols-outlined text-2xl text-white">event</span>
+                    <div>
+                        <h4 class="text-xs font-bold uppercase tracking-wider text-white/80">Appointment Pass</h4>
+                        <p class="text-sm font-extrabold text-white">Dr. J. Aris</p>
+                    </div>
+                </div>
+                <span class="px-2 py-0.5 rounded-full bg-white/20 text-[10px] font-bold text-white uppercase">Sep 02</span>
+            </div>
+
+            <div class="text-xs space-y-0.5">
+                <p class="font-bold text-white text-[11px]">Cardiology Review (10:30 AM)</p>
+                <p class="text-[10px] text-white/70">Cardiology Ward 4B • Post-Discharge 72h</p>
+            </div>
+
+            <div class="flex justify-between items-center border-t border-white/15 pt-2">
+                <a href="/consultation/careai" class="text-xs font-bold text-white flex items-center gap-1 hover:underline">
+                    <span>Join Telemedicine</span>
+                    <span class="material-symbols-outlined text-[14px]">videocam</span>
+                </a>
+                <a href="/verify-appointment/QRT-APT-99214" target="_blank" class="p-1.5 bg-white/20 hover:bg-white/30 rounded-lg transition-colors" title="Verify Pass">
+                    <span class="material-symbols-outlined text-[16px] text-white">qr_code</span>
+                </a>
+            </div>
+        </div>
+
+        <!-- 3. Medical Convalescence Certificate Pass -->
+        <div class="bg-gradient-to-br from-[#53438a] to-[#2c2057] text-white rounded-3xl p-5 shadow-lg flex flex-col justify-between h-[230px] border border-white/20 relative overflow-hidden group">
+            <div class="flex justify-between items-start">
+                <div class="flex items-center gap-2">
+                    <span class="material-symbols-outlined text-2xl text-white">verified</span>
+                    <div>
+                        <h4 class="text-xs font-bold uppercase tracking-wider text-white/80">Medical Certificate</h4>
+                        <p class="text-sm font-extrabold text-white">14-Day Medical Leave</p>
+                    </div>
+                </div>
+                <span class="px-2 py-0.5 rounded-full bg-white/20 text-[10px] font-bold text-white uppercase">Signed</span>
+            </div>
+
+            <div class="text-xs space-y-0.5">
+                <p class="font-mono text-white/90 text-[11px]">CERT-2023-84729</p>
+                <p class="text-[10px] text-white/70">Signed by Dr. J. Aris • Validated</p>
+            </div>
+
+            <div class="flex justify-between items-center border-t border-white/15 pt-2">
+                <a href="/certificates" class="text-xs font-bold text-white flex items-center gap-1 hover:underline">
+                    <span>View Official Certificate</span>
+                    <span class="material-symbols-outlined text-[14px]">description</span>
+                </a>
+                <a href="/verify-certificate/CERT-2023-84729" target="_blank" class="p-1.5 bg-white/20 hover:bg-white/30 rounded-lg transition-colors" title="Verify Certificate">
+                    <span class="material-symbols-outlined text-[16px] text-white">qr_code</span>
+                </a>
+            </div>
+        </div>
+
+        <!-- 4. Temporary Document Share Pass -->
+        <div class="bg-gradient-to-br from-[#854f00] to-[#4a2b00] text-white rounded-3xl p-5 shadow-lg flex flex-col justify-between h-[230px] border border-white/20 relative overflow-hidden group">
+            <div class="flex justify-between items-start">
+                <div class="flex items-center gap-2">
+                    <span class="material-symbols-outlined text-2xl text-white">share</span>
+                    <div>
+                        <h4 class="text-xs font-bold uppercase tracking-wider text-white/80">Temporary Share Pass</h4>
+                        <p class="text-sm font-extrabold text-white">Lab Panel & CBC</p>
+                    </div>
+                </div>
+                <span class="px-2 py-0.5 rounded-full bg-amber-400/30 text-amber-200 text-[10px] font-bold uppercase">24h Expire</span>
+            </div>
+
+            <div class="text-xs space-y-0.5">
+                <p class="text-[11px] font-semibold text-white">Shared with: Consulting Nephrologist</p>
+                <p class="text-[10px] text-white/70">Expires in 18 hours • View Only</p>
+            </div>
+
+            <div class="flex justify-between items-center border-t border-white/15 pt-2">
+                <a href="/qr/temporary-share" class="text-xs font-bold text-white flex items-center gap-1 hover:underline">
+                    <span>Manage Sharing</span>
+                    <span class="material-symbols-outlined text-[14px]">tune</span>
+                </a>
+                <a href="/verify-share/QRT-SHARE-DOC84729" target="_blank" class="p-1.5 bg-white/20 hover:bg-white/30 rounded-lg transition-colors" title="Verify Share">
+                    <span class="material-symbols-outlined text-[16px] text-white">qr_code</span>
+                </a>
+            </div>
+        </div>
+
+        <!-- 5. Doctor Professional Pass -->
+        <div class="bg-gradient-to-br from-[#1b3a4b] to-[#0d1f2d] text-white rounded-3xl p-5 shadow-lg flex flex-col justify-between h-[230px] border border-white/20 relative overflow-hidden group">
+            <div class="flex justify-between items-start">
+                <div class="flex items-center gap-2">
+                    <span class="material-symbols-outlined text-2xl text-white">medical_information</span>
+                    <div>
+                        <h4 class="text-xs font-bold uppercase tracking-wider text-white/80">Physician Pass</h4>
+                        <p class="text-sm font-extrabold text-white">Dr. J. Aris, MD</p>
+                    </div>
+                </div>
+                <span class="px-2 py-0.5 rounded-full bg-cyan-400/20 text-cyan-200 text-[10px] font-bold uppercase">Doctor</span>
+            </div>
+
+            <div class="text-xs space-y-0.5">
+                <p class="text-[11px] font-semibold text-white">Cardiology & Heart Failure</p>
+                <p class="text-[10px] text-white/70">Lic: MD-88219-NY • Metro General</p>
+            </div>
+
+            <div class="flex justify-between items-center border-t border-white/15 pt-2">
+                <a href="/doctor-id" class="text-xs font-bold text-white flex items-center gap-1 hover:underline">
+                    <span>View Doctor Badge</span>
+                    <span class="material-symbols-outlined text-[14px]">arrow_forward</span>
+                </a>
+                <a href="/verify-doctor/QRT-DOC-ARIS-88219" target="_blank" class="p-1.5 bg-white/20 hover:bg-white/30 rounded-lg transition-colors" title="Verify Doctor">
+                    <span class="material-symbols-outlined text-[16px] text-white">qr_code</span>
+                </a>
+            </div>
+        </div>
+
+    </div>
+</div>
+{% endblock %}

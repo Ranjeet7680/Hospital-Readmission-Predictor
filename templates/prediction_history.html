@@ -1,0 +1,192 @@
+{% extends "base.html" %}
+
+{% block title %}Prediction History - Hospital Readmission Predictor{% endblock %}
+{% block header_title %}Prediction History Archive{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto space-y-lg">
+    <!-- Header Section -->
+    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+        <div>
+            <h1 class="text-headline-lg font-headline-lg font-bold text-on-surface">Prediction History</h1>
+            <p class="text-body-lg font-body-lg text-secondary mt-1">Review and manage past patient readmission risk assessments and intervention statuses.</p>
+        </div>
+        <div class="flex items-center gap-3">
+            <a href="/api/history/export" class="flex items-center gap-2 px-4 py-2.5 bg-surface-container-lowest border border-outline-variant rounded-xl text-primary hover:bg-surface-container-low transition-colors shadow-sm font-bold font-label-lg">
+                <span class="material-symbols-outlined text-[18px]">download</span>
+                <span>Export CSV</span>
+            </a>
+            <a href="/prediction/new" class="flex items-center gap-2 px-5 py-2.5 bg-primary text-on-primary rounded-xl font-bold font-label-lg hover:bg-on-primary-fixed-variant transition-colors shadow-md">
+                <span class="material-symbols-outlined text-[18px]">add_circle</span>
+                <span>New Prediction</span>
+            </a>
+        </div>
+    </div>
+
+    <!-- Filters Bar Form -->
+    <form action="/history" method="get" class="bg-surface-container-lowest p-md rounded-2xl border border-outline-variant shadow-sm flex flex-col md:flex-row gap-md items-end">
+        <div class="flex-1 w-full md:w-auto">
+            <label class="block text-label-lg font-label-lg text-secondary mb-1">Search Patient or Clinician</label>
+            <input name="search" value="{{ selected_search or '' }}" placeholder="Search ID or Name..." class="w-full bg-surface border border-outline-variant rounded-xl px-3 py-2.5 text-body-md focus:border-primary outline-none text-on-surface"/>
+        </div>
+
+        <div class="flex-1 w-full md:w-auto">
+            <label class="block text-label-lg font-label-lg text-secondary mb-1">Risk Level</label>
+            <select name="risk_level" class="w-full bg-surface border border-outline-variant rounded-xl px-3 py-2.5 text-body-md focus:border-primary outline-none cursor-pointer">
+                <option value="All Levels" {% if not selected_risk or selected_risk == 'All Levels' %}selected{% endif %}>All Risk Levels</option>
+                <option value="high" {% if selected_risk == 'high' %}selected{% endif %}>High Risk (61-100%)</option>
+                <option value="moderate" {% if selected_risk == 'moderate' %}selected{% endif %}>Moderate Risk (31-60%)</option>
+                <option value="low" {% if selected_risk == 'low' %}selected{% endif %}>Low Risk (0-30%)</option>
+            </select>
+        </div>
+
+        <div class="flex-1 w-full md:w-auto">
+            <label class="block text-label-lg font-label-lg text-secondary mb-1">Department</label>
+            <select name="department" class="w-full bg-surface border border-outline-variant rounded-xl px-3 py-2.5 text-body-md focus:border-primary outline-none cursor-pointer">
+                <option value="All Departments" {% if not selected_dept or selected_dept == 'All Departments' %}selected{% endif %}>All Departments</option>
+                <option value="Cardiology" {% if selected_dept == 'Cardiology' %}selected{% endif %}>Cardiology</option>
+                <option value="Neurology" {% if selected_dept == 'Neurology' %}selected{% endif %}>Neurology</option>
+                <option value="General Surgery" {% if selected_dept == 'General Surgery' %}selected{% endif %}>General Surgery</option>
+                <option value="Internal Medicine" {% if selected_dept == 'Internal Medicine' %}selected{% endif %}>Internal Medicine</option>
+                <option value="Orthopedics" {% if selected_dept == 'Orthopedics' %}selected{% endif %}>Orthopedics</option>
+            </select>
+        </div>
+
+        <button type="submit" class="w-full md:w-auto px-6 py-2.5 bg-primary text-on-primary rounded-xl text-label-lg font-label-lg font-bold hover:bg-surface-tint transition-colors shadow-sm flex items-center justify-center gap-1.5">
+            <span class="material-symbols-outlined text-[18px]">filter_list</span>
+            Apply Filters
+        </button>
+    </form>
+
+    <!-- Data Table Container (Desktop & Tablet) + Mobile Cards -->
+    <div class="bg-surface-container-lowest border border-outline-variant rounded-2xl overflow-hidden shadow-sm">
+        <!-- Desktop / Tablet Contained Scroll Table -->
+        <div class="hidden md:block overflow-x-auto">
+            <table class="w-full text-left border-collapse">
+                <thead>
+                    <tr class="bg-surface-container-low border-b border-outline-variant text-secondary text-xs uppercase tracking-wider font-semibold">
+                        <th class="py-3.5 px-4">Patient ID</th>
+                        <th class="py-3.5 px-4">Patient Name</th>
+                        <th class="py-3.5 px-4">Date / Time</th>
+                        <th class="py-3.5 px-4">Risk Score</th>
+                        <th class="py-3.5 px-4">Risk Level</th>
+                        <th class="py-3.5 px-4">Model Ver.</th>
+                        <th class="py-3.5 px-4">Clinician</th>
+                        <th class="py-3.5 px-4">Department</th>
+                        <th class="py-3.5 px-4">Status</th>
+                        <th class="py-3.5 px-4 text-right">Actions</th>
+                    </tr>
+                </thead>
+                <tbody class="text-body-md divide-y divide-outline-variant/60">
+                    {% for row in predictions %}
+                    <tr class="hover:bg-surface-container-low/60 transition-colors {% if loop.index is odd %}bg-surface-container-lowest{% else %}bg-surface/50{% endif %}">
+                        <td class="py-3.5 px-4 font-bold text-primary">
+                            <a href="/patient/{{ row.patient_id }}" class="hover:underline">{{ row.patient_id }}</a>
+                        </td>
+                        <td class="py-3.5 px-4 font-semibold text-on-surface">{{ row.patient_name }}</td>
+                        <td class="py-3.5 px-4 text-secondary text-xs">{{ row.timestamp }}</td>
+                        <td class="py-3.5 px-4 font-bold text-on-surface text-base">{{ row.risk_score }}%</td>
+                        <td class="py-3.5 px-4">
+                            {% if row.risk_level_code == 'high' %}
+                                <span class="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-error text-on-error text-xs font-bold shadow-xs">
+                                    <span class="material-symbols-outlined text-[14px]">warning</span> High Risk
+                                </span>
+                            {% elif row.risk_level_code == 'moderate' %}
+                                <span class="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-amber-100 text-amber-800 border border-amber-200 text-xs font-bold">
+                                    <span class="material-symbols-outlined text-[14px]">info</span> Moderate
+                                </span>
+                            {% else %}
+                                <span class="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-green-100 text-green-800 border border-green-200 text-xs font-bold">
+                                    <span class="material-symbols-outlined text-[14px]">check_circle</span> Low Risk
+                                </span>
+                            {% endif %}
+                        </td>
+                        <td class="py-3.5 px-4 text-secondary font-mono text-xs">{{ row.model_version }}</td>
+                        <td class="py-3.5 px-4 text-on-surface-variant text-sm">{{ row.clinician }}</td>
+                        <td class="py-3.5 px-4 text-on-surface-variant text-sm">{{ row.department }}</td>
+                        <td class="py-3.5 px-4">
+                            <span class="px-2.5 py-0.5 rounded-full text-xs font-medium bg-surface-container-high text-on-surface-variant">
+                                {{ row.status }}
+                            </span>
+                        </td>
+                        <td class="py-3.5 px-4 text-right">
+                            <a href="/prediction/{{ row.id }}" class="text-primary hover:text-primary-container font-bold text-sm hover:underline">
+                                View Assessment
+                            </a>
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="10" class="py-8 text-center text-secondary">
+                            <span class="material-symbols-outlined text-4xl mb-2 text-outline-variant">search_off</span>
+                            <p>No prediction records match the selected filter criteria.</p>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Mobile Card List View (< 768px) -->
+        <div class="md:hidden divide-y divide-surface-variant/60 p-2 space-y-2">
+            {% for row in predictions %}
+            <div class="p-3 bg-surface-container-low rounded-xl border border-outline-variant/60 space-y-2 text-xs">
+                <div class="flex justify-between items-start">
+                    <div>
+                        <a href="/patient/{{ row.patient_id }}" class="font-bold text-sm text-primary hover:underline block">{{ row.patient_name }}</a>
+                        <span class="text-secondary font-mono text-[11px]">{{ row.patient_id }} • {{ row.department }}</span>
+                    </div>
+                    {% if row.risk_level_code == 'high' %}
+                        <span class="px-2 py-0.5 rounded-full bg-error text-white font-bold text-[10px]">
+                            {{ row.risk_score }}% High
+                        </span>
+                    {% elif row.risk_level_code == 'moderate' %}
+                        <span class="px-2 py-0.5 rounded-full bg-amber-100 text-amber-800 font-bold text-[10px]">
+                            {{ row.risk_score }}% Moderate
+                        </span>
+                    {% else %}
+                        <span class="px-2 py-0.5 rounded-full bg-green-100 text-green-800 font-bold text-[10px]">
+                            {{ row.risk_score }}% Low
+                        </span>
+                    {% endif %}
+                </div>
+
+                <div class="flex justify-between text-[11px] text-secondary border-t border-surface-container-high pt-1.5">
+                    <span>Clinician: <strong class="text-on-surface">{{ row.clinician }}</strong></span>
+                    <span>{{ row.timestamp }}</span>
+                </div>
+
+                <div class="pt-1 flex justify-end">
+                    <a href="/prediction/{{ row.id }}" class="px-3 py-1.5 bg-primary text-white font-bold rounded-lg text-xs flex items-center gap-1 shadow-xs">
+                        <span>View Assessment</span>
+                        <span class="material-symbols-outlined text-[14px]">arrow_forward</span>
+                    </a>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+
+        <!-- Pagination -->
+        <div class="px-4 py-3.5 border-t border-outline-variant bg-surface-container-lowest flex items-center justify-between">
+            <div>
+                <p class="text-sm text-secondary">
+                    Showing <span class="font-bold text-on-surface">1</span> to <span class="font-bold text-on-surface">{{ predictions|length }}</span> of <span class="font-bold text-on-surface">{{ total_count }}</span> assessments
+                </p>
+            </div>
+            <div>
+                <nav class="inline-flex rounded-lg shadow-sm -space-x-px" aria-label="Pagination">
+                    <a href="#" class="inline-flex items-center px-3 py-1.5 rounded-l-lg border border-outline-variant bg-surface text-sm font-medium text-secondary hover:bg-surface-container-low">
+                        <span class="material-symbols-outlined text-[18px]">chevron_left</span>
+                    </a>
+                    <a href="#" class="inline-flex items-center px-3.5 py-1.5 border border-outline-variant bg-primary text-on-primary text-sm font-bold">1</a>
+                    <a href="#" class="inline-flex items-center px-3.5 py-1.5 border border-outline-variant bg-surface text-secondary hover:bg-surface-container-low text-sm font-medium">2</a>
+                    <a href="#" class="inline-flex items-center px-3.5 py-1.5 border border-outline-variant bg-surface text-secondary hover:bg-surface-container-low text-sm font-medium">3</a>
+                    <a href="#" class="inline-flex items-center px-3 py-1.5 rounded-r-lg border border-outline-variant bg-surface text-sm font-medium text-secondary hover:bg-surface-container-low">
+                        <span class="material-symbols-outlined text-[18px]">chevron_right</span>
+                    </a>
+                </nav>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

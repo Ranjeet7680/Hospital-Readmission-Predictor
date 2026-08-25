@@ -1,0 +1,127 @@
+{% extends "base.html" %}
+
+{% block title %}Patient Portal - Eleanor Vance - Hospital Readmission Predictor{% endblock %}
+{% block header_title %}My Health Record & Portal{% endblock %}
+
+{% block content %}
+<div class="max-w-6xl mx-auto space-y-6">
+    <!-- Header -->
+    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-surface-container-lowest p-6 rounded-2xl border border-outline-variant shadow-xs">
+        <div class="flex items-center gap-4">
+            <div class="w-16 h-16 rounded-full bg-primary-fixed text-primary flex items-center justify-center text-xl font-bold">
+                EV
+            </div>
+            <div>
+                <div class="flex items-center gap-2 mb-1">
+                    <h1 class="text-xl font-bold text-on-surface">Eleanor Vance</h1>
+                    <span class="text-xs px-2.5 py-0.5 rounded-full bg-surface-variant font-mono">#PT-84729</span>
+                </div>
+                <p class="text-xs text-secondary">Cardiology Department • Attending Physician: <strong>Dr. J. Aris, MD</strong></p>
+            </div>
+        </div>
+
+        <div class="flex items-center gap-3">
+            <a href="/consultation/careai" class="px-4 py-2 bg-primary text-on-primary font-bold text-xs rounded-xl hover:bg-on-primary-fixed-variant transition-colors shadow-xs flex items-center gap-1.5">
+                <span class="material-symbols-outlined text-[16px]">videocam</span>
+                Join Video Consultation
+            </a>
+            <a href="/certificates" class="px-4 py-2 border border-outline-variant text-secondary hover:text-on-surface font-bold text-xs rounded-xl hover:bg-surface-container-low transition-colors flex items-center gap-1.5">
+                <span class="material-symbols-outlined text-[16px]">verified</span>
+                My Certificates
+            </a>
+        </div>
+    </div>
+
+    <!-- 3 Quick Summary Cards -->
+    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        <!-- 1. 30d Risk Assessment -->
+        <div class="p-5 bg-surface-container-lowest border border-outline-variant rounded-2xl shadow-xs">
+            <div class="flex justify-between items-start mb-2">
+                <span class="text-xs font-bold text-secondary uppercase">30-Day Readmission Risk</span>
+                <span class="px-2 py-0.5 rounded-full bg-error text-on-error text-[10px] font-bold">High Risk</span>
+            </div>
+            <p class="text-3xl font-bold text-error">68%</p>
+            <p class="text-xs text-secondary mt-1">Care plan scheduled with 72h PCP follow-up</p>
+        </div>
+
+        <!-- 2. Next Appointment -->
+        <div class="p-5 bg-surface-container-lowest border border-outline-variant rounded-2xl shadow-xs">
+            <div class="flex justify-between items-start mb-2">
+                <span class="text-xs font-bold text-secondary uppercase">Next Follow-Up</span>
+                <span class="material-symbols-outlined text-primary text-[18px]">calendar_today</span>
+            </div>
+            <p class="text-lg font-bold text-on-surface">Tomorrow, 10:30 AM</p>
+            <p class="text-xs text-secondary mt-1">Tele-health Cardiology Review with Dr. Aris</p>
+        </div>
+
+        <!-- 3. Active Prescriptions -->
+        <div class="p-5 bg-surface-container-lowest border border-outline-variant rounded-2xl shadow-xs">
+            <div class="flex justify-between items-start mb-2">
+                <span class="text-xs font-bold text-secondary uppercase">Active Prescriptions</span>
+                <span class="material-symbols-outlined text-primary text-[18px]">pill</span>
+            </div>
+            <p class="text-lg font-bold text-on-surface">8 Medications</p>
+            <p class="text-xs text-secondary mt-1">Furosemide, Metoprolol, Lisinopril, Metformin</p>
+        </div>
+    </div>
+
+    <!-- Health Timeline & Documents -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <!-- Care Timeline -->
+        <div class="p-6 bg-surface-container-lowest border border-outline-variant rounded-2xl shadow-xs space-y-4">
+            <h3 class="text-base font-bold text-on-surface flex items-center gap-2">
+                <span class="material-symbols-outlined text-primary text-[20px]">timeline</span>
+                Recent Care Timeline
+            </h3>
+            <div class="space-y-4 text-xs">
+                <div class="p-3 bg-surface rounded-xl border border-outline-variant">
+                    <span class="font-bold text-primary">Today, 09:30 AM</span>
+                    <p class="font-bold text-on-surface mt-0.5">30-Day Readmission Risk Evaluated (68%)</p>
+                    <p class="text-secondary mt-0.5">AI model flagged elevated creatinine and prior 30-day admission.</p>
+                </div>
+                <div class="p-3 bg-surface rounded-xl border border-outline-variant">
+                    <span class="font-bold text-secondary">Oct 24, 2023</span>
+                    <p class="font-bold text-on-surface mt-0.5">Medication Adjusted</p>
+                    <p class="text-secondary mt-0.5">Furosemide adjusted to 40mg daily by Cardiology team.</p>
+                </div>
+                <div class="p-3 bg-surface rounded-xl border border-outline-variant">
+                    <span class="font-bold text-secondary">Oct 24, 2023</span>
+                    <p class="font-bold text-on-surface mt-0.5">Medical Certificate Issued</p>
+                    <p class="text-secondary mt-0.5">14-day convalescence sick leave certificate signed by Dr. Aris.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- My Health Reports -->
+        <div class="p-6 bg-surface-container-lowest border border-outline-variant rounded-2xl shadow-xs space-y-4">
+            <div class="flex justify-between items-center">
+                <h3 class="text-base font-bold text-on-surface flex items-center gap-2">
+                    <span class="material-symbols-outlined text-primary text-[20px]">description</span>
+                    My Medical Documents
+                </h3>
+                <a href="/documents" class="text-xs text-primary font-bold hover:underline">View All</a>
+            </div>
+            <div class="space-y-3 text-xs">
+                <div class="p-3 bg-surface rounded-xl border border-outline-variant flex justify-between items-center">
+                    <div>
+                        <span class="font-bold text-on-surface">Comprehensive Metabolic & CBC Panel</span>
+                        <p class="text-secondary">Lab Report • Oct 24, 2023</p>
+                    </div>
+                    <a href="/documents/analyze/DOC-84729-LAB" class="px-3 py-1.5 bg-primary/10 text-primary font-bold rounded-lg hover:bg-primary hover:text-on-primary transition-colors">
+                        View Analysis
+                    </a>
+                </div>
+                <div class="p-3 bg-surface rounded-xl border border-outline-variant flex justify-between items-center">
+                    <div>
+                        <span class="font-bold text-on-surface">Sick Leave Convalescence Certificate</span>
+                        <p class="text-secondary">Medical Certificate • Oct 24, 2023</p>
+                    </div>
+                    <a href="/certificates/CERT-2023-84729" class="px-3 py-1.5 bg-primary/10 text-primary font-bold rounded-lg hover:bg-primary hover:text-on-primary transition-colors">
+                        View Certificate
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

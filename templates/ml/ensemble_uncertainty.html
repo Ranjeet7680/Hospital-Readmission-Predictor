@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+
+{% block title %}Ensemble Prediction & Model Uncertainty - Hospital Readmission Predictor{% endblock %}
+{% block header_title %}Weighted Ensemble & Model Uncertainty Analysis{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto space-y-6">
+    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+        <div>
+            <h1 class="text-2xl font-bold text-on-surface" data-i18n="ensemble_uncertainty">Weighted Ensemble & Model Uncertainty</h1>
+            <p class="text-sm text-secondary">Blends XGBoost (50%), Random Forest (30%), and PyTorch ANN (20%) with multi-model agreement & epistemic uncertainty scores.</p>
+        </div>
+    </div>
+
+    <!-- Ensemble Risk & Uncertainty Cards -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <!-- 1. Ensemble Blended Risk Score -->
+        <div class="p-6 bg-surface-container-lowest border border-outline-variant rounded-2xl shadow-xs text-center space-y-2">
+            <span class="text-xs font-bold text-secondary uppercase">Weighted Ensemble Risk Score</span>
+            <p class="text-5xl font-bold text-error">{{ ensemble.ensemble_risk_pct }}%</p>
+            <span class="px-2.5 py-0.5 rounded-full bg-error text-on-error font-bold text-xs">High Readmission Risk</span>
+        </div>
+
+        <!-- 2. Model Agreement Indicator -->
+        <div class="p-6 bg-surface-container-lowest border border-outline-variant rounded-2xl shadow-xs text-center space-y-2">
+            <span class="text-xs font-bold text-secondary uppercase">Prediction Agreement</span>
+            <p class="text-2xl font-bold text-[#146c2e]">{{ ensemble.agreement_indicator }}</p>
+            <p class="text-xs text-secondary">Models exhibit tightly correlated risk trajectory estimations.</p>
+        </div>
+
+        <!-- 3. Model Uncertainty Indicator -->
+        <div class="p-6 bg-surface-container-lowest border border-outline-variant rounded-2xl shadow-xs text-center space-y-2">
+            <span class="text-xs font-bold text-secondary uppercase">Model Uncertainty (Epistemic)</span>
+            <p class="text-2xl font-bold" style="color: {{ ensemble.uncertainty_color }}">{{ ensemble.uncertainty_level }}</p>
+            <p class="text-xs text-secondary">Ensemble Standard Deviation: <span class="font-mono font-bold">{{ ensemble.uncertainty_std }}</span></p>
+        </div>
+    </div>
+
+    <!-- Individual Model Weights Breakdown -->
+    <div class="p-6 bg-surface-container-lowest border border-outline-variant rounded-2xl shadow-xs space-y-4">
+        <h3 class="font-bold text-on-surface text-sm border-b border-surface-variant pb-2">Constituent Model Probability Predictions</h3>
+        <div class="space-y-4 text-xs">
+            {% for key, item in ensemble.individual_predictions.items() %}
+            <div class="p-3.5 bg-surface rounded-xl border border-outline-variant flex justify-between items-center">
+                <div>
+                    <span class="font-bold text-on-surface text-sm">{{ item.name }}</span>
+                    <span class="text-secondary ml-2">(Weight: {{ (item.weight * 100)|int }}%)</span>
+                </div>
+                <div class="flex items-center gap-3">
+                    <div class="w-32 h-2.5 bg-surface-container-high rounded-full overflow-hidden">
+                        <div class="bg-primary h-full" style="width: {{ item.prob_pct }}%;"></div>
+                    </div>
+                    <span class="font-bold text-error font-mono text-sm w-12 text-right">{{ item.prob_pct }}%</span>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        <p class="text-[11px] text-secondary italic pt-2">{{ ensemble.disclaimer }}</p>
+    </div>
+</div>
+{% endblock %}

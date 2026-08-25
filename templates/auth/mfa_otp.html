@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+
+{% block title %}Verify Identity (MFA) - Hospital Readmission Predictor{% endblock %}
+
+{% block full_content %}
+<div class="min-h-screen bg-surface flex flex-col justify-center items-center p-4 font-body-md">
+    <div class="w-full max-w-md bg-surface-container-lowest border border-outline-variant p-8 rounded-2xl shadow-md">
+        <div class="text-center mb-6">
+            <div class="w-12 h-12 rounded-full bg-primary-fixed text-primary flex items-center justify-center mx-auto mb-3">
+                <span class="material-symbols-outlined text-2xl">pin</span>
+            </div>
+            <h2 class="text-2xl font-bold text-on-surface mb-1" data-i18n="verify_identity">Verify Your Identity</h2>
+            <p class="text-xs text-secondary">We sent a 6-digit verification security code to your registered contact.</p>
+            <span class="inline-block mt-2 px-3 py-1 bg-surface-container text-primary font-mono text-xs rounded-full font-bold">Demo OTP: 742891</span>
+        </div>
+
+        <form action="/dashboard" method="get" class="space-y-4" onsubmit="verifyOtp(event)">
+            <div>
+                <label class="block text-xs font-bold text-secondary mb-2 text-center uppercase tracking-wider">6-Digit Security Code</label>
+                <div class="flex justify-center gap-2">
+                    <input id="otp-input" type="text" maxlength="6" value="742891" class="w-48 text-center tracking-[0.5em] text-2xl font-bold py-2 border-2 border-primary rounded-xl bg-surface focus:outline-none focus:ring-2 focus:ring-primary font-mono" required/>
+                </div>
+            </div>
+
+            <div class="text-center text-xs text-secondary py-1">
+                <span>Resend code available in: </span>
+                <span id="countdown" class="font-bold text-primary">00:45</span>
+            </div>
+
+            <button type="submit" class="w-full py-3 bg-primary text-on-primary font-bold rounded-xl hover:bg-on-primary-fixed-variant transition-colors shadow-md text-sm flex items-center justify-center gap-2">
+                <span class="material-symbols-outlined text-[18px]">verified_user</span>
+                Verify & Proceed to Dashboard
+            </button>
+        </form>
+
+        <div class="mt-6 pt-4 border-t border-surface-variant flex justify-between items-center text-xs">
+            <button onclick="resendCode()" class="text-primary font-bold hover:underline">Resend Code</button>
+            <a href="/login" class="text-secondary hover:text-on-surface">Use Another Method</a>
+        </div>
+    </div>
+</div>
+
+<script>
+    let timer = 45;
+    const interval = setInterval(() => {
+        timer--;
+        const countEl = document.getElementById('countdown');
+        if (countEl) {
+            countEl.textContent = `00:${timer < 10 ? '0' : ''}${timer}`;
+        }
+        if (timer <= 0) clearInterval(interval);
+    }, 1000);
+
+    function resendCode() {
+        window.soundEngine?.message();
+        alert('A new 6-digit OTP code (742891) has been sent to your registered contact.');
+    }
+
+    function verifyOtp(e) {
+        e.preventDefault();
+        const code = document.getElementById('otp-input').value;
+        if (code === '742891') {
+            window.soundEngine?.success();
+            window.location.href = '/dashboard';
+        } else {
+            window.soundEngine?.error();
+            alert('Invalid OTP code. Please enter 742891');
+        }
+    }
+</script>
+{% endblock %}

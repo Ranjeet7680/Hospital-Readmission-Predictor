@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+
+{% block title %}Model & Data Drift Monitoring - Hospital Readmission Predictor{% endblock %}
+{% block header_title %}Production Model & Data Drift Monitoring{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto space-y-6">
+    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+        <div>
+            <h1 class="text-2xl font-bold text-on-surface" data-i18n="model_monitoring">Production Drift Monitoring & Health</h1>
+            <p class="text-sm text-secondary">Kolmogorov-Smirnov statistical tests, Population Stability Index (PSI), and automated retraining triggers.</p>
+        </div>
+    </div>
+
+    <!-- Health Indicators -->
+    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        <div class="p-5 bg-surface-container-lowest border border-outline-variant rounded-2xl shadow-xs">
+            <span class="text-xs font-bold text-secondary uppercase">Data Drift Status (KS Test)</span>
+            <p class="text-xl font-bold mt-1" style="color: {{ monitor.data_drift_color }}">{{ monitor.data_drift_status }}</p>
+            <span class="text-[11px] text-secondary">No significant covariate shift</span>
+        </div>
+
+        <div class="p-5 bg-surface-container-lowest border border-outline-variant rounded-2xl shadow-xs">
+            <span class="text-xs font-bold text-secondary uppercase">Model Concept Drift (PSI)</span>
+            <p class="text-xl font-bold mt-1" style="color: {{ monitor.model_drift_color }}">{{ monitor.model_drift_status }}</p>
+            <span class="text-[11px] text-secondary">Output risk distribution is stable</span>
+        </div>
+
+        <div class="p-5 bg-surface-container-lowest border border-outline-variant rounded-2xl shadow-xs">
+            <span class="text-xs font-bold text-secondary uppercase">Automated Retraining Alert</span>
+            <p class="text-xl font-bold text-[#146c2e] mt-1">Normal (Not Triggered)</p>
+            <span class="text-[11px] text-secondary">{{ monitor.retraining_recommendation.action }}</span>
+        </div>
+    </div>
+
+    <!-- Feature Level Drift Table -->
+    <div class="bg-surface-container-lowest border border-outline-variant rounded-2xl overflow-hidden shadow-xs">
+        <div class="p-4 border-b border-surface-variant flex justify-between items-center">
+            <h3 class="font-bold text-on-surface text-sm">Feature-Level Population Stability Index (PSI)</h3>
+            <span class="text-xs text-secondary">Threshold: PSI &lt; 0.10 is stable</span>
+        </div>
+        <div class="overflow-x-auto">
+            <table class="w-full text-left text-xs">
+                <thead class="bg-surface-container-low border-b border-outline-variant text-secondary uppercase font-semibold">
+                    <tr>
+                        <th class="py-3 px-4">Monitored Feature</th>
+                        <th class="py-3 px-4">Calculated PSI</th>
+                        <th class="py-3 px-4">Drift Classification</th>
+                        <th class="py-3 px-4">Status Action</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-surface-variant">
+                    {% for item in monitor.feature_drifts %}
+                    <tr class="hover:bg-surface-container-low transition-colors">
+                        <td class="py-3.5 px-4 font-mono font-bold text-on-surface">{{ item.feature }}</td>
+                        <td class="py-3.5 px-4 font-mono font-bold">{{ item.psi }}</td>
+                        <td class="py-3.5 px-4 font-semibold" style="color: {{ item.color }}">{{ item.drift }}</td>
+                        <td class="py-3.5 px-4">
+                            <span class="px-2.5 py-0.5 rounded-full bg-green-100 text-[#146c2e] font-bold text-[10px]">Pass (Within Bounds)</span>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

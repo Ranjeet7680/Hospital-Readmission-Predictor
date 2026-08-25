@@ -1,0 +1,83 @@
+{% extends "base.html" %}
+
+{% block title %}Patient Registration - Hospital Readmission Predictor{% endblock %}
+
+{% block full_content %}
+<div class="min-h-screen bg-surface-container-low flex flex-col justify-center items-center p-4 font-body-md py-12">
+    <div class="w-full max-w-xl bg-surface-container-lowest border border-outline-variant p-8 rounded-2xl shadow-md">
+        <div class="text-center mb-6">
+            <div class="w-12 h-12 rounded-full bg-primary-fixed text-primary flex items-center justify-center mx-auto mb-3">
+                <span class="material-symbols-outlined text-2xl">person_add</span>
+            </div>
+            <h2 class="text-2xl font-bold text-on-surface mb-1">Patient Registration</h2>
+            <p class="text-xs text-secondary">Create a personal healthcare account to track readmission risks, follow-ups, and reports.</p>
+        </div>
+
+        <form action="/portal/patient" method="get" class="space-y-4" onsubmit="window.soundEngine?.success();">
+            <!-- Step 1: Basic Information -->
+            <div class="space-y-3 border-b border-surface-variant pb-4">
+                <h3 class="text-xs font-bold text-primary uppercase tracking-wider">1. Basic Information</h3>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs font-bold text-secondary mb-1">Full Legal Name</label>
+                        <input type="text" value="Eleanor Vance" required class="w-full rounded-xl border border-outline-variant bg-surface px-3 py-2 text-sm focus:border-primary outline-none"/>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-secondary mb-1">Date of Birth</label>
+                        <input type="date" value="1952-10-14" required class="w-full rounded-xl border border-outline-variant bg-surface px-3 py-2 text-sm focus:border-primary outline-none"/>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-secondary mb-1">Gender</label>
+                        <select class="w-full rounded-xl border border-outline-variant bg-surface px-3 py-2 text-sm focus:border-primary outline-none">
+                            <option selected>Female</option>
+                            <option>Male</option>
+                            <option>Other</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-secondary mb-1">Contact Phone</label>
+                        <input type="tel" value="+1 (555) 847-2901" required class="w-full rounded-xl border border-outline-variant bg-surface px-3 py-2 text-sm focus:border-primary outline-none"/>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Step 2: Account Credentials -->
+            <div class="space-y-3 border-b border-surface-variant pb-4">
+                <h3 class="text-xs font-bold text-primary uppercase tracking-wider">2. Account Credentials</h3>
+                <div>
+                    <label class="block text-xs font-bold text-secondary mb-1">Email Address</label>
+                    <input type="email" value="eleanor.vance@patient.org" required class="w-full rounded-xl border border-outline-variant bg-surface px-3 py-2 text-sm focus:border-primary outline-none"/>
+                </div>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs font-bold text-secondary mb-1">Password</label>
+                        <input type="password" value="Patient@2026!" required class="w-full rounded-xl border border-outline-variant bg-surface px-3 py-2 text-sm focus:border-primary outline-none"/>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-secondary mb-1">Confirm Password</label>
+                        <input type="password" value="Patient@2026!" required class="w-full rounded-xl border border-outline-variant bg-surface px-3 py-2 text-sm focus:border-primary outline-none"/>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Step 3: Consent -->
+            <div class="space-y-2 pt-1">
+                <h3 class="text-xs font-bold text-primary uppercase tracking-wider">3. Consent & Data Usage</h3>
+                <label class="flex items-start gap-2 text-xs text-secondary cursor-pointer">
+                    <input type="checkbox" checked required class="mt-0.5 rounded text-primary focus:ring-primary"/>
+                    <span>I consent to the processing of clinical health records and predictive readmission intelligence in accordance with the Privacy Policy and HIPAA regulations.</span>
+                </label>
+            </div>
+
+            <button type="submit" class="w-full py-3 bg-primary text-on-primary font-bold rounded-xl hover:bg-on-primary-fixed-variant transition-colors shadow-md text-sm flex items-center justify-center gap-2 mt-4">
+                <span class="material-symbols-outlined text-[18px]">check_circle</span>
+                Complete Registration & Open Portal
+            </button>
+        </form>
+
+        <div class="mt-6 pt-4 border-t border-surface-variant text-center text-xs text-secondary">
+            Already registered? <a href="/login" class="text-primary font-bold hover:underline">Sign In here</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

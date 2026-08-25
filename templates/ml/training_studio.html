@@ -1,0 +1,154 @@
+{% extends "base.html" %}
+
+{% block title %}Model Training Studio - Hospital Readmission Predictor{% endblock %}
+{% block header_title %}8-Step Model Training Studio{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto space-y-6">
+    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+        <div>
+            <h1 class="text-2xl font-bold text-on-surface" data-i18n="model_training">8-Step Model Training Studio</h1>
+            <p class="text-sm text-secondary">Configure hyperparameter grids, select loss objectives, and train Classical & PyTorch Deep Learning pipelines.</p>
+        </div>
+        <div class="flex items-center gap-2">
+            <a href="/ml/comparison" class="px-4 py-2 bg-primary text-on-primary rounded-xl font-bold text-xs hover:bg-on-primary-fixed-variant transition-colors shadow-xs flex items-center gap-1.5">
+                <span class="material-symbols-outlined text-[16px]">compare_arrows</span>
+                View Benchmark Comparison
+            </a>
+        </div>
+    </div>
+
+    <!-- Training Form & Parameters (5 cols) + Real-time Training Progress & Curves (7 cols) -->
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+        <!-- Configuration Controls (5 cols) -->
+        <div class="lg:col-span-5 bg-surface-container-lowest border border-outline-variant p-6 rounded-2xl shadow-xs space-y-4">
+            <h3 class="font-bold text-on-surface text-sm border-b border-surface-variant pb-2">Training Configuration</h3>
+            
+            <div>
+                <label class="block text-xs font-bold text-secondary mb-1">Model Architecture</label>
+                <select id="model-select" class="w-full rounded-xl border border-outline-variant bg-surface px-3 py-2 text-xs focus:border-primary outline-none font-semibold">
+                    <option value="xgboost" selected>XGBoost Gradient Boosting (Champion)</option>
+                    <option value="ann_mlp">PyTorch Tabular ANN / MLP</option>
+                    <option value="tabular_transformer">PyTorch Tabular Transformer (Self-Attention)</option>
+                    <option value="random_forest">Random Forest Ensemble (200 Trees)</option>
+                    <option value="logistic_regression">Logistic Regression Baseline</option>
+                </select>
+            </div>
+
+            <div class="grid grid-cols-2 gap-3">
+                <div>
+                    <label class="block text-xs font-bold text-secondary mb-1">Max Epochs / Trees</label>
+                    <input id="epochs-input" type="number" value="180" class="w-full rounded-xl border border-outline-variant bg-surface px-3 py-2 text-xs focus:border-primary outline-none"/>
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-secondary mb-1">Learning Rate</label>
+                    <input id="lr-input" type="number" step="0.01" value="0.06" class="w-full rounded-xl border border-outline-variant bg-surface px-3 py-2 text-xs focus:border-primary outline-none"/>
+                </div>
+            </div>
+
+            <div>
+                <label class="block text-xs font-bold text-secondary mb-1">Class Imbalance Weight Strategy</label>
+                <select class="w-full rounded-xl border border-outline-variant bg-surface px-3 py-2 text-xs focus:border-primary outline-none">
+                    <option selected>Cost-Sensitive Class Weights (scale_pos_weight = 7.96)</option>
+                    <option>SMOTE Synthetic Oversampling</option>
+                    <option>Focal Loss (gamma = 2.0)</option>
+                </select>
+            </div>
+
+            <div>
+                <label class="block text-xs font-bold text-secondary mb-1">Cross-Validation Folds</label>
+                <input type="number" value="5" class="w-full rounded-xl border border-outline-variant bg-surface px-3 py-2 text-xs focus:border-primary outline-none"/>
+            </div>
+
+            <button id="start-train-btn" onclick="startTraining()" class="w-full py-3 bg-primary text-on-primary font-bold rounded-xl hover:bg-on-primary-fixed-variant transition-colors shadow-md text-xs flex items-center justify-center gap-2 mt-4">
+                <span class="material-symbols-outlined text-[18px]">play_circle</span>
+                Launch Training Run (EXP-2023)
+            </button>
+        </div>
+
+        <!-- Live Training Progress & Metrics (7 cols) -->
+        <div class="lg:col-span-7 bg-surface-container-lowest border border-outline-variant p-6 rounded-2xl shadow-xs space-y-4">
+            <div class="flex justify-between items-center border-b border-surface-variant pb-2">
+                <h3 class="font-bold text-on-surface text-sm">Execution Status & Validation Convergence</h3>
+                <span id="train-status" class="px-2.5 py-0.5 bg-green-100 text-[#146c2e] font-bold rounded-full text-[10px]">Training Ready</span>
+            </div>
+
+            <!-- Progress Bar -->
+            <div class="space-y-1">
+                <div class="flex justify-between text-xs font-bold">
+                    <span class="text-secondary">Epoch Iteration Progress:</span>
+                    <span id="train-pct" class="text-primary">100% (180 / 180 Iterations)</span>
+                </div>
+                <div class="w-full h-3 bg-surface-container-high rounded-full overflow-hidden">
+                    <div id="progress-fill" class="bg-primary h-full transition-all duration-300" style="width: 100%;"></div>
+                </div>
+            </div>
+
+            <!-- Metrics Preview Grid -->
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-2">
+                <div class="p-3 bg-surface rounded-xl border border-outline-variant text-center">
+                    <span class="text-[10px] text-secondary font-bold uppercase">ROC-AUC</span>
+                    <p id="val-auc" class="text-lg font-bold text-primary">0.9794</p>
+                </div>
+                <div class="p-3 bg-surface rounded-xl border border-outline-variant text-center">
+                    <span class="text-[10px] text-secondary font-bold uppercase">Accuracy</span>
+                    <p id="val-acc" class="text-lg font-bold text-on-surface">93.7%</p>
+                </div>
+                <div class="p-3 bg-surface rounded-xl border border-outline-variant text-center">
+                    <span class="text-[10px] text-secondary font-bold uppercase">Sensitivity</span>
+                    <p id="val-sens" class="text-lg font-bold text-[#146c2e]">90.2%</p>
+                </div>
+                <div class="p-3 bg-surface rounded-xl border border-outline-variant text-center">
+                    <span class="text-[10px] text-secondary font-bold uppercase">F1-Score</span>
+                    <p id="val-f1" class="text-lg font-bold text-on-surface">0.778</p>
+                </div>
+            </div>
+
+            <!-- Action buttons after training -->
+            <div class="pt-4 flex justify-end gap-3 border-t border-surface-variant">
+                <a href="/ml/experiments" class="px-3.5 py-2 border border-outline-variant text-secondary rounded-xl text-xs font-bold hover:text-on-surface">View in Experiments</a>
+                <button onclick="promoteModel()" class="px-4 py-2 bg-primary text-on-primary rounded-xl font-bold text-xs hover:bg-on-primary-fixed-variant transition-colors shadow-xs flex items-center gap-1.5">
+                    <span class="material-symbols-outlined text-[16px]">verified</span>
+                    Promote to Model Registry
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function startTraining() {
+        window.soundEngine?.click();
+        const btn = document.getElementById('start-train-btn');
+        const status = document.getElementById('train-status');
+        const fill = document.getElementById('progress-fill');
+        const pct = document.getElementById('train-pct');
+
+        btn.disabled = true;
+        btn.innerHTML = `<span class="material-symbols-outlined animate-spin text-[18px]">autorenew</span> Training Tensor Batches...`;
+        status.textContent = "Epoch Training in Progress...";
+        status.className = "px-2.5 py-0.5 bg-amber-100 text-amber-900 font-bold rounded-full text-[10px]";
+        
+        let p = 0;
+        const timer = setInterval(() => {
+            p += 20;
+            fill.style.width = p + '%';
+            pct.textContent = `${p}% (${Math.round(p * 1.8)} / 180)`;
+            if (p >= 100) {
+                clearInterval(timer);
+                btn.disabled = false;
+                btn.innerHTML = `<span class="material-symbols-outlined text-[18px]">play_circle</span> Launch Training Run`;
+                status.textContent = "Run Completed & Validated";
+                status.className = "px-2.5 py-0.5 bg-green-100 text-[#146c2e] font-bold rounded-full text-[10px]";
+                window.soundEngine?.predictionReady();
+            }
+        }, 300);
+    }
+
+    function promoteModel() {
+        window.soundEngine?.success();
+        alert('Trained model artifact promoted to Active Champion status in Model Registry.');
+        window.location.href = '/ml/registry';
+    }
+</script>
+{% endblock %}

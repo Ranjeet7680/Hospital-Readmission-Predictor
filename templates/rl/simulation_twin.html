@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+
+{% block title %}Digital Twin & Counterfactual Simulation - Hospital Readmission Predictor{% endblock %}
+{% block header_title %}Digital Twin & Counterfactual What-If Simulator{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto space-y-6">
+    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+        <div>
+            <h1 class="text-2xl font-bold text-on-surface" data-i18n="digital_twin_sim">Digital Twin & What-If Simulation</h1>
+            <p class="text-sm text-secondary">Counterfactual simulation exploring risk trajectories under different post-discharge intervention policies for Eleanor Vance (PT-84729).</p>
+        </div>
+    </div>
+
+    <!-- 3 Simulated Scenarios Cards -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <!-- Scenario A -->
+        <div class="p-6 bg-surface-container-lowest border border-outline-variant rounded-2xl shadow-xs space-y-3">
+            <span class="px-2.5 py-0.5 bg-surface-variant text-secondary font-bold text-xs rounded-full">Scenario A</span>
+            <h3 class="font-bold text-on-surface text-base">{{ sim.scenario_a.name }}</h3>
+            <div class="p-4 bg-surface rounded-xl border border-outline-variant space-y-1">
+                <span class="text-[10px] text-secondary font-bold uppercase">Simulated 30d Risk</span>
+                <p class="text-3xl font-bold text-error">{{ sim.scenario_a.final_simulated_risk }}</p>
+                <p class="text-xs text-secondary">Intervention Cost: {{ sim.scenario_a.cost }}</p>
+            </div>
+            <p class="text-xs text-error font-semibold">{{ sim.scenario_a.simulated_outcome }}</p>
+        </div>
+
+        <!-- Scenario B -->
+        <div class="p-6 bg-surface-container-lowest border border-outline-variant rounded-2xl shadow-xs space-y-3">
+            <span class="px-2.5 py-0.5 bg-primary-fixed text-primary font-bold text-xs rounded-full">Scenario B</span>
+            <h3 class="font-bold text-on-surface text-base">{{ sim.scenario_b.name }}</h3>
+            <div class="p-4 bg-surface rounded-xl border border-outline-variant space-y-1">
+                <span class="text-[10px] text-secondary font-bold uppercase">Simulated 30d Risk</span>
+                <p class="text-3xl font-bold text-amber-600">{{ sim.scenario_b.final_simulated_risk }}</p>
+                <p class="text-xs text-secondary">Intervention Cost: {{ sim.scenario_b.cost }}</p>
+            </div>
+            <p class="text-xs text-secondary font-semibold">{{ sim.scenario_b.simulated_outcome }}</p>
+        </div>
+
+        <!-- Scenario C: PPO Optimized -->
+        <div class="p-6 bg-surface-container-lowest border-2 border-primary rounded-2xl shadow-md space-y-3 relative overflow-hidden">
+            <div class="absolute top-0 right-0 bg-primary text-on-primary text-[10px] font-bold px-3 py-1 rounded-bl-xl">
+                RL Optimal
+            </div>
+            <span class="px-2.5 py-0.5 bg-green-100 text-[#146c2e] font-bold text-xs rounded-full">Scenario C (PPO RL)</span>
+            <h3 class="font-bold text-on-surface text-base">{{ sim.scenario_c.name }}</h3>
+            <div class="p-4 bg-surface rounded-xl border border-primary/30 space-y-1">
+                <span class="text-[10px] text-primary font-bold uppercase">Simulated 30d Risk</span>
+                <p class="text-3xl font-bold text-[#146c2e]">{{ sim.scenario_c.final_simulated_risk }}</p>
+                <p class="text-xs text-secondary">Intervention Cost: {{ sim.scenario_c.cost }}</p>
+            </div>
+            <p class="text-xs text-[#146c2e] font-bold">{{ sim.scenario_c.simulated_outcome }}</p>
+        </div>
+    </div>
+
+    <!-- Safety Disclaimer -->
+    <div class="p-4 bg-surface-container-lowest border border-outline-variant rounded-2xl shadow-xs text-xs text-secondary text-center italic">
+        {{ sim.disclaimer }}
+    </div>
+</div>
+{% endblock %}

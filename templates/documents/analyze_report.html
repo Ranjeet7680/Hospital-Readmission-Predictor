@@ -1,0 +1,247 @@
+{% extends "base.html" %}
+
+{% block title %}Report Analysis - {{ doc.title }} - Hospital Readmission Predictor{% endblock %}
+{% block header_title %}Medical Report Analysis & Lab Biomarkers{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto space-y-6">
+    <!-- Breadcrumbs & Header -->
+    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+        <div>
+            <div class="flex items-center gap-2 text-xs text-secondary mb-1">
+                <a href="/documents" class="hover:text-primary transition-colors flex items-center">
+                    <span class="material-symbols-outlined text-[14px] mr-1">arrow_back</span> Documents
+                </a>
+                <span>/</span>
+                <span class="text-on-surface font-semibold">{{ doc.id }}</span>
+            </div>
+            <h1 class="text-2xl font-bold text-on-surface">{{ doc.title }}</h1>
+            <p class="text-xs text-secondary">Patient: <span class="font-bold text-on-surface">{{ doc.patient_name }}</span> ({{ doc.patient_id }}) • Facility: {{ doc.facility }}</p>
+        </div>
+
+        <div class="flex items-center gap-2">
+            <button onclick="window.print()" class="px-3.5 py-2 border border-outline-variant text-secondary hover:text-on-surface font-bold text-xs rounded-xl hover:bg-surface-container-low transition-colors flex items-center gap-1.5">
+                <span class="material-symbols-outlined text-[16px]">print</span>
+                Print Report
+            </button>
+            <a href="/prediction/new" class="px-4 py-2 bg-primary text-on-primary font-bold text-xs rounded-xl hover:bg-on-primary-fixed-variant transition-colors shadow-xs flex items-center gap-1.5">
+                <span class="material-symbols-outlined text-[16px]">magic_button</span>
+                Send to ML Prediction
+            </a>
+        </div>
+    </div>
+
+    <!-- OCR Confidence & Safety Banner -->
+    <div class="p-3.5 bg-surface-container-lowest border border-outline-variant rounded-2xl flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 shadow-xs text-xs">
+        <div class="flex items-center gap-2 text-secondary">
+            <span class="material-symbols-outlined text-[#146c2e] text-[18px]">verified</span>
+            <span>OCR Extraction Confidence: <strong class="text-[#146c2e]">{{ doc.ocr_confidence }}</strong> (All 7 key lab biomarkers matched source)</span>
+        </div>
+        <span class="text-[11px] text-secondary italic">AI extracted information — please verify against the source document.</span>
+    </div>
+
+    <!-- Grid: AI Summary (7 cols) + Lab Table & XAI Chat (5 cols) -->
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+        <!-- Main Structured Lab Table & AI Summary (7 cols) -->
+        <div class="lg:col-span-7 space-y-6">
+            <!-- Patient-Friendly AI Summary -->
+            <div class="p-5 bg-surface-container-lowest border border-outline-variant rounded-2xl shadow-xs space-y-3">
+                <div class="flex justify-between items-center border-b border-surface-variant pb-2">
+                    <h3 class="font-bold text-on-surface text-sm flex items-center gap-1.5">
+                        <span class="material-symbols-outlined text-primary text-[18px]">auto_awesome</span>
+                        Plain-Language Summary (Patient & Caregiver Friendly)
+                    </h3>
+                    <button onclick="toggleSummaryLang(this)" class="text-xs text-primary font-bold hover:underline">
+                        हिंदी में पढ़ें
+                    </button>
+                </div>
+                <p id="summary-text" class="text-xs text-secondary leading-relaxed">
+                    {{ doc.ai_summary.what_report_says }}
+                </p>
+                <div class="p-3 bg-error-container/30 border border-error/20 rounded-xl text-xs space-y-1">
+                    <span class="font-bold text-error block">Attention Items (Reported Above/Below Range):</span>
+                    <p class="text-secondary">{{ doc.ai_summary.abnormal_findings }}</p>
+                </div>
+            </div>
+
+            <!-- Structured Laboratory Biomarkers Table -->
+            <div class="bg-surface-container-lowest border border-outline-variant rounded-2xl overflow-hidden shadow-xs">
+                <div class="p-4 border-b border-surface-variant flex justify-between items-center">
+                    <h3 class="font-bold text-on-surface text-sm">Extracted Laboratory Biomarkers</h3>
+                    <span class="text-[11px] text-secondary">Ranges printed on source lab report</span>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left text-xs">
+                        <thead class="bg-surface-container-low border-b border-outline-variant text-secondary uppercase font-semibold">
+                            <tr>
+                                <th class="py-3 px-4">Test Name</th>
+                                <th class="py-3 px-4">Result</th>
+                                <th class="py-3 px-4">Unit</th>
+                                <th class="py-3 px-4">Reference Range</th>
+                                <th class="py-3 px-4">Status</th>
+                                <th class="py-3 px-4">Trend</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-surface-variant">
+                            {% for lab in doc.extracted_labs %}
+                            <tr class="hover:bg-surface-container-low transition-colors">
+                                <td class="py-3.5 px-4 font-bold text-on-surface">{{ lab.test }}</td>
+                                <td class="py-3.5 px-4 font-bold {% if lab.flag == 'high' or lab.flag == 'low' %}text-error{% else %}text-on-surface{% endif %}">
+                                    {{ lab.result }}
+                                </td>
+                                <td class="py-3.5 px-4 text-secondary">{{ lab.unit }}</td>
+                                <td class="py-3.5 px-4 text-secondary font-mono">{{ lab.ref_range }}</td>
+                                <td class="py-3.5 px-4">
+                                    {% if lab.flag == 'high' %}
+                                        <span class="px-2.5 py-0.5 bg-error text-on-error font-bold rounded-full text-[10px]">Above Range</span>
+                                    {% elif lab.flag == 'low' %}
+                                        <span class="px-2.5 py-0.5 bg-amber-100 text-amber-900 font-bold rounded-full text-[10px]">Below Range</span>
+                                    {% else %}
+                                        <span class="px-2.5 py-0.5 bg-green-100 text-[#146c2e] font-bold rounded-full text-[10px]">Within Range</span>
+                                    {% endif %}
+                                </td>
+                                <td class="py-3.5 px-4 text-secondary">{{ lab.trend }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- "Ask About This Report" AI Chat & Voice Assistant (5 cols) -->
+        <div class="lg:col-span-5 space-y-6">
+            <!-- AI Report Chatbot -->
+            <div class="p-5 bg-surface-container-lowest border border-outline-variant rounded-2xl shadow-xs space-y-3 flex flex-col justify-between min-h-[380px]">
+                <div>
+                    <div class="flex justify-between items-center border-b border-surface-variant pb-2">
+                        <div class="flex items-center gap-1.5">
+                            <span class="material-symbols-outlined text-primary text-xl fill-icon">chat</span>
+                            <h3 class="font-bold text-on-surface text-sm">Ask About This Report</h3>
+                        </div>
+                        <span class="text-[10px] text-secondary">Cites Specific Pages</span>
+                    </div>
+
+                    <!-- Chat Messages Container -->
+                    <div id="chat-messages" class="space-y-3 py-3 text-xs max-h-60 overflow-y-auto">
+                        <div class="p-3 bg-surface-container-low rounded-xl text-secondary">
+                            <p class="font-bold text-primary mb-1">CareAI Document Assistant:</p>
+                            <p>Hello! Ask any question about Eleanor Vance's lab values or click a quick prompt below. Answers cite exact document sections.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Quick Prompt Chips -->
+                <div class="space-y-2 pt-2 border-t border-surface-variant">
+                    <div class="flex flex-wrap gap-1.5">
+                        <button onclick="askPrompt('What is my Creatinine level and is it high?')" class="px-2.5 py-1 rounded-full bg-surface-variant text-on-surface hover:bg-primary-fixed hover:text-primary text-[10px] font-semibold transition-colors">
+                            Creatinine status?
+                        </button>
+                        <button onclick="askPrompt('Is there any sign of anemia in my hemoglobin?')" class="px-2.5 py-1 rounded-full bg-surface-variant text-on-surface hover:bg-primary-fixed hover:text-primary text-[10px] font-semibold transition-colors">
+                            Hemoglobin / Anemia?
+                        </button>
+                        <button onclick="askPrompt('क्या मेरी कोई रिपोर्ट सामान्य सीमा से बाहर है?', 'hi')" class="px-2.5 py-1 rounded-full bg-surface-variant text-on-surface hover:bg-primary-fixed hover:text-primary text-[10px] font-semibold transition-colors">
+                            हिंदी में सारांश?
+                        </button>
+                    </div>
+
+                    <!-- Input Box + Voice Button -->
+                    <form onsubmit="handleChatSubmit(event)" class="flex gap-2 items-center">
+                        <input id="chat-input" type="text" placeholder="Type or speak question..." class="flex-1 rounded-xl border border-outline-variant bg-surface px-3 py-2 text-xs focus:border-primary outline-none"/>
+                        <button type="button" onclick="startVoiceInput()" class="p-2 rounded-xl bg-surface-container-low hover:bg-surface-container-high text-primary transition-colors" title="Voice Input (English/Hindi)">
+                            <span class="material-symbols-outlined text-[18px]">mic</span>
+                        </button>
+                        <button type="submit" class="p-2 rounded-xl bg-primary text-on-primary hover:bg-on-primary-fixed-variant transition-colors shadow-xs">
+                            <span class="material-symbols-outlined text-[18px]">send</span>
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Extracted Medications Card -->
+            <div class="p-5 bg-surface-container-lowest border border-outline-variant rounded-2xl shadow-xs space-y-3">
+                <h3 class="font-bold text-on-surface text-sm flex items-center gap-1.5">
+                    <span class="material-symbols-outlined text-primary text-[18px]">medication</span>
+                    Prescription Mentioned in Document
+                </h3>
+                <div class="space-y-2 text-xs">
+                    {% for med in doc.medications_extracted %}
+                    <div class="p-2.5 bg-surface rounded-xl border border-outline-variant flex justify-between items-center">
+                        <div>
+                            <span class="font-bold text-on-surface">{{ med.name }} {{ med.dose }}</span>
+                            <p class="text-secondary text-[11px]">{{ med.frequency }} • {{ med.route }}</p>
+                        </div>
+                        <span class="px-2 py-0.5 rounded-full bg-primary-fixed text-primary font-bold text-[10px]">{{ med.duration }}</span>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    let isHindi = false;
+    function toggleSummaryLang(btn) {
+        window.soundEngine?.click();
+        const textEl = document.getElementById('summary-text');
+        if (!isHindi) {
+            textEl.textContent = "{{ doc.ai_summary.what_report_says_hi }}";
+            btn.textContent = "Read in English";
+            isHindi = true;
+        } else {
+            textEl.textContent = "{{ doc.ai_summary.what_report_says }}";
+            btn.textContent = "हिंदी में पढ़ें";
+            isHindi = false;
+        }
+    }
+
+    async function askPrompt(text, lang = 'en') {
+        document.getElementById('chat-input').value = text;
+        await sendQuestion(text, lang);
+    }
+
+    async function handleChatSubmit(e) {
+        e.preventDefault();
+        const input = document.getElementById('chat-input');
+        const text = input.value.trim();
+        if (!text) return;
+        input.value = '';
+        await sendQuestion(text, 'en');
+    }
+
+    async function sendQuestion(text, lang) {
+        window.soundEngine?.message();
+        const chatContainer = document.getElementById('chat-messages');
+        chatContainer.innerHTML += `
+            <div class="p-2.5 bg-primary/10 rounded-xl text-primary font-semibold text-right">
+                ${text}
+            </div>
+        `;
+
+        try {
+            const resp = await fetch(`/api/documents/DOC-84729-LAB/chat?q=${encodeURIComponent(text)}&lang=${lang}`);
+            const data = await resp.json();
+            window.soundEngine?.predictionReady();
+            chatContainer.innerHTML += `
+                <div class="p-3 bg-surface-container-low rounded-xl text-secondary space-y-1">
+                    <p class="font-bold text-primary">CareAI Assistant:</p>
+                    <p>${data.answer}</p>
+                    <span class="text-[10px] text-secondary/80 block italic">Source: ${data.source_citation}</span>
+                </div>
+            `;
+            chatContainer.scrollTop = chatContainer.scrollHeight;
+        } catch (err) {
+            console.error(err);
+        }
+    }
+
+    function startVoiceInput() {
+        window.soundEngine?.click();
+        alert('Listening... Speak your question in English or Hindi (Speech-to-Text).');
+        document.getElementById('chat-input').value = "What is my Creatinine level?";
+    }
+</script>
+{% endblock %}

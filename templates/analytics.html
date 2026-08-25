@@ -1,0 +1,145 @@
+{% extends "base.html" %}
+
+{% block title %}Clinical Analytics - Hospital Readmission Predictor{% endblock %}
+{% block header_title %}Population Analytics & Clinical Trends{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto space-y-lg">
+    <!-- Header -->
+    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+        <div>
+            <h1 class="text-headline-lg font-headline-lg font-bold text-on-surface">Population Clinical Analytics</h1>
+            <p class="text-body-lg text-secondary mt-1">Cross-sectional study of readmission risk distributions, comorbidity impacts, and intervention efficacy.</p>
+        </div>
+        <button onclick="window.print()" class="flex items-center gap-2 px-4 py-2.5 bg-surface-container-lowest border border-outline-variant rounded-xl text-primary hover:bg-surface-container-low transition-colors shadow-sm font-bold font-label-lg">
+            <span class="material-symbols-outlined text-[18px]">print</span>
+            <span>Export Analytics Report</span>
+        </button>
+    </div>
+
+    <!-- Analytics KPI Cards -->
+    <div class="grid grid-cols-1 sm:grid-cols-3 gap-md">
+        <div class="p-lg bg-surface-container-lowest border border-outline-variant rounded-2xl shadow-sm">
+            <span class="text-xs font-bold text-secondary uppercase tracking-wider">30-Day Readmission Rate</span>
+            <div class="flex items-baseline gap-2 mt-1">
+                <span class="text-3xl font-bold text-on-surface">12.2%</span>
+                <span class="text-xs font-semibold text-[#146c2e]">-3.4% vs last quarter</span>
+            </div>
+            <p class="text-xs text-secondary mt-2">National benchmark: 14.8% (Heart Failure & Acute Inpatients)</p>
+        </div>
+
+        <div class="p-lg bg-surface-container-lowest border border-outline-variant rounded-2xl shadow-sm">
+            <span class="text-xs font-bold text-secondary uppercase tracking-wider">High Risk Follow-up Scheduled</span>
+            <div class="flex items-baseline gap-2 mt-1">
+                <span class="text-3xl font-bold text-primary">94.8%</span>
+                <span class="text-xs font-semibold text-primary">+8.1% compliance</span>
+            </div>
+            <p class="text-xs text-secondary mt-2">Target &gt;90% within 72 hours of hospital discharge</p>
+        </div>
+
+        <div class="p-lg bg-surface-container-lowest border border-outline-variant rounded-2xl shadow-sm">
+            <span class="text-xs font-bold text-secondary uppercase tracking-wider">Care Transition Cost Avoidance</span>
+            <div class="flex items-baseline gap-2 mt-1">
+                <span class="text-3xl font-bold text-[#146c2e]">$1.42M</span>
+                <span class="text-xs font-semibold text-secondary">Annualized estimate</span>
+            </div>
+            <p class="text-xs text-secondary mt-2">Estimated through avoided preventable CMS penalties</p>
+        </div>
+    </div>
+
+    <!-- Charts Grid -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-lg">
+        <!-- Chart 1: Department Risk Comparison -->
+        <div class="bg-surface-container-lowest border border-outline-variant rounded-2xl p-lg shadow-sm space-y-4">
+            <h3 class="text-title-lg font-bold text-on-surface flex items-center gap-2">
+                <span class="material-symbols-outlined text-primary">domain</span>
+                Readmission Risk Rate by Clinical Department
+            </h3>
+            
+            <div class="space-y-3 pt-2">
+                <div>
+                    <div class="flex justify-between text-xs font-bold mb-1">
+                        <span class="text-on-surface">Cardiology (Congestive Heart Failure, AMI)</span>
+                        <span class="text-error">21.4% (Highest)</span>
+                    </div>
+                    <div class="w-full h-3 bg-surface-variant rounded-full overflow-hidden">
+                        <div class="h-full bg-error rounded-full w-[85%]"></div>
+                    </div>
+                </div>
+
+                <div>
+                    <div class="flex justify-between text-xs font-bold mb-1">
+                        <span class="text-on-surface">Internal Medicine (Multi-morbidity, CKD)</span>
+                        <span class="text-error">15.9%</span>
+                    </div>
+                    <div class="w-full h-3 bg-surface-variant rounded-full overflow-hidden">
+                        <div class="h-full bg-error rounded-full w-[64%]"></div>
+                    </div>
+                </div>
+
+                <div>
+                    <div class="flex justify-between text-xs font-bold mb-1">
+                        <span class="text-on-surface">Neurology (Stroke, TIA)</span>
+                        <span class="text-[#b36b00]">11.8%</span>
+                    </div>
+                    <div class="w-full h-3 bg-surface-variant rounded-full overflow-hidden">
+                        <div class="h-full bg-[#b36b00] rounded-full w-[47%]"></div>
+                    </div>
+                </div>
+
+                <div>
+                    <div class="flex justify-between text-xs font-bold mb-1">
+                        <span class="text-on-surface">General Surgery (Post-op complications)</span>
+                        <span class="text-[#146c2e]">6.2%</span>
+                    </div>
+                    <div class="w-full h-3 bg-surface-variant rounded-full overflow-hidden">
+                        <div class="h-full bg-[#146c2e] rounded-full w-[25%]"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Chart 2: Top Comorbidity Risk Multipliers -->
+        <div class="bg-surface-container-lowest border border-outline-variant rounded-2xl p-lg shadow-sm space-y-4">
+            <h3 class="text-title-lg font-bold text-on-surface flex items-center gap-2">
+                <span class="material-symbols-outlined text-primary">analytics</span>
+                Comorbidity Risk Odds Ratios (Odds vs Baseline)
+            </h3>
+
+            <div class="space-y-3 pt-2">
+                <div class="p-3 bg-surface rounded-xl border border-outline-variant flex justify-between items-center">
+                    <div>
+                        <span class="font-bold text-sm text-on-surface">Prior Admission (&lt;90 days)</span>
+                        <span class="block text-xs text-secondary">Strongest independent statistical predictor</span>
+                    </div>
+                    <span class="px-3 py-1 bg-error-container text-error rounded-full font-bold text-sm">3.8x Odds</span>
+                </div>
+
+                <div class="p-3 bg-surface rounded-xl border border-outline-variant flex justify-between items-center">
+                    <div>
+                        <span class="font-bold text-sm text-on-surface">Chronic Kidney Disease (Creatinine &gt;1.5)</span>
+                        <span class="block text-xs text-secondary">Renal impairment with polypharmacy</span>
+                    </div>
+                    <span class="px-3 py-1 bg-amber-100 text-amber-900 rounded-full font-bold text-sm">2.4x Odds</span>
+                </div>
+
+                <div class="p-3 bg-surface rounded-xl border border-outline-variant flex justify-between items-center">
+                    <div>
+                        <span class="font-bold text-sm text-on-surface">Congestive Heart Failure</span>
+                        <span class="block text-xs text-secondary">Fluid overload and compliance vulnerability</span>
+                    </div>
+                    <span class="px-3 py-1 bg-amber-100 text-amber-900 rounded-full font-bold text-sm">2.1x Odds</span>
+                </div>
+
+                <div class="p-3 bg-surface rounded-xl border border-outline-variant flex justify-between items-center">
+                    <div>
+                        <span class="font-bold text-sm text-on-surface">Type 2 Diabetes (Uncontrolled HbA1c &gt;8%)</span>
+                        <span class="block text-xs text-secondary">Metabolic instability</span>
+                    </div>
+                    <span class="px-3 py-1 bg-surface-container-high text-on-surface-variant rounded-full font-bold text-sm">1.6x Odds</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

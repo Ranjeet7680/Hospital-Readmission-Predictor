@@ -1,0 +1,26 @@
+/* Additional clinical styling for HRP Clinical */
+
+@keyframes pulseGlow {
+    0%, 100% { transform: scale(1); opacity: 0.9; }
+    50% { transform: scale(1.05); opacity: 1; }
+}
+
+.pulse-high-risk {
+    animation: pulseGlow 2s infinite ease-in-out;
+}
+
+.gauge-ring {
+    transform-origin: center;
+    transition: stroke-dashoffset 1.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@media print {
+    nav, header, button, .no-print {
+        display: none !important;
+    }
+    body, main {
+        background: white !important;
+        color: black !important;
+        padding: 0 !important;
+    }
+}

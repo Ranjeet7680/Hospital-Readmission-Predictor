@@ -1,0 +1,139 @@
+{% extends "base.html" %}
+
+{% block title %}Temporary Document Sharing - Hospital Readmission Predictor{% endblock %}
+{% block header_title %}Secure Time-Limited Sharing{% endblock %}
+
+{% block content %}
+<div class="max-w-5xl mx-auto space-y-8 animate-fade-in pb-12">
+    <!-- Header -->
+    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border-b border-surface-variant pb-5">
+        <div>
+            <div class="flex items-center gap-2 mb-1">
+                <span class="px-2.5 py-0.5 rounded-full text-xs font-bold bg-amber-500/10 text-amber-800 border border-amber-500/20 flex items-center gap-1">
+                    <span class="material-symbols-outlined text-[14px]">timer</span> Time-Limited Access
+                </span>
+                <span class="text-xs text-secondary font-mono">Owner: {{ profile.full_name }}</span>
+            </div>
+            <h1 class="text-2xl sm:text-3xl font-bold text-on-surface">Temporary Document & Record Sharing</h1>
+            <p class="text-sm text-secondary">Generate secure, auto-expiring QR access passes for consulting physicians or family members.</p>
+        </div>
+
+        <div class="flex items-center gap-3">
+            <a href="/wallet" class="px-4 py-2 rounded-xl bg-surface-container-high hover:bg-surface-container-highest text-on-surface font-semibold text-xs transition-all flex items-center gap-1.5 border border-outline-variant/60 shadow-xs">
+                <span class="material-symbols-outlined text-[18px]">account_balance_wallet</span>
+                <span>My Digital Wallet</span>
+            </a>
+        </div>
+    </div>
+
+    <!-- Create Share & Active Passes Grid -->
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+        
+        <!-- Create Temporary Share Form (Span 5) -->
+        <div class="lg:col-span-5 bg-surface-container-lowest border border-outline-variant rounded-3xl p-6 shadow-sm space-y-4">
+            <div class="flex items-center gap-2.5 border-b border-surface-variant pb-3">
+                <span class="material-symbols-outlined text-primary text-xl">share_location</span>
+                <h3 class="text-base font-bold text-on-surface">Create New Share Pass</h3>
+            </div>
+
+            <form action="/qr/temporary-share" method="post" class="space-y-4 text-xs">
+                <!-- Select Resource -->
+                <div class="space-y-1.5">
+                    <label class="font-bold text-secondary">Select Document / Record</label>
+                    <select name="document_id" class="w-full bg-surface-container-low border border-outline-variant rounded-xl p-2.5 text-on-surface font-medium outline-none focus:border-primary">
+                        <option value="DOC-84729-LAB">Comprehensive Metabolic Panel & CBC (Lab Report)</option>
+                        <option value="PRED-PT-84729">30-Day Readmission Risk Summary (68% High Risk)</option>
+                        <option value="CERT-2023-84729">14-Day Medical Convalescence Certificate</option>
+                        <option value="HEALTH-PROFILE-SUMMARY">Basic Patient Profile & Care Contacts</option>
+                    </select>
+                </div>
+
+                <!-- Recipient Label -->
+                <div class="space-y-1.5">
+                    <label class="font-bold text-secondary">Recipient / Organization</label>
+                    <input name="recipient" type="text" placeholder="e.g. Dr. Miller (Cardiologist) or Employer" required class="w-full bg-surface-container-low border border-outline-variant rounded-xl p-2.5 text-on-surface font-medium outline-none focus:border-primary"/>
+                </div>
+
+                <!-- Expiration Window -->
+                <div class="space-y-1.5">
+                    <label class="font-bold text-secondary">Access Expiration Duration</label>
+                    <div class="grid grid-cols-3 gap-2">
+                        <label class="p-2.5 bg-surface-container-low border border-outline-variant rounded-xl text-center cursor-pointer hover:bg-surface-container-high transition-colors font-semibold">
+                            <input type="radio" name="duration_hours" value="1" class="mr-1"> 1 Hour
+                        </label>
+                        <label class="p-2.5 bg-surface-container-low border border-primary text-primary rounded-xl text-center cursor-pointer font-bold">
+                            <input type="radio" name="duration_hours" value="24" checked class="mr-1"> 24 Hours
+                        </label>
+                        <label class="p-2.5 bg-surface-container-low border border-outline-variant rounded-xl text-center cursor-pointer hover:bg-surface-container-high transition-colors font-semibold">
+                            <input type="radio" name="duration_hours" value="168" class="mr-1"> 7 Days
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Permissions Checkbox -->
+                <div class="space-y-2 pt-1 border-t border-surface-variant">
+                    <label class="flex items-center gap-2 cursor-pointer">
+                        <input type="checkbox" name="allow_download" value="true" class="rounded text-primary focus:ring-primary"/>
+                        <span class="text-secondary font-medium">Allow recipient to download raw PDF file</span>
+                    </label>
+                </div>
+
+                <button type="submit" class="w-full py-3 rounded-xl bg-primary hover:bg-primary/90 text-on-primary font-bold text-xs shadow-sm flex items-center justify-center gap-1.5 transition-all">
+                    <span class="material-symbols-outlined text-[18px]">key</span>
+                    <span>Generate Time-Limited QR Pass</span>
+                </button>
+            </form>
+        </div>
+
+        <!-- Active Shared Passes Table (Span 7) -->
+        <div class="lg:col-span-7 bg-surface-container-lowest border border-outline-variant rounded-3xl p-6 shadow-sm space-y-4">
+            <div class="flex items-center justify-between border-b border-surface-variant pb-3">
+                <div class="flex items-center gap-2">
+                    <span class="material-symbols-outlined text-secondary text-xl">history_toggle_off</span>
+                    <h3 class="text-base font-bold text-on-surface">Active Temporary Passes</h3>
+                </div>
+                <span class="text-xs text-secondary font-mono">Active Tokens: {{ active_shares|length }}</span>
+            </div>
+
+            <div class="space-y-3">
+                {% for pass_item in active_shares %}
+                <div class="p-4 rounded-2xl bg-surface-container-low border border-outline-variant/60 space-y-2 text-xs">
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <span class="px-2 py-0.5 rounded-full bg-amber-500/10 text-amber-800 font-bold text-[10px] uppercase border border-amber-500/20">
+                                Expires in {{ pass_item.metadata.duration_hours or 24 }} Hours
+                            </span>
+                            <h4 class="text-sm font-bold text-on-surface mt-1">{{ pass_item.subject_name }}</h4>
+                            <p class="text-secondary text-[11px]">Recipient: <strong class="text-on-surface">{{ pass_item.metadata.recipient or pass_item.metadata.recipient_label }}</strong></p>
+                        </div>
+
+                        <span class="px-2 py-0.5 rounded-full bg-green-100 text-green-800 text-[10px] font-bold">
+                            {{ pass_item.status }}
+                        </span>
+                    </div>
+
+                    <div class="flex justify-between items-center text-[10px] text-secondary border-t border-surface-container-high pt-2">
+                        <span class="font-mono">Token: {{ pass_item.token_id }}</span>
+                        
+                        <div class="flex items-center gap-2">
+                            <a href="/verify-share/{{ pass_item.token_id }}" target="_blank" class="text-primary font-bold hover:underline flex items-center gap-0.5">
+                                <span>Preview Link</span>
+                                <span class="material-symbols-outlined text-[12px]">open_in_new</span>
+                            </a>
+                            <span>•</span>
+                            <form action="/qr/revoke-share" method="post" class="inline">
+                                <input type="hidden" name="token_id" value="{{ pass_item.token_id }}"/>
+                                <button type="submit" onclick="return confirm('Revoke this share pass immediately? Recipient access will be revoked.')" class="text-error font-bold hover:underline">
+                                    Revoke
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+
+    </div>
+</div>
+{% endblock %}

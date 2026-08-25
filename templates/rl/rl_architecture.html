@@ -1,0 +1,98 @@
+{% extends "base.html" %}
+
+{% block title %}8-Layer AI Stack Architecture - Hospital Readmission Predictor{% endblock %}
+{% block header_title %}8-Layer Healthcare AI & Intelligence Architecture{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto space-y-6">
+    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+        <div>
+            <h1 class="text-2xl font-bold text-on-surface" data-i18n="stack_architecture">8-Layer Unified AI Stack Architecture</h1>
+            <p class="text-sm text-secondary">Complete architectural pipeline from Raw EHR Data ingestion to Clinician Action and Post-Discharge Monitoring.</p>
+        </div>
+    </div>
+
+    <!-- 8 Layers Vertical Stack Cards -->
+    <div class="space-y-3">
+        <!-- Layer 1 -->
+        <div class="p-4 bg-surface-container-lowest border border-outline-variant rounded-2xl shadow-xs flex items-center gap-4">
+            <span class="w-8 h-8 rounded-full bg-primary-fixed text-primary font-bold text-xs flex items-center justify-center shrink-0">L1</span>
+            <div class="flex-1">
+                <h3 class="font-bold text-on-surface text-sm">Layer 1: Clinical Ingestion & OCR Data Gateway</h3>
+                <p class="text-xs text-secondary">EHR ingestion of Diabetes 130k cohort, Lab Reports, Prescriptions, OCR extraction with confidence scoring.</p>
+            </div>
+            <span class="px-2.5 py-0.5 bg-surface-variant text-secondary font-semibold text-[10px] rounded-full">Data Layer</span>
+        </div>
+
+        <!-- Layer 2 -->
+        <div class="p-4 bg-surface-container-lowest border border-outline-variant rounded-2xl shadow-xs flex items-center gap-4">
+            <span class="w-8 h-8 rounded-full bg-primary-fixed text-primary font-bold text-xs flex items-center justify-center shrink-0">L2</span>
+            <div class="flex-1">
+                <h3 class="font-bold text-on-surface text-sm">Layer 2: 10-Stage Visual Preprocessing & Feature Engineering</h3>
+                <p class="text-xs text-secondary">Missingness imputation, outlier clipping, one-hot ICD-9 encoding, StandardScaler normalization, SMOTE balancing.</p>
+            </div>
+            <span class="px-2.5 py-0.5 bg-surface-variant text-secondary font-semibold text-[10px] rounded-full">Pipeline</span>
+        </div>
+
+        <!-- Layer 3 -->
+        <div class="p-4 bg-surface-container-lowest border border-outline-variant rounded-2xl shadow-xs flex items-center gap-4">
+            <span class="w-8 h-8 rounded-full bg-primary-fixed text-primary font-bold text-xs flex items-center justify-center shrink-0">L3</span>
+            <div class="flex-1">
+                <h3 class="font-bold text-on-surface text-sm">Layer 3: Classical ML & PyTorch Deep Learning Models</h3>
+                <p class="text-xs text-secondary">XGBoost (ROC-AUC 0.9794), Random Forest, Tabular Transformers, PyTorch ANN, Patient Autoencoders.</p>
+            </div>
+            <span class="px-2.5 py-0.5 bg-primary-fixed text-primary font-bold text-[10px] rounded-full">Predictive AI</span>
+        </div>
+
+        <!-- Layer 4 -->
+        <div class="p-4 bg-surface-container-lowest border border-outline-variant rounded-2xl shadow-xs flex items-center gap-4">
+            <span class="w-8 h-8 rounded-full bg-primary-fixed text-primary font-bold text-xs flex items-center justify-center shrink-0">L4</span>
+            <div class="flex-1">
+                <h3 class="font-bold text-on-surface text-sm">Layer 4: Explainable AI (SHAP Waterfall) & Patient Embeddings</h3>
+                <p class="text-xs text-secondary">TreeSHAP local feature attribution decomposing risk shift, 2D PCA patient population clustering.</p>
+            </div>
+            <span class="px-2.5 py-0.5 bg-surface-variant text-secondary font-semibold text-[10px] rounded-full">XAI</span>
+        </div>
+
+        <!-- Layer 5 -->
+        <div class="p-4 bg-surface-container-lowest border border-outline-variant rounded-2xl shadow-xs flex items-center gap-4">
+            <span class="w-8 h-8 rounded-full bg-primary-fixed text-primary font-bold text-xs flex items-center justify-center shrink-0">L5</span>
+            <div class="flex-1">
+                <h3 class="font-bold text-on-surface text-sm">Layer 5: Reinforcement Learning & Care Pathway Optimizer</h3>
+                <p class="text-xs text-secondary">PPO & Double DQN policy optimization across 6-stage Markov care environment ($t_0 \to t_5$).</p>
+            </div>
+            <span class="px-2.5 py-0.5 bg-primary-fixed text-primary font-bold text-[10px] rounded-full">RL Intelligence</span>
+        </div>
+
+        <!-- Layer 6 -->
+        <div class="p-4 bg-surface-container-lowest border border-outline-variant rounded-2xl shadow-xs flex items-center gap-4">
+            <span class="w-8 h-8 rounded-full bg-primary-fixed text-primary font-bold text-xs flex items-center justify-center shrink-0">L6</span>
+            <div class="flex-1">
+                <h3 class="font-bold text-on-surface text-sm">Layer 6: Safety Constraint Engine & Digital Twin Simulator</h3>
+                <p class="text-xs text-secondary">Hard safety boundaries prohibiting autonomous clinical prescribing, counterfactual What-If risk simulator.</p>
+            </div>
+            <span class="px-2.5 py-0.5 bg-amber-100 text-amber-900 font-bold text-[10px] rounded-full">Safety Guardrail</span>
+        </div>
+
+        <!-- Layer 7 -->
+        <div class="p-4 bg-surface-container-lowest border border-outline-variant rounded-2xl shadow-xs flex items-center gap-4">
+            <span class="w-8 h-8 rounded-full bg-primary-fixed text-primary font-bold text-xs flex items-center justify-center shrink-0">L7</span>
+            <div class="flex-1">
+                <h3 class="font-bold text-on-surface text-sm">Layer 7: Human-in-the-Loop Clinician Authorization Gate</h3>
+                <p class="text-xs text-secondary">Doctor review, digital certificate signing, and CareAI video consultation copilot with bilingual Hindi translation.</p>
+            </div>
+            <span class="px-2.5 py-0.5 bg-green-100 text-[#146c2e] font-bold text-[10px] rounded-full">Clinician Gate</span>
+        </div>
+
+        <!-- Layer 8 -->
+        <div class="p-4 bg-surface-container-lowest border border-outline-variant rounded-2xl shadow-xs flex items-center gap-4">
+            <span class="w-8 h-8 rounded-full bg-primary-fixed text-primary font-bold text-xs flex items-center justify-center shrink-0">L8</span>
+            <div class="flex-1">
+                <h3 class="font-bold text-on-surface text-sm">Layer 8: MLOps Production Registry & Security Audit Logs</h3>
+                <p class="text-xs text-secondary">Continuous KS/PSI drift monitoring, automated retraining triggers, model versioning, tamper-evident audit logs.</p>
+            </div>
+            <span class="px-2.5 py-0.5 bg-surface-variant text-secondary font-semibold text-[10px] rounded-full">MLOps & Audit</span>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,328 @@
+{% extends "base.html" %}
+
+{% block title %}Patient Profile - {{ patient.name }} - HRP Clinical{% endblock %}
+{% block header_title %}Patient Electronic Record{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto space-y-lg">
+    <!-- Breadcrumbs & Header Actions -->
+    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-4">
+        <div>
+            <div class="flex items-center gap-2 text-sm text-secondary mb-1">
+                <a href="/patients" class="hover:text-primary transition-colors flex items-center">
+                    <span class="material-symbols-outlined text-[16px] mr-1">arrow_back</span> Patients
+                </a>
+                <span>/</span>
+                <span class="text-on-surface font-semibold">Patient #{{ patient.id }}</span>
+            </div>
+            <h1 class="text-headline-lg font-headline-lg font-bold text-on-surface">{{ patient.name }}</h1>
+        </div>
+
+        <div class="flex items-center gap-3">
+            <button onclick="alert('Profile editor opened for patient record {{ patient.id }}');" class="flex items-center px-4 py-2.5 border border-outline-variant text-secondary hover:text-on-surface rounded-xl text-title-md font-title-md hover:bg-surface-container-low transition-colors shadow-sm">
+                <span class="material-symbols-outlined mr-1.5 text-[20px]">edit</span> Edit Profile
+            </button>
+            <a href="/prediction/new" class="flex items-center px-5 py-2.5 bg-primary text-on-primary rounded-xl text-title-md font-title-md hover:bg-on-primary-fixed-variant transition-all shadow-md font-bold">
+                <span class="material-symbols-outlined mr-1.5 text-[20px]">add_circle</span> New Prediction
+            </a>
+        </div>
+    </div>
+
+    <!-- Patient Summary Card -->
+    <div class="bg-surface-container-lowest border border-outline-variant rounded-2xl p-lg flex flex-col md:flex-row gap-lg items-start relative overflow-hidden shadow-sm">
+        <div class="absolute top-0 right-0 w-64 h-64 bg-primary-fixed-dim opacity-20 rounded-full blur-3xl -translate-y-1/2 translate-x-1/3 pointer-events-none"></div>
+        
+        <div class="flex items-center gap-md md:border-r border-surface-variant md:pr-lg shrink-0">
+            <div class="w-20 h-20 rounded-full bg-secondary-container flex items-center justify-center text-on-secondary-container font-headline-md font-bold">
+                {{ patient.initials }}
+            </div>
+            <div>
+                <div class="flex items-center gap-sm mb-1">
+                    <span class="text-title-lg font-title-lg font-bold text-on-surface">#{{ patient.id }}</span>
+                    {% if patient.acuity_level == 'High' %}
+                        <span class="px-2.5 py-0.5 bg-error/15 text-error rounded-full text-xs font-bold flex items-center gap-1">
+                            <span class="material-symbols-outlined text-[14px]">warning</span> High Risk
+                        </span>
+                    {% elif patient.acuity_level == 'Moderate' %}
+                        <span class="px-2.5 py-0.5 bg-amber-100 text-amber-800 rounded-full text-xs font-bold flex items-center gap-1">
+                            <span class="material-symbols-outlined text-[14px]">info</span> Moderate Risk
+                        </span>
+                    {% else %}
+                        <span class="px-2.5 py-0.5 bg-green-100 text-green-800 rounded-full text-xs font-bold flex items-center gap-1">
+                            <span class="material-symbols-outlined text-[14px]">check_circle</span> Low Risk
+                        </span>
+                    {% endif %}
+                </div>
+                <p class="text-body-md text-secondary">Admitted: {{ patient.admission_date }}</p>
+                <p class="text-xs text-secondary font-medium mt-0.5">{{ patient.primary_diagnosis }}</p>
+            </div>
+        </div>
+
+        <div class="flex-1 grid grid-cols-2 md:grid-cols-4 gap-md w-full z-10">
+            <div>
+                <p class="text-label-lg font-label-lg text-secondary mb-1 uppercase tracking-wider">Age / Gender</p>
+                <p class="text-title-md font-title-md font-bold text-on-surface">{{ patient.age }} / {{ patient.gender }}</p>
+            </div>
+            <div>
+                <p class="text-label-lg font-label-lg text-secondary mb-1 uppercase tracking-wider">Department</p>
+                <p class="text-title-md font-title-md font-bold text-on-surface">{{ patient.department }}</p>
+            </div>
+            <div>
+                <p class="text-label-lg font-label-lg text-secondary mb-1 uppercase tracking-wider">Attending</p>
+                <p class="text-title-md font-title-md font-bold text-on-surface">{{ patient.attending_physician }}</p>
+            </div>
+            <div>
+                <p class="text-label-lg font-label-lg text-secondary mb-1 uppercase tracking-wider">Prior Discharge</p>
+                <p class="text-title-md font-title-md font-bold text-on-surface">{{ patient.last_discharge }}</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Navigation Tabs -->
+    <div class="border-b border-surface-variant overflow-x-auto">
+        <nav class="flex space-x-lg px-2 min-w-max">
+            <button onclick="switchTab('overview')" id="tab-btn-overview" class="py-3 px-1 border-b-2 border-primary text-primary font-bold text-title-md whitespace-nowrap">Overview</button>
+            <button onclick="switchTab('clinical')" id="tab-btn-clinical" class="py-3 px-1 border-b-2 border-transparent text-secondary hover:text-on-surface transition-colors text-title-md whitespace-nowrap">Clinical Data</button>
+            <button onclick="switchTab('history')" id="tab-btn-history" class="py-3 px-1 border-b-2 border-transparent text-secondary hover:text-on-surface transition-colors text-title-md whitespace-nowrap">Medical History</button>
+            <button onclick="switchTab('timeline')" id="tab-btn-timeline" class="py-3 px-1 border-b-2 border-transparent text-secondary hover:text-on-surface transition-colors text-title-md whitespace-nowrap">Timeline</button>
+        </nav>
+    </div>
+
+    <!-- TAB 1: OVERVIEW -->
+    <div id="tab-content-overview" class="space-y-gutter">
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-gutter">
+            <!-- 30-Day Readmission Risk History Chart (Span 2) -->
+            <div class="lg:col-span-2 bg-surface-container-lowest border border-outline-variant rounded-2xl p-lg flex flex-col shadow-sm">
+                <div class="flex justify-between items-center mb-md">
+                    <h3 class="text-title-lg font-title-lg font-bold text-on-surface flex items-center">
+                        <span class="material-symbols-outlined text-primary mr-2">show_chart</span>
+                        30-Day Readmission Risk Trajectory
+                    </h3>
+                    <div class="flex space-x-sm">
+                        <span class="text-xs px-3 py-1 bg-surface-container-high rounded-full text-on-surface font-semibold">6 Months</span>
+                    </div>
+                </div>
+
+                <!-- Chart Simulation SVG -->
+                <div class="flex-1 min-h-[260px] relative mt-4 border-l border-b border-surface-variant pt-4 pr-2">
+                    <!-- Y-Axis Labels -->
+                    <div class="absolute -left-8 top-0 h-full flex flex-col justify-between text-xs text-secondary pb-6 font-mono">
+                        <span>100%</span>
+                        <span>75%</span>
+                        <span>50%</span>
+                        <span>25%</span>
+                        <span>0%</span>
+                    </div>
+
+                    <!-- Grid Lines -->
+                    <div class="absolute inset-0 flex flex-col justify-between pointer-events-none pt-4 pb-6">
+                        <div class="w-full h-px bg-surface-variant border-dashed"></div>
+                        <div class="w-full h-px bg-surface-variant border-dashed"></div>
+                        <div class="w-full h-px bg-surface-variant border-dashed"></div>
+                        <div class="w-full h-px bg-surface-variant border-dashed"></div>
+                        <div class="w-full h-px bg-transparent"></div>
+                    </div>
+
+                    <!-- Risk Threshold Zone (Red) -->
+                    <div class="absolute top-4 w-full h-[30%] bg-error/5 pointer-events-none z-0 border-b border-error/20 flex items-start justify-end pr-2 pt-1">
+                        <span class="text-[10px] font-bold text-error uppercase">High Risk Threshold (&gt;60%)</span>
+                    </div>
+
+                    <!-- SVG Line Chart -->
+                    <svg class="w-full h-[calc(100%-24px)] absolute bottom-6 z-10 overflow-visible" preserveAspectRatio="none" viewBox="0 0 100 100">
+                        <defs>
+                            <linearGradient id="lineGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+                                <stop offset="0%" stop-color="#1a73e8"></stop>
+                                <stop offset="65%" stop-color="#1a73e8"></stop>
+                                <stop offset="100%" stop-color="#ba1a1a"></stop>
+                            </linearGradient>
+                        </defs>
+                        <!-- Connecting Path -->
+                        <path d="M 0 70 L 20 65 L 40 40 L 60 50 L 80 20 L 100 32" fill="none" stroke="url(#lineGrad)" stroke-width="3" vector-effect="non-scaling-stroke"></path>
+                        
+                        <!-- Data Points -->
+                        <circle cx="0" cy="70" r="4.5" fill="#ffffff" stroke="#1a73e8" stroke-width="2.5" vector-effect="non-scaling-stroke"></circle>
+                        <circle cx="20" cy="65" r="4.5" fill="#ffffff" stroke="#1a73e8" stroke-width="2.5" vector-effect="non-scaling-stroke"></circle>
+                        <circle cx="40" cy="40" r="4.5" fill="#ffffff" stroke="#1a73e8" stroke-width="2.5" vector-effect="non-scaling-stroke"></circle>
+                        <circle cx="60" cy="50" r="4.5" fill="#ffffff" stroke="#1a73e8" stroke-width="2.5" vector-effect="non-scaling-stroke"></circle>
+                        <circle cx="80" cy="20" r="4.5" fill="#ffffff" stroke="#ba1a1a" stroke-width="2.5" vector-effect="non-scaling-stroke"></circle>
+                        
+                        <!-- Current High Risk Point with pulse effect -->
+                        <circle cx="100" cy="32" r="6" fill="#ba1a1a" stroke="#ffffff" stroke-width="2" vector-effect="non-scaling-stroke"></circle>
+                    </svg>
+
+                    <!-- X-Axis Labels -->
+                    <div class="absolute bottom-0 w-full flex justify-between text-xs text-secondary px-1 font-semibold">
+                        <span>May (30%)</span>
+                        <span>Jun (35%)</span>
+                        <span>Jul (60%)</span>
+                        <span>Aug (50%)</span>
+                        <span>Sep (80%)</span>
+                        <span class="text-error font-bold">Oct (68%)</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Patient Timeline (Span 1) -->
+            <div class="bg-surface-container-lowest border border-outline-variant rounded-2xl p-lg flex flex-col shadow-sm">
+                <div class="flex justify-between items-center mb-md border-b border-surface-variant pb-2">
+                    <h3 class="text-title-lg font-title-lg font-bold text-on-surface flex items-center">
+                        <span class="material-symbols-outlined text-primary mr-2">schedule</span>
+                        Timeline
+                    </h3>
+                </div>
+
+                <div class="relative flex-1 overflow-y-auto max-h-[320px]">
+                    <div class="absolute left-[15px] top-4 bottom-4 w-px bg-surface-variant"></div>
+                    <div class="space-y-5 relative z-10">
+                        {% for event in patient.timeline %}
+                        <div class="flex gap-4">
+                            <div class="w-8 h-8 rounded-full {{ event.bg_class }} border-2 border-surface-container-lowest flex items-center justify-center shrink-0 z-10 shadow-sm">
+                                <span class="material-symbols-outlined {{ event.color }} text-[16px]">{{ event.icon }}</span>
+                            </div>
+                            <div class="pt-0.5">
+                                <p class="text-xs font-bold {{ event.color }} mb-0.5">{{ event.time }}</p>
+                                <p class="text-sm font-bold text-on-surface">{{ event.title }}</p>
+                                <p class="text-xs text-secondary mt-1 leading-relaxed">{{ event.description }}</p>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <a href="/prediction/{{ patient.id }}" class="mt-4 w-full py-2 text-center text-primary font-bold text-xs hover:bg-surface-container-low rounded-lg transition-colors border border-outline-variant/50">
+                    View Latest Prediction
+                </a>
+            </div>
+
+            <!-- Current Top Risk Factors (Span 3) -->
+            <div class="lg:col-span-3 bg-surface-container-lowest border border-outline-variant rounded-2xl p-lg shadow-sm">
+                <h3 class="text-title-lg font-title-lg font-bold text-on-surface mb-md">Current Top Risk Factors</h3>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-md">
+                    <div class="p-md rounded-xl bg-surface border border-outline-variant flex items-start gap-3">
+                        <span class="material-symbols-outlined text-error mt-0.5">warning</span>
+                        <div>
+                            <p class="text-title-md font-bold text-on-surface">Multiple Prior Admissions</p>
+                            <p class="text-body-md text-secondary mt-1">2 admissions in the past 6 months significantly increases baseline probability.</p>
+                        </div>
+                    </div>
+                    <div class="p-md rounded-xl bg-surface border border-outline-variant flex items-start gap-3">
+                        <span class="material-symbols-outlined text-[#b36b00] mt-0.5">medication</span>
+                        <div>
+                            <p class="text-title-md font-bold text-on-surface">Polypharmacy Burden</p>
+                            <p class="text-body-md text-secondary mt-1">Currently on 8 active prescription medications requiring adherence monitoring.</p>
+                        </div>
+                    </div>
+                    <div class="p-md rounded-xl bg-surface border border-outline-variant flex items-start gap-3">
+                        <span class="material-symbols-outlined text-error mt-0.5">favorite</span>
+                        <div>
+                            <p class="text-title-md font-bold text-on-surface">Chronic Heart Failure</p>
+                            <p class="text-body-md text-secondary mt-1">Primary diagnosis highly correlated with fluid overload and readmission events.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- TAB 2: CLINICAL DATA -->
+    <div id="tab-content-clinical" class="hidden bg-surface-container-lowest border border-outline-variant rounded-2xl p-lg shadow-sm space-y-md">
+        <h3 class="text-title-lg font-title-lg font-bold text-on-surface border-b border-surface-variant pb-2">Recorded Physiological Vitals & Lab Panels</h3>
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-md">
+            <div class="p-3 bg-surface rounded-xl border border-outline-variant">
+                <span class="text-xs text-secondary font-bold uppercase">Heart Rate</span>
+                <p class="text-xl font-bold text-on-surface mt-1">{{ patient.vitals.heart_rate }} bpm</p>
+            </div>
+            <div class="p-3 bg-surface rounded-xl border border-outline-variant">
+                <span class="text-xs text-secondary font-bold uppercase">Blood Pressure</span>
+                <p class="text-xl font-bold text-on-surface mt-1">{{ patient.vitals.systolic_bp }}/{{ patient.vitals.diastolic_bp }} mmHg</p>
+            </div>
+            <div class="p-3 bg-surface rounded-xl border border-outline-variant">
+                <span class="text-xs text-secondary font-bold uppercase">SpO2</span>
+                <p class="text-xl font-bold text-on-surface mt-1">{{ patient.vitals.spo2 }}%</p>
+            </div>
+            <div class="p-3 bg-surface rounded-xl border border-outline-variant">
+                <span class="text-xs text-secondary font-bold uppercase">Creatinine</span>
+                <p class="text-xl font-bold text-error mt-1">{{ patient.vitals.creatinine }} mg/dL</p>
+            </div>
+            <div class="p-3 bg-surface rounded-xl border border-outline-variant">
+                <span class="text-xs text-secondary font-bold uppercase">Hemoglobin</span>
+                <p class="text-xl font-bold text-on-surface mt-1">{{ patient.vitals.hemoglobin }} g/dL</p>
+            </div>
+            <div class="p-3 bg-surface rounded-xl border border-outline-variant">
+                <span class="text-xs text-secondary font-bold uppercase">WBC</span>
+                <p class="text-xl font-bold text-on-surface mt-1">{{ patient.vitals.wbc }} x10³/µL</p>
+            </div>
+            <div class="p-3 bg-surface rounded-xl border border-outline-variant">
+                <span class="text-xs text-secondary font-bold uppercase">HbA1c</span>
+                <p class="text-xl font-bold text-error mt-1">{{ patient.vitals.hba1c }}%</p>
+            </div>
+            <div class="p-3 bg-surface rounded-xl border border-outline-variant">
+                <span class="text-xs text-secondary font-bold uppercase">BMI</span>
+                <p class="text-xl font-bold text-on-surface mt-1">{{ patient.vitals.bmi }} kg/m²</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- TAB 3: MEDICAL HISTORY -->
+    <div id="tab-content-history" class="hidden bg-surface-container-lowest border border-outline-variant rounded-2xl p-lg shadow-sm space-y-md">
+        <h3 class="text-title-lg font-title-lg font-bold text-on-surface border-b border-surface-variant pb-2">Active Prescriptions & Comorbidities</h3>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-lg">
+            <div>
+                <h4 class="font-bold text-sm text-secondary uppercase mb-2">Comorbidities</h4>
+                <ul class="list-disc list-inside space-y-1 text-on-surface">
+                    {% for c in patient.history.comorbidities %}
+                        <li>{{ c }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+            <div>
+                <h4 class="font-bold text-sm text-secondary uppercase mb-2">Medications ({{ patient.history.medication_count }} Active)</h4>
+                <div class="flex flex-wrap gap-2">
+                    {% for m in patient.history.medication_list %}
+                        <span class="px-3 py-1 bg-primary-fixed text-on-primary-fixed rounded-lg text-xs font-semibold">{{ m }}</span>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- TAB 4: TIMELINE -->
+    <div id="tab-content-timeline" class="hidden bg-surface-container-lowest border border-outline-variant rounded-2xl p-lg shadow-sm space-y-md">
+        <h3 class="text-title-lg font-title-lg font-bold text-on-surface border-b border-surface-variant pb-2">Full Clinical Timeline</h3>
+        <div class="space-y-4">
+            {% for event in patient.timeline %}
+            <div class="p-4 bg-surface rounded-xl border border-outline-variant flex items-start gap-3">
+                <span class="material-symbols-outlined {{ event.color }} text-xl">{{ event.icon }}</span>
+                <div>
+                    <span class="text-xs text-secondary font-bold">{{ event.time }}</span>
+                    <p class="font-bold text-on-surface">{{ event.title }}</p>
+                    <p class="text-sm text-secondary mt-1">{{ event.description }}</p>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    function switchTab(tabName) {
+        const tabs = ['overview', 'clinical', 'history', 'timeline'];
+        tabs.forEach(t => {
+            const content = document.getElementById(`tab-content-${t}`);
+            const btn = document.getElementById(`tab-btn-${t}`);
+            if (content && btn) {
+                if (t === tabName) {
+                    content.classList.remove('hidden');
+                    btn.className = "py-3 px-1 border-b-2 border-primary text-primary font-bold text-title-md whitespace-nowrap";
+                } else {
+                    content.classList.add('hidden');
+                    btn.className = "py-3 px-1 border-b-2 border-transparent text-secondary hover:text-on-surface transition-colors text-title-md whitespace-nowrap";
+                }
+            }
+        });
+    }
+</script>
+{% endblock %}

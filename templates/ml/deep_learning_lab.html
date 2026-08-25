@@ -1,0 +1,92 @@
+{% extends "base.html" %}
+
+{% block title %}Deep Learning Lab - PyTorch Tabular Architectures - Hospital Readmission Predictor{% endblock %}
+{% block header_title %}Deep Learning Lab (PyTorch){% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto space-y-6">
+    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+        <div>
+            <h1 class="text-2xl font-bold text-on-surface">Deep Learning Lab (PyTorch)</h1>
+            <p class="text-sm text-secondary">Tabular Multi-Layer Perceptrons, Tabular Transformers with self-attention, Patient Autoencoders, and Sequence LSTMs.</p>
+        </div>
+        <div class="flex items-center gap-2">
+            <a href="/ml/comparison" class="px-4 py-2 bg-primary text-on-primary rounded-xl font-bold text-xs hover:bg-on-primary-fixed-variant transition-colors shadow-xs flex items-center gap-1.5">
+                <span class="material-symbols-outlined text-[16px]">compare_arrows</span>
+                Compare vs Classical ML
+            </a>
+        </div>
+    </div>
+
+    <!-- 4 Deep Learning Architecture Cards -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <!-- 1. Tabular ANN / MLP -->
+        <div class="p-6 bg-surface-container-lowest border border-outline-variant rounded-2xl shadow-xs space-y-3">
+            <div class="flex justify-between items-center border-b border-surface-variant pb-2">
+                <div class="flex items-center gap-2">
+                    <span class="material-symbols-outlined text-primary text-xl">hub</span>
+                    <h3 class="font-bold text-on-surface text-base">PyTorch Tabular ANN / MLP</h3>
+                </div>
+                <span class="px-2 py-0.5 bg-green-100 text-[#146c2e] font-bold rounded-full text-[10px]">ROC-AUC: 0.9580</span>
+            </div>
+            <p class="text-xs text-secondary leading-relaxed">
+                Feedforward deep neural network featuring Batch Normalization, ReLU non-linearities, and Dropout regularization (p=0.25) to prevent overfitting on clinical tabular EHR data.
+            </p>
+            <div class="p-3 bg-surface rounded-xl border border-outline-variant font-mono text-[11px] text-primary">
+                Linear(24, 64) → BatchNorm1d → ReLU → Dropout(0.25) → Linear(64, 32) → BatchNorm1d → ReLU → Dropout(0.25) → Linear(32, 1) → Sigmoid
+            </div>
+        </div>
+
+        <!-- 2. Tabular Transformer -->
+        <div class="p-6 bg-surface-container-lowest border border-outline-variant rounded-2xl shadow-xs space-y-3">
+            <div class="flex justify-between items-center border-b border-surface-variant pb-2">
+                <div class="flex items-center gap-2">
+                    <span class="material-symbols-outlined text-primary text-xl">account_tree</span>
+                    <h3 class="font-bold text-on-surface text-base">PyTorch Tabular Transformer</h3>
+                </div>
+                <span class="px-2 py-0.5 bg-green-100 text-[#146c2e] font-bold rounded-full text-[10px]">ROC-AUC: 0.9682</span>
+            </div>
+            <p class="text-xs text-secondary leading-relaxed">
+                Self-Attention multi-head encoder across numerical and categorical feature tokens, capturing complex cross-feature interactions between chronic co-morbidities and lab shifts.
+            </p>
+            <div class="p-3 bg-surface rounded-xl border border-outline-variant font-mono text-[11px] text-primary">
+                Embedding(24, 32) → TransformerEncoder(d_model=32, nhead=4, layers=2) → MLP Classification Head → Sigmoid
+            </div>
+        </div>
+
+        <!-- 3. Patient Autoencoder -->
+        <div class="p-6 bg-surface-container-lowest border border-outline-variant rounded-2xl shadow-xs space-y-3">
+            <div class="flex justify-between items-center border-b border-surface-variant pb-2">
+                <div class="flex items-center gap-2">
+                    <span class="material-symbols-outlined text-primary text-xl">bubble_chart</span>
+                    <h3 class="font-bold text-on-surface text-base">Patient Autoencoder</h3>
+                </div>
+                <span class="px-2 py-0.5 bg-primary-fixed text-primary font-bold rounded-full text-[10px]">Latent Dim: 8</span>
+            </div>
+            <p class="text-xs text-secondary leading-relaxed">
+                Unsupervised autoencoder learning compressed low-dimensional continuous patient representations and reconstruction anomaly scores for rare clinical trajectories.
+            </p>
+            <div class="p-3 bg-surface rounded-xl border border-outline-variant font-mono text-[11px] text-primary">
+                Encoder: Linear(24, 32) → ReLU → Linear(32, 8) | Decoder: Linear(8, 32) → ReLU → Linear(32, 24)
+            </div>
+        </div>
+
+        <!-- 4. Sequence LSTM Model -->
+        <div class="p-6 bg-surface-container-lowest border border-outline-variant rounded-2xl shadow-xs space-y-3">
+            <div class="flex justify-between items-center border-b border-surface-variant pb-2">
+                <div class="flex items-center gap-2">
+                    <span class="material-symbols-outlined text-primary text-xl">timeline</span>
+                    <h3 class="font-bold text-on-surface text-base">Longitudinal Sequence LSTM</h3>
+                </div>
+                <span class="px-2 py-0.5 bg-surface-variant text-secondary font-bold rounded-full text-[10px]">Sequence Length: 5</span>
+            </div>
+            <p class="text-xs text-secondary leading-relaxed">
+                Recurrent Long Short-Term Memory network modeling temporal sequences of sequential emergency room visits, inpatient stays, and medication modifications over time.
+            </p>
+            <div class="p-3 bg-surface rounded-xl border border-outline-variant font-mono text-[11px] text-primary">
+                LSTM(input_dim=12, hidden_dim=32, num_layers=2, batch_first=True) → Linear(32, 1) → Sigmoid
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

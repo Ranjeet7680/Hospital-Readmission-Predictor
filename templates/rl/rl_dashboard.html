@@ -1,0 +1,126 @@
+{% extends "base.html" %}
+
+{% block title %}Reinforcement Learning Dashboard - Hospital Readmission Predictor{% endblock %}
+{% block header_title %}Reinforcement Learning (RL) Intelligence & Research{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto space-y-6">
+    <!-- Header with Clinical Research Mode Disclaimer -->
+    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+        <div>
+            <div class="flex items-center gap-2 mb-1">
+                <h1 class="text-2xl font-bold text-on-surface" data-i18n="rl_dashboard">Reinforcement Learning Control Center</h1>
+                <span class="px-2.5 py-0.5 rounded-full bg-amber-100 text-amber-900 font-bold text-[10px] uppercase tracking-wider">
+                    Simulation / Decision-Support Only
+                </span>
+            </div>
+            <p class="text-sm text-secondary">Care pathway optimization using Proximal Policy Optimization (PPO) & Deep Q-Networks within clinical safety guardrails.</p>
+        </div>
+        <div class="flex items-center gap-2">
+            <a href="/rl/care-pathway" class="px-4 py-2 bg-primary text-on-primary rounded-xl font-bold text-xs hover:bg-on-primary-fixed-variant transition-colors shadow-xs flex items-center gap-1.5">
+                <span class="material-symbols-outlined text-[16px]">route</span>
+                Optimize Pathway
+            </a>
+            <a href="/rl/simulation" class="px-3.5 py-2 border border-outline-variant text-secondary hover:text-on-surface font-bold text-xs rounded-xl hover:bg-surface-container-low transition-colors flex items-center gap-1.5">
+                <span class="material-symbols-outlined text-[16px]">tune</span>
+                Digital Twin Sim
+            </a>
+        </div>
+    </div>
+
+    <!-- 4 RL KPI Cards -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div class="p-5 bg-surface-container-lowest border border-outline-variant rounded-2xl shadow-xs">
+            <span class="text-xs font-bold text-secondary uppercase">Active Policy</span>
+            <p class="text-xl font-bold text-primary mt-1">PPO Policy v2.4</p>
+            <span class="text-[11px] text-[#146c2e] font-semibold">Active Champion Policy</span>
+        </div>
+
+        <div class="p-5 bg-surface-container-lowest border border-outline-variant rounded-2xl shadow-xs">
+            <span class="text-xs font-bold text-secondary uppercase">Average Policy Reward</span>
+            <p class="text-3xl font-bold text-on-surface mt-1" data-countup="84.5" data-decimals="1">+84.5</p>
+            <span class="text-[11px] text-[#146c2e] font-semibold">+23.3 vs Rule-Based Baseline</span>
+        </div>
+
+        <div class="p-5 bg-surface-container-lowest border border-outline-variant rounded-2xl shadow-xs">
+            <span class="text-xs font-bold text-secondary uppercase">Safety Constraint Violations</span>
+            <p class="text-3xl font-bold text-[#146c2e] mt-1" data-countup="0">0</p>
+            <span class="text-[11px] text-[#146c2e] font-semibold">100% Guardrail Adherence</span>
+        </div>
+
+        <div class="p-5 bg-surface-container-lowest border border-outline-variant rounded-2xl shadow-xs">
+            <span class="text-xs font-bold text-secondary uppercase">72h Follow-up Rate</span>
+            <p class="text-3xl font-bold text-on-surface mt-1" data-countup="94.2" data-is-pct="true" data-decimals="1">94.2%</p>
+            <span class="text-[11px] text-primary font-semibold">Care Gap Prevention</span>
+        </div>
+    </div>
+
+    <!-- Quick Navigation Hub for RL Modules -->
+    <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
+        <a href="/rl/environment" class="p-4 bg-surface-container-lowest border border-outline-variant rounded-xl text-center hover:border-primary transition-all group">
+            <span class="material-symbols-outlined text-primary text-2xl mb-1 group-hover:scale-110 transition-transform">view_timeline</span>
+            <span class="block text-xs font-bold text-on-surface">Care Journey Env</span>
+        </a>
+        <a href="/rl/care-pathway" class="p-4 bg-surface-container-lowest border border-outline-variant rounded-xl text-center hover:border-primary transition-all group">
+            <span class="material-symbols-outlined text-primary text-2xl mb-1 group-hover:scale-110 transition-transform">route</span>
+            <span class="block text-xs font-bold text-on-surface">Pathway Opt</span>
+        </a>
+        <a href="/rl/simulation" class="p-4 bg-surface-container-lowest border border-outline-variant rounded-xl text-center hover:border-primary transition-all group">
+            <span class="material-symbols-outlined text-primary text-2xl mb-1 group-hover:scale-110 transition-transform">tune</span>
+            <span class="block text-xs font-bold text-on-surface">What-If Digital Twin</span>
+        </a>
+        <a href="/rl/safety" class="p-4 bg-surface-container-lowest border border-outline-variant rounded-xl text-center hover:border-primary transition-all group">
+            <span class="material-symbols-outlined text-primary text-2xl mb-1 group-hover:scale-110 transition-transform">shield</span>
+            <span class="block text-xs font-bold text-on-surface">Safety Engine</span>
+        </a>
+        <a href="/rl/human-review" class="p-4 bg-surface-container-lowest border border-outline-variant rounded-xl text-center hover:border-primary transition-all group">
+            <span class="material-symbols-outlined text-primary text-2xl mb-1 group-hover:scale-110 transition-transform">how_to_reg</span>
+            <span class="block text-xs font-bold text-on-surface">Doctor Review</span>
+        </a>
+        <a href="/rl/architecture" class="p-4 bg-surface-container-lowest border border-outline-variant rounded-xl text-center hover:border-primary transition-all group">
+            <span class="material-symbols-outlined text-primary text-2xl mb-1 group-hover:scale-110 transition-transform">layers</span>
+            <span class="block text-xs font-bold text-on-surface">8-Layer Stack</span>
+        </a>
+    </div>
+
+    <!-- Active RL Policies Table -->
+    <div class="bg-surface-container-lowest border border-outline-variant rounded-2xl overflow-hidden shadow-xs">
+        <div class="p-4 border-b border-surface-variant flex justify-between items-center">
+            <h3 class="font-bold text-on-surface text-sm">Trained Policy Registry</h3>
+            <span class="text-xs text-secondary">Reward Function: R_outcome - Cost - Penalty</span>
+        </div>
+        <div class="overflow-x-auto">
+            <table class="w-full text-left text-xs">
+                <thead class="bg-surface-container-low border-b border-outline-variant text-secondary uppercase font-semibold">
+                    <tr>
+                        <th class="py-3 px-4">Policy ID / Name</th>
+                        <th class="py-3 px-4">Algorithm</th>
+                        <th class="py-3 px-4">Average Reward</th>
+                        <th class="py-3 px-4">Safety Violations</th>
+                        <th class="py-3 px-4">Follow-up Rate</th>
+                        <th class="py-3 px-4">Status</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-surface-variant">
+                    {% for p in policies %}
+                    <tr class="hover:bg-surface-container-low transition-colors">
+                        <td class="py-3.5 px-4 font-mono font-bold text-on-surface">{{ p.name }} ({{ p.id }})</td>
+                        <td class="py-3.5 px-4 font-semibold text-primary">{{ p.algorithm }}</td>
+                        <td class="py-3.5 px-4 font-bold text-[#146c2e]">+{{ p.avg_reward }}</td>
+                        <td class="py-3.5 px-4 font-mono font-bold text-[#146c2e]">{{ p.violations }}</td>
+                        <td class="py-3.5 px-4 text-on-surface">{{ p.followup_rate }}</td>
+                        <td class="py-3.5 px-4">
+                            {% if p.status == 'Active Champion' %}
+                                <span class="px-2.5 py-0.5 bg-primary text-on-primary font-bold rounded-full text-[10px]">Active Champion</span>
+                            {% else %}
+                                <span class="px-2.5 py-0.5 bg-surface-variant text-secondary font-semibold rounded-full text-[10px]">{{ p.status }}</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

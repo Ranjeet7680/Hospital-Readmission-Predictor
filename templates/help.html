@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+
+{% block title %}Help & Documentation - Hospital Readmission Predictor{% endblock %}
+{% block header_title %}Clinical User Guide & Support{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto space-y-lg">
+    <div>
+        <h1 class="text-headline-lg font-headline-lg font-bold text-on-surface">Clinical Decision Support Guide</h1>
+        <p class="text-body-lg text-secondary mt-1">Frequently asked questions, clinical protocol integration, and system documentation.</p>
+    </div>
+
+    <div class="space-y-md">
+        <!-- Section 1 -->
+        <div class="bg-surface-container-lowest border border-outline-variant rounded-2xl p-lg shadow-sm">
+            <h3 class="text-title-lg font-bold text-on-surface mb-2 flex items-center gap-2">
+                <span class="material-symbols-outlined text-primary">help</span>
+                How does HRP Clinical calculate the 30-day readmission risk?
+            </h3>
+            <p class="text-body-md text-secondary leading-relaxed">
+                The model utilizes a gradient-boosted decision tree ensemble (XGBoost) trained on 30,000 multi-center electronic health records. It processes patient demographics, physiological vitals, acute biomarker labs (such as creatinine and hemoglobin), prior utilization frequency, and active medication counts to predict the mathematical probability of unplanned return within 30 days of discharge.
+            </p>
+        </div>
+
+        <!-- Section 2 -->
+        <div class="bg-surface-container-lowest border border-outline-variant rounded-2xl p-lg shadow-sm">
+            <h3 class="text-title-lg font-bold text-on-surface mb-2 flex items-center gap-2">
+                <span class="material-symbols-outlined text-primary">medical_services</span>
+                What are the recommended actions for High-Risk patients?
+            </h3>
+            <p class="text-body-md text-secondary leading-relaxed">
+                For patients stratified into the High Risk tier (&gt;60%), hospital clinical protocol mandates:
+            </p>
+            <ul class="list-disc list-inside text-sm text-secondary space-y-1 mt-2">
+                <li>Primary care follow-up appointment confirmed within 72 hours of discharge.</li>
+                <li>Pharmacist-led discharge medication reconciliation to mitigate polypharmacy errors.</li>
+                <li>Home health agency or visiting nurse transition-of-care order.</li>
+                <li>Patient provided with 24/7 clinical condition hotline number.</li>
+            </ul>
+        </div>
+
+        <!-- Section 3 -->
+        <div class="bg-surface-container-lowest border border-outline-variant rounded-2xl p-lg shadow-sm">
+            <h3 class="text-title-lg font-bold text-on-surface mb-2 flex items-center gap-2">
+                <span class="material-symbols-outlined text-primary">support_agent</span>
+                Technical & Clinical Informatics Support
+            </h3>
+            <p class="text-body-md text-secondary leading-relaxed">
+                Need EHR integration assistance or have clinical feedback regarding model explanations? Contact the Clinical Informatics Support Desk at <a href="mailto:support@hospital.org" class="text-primary font-bold hover:underline">support@hospital.org</a> or extension <strong>x4820</strong>.
+            </p>
+        </div>
+    </div>
+</div>
+{% endblock %}

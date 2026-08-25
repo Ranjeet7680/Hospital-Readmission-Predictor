@@ -1,0 +1,91 @@
+{% extends "base.html" %}
+
+{% block title %}Ask the Model - AI Analytics Assistant - Hospital Readmission Predictor{% endblock %}
+{% block header_title %}Ask the Model (AI Analytics Assistant){% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto space-y-6">
+    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+        <div>
+            <h1 class="text-2xl font-bold text-on-surface" data-i18n="ask_the_model">Ask the Model (AI Analytics Assistant)</h1>
+            <p class="text-sm text-secondary">Natural language conversational analytics about dataset distributions, SHAP feature rankings, model benchmarking, and versions.</p>
+        </div>
+    </div>
+
+    <!-- Chat Container -->
+    <div class="bg-surface-container-lowest border border-outline-variant rounded-2xl shadow-xs p-6 space-y-4 flex flex-col justify-between min-h-[480px]">
+        <!-- Messages Area -->
+        <div id="model-chat-messages" class="space-y-3 py-2 text-xs max-h-96 overflow-y-auto">
+            <div class="p-4 bg-surface-container-low rounded-2xl text-secondary space-y-1">
+                <p class="font-bold text-primary">HRP Model Analytics Copilot:</p>
+                <p>Hello! I am your AI Analytics Assistant. You can ask me questions about the Diabetes 101k cohort, XGBoost vs Deep Learning metrics, SHAP feature rankings, or drift monitoring.</p>
+            </div>
+        </div>
+
+        <!-- Quick Prompts & Input Box -->
+        <div class="space-y-3 pt-3 border-t border-surface-variant">
+            <div class="flex flex-wrap gap-2">
+                <button onclick="askModelPrompt('What are the top 3 features associated with readmission?')" class="px-3 py-1.5 rounded-full bg-surface-variant hover:bg-primary-fixed hover:text-primary text-xs font-semibold transition-colors">
+                    Top 3 risk features?
+                </button>
+                <button onclick="askModelPrompt('Compare XGBoost vs Random Forest performance on the test set.')" class="px-3 py-1.5 rounded-full bg-surface-variant hover:bg-primary-fixed hover:text-primary text-xs font-semibold transition-colors">
+                    Compare XGB vs RF?
+                </button>
+                <button onclick="askModelPrompt('मॉडल के अनुसार सबसे महत्वपूर्ण कारक क्या हैं?', 'hi')" class="px-3 py-1.5 rounded-full bg-surface-variant hover:bg-primary-fixed hover:text-primary text-xs font-semibold transition-colors">
+                    हिंदी में मॉडल अंतर्दृष्टि?
+                </button>
+            </div>
+
+            <form onsubmit="handleModelChatSubmit(event)" class="flex gap-2 items-center">
+                <input id="model-chat-input" type="text" placeholder="Ask anything about the model..." class="flex-1 rounded-xl border border-outline-variant bg-surface px-4 py-2.5 text-xs focus:border-primary outline-none"/>
+                <button type="submit" class="px-4 py-2.5 bg-primary text-on-primary font-bold text-xs rounded-xl hover:bg-on-primary-fixed-variant transition-colors shadow-xs flex items-center gap-1.5">
+                    <span class="material-symbols-outlined text-[16px]">send</span>
+                    Ask Model
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    async function askModelPrompt(text, lang = 'en') {
+        document.getElementById('model-chat-input').value = text;
+        await sendModelQuery(text, lang);
+    }
+
+    async function handleModelChatSubmit(e) {
+        e.preventDefault();
+        const input = document.getElementById('model-chat-input');
+        const text = input.value.trim();
+        if (!text) return;
+        input.value = '';
+        await sendModelQuery(text, 'en');
+    }
+
+    async function sendModelQuery(text, lang) {
+        window.soundEngine?.message();
+        const chatContainer = document.getElementById('model-chat-messages');
+        chatContainer.innerHTML += `
+            <div class="p-3 bg-primary/10 rounded-2xl text-primary font-semibold text-right">
+                ${text}
+            </div>
+        `;
+
+        try {
+            const resp = await fetch(`/api/ml/chat?q=${encodeURIComponent(text)}&lang=${lang}`);
+            const data = await resp.json();
+            window.soundEngine?.predictionReady();
+            chatContainer.innerHTML += `
+                <div class="p-4 bg-surface-container-low rounded-2xl text-secondary space-y-1">
+                    <p class="font-bold text-primary">HRP Model Analytics Copilot:</p>
+                    <p>${data.answer}</p>
+                    <span class="text-[10px] text-secondary/80 block italic">${data.disclaimer}</span>
+                </div>
+            `;
+            chatContainer.scrollTop = chatContainer.scrollHeight;
+        } catch (err) {
+            console.error(err);
+        }
+    }
+</script>
+{% endblock %}

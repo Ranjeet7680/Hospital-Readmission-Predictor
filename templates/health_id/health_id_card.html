@@ -1,0 +1,390 @@
+{% extends "base.html" %}
+
+{% block title %}My Health ID Card - Hospital Readmission Predictor{% endblock %}
+{% block header_title %}Digital Healthcare ID{% endblock %}
+
+{% block content %}
+<div class="max-w-6xl mx-auto space-y-8 animate-fade-in pb-12">
+    <!-- Header Section -->
+    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border-b border-surface-variant pb-5">
+        <div>
+            <div class="flex items-center gap-2 mb-1">
+                <span class="px-2.5 py-0.5 rounded-full text-xs font-bold bg-primary/10 text-primary border border-primary/20 flex items-center gap-1">
+                    <span class="material-symbols-outlined text-[14px]">verified</span> Level 3 Verified Identity
+                </span>
+                <span class="text-xs text-secondary font-mono">ID: {{ profile.health_id }}</span>
+            </div>
+            <h1 class="text-2xl sm:text-3xl font-bold text-on-surface">Digital Health ID Card</h1>
+            <p class="text-sm text-secondary">Encrypted digital patient credential with real-time dynamic QR verification.</p>
+        </div>
+
+        <div class="flex items-center gap-3">
+            <a href="/wallet" class="px-4 py-2 rounded-xl bg-surface-container-high hover:bg-surface-container-highest text-on-surface font-semibold text-xs transition-all flex items-center gap-1.5 border border-outline-variant/60 shadow-xs">
+                <span class="material-symbols-outlined text-[18px]">account_balance_wallet</span>
+                <span>My Digital Wallet</span>
+            </a>
+            <a href="/qr/scanner" class="px-4 py-2 rounded-xl bg-primary hover:bg-primary/90 text-on-primary font-semibold text-xs transition-all flex items-center gap-1.5 shadow-sm">
+                <span class="material-symbols-outlined text-[18px]">qr_code_scanner</span>
+                <span>Scan a QR Code</span>
+            </a>
+        </div>
+    </div>
+
+    <!-- Main Card & Actions Grid -->
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+        
+        <!-- 3D Flip Card Presentation (Span 7) -->
+        <div class="lg:col-span-7 flex flex-col items-center space-y-4">
+            
+            <div class="text-xs text-secondary flex items-center gap-1.5 font-medium">
+                <span class="material-symbols-outlined text-[16px] text-primary">3d_rotation</span>
+                <span>Click the card or use button below to flip and view verification details</span>
+            </div>
+
+            <!-- CSS 3D Card Container -->
+            <div class="perspective-1000 w-full max-w-[460px] h-[280px] cursor-pointer group" onclick="toggleCardFlip()">
+                <div id="health-id-card-inner" class="relative w-full h-full duration-700 transform-style-3d transition-transform shadow-xl rounded-3xl">
+                    
+                    <!-- ================= CARD FRONT ================= -->
+                    <div class="absolute inset-0 w-full h-full rounded-3xl p-6 bg-gradient-to-br from-[#005bbf] via-[#004a9e] to-[#002f6c] text-white flex flex-col justify-between backface-hidden border border-white/20 shadow-2xl overflow-hidden">
+                        <!-- Holographic Background Mesh -->
+                        <div class="absolute -right-16 -bottom-16 w-56 h-56 rounded-full bg-white/10 blur-2xl pointer-events-none"></div>
+                        <div class="absolute top-0 right-0 p-4 opacity-15">
+                            <span class="material-symbols-outlined text-[110px] text-white">local_hospital</span>
+                        </div>
+
+                        <!-- Top Header -->
+                        <div class="flex justify-between items-start relative z-10">
+                            <div class="flex items-center gap-2.5">
+                                <div class="w-10 h-10 rounded-2xl bg-white/20 backdrop-blur-md flex items-center justify-center border border-white/30 shadow-inner">
+                                    <span class="material-symbols-outlined text-2xl text-white">health_and_safety</span>
+                                </div>
+                                <div>
+                                    <h3 class="text-xs font-bold uppercase tracking-widest text-white/80">Metro General Hospital</h3>
+                                    <h2 class="text-base font-extrabold tracking-wide text-white">Digital Health ID</h2>
+                                </div>
+                            </div>
+                            <span class="px-2 py-0.5 rounded-full bg-white/25 backdrop-blur-md text-[10px] font-extrabold tracking-wide uppercase border border-white/30 flex items-center gap-1">
+                                <span class="w-1.5 h-1.5 rounded-full bg-green-400 animate-pulse"></span>
+                                {{ profile.verification_status.overall }}
+                            </span>
+                        </div>
+
+                        <!-- Middle Identity Info -->
+                        <div class="grid grid-cols-12 gap-3 items-center relative z-10 py-1">
+                            <!-- Avatar -->
+                            <div class="col-span-3 flex justify-center">
+                                <div class="w-16 h-16 rounded-2xl bg-gradient-to-tr from-amber-200 to-amber-400 text-[#002f6c] font-black text-2xl flex items-center justify-center shadow-md border-2 border-white/50">
+                                    {{ profile.initials }}
+                                </div>
+                            </div>
+                            <!-- Patient Details -->
+                            <div class="col-span-6 space-y-0.5">
+                                <h4 class="text-lg font-bold text-white leading-snug">{{ profile.full_name }}</h4>
+                                <p class="text-xs font-mono text-white/80 tracking-wider font-semibold">{{ profile.health_id }}</p>
+                                <div class="flex items-center gap-3 text-[11px] text-white/75 pt-0.5">
+                                    <span>DOB: <strong class="text-white">{{ profile.dob }}</strong></span>
+                                    <span>•</span>
+                                    <span>Blood: <strong class="text-white">{{ profile.blood_group }}</strong></span>
+                                </div>
+                            </div>
+                            <!-- QR Code Preview -->
+                            <div class="col-span-3 flex justify-end">
+                                <div class="w-16 h-16 bg-white p-1 rounded-xl shadow-lg border border-white/40 flex items-center justify-center">
+                                    <div class="w-full h-full transform scale-90">
+                                        {{ qr_svg|safe }}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Bottom Footer -->
+                        <div class="flex justify-between items-end text-[10px] text-white/80 border-t border-white/15 pt-2 relative z-10">
+                            <div>
+                                <span class="block text-[9px] uppercase tracking-wider text-white/60">Emergency Contact</span>
+                                <span class="font-semibold text-white truncate max-w-[200px] block">Robert Vance (Spouse)</span>
+                            </div>
+                            <div class="text-right">
+                                <span class="block text-[9px] uppercase tracking-wider text-white/60">Account Type</span>
+                                <span class="font-bold text-white uppercase">{{ profile.account_type }}</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- ================= CARD BACK ================= -->
+                    <div class="absolute inset-0 w-full h-full rounded-3xl p-6 bg-gradient-to-br from-slate-900 via-[#111c2e] to-[#0f172a] text-white flex flex-col justify-between rotate-y-180 backface-hidden border border-white/20 shadow-2xl overflow-hidden">
+                        <!-- Hologram Accent -->
+                        <div class="absolute -left-12 -top-12 w-44 h-44 rounded-full bg-primary/20 blur-2xl pointer-events-none"></div>
+
+                        <!-- Top Back Header -->
+                        <div class="flex justify-between items-center border-b border-white/15 pb-2 relative z-10">
+                            <div class="flex items-center gap-2">
+                                <span class="material-symbols-outlined text-primary text-xl">verified_user</span>
+                                <span class="text-xs font-bold uppercase tracking-wider text-white/90">Identity Verification Metadata</span>
+                            </div>
+                            <span class="text-[10px] font-mono text-white/60">TOKEN: {{ token.token_id }}</span>
+                        </div>
+
+                        <!-- Metadata Grid -->
+                        <div class="grid grid-cols-2 gap-2.5 text-xs relative z-10 py-1">
+                            <div class="bg-white/5 p-2 rounded-xl border border-white/10">
+                                <span class="text-[9px] uppercase tracking-wider text-white/50 block">Issuing Authority</span>
+                                <span class="font-bold text-white text-[11px]">{{ token.organization }}</span>
+                            </div>
+                            <div class="bg-white/5 p-2 rounded-xl border border-white/10">
+                                <span class="text-[9px] uppercase tracking-wider text-white/50 block">Verification Status</span>
+                                <span class="font-bold text-green-400 text-[11px] flex items-center gap-1">
+                                    <span class="w-1.5 h-1.5 rounded-full bg-green-400"></span> {{ token.status }}
+                                </span>
+                            </div>
+                            <div class="bg-white/5 p-2 rounded-xl border border-white/10">
+                                <span class="text-[9px] uppercase tracking-wider text-white/50 block">Issue Date</span>
+                                <span class="font-semibold text-white text-[11px]">Jan 15, 2023</span>
+                            </div>
+                            <div class="bg-white/5 p-2 rounded-xl border border-white/10">
+                                <span class="text-[9px] uppercase tracking-wider text-white/50 block">Validity</span>
+                                <span class="font-semibold text-white text-[11px]">Lifetime Patient Credential</span>
+                            </div>
+                        </div>
+
+                        <!-- Privacy Notice & Action Buttons -->
+                        <div class="space-y-2 relative z-10 border-t border-white/15 pt-2">
+                            <p class="text-[9.5px] text-white/70 leading-relaxed flex items-center gap-1.5">
+                                <span class="material-symbols-outlined text-[13px] text-amber-300 shrink-0">shield</span>
+                                <span>Only authorized verification metadata is shared. Confidential medical history is never encoded directly in this QR.</span>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Flip Trigger Button -->
+            <button onclick="toggleCardFlip()" class="px-4 py-1.5 rounded-full bg-surface-container-high hover:bg-surface-container-highest text-secondary hover:text-on-surface text-xs font-semibold flex items-center gap-1.5 transition-all shadow-xs border border-outline-variant/50">
+                <span class="material-symbols-outlined text-[16px] text-primary">swap_horiz</span>
+                <span>Flip Card (Front / Back)</span>
+            </button>
+        </div>
+
+        <!-- Right Action Center & QR Modal Trigger (Span 5) -->
+        <div class="lg:col-span-5 space-y-4">
+            
+            <!-- Quick Actions Card -->
+            <div class="bg-surface-container-lowest border border-outline-variant rounded-2xl p-5 shadow-sm space-y-3">
+                <h3 class="text-sm font-bold text-on-surface flex items-center gap-2">
+                    <span class="material-symbols-outlined text-primary text-base">qr_code_2</span>
+                    <span>Digital Card Actions</span>
+                </h3>
+
+                <div class="grid grid-cols-2 gap-2.5">
+                    <button onclick="openQRModal()" class="p-3 rounded-xl bg-surface-container hover:bg-primary/10 border border-outline-variant/70 text-left transition-all group">
+                        <span class="material-symbols-outlined text-primary group-hover:scale-110 transition-transform text-xl block mb-1">fullscreen</span>
+                        <span class="text-xs font-bold text-on-surface block">Show Large QR</span>
+                        <span class="text-[10px] text-secondary">Present for clinic check-in</span>
+                    </button>
+
+                    <button onclick="openShareModal()" class="p-3 rounded-xl bg-surface-container hover:bg-primary/10 border border-outline-variant/70 text-left transition-all group">
+                        <span class="material-symbols-outlined text-primary group-hover:scale-110 transition-transform text-xl block mb-1">share</span>
+                        <span class="text-xs font-bold text-on-surface block">Share ID Link</span>
+                        <span class="text-[10px] text-secondary">Send secure access link</span>
+                    </button>
+
+                    <button onclick="window.print()" class="p-3 rounded-xl bg-surface-container hover:bg-primary/10 border border-outline-variant/70 text-left transition-all group">
+                        <span class="material-symbols-outlined text-primary group-hover:scale-110 transition-transform text-xl block mb-1">download</span>
+                        <span class="text-xs font-bold text-on-surface block">Download ID</span>
+                        <span class="text-[10px] text-secondary">Save printable PDF / image</span>
+                    </button>
+
+                    <button onclick="alert('Digital Wallet Pass (.pkpass) generated for Apple Wallet & Google Wallet.')" class="p-3 rounded-xl bg-surface-container hover:bg-primary/10 border border-outline-variant/70 text-left transition-all group">
+                        <span class="material-symbols-outlined text-primary group-hover:scale-110 transition-transform text-xl block mb-1">account_balance_wallet</span>
+                        <span class="text-xs font-bold text-on-surface block">Add to Wallet</span>
+                        <span class="text-[10px] text-secondary">Apple / Google Wallet pass</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Security & QR Rotation Card -->
+            <div class="bg-surface-container-lowest border border-outline-variant rounded-2xl p-5 shadow-sm space-y-3">
+                <div class="flex items-center justify-between">
+                    <h3 class="text-sm font-bold text-on-surface flex items-center gap-2">
+                        <span class="material-symbols-outlined text-secondary text-base">lock_reset</span>
+                        <span>Security & QR Rotation</span>
+                    </h3>
+                    <span class="text-[10px] px-2 py-0.5 rounded-full bg-green-100 text-green-800 font-bold border border-green-200">Active</span>
+                </div>
+                <p class="text-xs text-secondary leading-relaxed">
+                    If your ID card was exposed or lost, immediately invalidate the current verification QR and generate a fresh token.
+                </p>
+
+                <div class="flex items-center gap-2.5 pt-1">
+                    <form action="/health-id/regenerate" method="post" class="flex-1">
+                        <input type="hidden" name="token_id" value="{{ token.token_id }}">
+                        <button type="submit" onclick="return confirm('Regenerate QR Code? Previous QR code links will be immediately invalidated.')" class="w-full py-2 px-3 rounded-xl bg-surface-container-high hover:bg-surface-container-highest border border-outline-variant text-xs font-bold text-on-surface transition-all flex items-center justify-center gap-1.5">
+                            <span class="material-symbols-outlined text-[16px] text-primary">sync</span>
+                            <span>Regenerate QR</span>
+                        </button>
+                    </form>
+
+                    <form action="/health-id/report-lost" method="post" class="flex-1">
+                        <input type="hidden" name="token_id" value="{{ token.token_id }}">
+                        <button type="submit" onclick="return confirm('Report ID as Lost? This will temporarily disable your digital ID until re-verified.')" class="w-full py-2 px-3 rounded-xl bg-error/10 hover:bg-error/20 border border-error/30 text-xs font-bold text-error transition-all flex items-center justify-center gap-1.5">
+                            <span class="material-symbols-outlined text-[16px]">report_problem</span>
+                            <span>Report Lost ID</span>
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Verification Gateway Link Card -->
+            <div class="bg-surface-container-low border border-outline-variant/60 rounded-2xl p-4 flex items-center justify-between">
+                <div class="flex items-center gap-3">
+                    <div class="w-9 h-9 rounded-xl bg-primary/10 text-primary flex items-center justify-center shrink-0">
+                        <span class="material-symbols-outlined text-xl">domain_verification</span>
+                    </div>
+                    <div>
+                        <span class="text-xs font-bold text-on-surface block">Public Verification Portal</span>
+                        <span class="text-[10px] text-secondary">Inspect public check screen</span>
+                    </div>
+                </div>
+                <a href="/verify-id/{{ token.token_id }}" target="_blank" class="px-3 py-1.5 rounded-lg bg-white text-primary border border-outline-variant hover:bg-primary/5 text-xs font-bold flex items-center gap-1 shadow-xs">
+                    <span>Test Gateway</span>
+                    <span class="material-symbols-outlined text-[14px]">open_in_new</span>
+                </a>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<!-- ================= MODAL: LARGE QR VIEW ================= -->
+<div id="qr-modal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-surface-container-lowest border border-outline-variant rounded-3xl max-w-sm w-full p-6 shadow-2xl space-y-4 animate-scale-up text-center relative">
+        <button onclick="closeQRModal()" class="absolute top-4 right-4 text-secondary hover:text-on-surface p-1 rounded-full hover:bg-surface-container">
+            <span class="material-symbols-outlined text-xl">close</span>
+        </button>
+
+        <div class="space-y-1 pt-2">
+            <span class="px-2.5 py-0.5 rounded-full bg-primary/10 text-primary text-[10px] font-bold">Encrypted Verification Code</span>
+            <h3 class="text-lg font-bold text-on-surface">{{ profile.full_name }}</h3>
+            <p class="text-xs text-secondary font-mono">{{ profile.health_id }}</p>
+        </div>
+
+        <!-- Render Large SVG QR -->
+        <div class="flex justify-center p-3 bg-white rounded-2xl border border-outline-variant/60 shadow-inner">
+            {{ qr_svg_large|safe }}
+        </div>
+
+        <p class="text-[11px] text-secondary leading-tight">
+            Scan with any smartphone camera or hospital check-in terminal to verify credential validity.
+        </p>
+
+        <div class="pt-2">
+            <button onclick="closeQRModal()" class="w-full py-2.5 rounded-xl bg-primary hover:bg-primary/90 text-on-primary font-bold text-xs shadow-sm">
+                Done
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- ================= MODAL: SHARE ID LINK ================= -->
+<div id="share-modal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-surface-container-lowest border border-outline-variant rounded-3xl max-w-md w-full p-6 shadow-2xl space-y-4 animate-scale-up relative">
+        <button onclick="closeShareModal()" class="absolute top-4 right-4 text-secondary hover:text-on-surface p-1 rounded-full hover:bg-surface-container">
+            <span class="material-symbols-outlined text-xl">close</span>
+        </button>
+
+        <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-2xl bg-primary/10 text-primary flex items-center justify-center">
+                <span class="material-symbols-outlined text-2xl">share</span>
+            </div>
+            <div>
+                <h3 class="text-base font-bold text-on-surface">Share Health ID</h3>
+                <p class="text-xs text-secondary">Provide secure public verification link to clinics or employers.</p>
+            </div>
+        </div>
+
+        <div class="space-y-1.5">
+            <label class="text-xs font-semibold text-secondary">Verification URL</label>
+            <div class="flex items-center gap-2">
+                <input id="share-url-input" type="text" readonly value="{{ verification_url }}" class="flex-1 bg-surface-container-low border border-outline-variant rounded-xl px-3 py-2 text-xs font-mono text-on-surface outline-none"/>
+                <button onclick="copyShareUrl()" class="px-3 py-2 rounded-xl bg-primary text-on-primary text-xs font-bold hover:bg-primary/90 transition-all flex items-center gap-1">
+                    <span class="material-symbols-outlined text-[16px]">content_copy</span>
+                    <span id="copy-btn-text">Copy</span>
+                </button>
+            </div>
+        </div>
+
+        <div class="bg-surface-container-low p-3 rounded-xl border border-outline-variant/60 text-xs text-secondary space-y-1">
+            <span class="font-bold text-on-surface block">Privacy Safeguard:</span>
+            <span>The recipient will only see verified identity status, issuing hospital, and validity dates. Detailed medical history is protected.</span>
+        </div>
+
+        <div class="pt-2">
+            <a href="/qr/temporary-share" class="w-full py-2.5 rounded-xl bg-surface-container-high hover:bg-surface-container-highest border border-outline-variant text-center font-bold text-xs text-on-surface flex items-center justify-center gap-1.5">
+                <span class="material-symbols-outlined text-[16px] text-primary">schedule_send</span>
+                <span>Create Time-Limited Temporary Share Pass instead</span>
+            </a>
+        </div>
+    </div>
+</div>
+
+<script>
+let isCardFlipped = false;
+
+function toggleCardFlip() {
+    const cardInner = document.getElementById('health-id-card-inner');
+    isCardFlipped = !isCardFlipped;
+    if (isCardFlipped) {
+        cardInner.classList.add('rotate-y-180');
+        window.soundEngine?.click();
+    } else {
+        cardInner.classList.remove('rotate-y-180');
+        window.soundEngine?.click();
+    }
+}
+
+function openQRModal() {
+    document.getElementById('qr-modal').classList.remove('hidden');
+    window.soundEngine?.click();
+}
+
+function closeQRModal() {
+    document.getElementById('qr-modal').classList.add('hidden');
+}
+
+function openShareModal() {
+    document.getElementById('share-modal').classList.remove('hidden');
+    window.soundEngine?.click();
+}
+
+function closeShareModal() {
+    document.getElementById('share-modal').classList.add('hidden');
+}
+
+function copyShareUrl() {
+    const input = document.getElementById('share-url-input');
+    input.select();
+    navigator.clipboard.writeText(input.value);
+    document.getElementById('copy-btn-text').innerText = 'Copied!';
+    window.soundEngine?.success();
+    setTimeout(() => {
+        document.getElementById('copy-btn-text').innerText = 'Copy';
+    }, 2000);
+}
+</script>
+
+<style>
+.perspective-1000 {
+    perspective: 1000px;
+}
+.transform-style-3d {
+    transform-style: preserve-3d;
+}
+.backface-hidden {
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+}
+.rotate-y-180 {
+    transform: rotateY(180deg);
+}
+</style>
+{% endblock %}

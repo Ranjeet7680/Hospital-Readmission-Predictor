@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+
+{% block title %}Model Comparison Matrix - Hospital Readmission Predictor{% endblock %}
+{% block header_title %}Model Comparison Matrix (7 Algorithms){% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto space-y-6">
+    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+        <div>
+            <h1 class="text-2xl font-bold text-on-surface" data-i18n="model_comparison">Multi-Model Comparison Matrix</h1>
+            <p class="text-sm text-secondary">Evaluated on holdout test partition (15,265 encounters). Classical Machine Learning vs PyTorch Deep Learning.</p>
+        </div>
+        <div class="flex items-center gap-2">
+            <a href="/ml/ensemble" class="px-4 py-2 bg-primary text-on-primary rounded-xl font-bold text-xs hover:bg-on-primary-fixed-variant transition-colors shadow-xs flex items-center gap-1.5">
+                <span class="material-symbols-outlined text-[16px]">join</span>
+                Weighted Ensemble
+            </a>
+        </div>
+    </div>
+
+    <!-- Comparison Matrix Table -->
+    <div class="bg-surface-container-lowest border border-outline-variant rounded-2xl overflow-hidden shadow-xs">
+        <div class="overflow-x-auto">
+            <table class="w-full text-left text-xs">
+                <thead class="bg-surface-container-low border-b border-outline-variant text-secondary uppercase font-semibold">
+                    <tr>
+                        <th class="py-3 px-4">Model Architecture</th>
+                        <th class="py-3 px-4">Category</th>
+                        <th class="py-3 px-4">ROC-AUC</th>
+                        <th class="py-3 px-4">Accuracy</th>
+                        <th class="py-3 px-4">Sensitivity (Recall)</th>
+                        <th class="py-3 px-4">Precision</th>
+                        <th class="py-3 px-4">F1-Score</th>
+                        <th class="py-3 px-4">Training Time</th>
+                        <th class="py-3 px-4">Status</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-surface-variant">
+                    {% for m in models %}
+                    <tr class="hover:bg-surface-container-low transition-colors {% if m.id == 'xgboost' %}bg-primary-fixed/20 font-semibold{% endif %}">
+                        <td class="py-3.5 px-4 font-bold text-on-surface flex items-center gap-2">
+                            {% if m.id == 'xgboost' %}
+                                <span class="material-symbols-outlined text-primary text-[16px]">star</span>
+                            {% endif %}
+                            {{ m.name }}
+                        </td>
+                        <td class="py-3.5 px-4 text-secondary">{{ m.type }}</td>
+                        <td class="py-3.5 px-4 font-bold text-primary">{{ m.roc_auc }}</td>
+                        <td class="py-3.5 px-4 font-bold text-on-surface">{{ (m.accuracy * 100)|round(1) }}%</td>
+                        <td class="py-3.5 px-4 font-bold text-[#146c2e]">{{ (m.sensitivity * 100)|round(1) }}%</td>
+                        <td class="py-3.5 px-4 text-secondary">{{ (m.precision * 100)|round(1) }}%</td>
+                        <td class="py-3.5 px-4 text-on-surface">{{ m.f1 }}</td>
+                        <td class="py-3.5 px-4 font-mono text-secondary">{{ m.training_time }}</td>
+                        <td class="py-3.5 px-4">
+                            {% if m.status == 'Active Champion' %}
+                                <span class="px-2.5 py-0.5 bg-primary text-on-primary font-bold rounded-full text-[10px]">Active Champion</span>
+                            {% else %}
+                                <span class="px-2.5 py-0.5 bg-surface-variant text-secondary font-semibold rounded-full text-[10px]">{{ m.status }}</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

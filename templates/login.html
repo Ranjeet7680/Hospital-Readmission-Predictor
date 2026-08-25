@@ -1,0 +1,151 @@
+{% extends "base.html" %}
+
+{% block title %}Login - Hospital Readmission Predictor{% endblock %}
+
+{% block full_content %}
+<div class="bg-surface text-on-surface h-screen w-screen overflow-hidden flex flex-col font-body-md">
+    <!-- Main Split Layout -->
+    <main class="flex-1 flex w-full h-full">
+        <!-- Left Panel: Illustration & Value Prop (Hidden on Mobile) -->
+        <section class="hidden lg:flex lg:w-1/2 bg-surface-container-low flex-col justify-between relative overflow-hidden p-margin-desktop border-r border-outline-variant/30">
+            <!-- Branding -->
+            <div class="z-10 flex items-center gap-2">
+                <span class="material-symbols-outlined text-primary text-3xl fill-icon">monitor_heart</span>
+                <span class="font-title-lg text-title-lg font-bold text-primary">Clinical AI</span>
+            </div>
+
+            <!-- Value Prop & Illustration Container -->
+            <div class="flex flex-col justify-center z-10 max-w-xl mx-auto py-8">
+                <h1 class="font-display-lg text-display-lg text-on-surface mb-lg leading-tight">Predictive Analytics for Better Outcomes.</h1>
+                <p class="font-body-lg text-body-lg text-on-surface-variant mb-xl max-w-md">
+                    Empowering healthcare professionals with advanced AI to accurately forecast readmission risks, optimize care plans, and prioritize patient well-being.
+                </p>
+                <!-- Decorative Abstract Data Viz -->
+                <div class="w-full h-64 rounded-2xl overflow-hidden shadow-md border border-outline-variant/50 bg-gradient-to-tr from-primary-container/20 via-surface-container-highest to-surface-container-lowest p-6 flex flex-col justify-between">
+                    <div class="flex items-center justify-between">
+                        <span class="px-3 py-1 bg-primary text-on-primary rounded-full text-xs font-bold">Live Model: Active</span>
+                        <span class="text-xs text-secondary">Latency: 48ms</span>
+                    </div>
+                    <div class="space-y-2">
+                        <div class="flex justify-between text-xs font-semibold">
+                            <span>High-Risk Readmission Identification</span>
+                            <span class="text-primary font-bold">93.7% Accuracy</span>
+                        </div>
+                        <div class="h-2 bg-surface-variant rounded-full overflow-hidden">
+                            <div class="h-full bg-primary rounded-full w-[94%]"></div>
+                        </div>
+                    </div>
+                    <div class="flex items-center justify-around pt-2 text-xs text-secondary border-t border-outline-variant/40">
+                        <span>• 30-Day Risk Window</span>
+                        <span>• Dynamic XAI Attribution</span>
+                        <span>• EHR Integration Ready</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Footer Left -->
+            <div class="z-10 text-on-surface-variant font-label-sm text-label-sm opacity-80 flex items-center gap-2">
+                <span class="material-symbols-outlined text-xs">verified</span> v2.4.1-stable | Hospital Readmission Predictor
+            </div>
+
+            <!-- Subtle Background Pattern/Gradient -->
+            <div class="absolute inset-0 bg-gradient-to-br from-primary-fixed/20 to-transparent pointer-events-none z-0"></div>
+        </section>
+
+        <!-- Right Panel: Sign In Form -->
+        <section class="w-full lg:w-1/2 flex flex-col justify-center items-center p-margin-mobile md:p-margin-desktop bg-surface relative">
+            <!-- Mobile Branding (Visible only on small screens) -->
+            <div class="lg:hidden absolute top-margin-mobile left-margin-mobile flex items-center gap-2">
+                <span class="material-symbols-outlined text-primary text-2xl fill-icon">monitor_heart</span>
+                <span class="font-title-md text-title-md font-bold text-primary">Clinical AI</span>
+            </div>
+
+            <div class="w-full max-w-md">
+                <div class="mb-xl text-center lg:text-left">
+                    <h2 class="font-headline-lg text-headline-lg text-on-surface mb-sm">Secure Sign In</h2>
+                    <p class="font-body-md text-body-md text-on-surface-variant">Enter your credentials to access the clinical decision support platform.</p>
+                </div>
+
+                <form class="flex flex-col gap-md" action="/dashboard" method="get">
+                    <!-- Email Input -->
+                    <div class="flex flex-col gap-xs">
+                        <label class="font-label-lg text-label-lg text-on-surface" for="email">Corporate Email</label>
+                        <div class="relative">
+                            <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline-variant">mail</span>
+                            <input class="w-full pl-10 pr-4 py-3 rounded-lg border border-outline bg-surface-container-lowest text-on-surface focus:border-primary focus:ring-2 focus:ring-primary focus:outline-none transition-shadow font-body-md text-body-md h-12" id="email" placeholder="dr.smith@hospital.org" value="dr.smith@hospital.org" required="" type="email"/>
+                        </div>
+                    </div>
+
+                    <!-- Password Input -->
+                    <div class="flex flex-col gap-xs">
+                        <label class="font-label-lg text-label-lg text-on-surface" for="password">Password</label>
+                        <div class="relative">
+                            <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline-variant">lock</span>
+                            <input class="w-full pl-10 pr-10 py-3 rounded-lg border border-outline bg-surface-container-lowest text-on-surface focus:border-primary focus:ring-2 focus:ring-primary focus:outline-none transition-shadow font-body-md text-body-md h-12" id="password" value="••••••••••••" placeholder="••••••••" required="" type="password"/>
+                            <button class="absolute right-3 top-1/2 -translate-y-1/2 text-outline-variant hover:text-on-surface focus:outline-none transition-colors" onclick="togglePassword()" type="button" aria-label="Toggle password visibility">
+                                <span class="material-symbols-outlined" id="visibility-icon">visibility</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Remember Me & Forgot Password -->
+                    <div class="flex justify-between items-center mt-sm">
+                        <label class="flex items-center gap-2 cursor-pointer group">
+                            <input class="w-4 h-4 rounded border-outline text-primary focus:ring-primary" checked type="checkbox"/>
+                            <span class="font-body-md text-body-md text-on-surface-variant group-hover:text-on-surface transition-colors">Remember device</span>
+                        </label>
+                        <a class="font-label-lg text-label-lg text-primary hover:text-primary-container transition-colors" href="/help">Forgot Password?</a>
+                    </div>
+
+                    <!-- Sign In Button -->
+                    <button class="mt-lg w-full h-12 bg-primary text-on-primary rounded-lg font-label-lg text-label-lg hover:bg-surface-tint focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:ring-offset-surface transition-all active:scale-[0.98] shadow-md flex items-center justify-center gap-2 font-bold" type="submit">
+                        Sign In
+                        <span class="material-symbols-outlined text-[20px]">arrow_forward</span>
+                    </button>
+
+                    <!-- Divider -->
+                    <div class="flex items-center gap-4 my-md">
+                        <div class="flex-1 h-px bg-outline-variant/50"></div>
+                        <span class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">or continue with</span>
+                        <div class="flex-1 h-px bg-outline-variant/50"></div>
+                    </div>
+
+                    <!-- SSO Option -->
+                    <a href="/dashboard" class="w-full h-12 bg-surface-container-lowest border border-outline-variant text-on-surface rounded-lg font-label-lg text-label-lg hover:bg-surface-container-low focus:ring-2 focus:ring-outline focus:ring-offset-2 focus:ring-offset-surface transition-all shadow-sm flex items-center justify-center gap-3">
+                        <svg class="w-5 h-5" viewBox="0 0 24 24">
+                            <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+                            <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+                            <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/>
+                            <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/>
+                        </svg>
+                        Google Workspace / Enterprise SSO
+                    </a>
+                </form>
+            </div>
+
+            <!-- Footer Right -->
+            <div class="absolute bottom-margin-mobile md:bottom-margin-desktop w-full text-center px-margin-mobile md:px-margin-desktop">
+                <p class="font-label-sm text-label-sm text-on-surface-variant flex items-center justify-center gap-1 opacity-70">
+                    <span class="material-symbols-outlined text-[16px]">verified_user</span>
+                    Authorized healthcare professionals only. Protected health information (PHI) environment.
+                </p>
+            </div>
+        </section>
+    </main>
+</div>
+
+<script>
+    function togglePassword() {
+        const passwordInput = document.getElementById('password');
+        const visibilityIcon = document.getElementById('visibility-icon');
+        
+        if (passwordInput.type === 'password') {
+            passwordInput.type = 'text';
+            visibilityIcon.textContent = 'visibility_off';
+        } else {
+            passwordInput.type = 'password';
+            visibilityIcon.textContent = 'visibility';
+        }
+    }
+</script>
+{% endblock %}

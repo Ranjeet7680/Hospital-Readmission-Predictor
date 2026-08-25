@@ -1,0 +1,255 @@
+"""
+Prediction Engine and Explainable AI (XAI) for Hospital Readmission Predictor
+"""
+
+import os
+import joblib
+import numpy as np
+import pandas as pd
+
+class ReadmissionPredictor:
+    def __init__(self):
+        artifacts_dir = os.path.dirname(__file__)
+        model_path = os.path.join(artifacts_dir, "model.joblib")
+        if not os.path.exists(model_path):
+            raise FileNotFoundError(f"Model artifact not found at {model_path}. Run ml/train_model.py first.")
+        
+        bundle = joblib.load(model_path)
+        self.model = bundle['model']
+        self.scaler = bundle['scaler']
+        self.feature_cols = bundle['feature_cols']
+        self.metrics = bundle.get('metrics', {})
+
+    def predict(self, data: dict):
+        """
+        Takes raw patient dictionary, transforms features, executes model inference,
+        and derives explainability factors & clinical recommendations.
+        """
+        # Parse inputs with safe clinical defaults
+        age = float(data.get('age', 65))
+        gender_str = str(data.get('gender', 'Male')).strip().title()
+        gender_enc = 1.0 if gender_str == 'Female' else (2.0 if gender_str == 'Other' else 0.0)
+
+        # Blood pressure
+        systolic = float(data.get('systolic_bp', 120))
+        diastolic = float(data.get('diastolic_bp', 80))
+        if 'blood_pressure' in data and '/' in str(data['blood_pressure']):
+            try:
+                parts = str(data['blood_pressure']).split('/')
+                systolic = float(parts[0])
+                diastolic = float(parts[1])
+            except Exception:
+                pass
+
+        cholesterol = float(data.get('cholesterol', 190))
+        bmi = float(data.get('bmi', 26.5))
+        
+        # Check comorbidities & diagnosis strings
+        primary_diag = str(data.get('primary_diagnosis', '')).lower()
+        comorbidities = [str(c).lower() for c in data.get('comorbidities', [])]
+
+        has_diabetes = (
+            str(data.get('diabetes', '0')).lower() in ['1', 'yes', 'true', 't'] or
+            'diabetes' in primary_diag or
+            any('diabetes' in c for c in comorbidities)
+        )
+        diabetes = 1.0 if has_diabetes else 0.0
+
+        has_htn = (
+            str(data.get('hypertension', '0')).lower() in ['1', 'yes', 'true', 't'] or
+            'hypertension' in primary_diag or
+            systolic >= 140 or
+            any('hypertension' in c for c in comorbidities)
+        )
+        hypertension = 1.0 if has_htn else 0.0
+
+        med_count = float(data.get('medication_count', 4))
+        length_of_stay = float(data.get('length_of_stay', data.get('los_days', 4)))
+        
+        dest_map = {'home': 0, 'nursing_facility': 1, 'rehab': 2, 'other': 3}
+        discharge_dest = str(data.get('discharge_destination', 'home')).lower().replace(" ", "_")
+        dest_enc = float(dest_map.get(discharge_dest, 0))
+
+        creatinine = float(data.get('creatinine', 1.0))
+        haemoglobin = float(data.get('haemoglobin', data.get('hemoglobin', 13.5)))
+        hba1c = float(data.get('hba1c', 5.7 if not has_diabetes else 7.2))
+        heart_rate = float(data.get('heart_rate', 75))
+        resp_rate = float(data.get('resp_rate', 16))
+        spo2 = float(data.get('spo2', 98))
+        temp_c = float(data.get('temp_c', data.get('temperature', 37.0)))
+        wbc = float(data.get('wbc', 7.5))
+        
+        prev_30d = float(data.get('prev_admissions_30d', data.get('prev_admissions_30_days', 0)))
+        prev_12m = float(data.get('prev_admissions_12m', data.get('prev_admissions_12_months', max(prev_30d, 0))))
+        ed_visits = float(data.get('ed_visits_12m', data.get('ed_visits', 0)))
+        
+        chf = 1.0 if ('heart failure' in primary_diag or 'chf' in primary_diag or any('heart failure' in c or 'chf' in c for c in comorbidities)) else float(data.get('chf_history', 0))
+        ckd = 1.0 if ('kidney' in primary_diag or 'ckd' in primary_diag or creatinine > 1.3 or any('kidney' in c or 'ckd' in c for c in comorbidities)) else float(data.get('ckd_history', 0))
+
+        vector = [
+            age, gender_enc, systolic, diastolic, cholesterol, bmi,
+            diabetes, hypertension, med_count, length_of_stay,
+            dest_enc, creatinine, haemoglobin, hba1c, heart_rate,
+            resp_rate, spo2, temp_c, wbc, prev_30d,
+            prev_12m, ed_visits, chf, ckd
+        ]
+
+        df_vector = pd.DataFrame([vector], columns=self.feature_cols)
+        scaled_array = self.scaler.transform(df_vector)
+
+        # Raw probability from model
+        prob = float(self.model.predict_proba(scaled_array)[0][1])
+
+        # Clinical weighting adjustments for specific acute factors
+        clinical_additive = 0.0
+        if prev_30d >= 1:
+            clinical_additive += 0.22 * prev_30d
+        if prev_12m >= 2:
+            clinical_additive += 0.15
+        if chf == 1.0:
+            clinical_additive += 0.15
+        if creatinine >= 1.5:
+            clinical_additive += 0.12
+        if haemoglobin < 10.5:
+            clinical_additive += 0.10
+        if med_count >= 8:
+            clinical_additive += 0.10
+        if length_of_stay >= 7:
+            clinical_additive += 0.08
+        if spo2 <= 94:
+            clinical_additive += 0.10
+        if ed_visits >= 2:
+            clinical_additive += 0.10
+
+        # Blended risk
+        if clinical_additive > 0:
+            combined_prob = np.clip(max(prob, 0.20) * 0.45 + clinical_additive * 0.55, 0.05, 0.95)
+        else:
+            combined_prob = np.clip(prob, 0.05, 0.95)
+
+        risk_score_pct = int(round(combined_prob * 100))
+
+        # Classify risk level
+        if risk_score_pct <= 30:
+            risk_level = "Low Risk"
+            risk_badge_class = "bg-green-100 text-green-800 border border-green-200"
+            risk_color = "#146c2e"
+            risk_level_code = "low"
+        elif risk_score_pct <= 60:
+            risk_level = "Moderate Risk"
+            risk_badge_class = "bg-amber-100 text-amber-800 border border-amber-200"
+            risk_color = "#b36b00"
+            risk_level_code = "moderate"
+        else:
+            risk_level = "High Risk"
+            risk_badge_class = "bg-error text-on-error"
+            risk_color = "#ba1a1a"
+            risk_level_code = "high"
+
+        # Generate Explainable AI (XAI) Contributing Factors
+        factors = []
+        
+        if prev_12m >= 1 or prev_30d >= 1:
+            factors.append({
+                "title": "Previous Admission History",
+                "impact": "High Elevating Factor",
+                "direction": "up",
+                "color": "#ba1a1a",
+                "icon": "arrow_upward",
+                "description": f"{int(prev_12m)} prior admission(s) within the last 12 months (including {int(prev_30d)} in past 30 days) significantly elevates risk profile."
+            })
+
+        if creatinine >= 1.3:
+            factors.append({
+                "title": "Elevated Creatinine Levels",
+                "impact": "Elevating Factor",
+                "direction": "up",
+                "color": "#b36b00",
+                "icon": "arrow_upward",
+                "description": f"Serum creatinine of {creatinine:.2f} mg/dL indicates potential renal stress and impaired clearance."
+            })
+        elif haemoglobin < 11.5:
+            factors.append({
+                "title": "Low Hemoglobin / Anemia",
+                "impact": "Elevating Factor",
+                "direction": "up",
+                "color": "#b36b00",
+                "icon": "arrow_upward",
+                "description": f"Hemoglobin of {haemoglobin:.1f} g/dL reflects anemia, associated with increased cardiovascular fatigue."
+            })
+
+        if chf == 1.0 or diabetes == 1.0 or hypertension == 1.0 or ckd == 1.0:
+            conds = []
+            if chf == 1.0: conds.append("CHF")
+            if diabetes == 1.0: conds.append("Type 2 Diabetes")
+            if hypertension == 1.0: conds.append("Hypertension")
+            if ckd == 1.0: conds.append("CKD")
+            
+            factors.append({
+                "title": "Multiple Chronic Conditions",
+                "impact": "Clinical Factor",
+                "direction": "up",
+                "color": "#5b5f64",
+                "icon": "info",
+                "description": f"Patient manages {', '.join(conds)}, requiring intricate multidisciplinary coordination."
+            })
+
+        if med_count >= 6:
+            factors.append({
+                "title": "Polypharmacy Burden",
+                "impact": "Elevating Factor",
+                "direction": "up",
+                "color": "#b36b00",
+                "icon": "medication",
+                "description": f"Patient is prescribed {int(med_count)} concurrent medications, increasing the risk of adverse drug interactions and non-adherence."
+            })
+
+        if length_of_stay >= 6:
+            factors.append({
+                "title": "Extended Length of Stay",
+                "impact": "Elevating Factor",
+                "direction": "up",
+                "color": "#b36b00",
+                "icon": "hotel",
+                "description": f"Inpatient hospital stay of {int(length_of_stay)} days indicates severe index admission illness."
+            })
+
+        if not factors:
+            factors.append({
+                "title": "Normal Baseline Biomarkers",
+                "impact": "Protective Factor",
+                "direction": "down",
+                "color": "#146c2e",
+                "icon": "arrow_downward",
+                "description": "Vitals and baseline metabolic panels are stable with no major unmanaged acute episodes."
+            })
+
+        # Generate Actionable Clinical Follow-up Recommendations
+        recommendations = []
+        if risk_level_code == "high":
+            rec_text = "Clinical considerations: Review discharge readiness meticulously. Schedule primary care follow-up within 72 hours of discharge. Coordinate home health evaluation for medication reconciliation and disease management protocol."
+            recommendations.append(rec_text)
+            recommendations.append("Ensure caregiver engagement and provide clear red-flag symptoms hotline before discharge.")
+            recommendations.append("Order 7-day post-discharge tele-health check-in.")
+        elif risk_level_code == "moderate":
+            rec_text = "Clinical considerations: Schedule outpatient clinic follow-up within 7 to 10 days. Ensure patient has filled all discharge prescriptions and understands dosing."
+            recommendations.append(rec_text)
+            recommendations.append("Provide patient education packet on dietary restrictions and medication adherence.")
+        else:
+            rec_text = "Standard post-discharge care protocol: Routine primary care follow-up within 14-30 days. Standard discharge instructions and lifestyle guidance."
+            recommendations.append(rec_text)
+
+        return {
+            "risk_score": risk_score_pct,
+            "risk_level": risk_level,
+            "risk_level_code": risk_level_code,
+            "risk_badge_class": risk_badge_class,
+            "risk_color": risk_color,
+            "gauge_dashoffset": round(283 * (1 - (risk_score_pct / 100.0)), 2),
+            "contributing_factors": factors,
+            "recommendations": recommendations,
+            "primary_recommendation": recommendations[0] if recommendations else "Standard clinical observation."
+        }
+
+predictor_instance = ReadmissionPredictor()
+predictor = predictor_instance

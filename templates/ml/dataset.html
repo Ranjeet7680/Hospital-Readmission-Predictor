@@ -1,0 +1,91 @@
+{% extends "base.html" %}
+
+{% block title %}Dataset Workspace - Hospital Readmission Predictor{% endblock %}
+{% block header_title %}Diabetes 130-US Hospitals Dataset Workspace{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto space-y-6">
+    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+        <div>
+            <h1 class="text-2xl font-bold text-on-surface" data-i18n="dataset_workspace">Dataset Workspace</h1>
+            <p class="text-sm text-secondary">Primary Cohort: <strong>Diabetes 130-US Hospitals for Years 1999–2008</strong> (101,766 Encounters • 50 Clinical Features)</p>
+        </div>
+        <div class="flex items-center gap-2">
+            <a href="/ml/profiling" class="px-4 py-2 bg-primary text-on-primary rounded-xl font-bold text-xs hover:bg-on-primary-fixed-variant transition-colors shadow-xs flex items-center gap-1.5">
+                <span class="material-symbols-outlined text-[16px]">troubleshoot</span>
+                Run Data Quality Profiler
+            </a>
+        </div>
+    </div>
+
+    <!-- Metadata Cards -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div class="p-5 bg-surface-container-lowest border border-outline-variant rounded-2xl shadow-xs">
+            <span class="text-xs font-bold text-secondary uppercase">Encounters Ingested</span>
+            <p class="text-2xl font-bold text-primary mt-1">101,766</p>
+            <span class="text-[11px] text-secondary">Unique clinical admissions</span>
+        </div>
+        <div class="p-5 bg-surface-container-lowest border border-outline-variant rounded-2xl shadow-xs">
+            <span class="text-xs font-bold text-secondary uppercase">Feature Space</span>
+            <p class="text-2xl font-bold text-on-surface mt-1">50 Features</p>
+            <span class="text-[11px] text-secondary">Demographics, Labs, Rx, Utilization</span>
+        </div>
+        <div class="p-5 bg-surface-container-lowest border border-outline-variant rounded-2xl shadow-xs">
+            <span class="text-xs font-bold text-secondary uppercase">Target Variable</span>
+            <p class="text-sm font-bold text-error mt-1 truncate">readmitted_30d (Binary)</p>
+            <span class="text-[11px] text-secondary">11.16% Class Positive</span>
+        </div>
+        <div class="p-5 bg-surface-container-lowest border border-outline-variant rounded-2xl shadow-xs">
+            <span class="text-xs font-bold text-secondary uppercase">Data License</span>
+            <p class="text-sm font-bold text-[#146c2e] mt-1">CC-BY 4.0 Open Data</p>
+            <span class="text-[11px] text-secondary">Kaggle & UCI ML Repository</span>
+        </div>
+    </div>
+
+    <!-- Sample Data Table -->
+    <div class="bg-surface-container-lowest border border-outline-variant rounded-2xl overflow-hidden shadow-xs">
+        <div class="p-4 border-b border-surface-variant flex justify-between items-center">
+            <h3 class="font-bold text-on-surface text-sm">Sample Encounter Records (Holdout Partition)</h3>
+            <span class="text-xs text-secondary font-mono">Stratified 70/15/15 Split</span>
+        </div>
+        <div class="overflow-x-auto">
+            <table class="w-full text-left text-xs">
+                <thead class="bg-surface-container-low border-b border-outline-variant text-secondary uppercase font-semibold">
+                    <tr>
+                        <th class="py-3 px-4">Encounter ID</th>
+                        <th class="py-3 px-4">Patient MRN</th>
+                        <th class="py-3 px-4">Age Group</th>
+                        <th class="py-3 px-4">Gender</th>
+                        <th class="py-3 px-4">Stay (Days)</th>
+                        <th class="py-3 px-4">Medications</th>
+                        <th class="py-3 px-4">Inpatient Prior</th>
+                        <th class="py-3 px-4">Emergency Prior</th>
+                        <th class="py-3 px-4">Readmitted &lt;30d</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-surface-variant">
+                    {% for row in sample_rows %}
+                    <tr class="hover:bg-surface-container-low transition-colors">
+                        <td class="py-3 px-4 font-mono font-bold text-primary">{{ row.encounter_id }}</td>
+                        <td class="py-3 px-4 font-mono text-secondary">{{ row.patient_nbr }}</td>
+                        <td class="py-3 px-4 font-semibold text-on-surface">{{ row.age }}</td>
+                        <td class="py-3 px-4 text-secondary">{{ row.gender }}</td>
+                        <td class="py-3 px-4 font-bold text-on-surface">{{ row.time_in_hospital }}</td>
+                        <td class="py-3 px-4 text-on-surface">{{ row.num_medications }}</td>
+                        <td class="py-3 px-4 font-bold {% if row.number_inpatient > 0 %}text-error{% else %}text-secondary{% endif %}">{{ row.number_inpatient }}</td>
+                        <td class="py-3 px-4 text-secondary">{{ row.number_emergency }}</td>
+                        <td class="py-3 px-4">
+                            {% if row.readmitted_30d == 1 %}
+                                <span class="px-2.5 py-0.5 bg-error text-on-error font-bold rounded-full text-[10px]">1 (Readmitted)</span>
+                            {% else %}
+                                <span class="px-2.5 py-0.5 bg-green-100 text-[#146c2e] font-bold rounded-full text-[10px]">0 (No Readmit)</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

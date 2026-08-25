@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+
+{% block title %}Automated Data Quality Profiling - Hospital Readmission Predictor{% endblock %}
+{% block header_title %}Automated Data Quality Profiling{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto space-y-6">
+    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+        <div>
+            <h1 class="text-2xl font-bold text-on-surface">Automated Data Quality Profiler</h1>
+            <p class="text-sm text-secondary">Missingness audit, class imbalance analysis, and distributional health on 101,766 encounters.</p>
+        </div>
+        <a href="/ml/preprocessing" class="px-4 py-2 bg-primary text-on-primary rounded-xl font-bold text-xs hover:bg-on-primary-fixed-variant transition-colors shadow-xs flex items-center gap-1.5">
+            <span class="material-symbols-outlined text-[16px]">arrow_forward</span>
+            Open Preprocessing Pipeline
+        </a>
+    </div>
+
+    <!-- Class Imbalance Banner -->
+    <div class="p-5 bg-surface-container-lowest border border-outline-variant rounded-2xl shadow-xs space-y-2">
+        <div class="flex justify-between items-center">
+            <h3 class="font-bold text-on-surface text-sm">Target Variable Class Imbalance Audit</h3>
+            <span class="px-2.5 py-0.5 rounded-full bg-error text-on-error font-bold text-xs">Imbalance Ratio 1 : 7.96</span>
+        </div>
+        <div class="w-full h-3 bg-surface-container-high rounded-full overflow-hidden flex">
+            <div class="bg-error h-full" style="width: 11.16%;" title="Readmitted <30 Days (11.16%)"></div>
+            <div class="bg-[#146c2e] h-full" style="width: 88.84%;" title="Not Readmitted (88.84%)"></div>
+        </div>
+        <div class="flex justify-between text-xs text-secondary pt-1">
+            <span>Readmitted &lt;30d: <strong>11,357 encounters (11.16%)</strong></span>
+            <span>Not Readmitted: <strong>90,409 encounters (88.84%)</strong></span>
+        </div>
+    </div>
+
+    <!-- Missing Value Statistics Table -->
+    <div class="bg-surface-container-lowest border border-outline-variant rounded-2xl overflow-hidden shadow-xs">
+        <div class="p-4 border-b border-surface-variant flex justify-between items-center">
+            <h3 class="font-bold text-on-surface text-sm">Missing Value Distribution & Imputation Strategy</h3>
+            <span class="text-xs text-secondary">50 Features Audited</span>
+        </div>
+        <div class="overflow-x-auto">
+            <table class="w-full text-left text-xs">
+                <thead class="bg-surface-container-low border-b border-outline-variant text-secondary uppercase font-semibold">
+                    <tr>
+                        <th class="py-3 px-4">Feature Name</th>
+                        <th class="py-3 px-4">Missing Count</th>
+                        <th class="py-3 px-4">Missing Percentage</th>
+                        <th class="py-3 px-4">Automated Strategy</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-surface-variant">
+                    {% for item in profile.missing_stats %}
+                    <tr class="hover:bg-surface-container-low transition-colors">
+                        <td class="py-3 px-4 font-mono font-bold text-on-surface">{{ item.feature }}</td>
+                        <td class="py-3 px-4 text-secondary font-mono">{{ item.missing_count }}</td>
+                        <td class="py-3 px-4 font-bold {% if item.missing_pct > 50 %}text-error{% elif item.missing_pct > 0 %}text-amber-700{% else %}text-[#146c2e]{% endif %}">
+                            {{ item.missing_pct }}%
+                        </td>
+                        <td class="py-3 px-4">
+                            <span class="px-2 py-0.5 rounded-full bg-surface-variant font-semibold text-[10px]">
+                                {{ item.status }}
+                            </span>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

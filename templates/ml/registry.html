@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+
+{% block title %}Model Registry - Hospital Readmission Predictor{% endblock %}
+{% block header_title %}Model Governance & Version Registry{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto space-y-6">
+    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+        <div>
+            <h1 class="text-2xl font-bold text-on-surface" data-i18n="model_registry">Institutional Model Registry</h1>
+            <p class="text-sm text-secondary">Lifecycle governance: Development → Validation → Approved → Active Champion → Archived.</p>
+        </div>
+    </div>
+
+    <!-- Registry Table -->
+    <div class="bg-surface-container-lowest border border-outline-variant rounded-2xl overflow-hidden shadow-xs">
+        <div class="overflow-x-auto">
+            <table class="w-full text-left text-xs">
+                <thead class="bg-surface-container-low border-b border-outline-variant text-secondary uppercase font-semibold">
+                    <tr>
+                        <th class="py-3 px-4">Model Name</th>
+                        <th class="py-3 px-4">Version</th>
+                        <th class="py-3 px-4">Algorithm</th>
+                        <th class="py-3 px-4">Benchmark Metrics</th>
+                        <th class="py-3 px-4">Owner</th>
+                        <th class="py-3 px-4">Status</th>
+                        <th class="py-3 px-4 text-right">Lifecycle Actions</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-surface-variant">
+                    {% for m in models %}
+                    <tr class="hover:bg-surface-container-low transition-colors">
+                        <td class="py-3.5 px-4 font-bold text-on-surface">{{ m.name }}</td>
+                        <td class="py-3.5 px-4 font-mono font-bold text-primary">{{ m.version }}</td>
+                        <td class="py-3.5 px-4 text-secondary">{{ m.algorithm }}</td>
+                        <td class="py-3.5 px-4 font-semibold text-on-surface">{{ m.metrics }}</td>
+                        <td class="py-3.5 px-4 text-secondary">{{ m.owner }}</td>
+                        <td class="py-3.5 px-4">
+                            {% if m.status == 'Active' %}
+                                <span class="px-2.5 py-0.5 bg-primary text-on-primary font-bold rounded-full text-[10px]">Active Champion</span>
+                            {% elif m.status == 'Approved' %}
+                                <span class="px-2.5 py-0.5 bg-green-100 text-[#146c2e] font-bold rounded-full text-[10px]">Approved</span>
+                            {% else %}
+                                <span class="px-2.5 py-0.5 bg-surface-variant text-secondary font-semibold rounded-full text-[10px]">{{ m.status }}</span>
+                            {% endif %}
+                        </td>
+                        <td class="py-3.5 px-4 text-right space-x-2">
+                            {% if m.status != 'Active' %}
+                                <button onclick="window.soundEngine?.success(); alert('Model {{ m.version }} promoted to Active Champion.'); location.reload();" class="text-primary font-bold hover:underline">Promote</button>
+                            {% else %}
+                                <span class="text-secondary font-semibold text-[10px]">In Production</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

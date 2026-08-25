@@ -1,0 +1,69 @@
+{% extends "base.html" %}
+
+{% block title %}Settings - Hospital Readmission Predictor{% endblock %}
+{% block header_title %}System & Clinical Settings{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto space-y-lg">
+    <div>
+        <h1 class="text-headline-lg font-headline-lg font-bold text-on-surface">Clinical Settings & Configuration</h1>
+        <p class="text-body-lg text-secondary mt-1">Configure clinical risk thresholds, notification alerts, and electronic health record integration preferences.</p>
+    </div>
+
+    <div class="bg-surface-container-lowest border border-outline-variant rounded-2xl p-lg shadow-sm space-y-6">
+        <div>
+            <h3 class="text-title-lg font-bold text-on-surface mb-3 flex items-center gap-2">
+                <span class="material-symbols-outlined text-primary">tune</span>
+                Risk Threshold Calibration
+            </h3>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-md">
+                <div>
+                    <label class="block text-xs font-bold text-secondary uppercase mb-1">Moderate Risk Lower Cutoff (%)</label>
+                    <input type="number" value="31" class="w-full rounded-xl border border-outline-variant bg-surface px-3 py-2.5 text-body-md focus:border-primary outline-none"/>
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-secondary uppercase mb-1">High Risk Lower Cutoff (%)</label>
+                    <input type="number" value="61" class="w-full rounded-xl border border-outline-variant bg-surface px-3 py-2.5 text-body-md focus:border-primary outline-none"/>
+                </div>
+            </div>
+        </div>
+
+        <div class="border-t border-surface-variant pt-6">
+            <h3 class="text-title-lg font-bold text-on-surface mb-3 flex items-center gap-2">
+                <span class="material-symbols-outlined text-primary">model_training</span>
+                Active Model Pipeline
+            </h3>
+            <div class="p-4 bg-surface rounded-xl border border-outline-variant flex justify-between items-center">
+                <div>
+                    <span class="font-bold text-on-surface">XGBoost Readmission Classifier v2.4.1</span>
+                    <p class="text-xs text-secondary mt-0.5">Trained on 30,000 patient records • Calibrated Log-Loss</p>
+                </div>
+                <span class="px-3 py-1 bg-green-100 text-[#146c2e] font-bold text-xs rounded-full">Active & Serving</span>
+            </div>
+        </div>
+
+        <div class="border-t border-surface-variant pt-6">
+            <h3 class="text-title-lg font-bold text-on-surface mb-3 flex items-center gap-2">
+                <span class="material-symbols-outlined text-primary">notifications</span>
+                Alerts & Care Coordination
+            </h3>
+            <div class="space-y-3">
+                <label class="flex items-center gap-3 cursor-pointer">
+                    <input type="checkbox" checked class="w-4 h-4 rounded text-primary focus:ring-primary"/>
+                    <span class="text-sm font-medium text-on-surface">Automatically notify attending physician when patient risk score exceeds 60%</span>
+                </label>
+                <label class="flex items-center gap-3 cursor-pointer">
+                    <input type="checkbox" checked class="w-4 h-4 rounded text-primary focus:ring-primary"/>
+                    <span class="text-sm font-medium text-on-surface">Generate automatic pharmacist consultation referral for polypharmacy (&gt;6 medications)</span>
+                </label>
+            </div>
+        </div>
+
+        <div class="pt-4 border-t border-surface-variant flex justify-end">
+            <button onclick="alert('Clinical settings updated successfully.');" class="px-6 py-2.5 bg-primary text-on-primary font-bold rounded-xl hover:bg-on-primary-fixed-variant transition-colors shadow-md">
+                Save Changes
+            </button>
+        </div>
+    </div>
+</div>
+{% endblock %}
