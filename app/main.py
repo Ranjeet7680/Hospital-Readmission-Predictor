@@ -703,7 +703,7 @@ async def report_health_id_lost(request: Request, token_id: str = Form(...)):
     return RedirectResponse(url="/health-id", status_code=303)
 
 @app.get("/doctor-id", response_class=HTMLResponse)
-async def doctor_id_page(request: Request):
+async def doctor_id_page(request: Request, updated: Optional[bool] = Query(False)):
     doc_profile = account_manager.doctor_profile
     token = qr_engine.tokens.get("QRT-DOC-ARIS-88219")
     verify_url = f"{request.base_url}verify-doctor/{token['token_id']}"
@@ -712,8 +712,70 @@ async def doctor_id_page(request: Request):
         "active_page": "doctor_id",
         "doc_profile": doc_profile,
         "token": token,
-        "qr_svg": qr_svg
+        "qr_svg": qr_svg,
+        "updated": updated
     })
+
+@app.get("/doctor-profile/edit", response_class=HTMLResponse)
+@app.get("/doctor/profile/edit", response_class=HTMLResponse)
+async def doctor_profile_edit_page(request: Request, saved: Optional[bool] = Query(False)):
+    doc_profile = account_manager.doctor_profile
+    token = qr_engine.tokens.get("QRT-DOC-ARIS-88219")
+    verify_url = f"{request.base_url}verify-doctor/{token['token_id']}"
+    qr_svg = qr_engine.generate_svg_qr(verify_url, size=140)
+    return templates.TemplateResponse(request=request, name="health_id/doctor_profile_edit.html", context={
+        "active_page": "doctor_id",
+        "doc_profile": doc_profile,
+        "token": token,
+        "qr_svg": qr_svg,
+        "saved": saved
+    })
+
+@app.post("/doctor-profile/edit")
+@app.post("/doctor/profile/edit")
+async def doctor_profile_edit_post(
+    request: Request,
+    full_name: str = Form(...),
+    title: str = Form("Attending Physician & Clinical Cardiologist"),
+    email: str = Form(...),
+    phone: str = Form(...),
+    hospital: str = Form(...),
+    department: str = Form(...),
+    specialty: str = Form(...),
+    sub_specialties: str = Form(""),
+    license_number: str = Form(...),
+    npi_number: str = Form("1849204812"),
+    clinic_location: str = Form(""),
+    office_hours: str = Form(""),
+    experience: str = Form("18 Years"),
+    education: str = Form(""),
+    languages: str = Form("English, हिन्दी (Hindi)"),
+    bio: str = Form(""),
+    telehealth_enabled: Optional[str] = Form(None),
+    emergency_consult_enabled: Optional[str] = Form(None)
+):
+    form_data = {
+        "full_name": full_name,
+        "title": title,
+        "email": email,
+        "phone": phone,
+        "hospital": hospital,
+        "department": department,
+        "specialty": specialty,
+        "sub_specialties": sub_specialties,
+        "license_number": license_number,
+        "npi_number": npi_number,
+        "clinic_location": clinic_location,
+        "office_hours": office_hours,
+        "experience": experience,
+        "education": education,
+        "languages": languages,
+        "bio": bio,
+        "telehealth_enabled": telehealth_enabled is not None,
+        "emergency_consult_enabled": emergency_consult_enabled is not None
+    }
+    account_manager.update_doctor_profile(form_data)
+    return RedirectResponse(url="/doctor-id?updated=true", status_code=303)
 
 @app.get("/wallet", response_class=HTMLResponse)
 async def digital_wallet_page(request: Request):

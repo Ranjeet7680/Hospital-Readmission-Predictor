@@ -44,22 +44,33 @@ class AccountManager:
             }
         }
 
-        # Doctor Profile (Dr. J. Aris)
+        # Doctor Profile (Dr. Smith, MD)
         self.doctor_profile = {
             "id": "DR-88219",
             "health_id": "HRP-DOC-2026-088219",
-            "full_name": "Dr. J. Aris, MD, FACC",
-            "initials": "JA",
+            "full_name": "Dr. Smith, MD, FACC",
+            "first_name": "Dr. Smith",
+            "initials": "DS",
+            "title": "Attending Physician & Clinical Cardiologist",
             "email": "dr.smith@hospital.org",
             "phone": "+1 (555) 729-4410",
+            "department": "Inpatient Cardiology & Critical Care",
             "specialty": "Cardiology & Decompensated Heart Failure",
+            "sub_specialties": "Heart Failure Triage, Post-Discharge Surveillance, Arrhythmia & Hypertension",
             "license_number": "MD-88219-NY",
-            "hospital": "Metro General Heart Institute",
+            "npi_number": "1849204812",
+            "hospital": "St. Jude Medical Center",
+            "clinic_location": "Heart & Vascular Pavilion, Suite 402, Boston, MA",
+            "office_hours": "Mon–Fri: 08:00 AM – 05:00 PM EST",
+            "telehealth_enabled": True,
+            "emergency_consult_enabled": True,
             "experience": "18 Years",
-            "languages": ["English", "हिन्दी (Hindi)"],
+            "education": "Harvard Medical School (MD), Brigham & Women's Hospital (Fellowship)",
+            "languages": ["English", "हिन्दी (Hindi)", "Spanish"],
+            "bio": "Lead attending physician dedicated to reducing 30-day preventable readmissions using predictive ML risk models, explainable AI, and continuous post-discharge transitional care.",
             "account_type": "Doctor",
             "active_role": "Doctor",
-            "available_roles": ["Doctor", "Care Coordinator"],
+            "available_roles": ["Doctor", "Care Coordinator", "Administrator"],
             "verification_status": {
                 "email_verified": True,
                 "phone_verified": True,
@@ -261,6 +272,40 @@ class AccountManager:
             if key in data and data[key] is not None:
                 self.profile[key] = data[key]
         return self.profile
+
+    def update_doctor_profile(self, data: dict) -> dict:
+        for field in [
+            "full_name", "title", "email", "phone", "department", "specialty",
+            "sub_specialties", "license_number", "npi_number", "hospital",
+            "clinic_location", "office_hours", "experience", "education", "bio"
+        ]:
+            if field in data and data[field] is not None:
+                self.doctor_profile[field] = str(data[field]).strip()
+        
+        # Languages parsing
+        if "languages" in data:
+            if isinstance(data["languages"], list):
+                self.doctor_profile["languages"] = data["languages"]
+            elif isinstance(data["languages"], str):
+                self.doctor_profile["languages"] = [lang.strip() for lang in data["languages"].split(",") if lang.strip()]
+        
+        # Boolean toggles
+        if "telehealth_enabled" in data:
+            self.doctor_profile["telehealth_enabled"] = data.get("telehealth_enabled") in [True, "true", "True", "on", "1"]
+        if "emergency_consult_enabled" in data:
+            self.doctor_profile["emergency_consult_enabled"] = data.get("emergency_consult_enabled") in [True, "true", "True", "on", "1"]
+
+        # Recalculate initials
+        raw_name = self.doctor_profile["full_name"].replace("Dr.", "").replace("MD", "").replace("FACC", "").replace(",", "").strip()
+        parts = raw_name.split()
+        if len(parts) >= 2:
+            self.doctor_profile["initials"] = f"{parts[0][0]}{parts[-1][0]}".upper()
+        elif len(parts) == 1 and len(parts[0]) >= 2:
+            self.doctor_profile["initials"] = parts[0][:2].upper()
+        else:
+            self.doctor_profile["initials"] = "DS"
+
+        return self.doctor_profile
 
     def update_privacy(self, data: dict):
         for key in self.privacy_settings.keys():
