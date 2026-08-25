@@ -53,12 +53,8 @@ async def favicon():
     return FileResponse(os.path.join(BASE_DIR, "static", "favicon.svg"), media_type="image/svg+xml")
 
 @app.get("/ebook", response_class=HTMLResponse)
-async def read_ebook():
-    ebook_html_path = os.path.join(BASE_DIR, "docs", "ebook", "Hospital_Readmission_Predictor_Complete_eBook.html")
-    if os.path.exists(ebook_html_path):
-        with open(ebook_html_path, "r", encoding="utf-8") as f:
-            return HTMLResponse(content=f.read())
-    return HTMLResponse("<h1>eBook is being compiled. Please try again shortly.</h1>", status_code=404)
+async def read_ebook(request: Request):
+    return templates.TemplateResponse(request=request, name="ebook.html", context={})
 
 @app.get("/ebook/download")
 async def download_ebook_markdown():
