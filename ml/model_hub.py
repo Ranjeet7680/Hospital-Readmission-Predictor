@@ -3,14 +3,7 @@ Model Hub: Benchmark Suite, Model Evaluation, Multi-Model Comparison & Ensemble 
 """
 
 import numpy as np
-
-try:
-    import torch
-    from ml.deep_models import TabularANN, TabularTransformer
-    HAS_TORCH = True
-except ImportError:
-    torch = None
-    HAS_TORCH = False
+from ml.deep_models import TabularANN, TabularTransformer, HAS_TORCH
 
 class ModelHub:
     def __init__(self):
@@ -129,8 +122,11 @@ class ModelHub:
                 "parameters": "Embed(32) -> 2x TransformerEncoder(nhead=4) -> MLP Head"
             }
         }
-        self.ann_model = TabularANN()
-        self.ann_model.eval()
+        if HAS_TORCH:
+            self.ann_model = TabularANN()
+            self.ann_model.eval()
+        else:
+            self.ann_model = None
 
     def get_all_models(self):
         return list(self.benchmark_models.values())

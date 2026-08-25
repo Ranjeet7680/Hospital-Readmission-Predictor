@@ -46,67 +46,76 @@ class TabularANN(nn.Module if HAS_TORCH else object):
         logits = self.out(x)
         return torch.sigmoid(logits)
 
-class TabularTransformer(nn.Module):
+class TabularTransformer(nn.Module if HAS_TORCH else object):
     """Attention-Based Architecture for Tabular Healthcare EHR Data."""
     def __init__(self, num_features=24, embed_dim=32, num_heads=4, num_layers=2, dropout=0.2):
-        super(TabularTransformer, self).__init__()
-        self.feature_embedding = nn.Linear(1, embed_dim)
-        
-        encoder_layer = nn.TransformerEncoderLayer(
-            d_model=embed_dim,
-            nhead=num_heads,
-            dim_feedforward=64,
-            dropout=dropout,
-            batch_first=True
-        )
-        self.transformer_encoder = nn.TransformerEncoder(encoder_layer, num_layers=num_layers)
-        self.classifier_head = nn.Sequential(
-            nn.Linear(num_features * embed_dim, 64),
-            nn.ReLU(),
-            nn.Dropout(dropout),
-            nn.Linear(64, 1),
-            nn.Sigmoid()
-        )
+        if HAS_TORCH:
+            super(TabularTransformer, self).__init__()
+            self.feature_embedding = nn.Linear(1, embed_dim)
+            encoder_layer = nn.TransformerEncoderLayer(
+                d_model=embed_dim,
+                nhead=num_heads,
+                dim_feedforward=64,
+                dropout=dropout,
+                batch_first=True
+            )
+            self.transformer_encoder = nn.TransformerEncoder(encoder_layer, num_layers=num_layers)
+            self.classifier_head = nn.Sequential(
+                nn.Linear(num_features * embed_dim, 64),
+                nn.ReLU(),
+                nn.Dropout(dropout),
+                nn.Linear(64, 1),
+                nn.Sigmoid()
+            )
 
     def forward(self, x):
-        # x shape: (batch_size, num_features)
+        if not HAS_TORCH:
+            return 0.5
         batch_size, num_features = x.size()
-        x_reshaped = x.unsqueeze(-1) # (batch_size, num_features, 1)
-        embeddings = self.feature_embedding(x_reshaped) # (batch_size, num_features, embed_dim)
-        
+        x_reshaped = x.unsqueeze(-1)
+        embeddings = self.feature_embedding(x_reshaped)
         encoded = self.transformer_encoder(embeddings)
         flattened = encoded.reshape(batch_size, -1)
         return self.classifier_head(flattened)
 
-class PatientAutoencoder(nn.Module):
+class PatientAutoencoder(nn.Module if HAS_TORCH else object):
     """Autoencoder for Patient Representation, Latent Compression & Anomaly Scoring."""
     def __init__(self, input_dim=24, latent_dim=8):
-        super(PatientAutoencoder, self).__init__()
-        # Encoder
-        self.encoder = nn.Sequential(
-            nn.Linear(input_dim, 32),
-            nn.ReLU(),
-            nn.Linear(32, latent_dim),
-            nn.ReLU()
-        )
-        # Decoder
-        self.decoder = nn.Sequential(
-            nn.Linear(latent_dim, 32),
-            nn.ReLU(),
-            nn.Linear(32, input_dim)
-        )
+        if HAS_TORCH:
+            super(PatientAutoencoder, self).__init__()
+            self.encoder = nn.Sequential(
+                nn.Linear(input_dim, 32),
+                nn.ReLU(),
+                nn.Linear(32, latent_dim),
+                nn.ReLU()
+            )
+            self.decoder = nn.Sequential(
+                nn.Linear(latent_dim, 32),
+                nn.ReLU(),
+                nn.Linear(32, input_dim)
+            )
 
     def forward(self, x):
+        if not HAS_TORCH:
+            return x, None
         latent = self.encoder(x)
         reconstructed = self.decoder(latent)
         return reconstructed, latent
 
-class PatientSequenceLSTM(nn.Module):
+class PatientSequenceLSTM(nn.Module if HAS_TORCH else object):
     """LSTM Sequence Model for Longitudinal Patient Encounters."""
     def __init__(self, input_dim=12, hidden_dim=32, num_layers=2):
-        super(PatientSequenceLSTM, self).__init__()
-        self.lstm = nn.LSTM(input_dim, hidden_dim, num_layers=num_layers, batch_first=True)
-        self.fc = nn.Linear(hidden_dim, 1)
+        if HAS_TORCH:
+            super(PatientSequenceLSTM, self).__init__()
+            self.lstm = nn.LSTM(input_dim, hidden_dim, num_layers=num_layers, batch_first=True)
+            self.fc = nn.Linear(hidden_dim, 1)
+
+    def forward(self, x):
+        if not HAS_TORCH:
+            return 0.5
+        out, _ = self.lstm(x)
+        last_out = out[:, -1, :]
+        return torch.sigmoid(self.fc(last_out))
 
     def forward(self, x):
         # x shape: (batch_size, seq_len, input_dim)

@@ -40,18 +40,20 @@ class ActorCritic(nn.Module if HAS_TORCH else object):
                 nn.Linear(state_dim, 64),
                 nn.ReLU()
             )
-        self.actor = nn.Sequential(
-            nn.Linear(64, 32),
-            nn.ReLU(),
-            nn.Linear(32, action_dim)
-        )
-        self.critic = nn.Sequential(
-            nn.Linear(64, 32),
-            nn.ReLU(),
-            nn.Linear(32, 1)
-        )
+            self.actor = nn.Sequential(
+                nn.Linear(64, 32),
+                nn.ReLU(),
+                nn.Linear(32, action_dim)
+            )
+            self.critic = nn.Sequential(
+                nn.Linear(64, 32),
+                nn.ReLU(),
+                nn.Linear(32, 1)
+            )
 
     def forward(self, state):
+        if not HAS_TORCH:
+            return None, 0.0
         features = self.shared(state)
         action_logits = self.actor(features)
         value = self.critic(features)
@@ -130,10 +132,14 @@ class RLEngine:
     def __init__(self):
         self.env = PatientCareEnvironment()
         self.safety = SafetyConstraintEngine()
-        self.dqn = DQNAgent()
-        self.actor_critic = ActorCritic()
-        self.dqn.eval()
-        self.actor_critic.eval()
+        if HAS_TORCH:
+            self.dqn = DQNAgent()
+            self.actor_critic = ActorCritic()
+            self.dqn.eval()
+            self.actor_critic.eval()
+        else:
+            self.dqn = None
+            self.actor_critic = None
         
         # Tracked policy versions
         self.policies = [
