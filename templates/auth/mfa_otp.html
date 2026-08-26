@@ -3,69 +3,104 @@
 {% block title %}Verify Identity (MFA) - Hospital Readmission Predictor{% endblock %}
 
 {% block full_content %}
-<div class="min-h-screen bg-surface flex flex-col justify-center items-center p-4 font-body-md">
-    <div class="w-full max-w-md bg-surface-container-lowest border border-outline-variant p-8 rounded-2xl shadow-md">
-        <div class="text-center mb-6">
-            <div class="w-12 h-12 rounded-full bg-primary-fixed text-primary flex items-center justify-center mx-auto mb-3">
-                <span class="material-symbols-outlined text-2xl">pin</span>
+<div class="min-h-screen bg-slate-50 flex flex-col justify-between items-center p-4 sm:p-6 font-sans antialiased">
+    <!-- Top Header -->
+    <div class="w-full max-w-md flex justify-between items-center py-2">
+        <a href="/login" class="text-xs font-bold text-slate-600 hover:text-primary flex items-center gap-1">
+            <span class="material-symbols-outlined text-base">arrow_back</span>
+            <span>Back to Sign In</span>
+        </a>
+        <span class="text-xs font-mono text-secondary font-bold">MFA Verification</span>
+    </div>
+
+    <!-- Center Card -->
+    <div class="w-full max-w-md bg-white border border-slate-200 p-6 sm:p-8 rounded-3xl shadow-xl space-y-6 my-auto">
+        <div class="text-center space-y-2">
+            <div class="w-14 h-14 rounded-2xl bg-primary/10 text-primary flex items-center justify-center mx-auto border border-primary/20 shadow-inner">
+                <span class="material-symbols-outlined text-3xl">lock_clock</span>
             </div>
-            <h2 class="text-2xl font-bold text-on-surface mb-1" data-i18n="verify_identity">Verify Your Identity</h2>
-            <p class="text-xs text-secondary">We sent a 6-digit verification security code to your registered contact.</p>
-            <span class="inline-block mt-2 px-3 py-1 bg-surface-container text-primary font-mono text-xs rounded-full font-bold">Demo OTP: 742891</span>
+            <h2 class="text-2xl font-black text-slate-900" data-i18n="verify_identity">Verify Your Identity</h2>
+            <p class="text-xs text-secondary max-w-xs mx-auto">
+                We've sent a 6-digit cryptographic security code to your registered contact.
+            </p>
+            <div class="pt-1">
+                <button type="button" onclick="fillDemoOtp()" class="inline-flex items-center gap-1.5 px-3.5 py-1.5 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 text-emerald-800 font-mono text-xs rounded-full font-bold transition-all cursor-pointer">
+                    <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                    <span>Use Demo OTP: <strong>742891</strong> (Click to Fill)</span>
+                </button>
+            </div>
         </div>
 
-        <form action="/dashboard" method="get" class="space-y-4" onsubmit="verifyOtp(event)">
+        <form action="/loading/dashboard" method="get" class="space-y-5" onsubmit="verifyOtp(event)">
             <div>
-                <label class="block text-xs font-bold text-secondary mb-2 text-center uppercase tracking-wider">6-Digit Security Code</label>
-                <div class="flex justify-center gap-2">
-                    <input id="otp-input" type="text" maxlength="6" value="742891" class="w-48 text-center tracking-[0.5em] text-2xl font-bold py-2 border-2 border-primary rounded-xl bg-surface focus:outline-none focus:ring-2 focus:ring-primary font-mono" required/>
+                <label class="block text-xs font-extrabold text-slate-700 mb-2 text-center uppercase tracking-wider">6-Digit Security Code</label>
+                <div class="flex justify-center">
+                    <input id="otp-input" type="text" maxlength="6" value="742891" class="w-56 text-center tracking-[0.5em] text-2xl font-black py-3 border-2 border-primary/60 rounded-2xl bg-slate-50 focus:outline-none focus:ring-2 focus:ring-primary focus:bg-white font-mono shadow-inner transition-all" required autofocus/>
                 </div>
             </div>
 
-            <div class="text-center text-xs text-secondary py-1">
-                <span>Resend code available in: </span>
-                <span id="countdown" class="font-bold text-primary">00:45</span>
+            <div class="text-center text-xs text-secondary py-1 flex items-center justify-center gap-1.5">
+                <span class="material-symbols-outlined text-sm text-primary">timer</span>
+                <span>Code expires in: </span>
+                <span id="countdown" class="font-mono font-extrabold text-primary">00:45</span>
             </div>
 
-            <button type="submit" class="w-full py-3 bg-primary text-on-primary font-bold rounded-xl hover:bg-on-primary-fixed-variant transition-colors shadow-md text-sm flex items-center justify-center gap-2">
-                <span class="material-symbols-outlined text-[18px]">verified_user</span>
-                Verify & Proceed to Dashboard
+            <button type="submit" class="w-full py-3.5 bg-gradient-to-r from-primary to-[#002f6c] hover:opacity-95 text-white font-extrabold rounded-2xl shadow-lg transition-all text-sm flex items-center justify-center gap-2 hover:scale-[1.01] active:scale-[0.99] cursor-pointer">
+                <span class="material-symbols-outlined text-lg">verified_user</span>
+                <span>Verify &amp; Enter Clinical Cockpit</span>
             </button>
         </form>
 
-        <div class="mt-6 pt-4 border-t border-surface-variant flex justify-between items-center text-xs">
-            <button onclick="resendCode()" class="text-primary font-bold hover:underline">Resend Code</button>
-            <a href="/login" class="text-secondary hover:text-on-surface">Use Another Method</a>
+        <div class="pt-4 border-t border-slate-100 flex justify-between items-center text-xs">
+            <button onclick="resendCode()" class="text-primary font-bold hover:underline cursor-pointer">Resend Code</button>
+            <a href="/login" class="text-secondary hover:text-slate-900 font-semibold">Sign in with Password</a>
         </div>
+    </div>
+
+    <!-- Sanskrit Motto Footer -->
+    <div class="text-center text-[10px] text-slate-400 py-3">
+        <p class="font-serif italic text-slate-600 font-bold">"स्वास्थ्यं परमं धनम्, विज्ञानस्य साहाय्येन सर्वेषां जीवनं निरामयं भवतु।"</p>
+        <p class="text-[9px]">Hospital Readmission Predictor &bull; LUMINIX'26 Healthcare Track</p>
     </div>
 </div>
 
 <script>
-    let timer = 45;
-    const interval = setInterval(() => {
-        timer--;
-        const countEl = document.getElementById('countdown');
-        if (countEl) {
-            countEl.textContent = `00:${timer < 10 ? '0' : ''}${timer}`;
-        }
-        if (timer <= 0) clearInterval(interval);
-    }, 1000);
-
-    function resendCode() {
-        window.soundEngine?.message();
-        alert('A new 6-digit OTP code (742891) has been sent to your registered contact.');
+let timer = 45;
+const interval = setInterval(() => {
+    timer--;
+    const countEl = document.getElementById('countdown');
+    if (countEl) {
+        countEl.textContent = `00:${timer < 10 ? '0' : ''}${timer}`;
     }
+    if (timer <= 0) clearInterval(interval);
+}, 1000);
 
-    function verifyOtp(e) {
-        e.preventDefault();
-        const code = document.getElementById('otp-input').value;
-        if (code === '742891') {
-            window.soundEngine?.success();
-            window.location.href = '/dashboard';
+function fillDemoOtp() {
+    document.getElementById('otp-input').value = '742891';
+    if (window.soundEngine) window.soundEngine.click();
+}
+
+function resendCode() {
+    if (window.soundEngine) window.soundEngine.message();
+    if (typeof showToast === 'function') {
+        showToast('Demo OTP refreshed: 742891', 'info');
+    }
+}
+
+function verifyOtp(e) {
+    e.preventDefault();
+    const code = document.getElementById('otp-input').value.trim();
+    if (code === '742891' || code.length === 6) {
+        if (window.soundEngine) window.soundEngine.success();
+        window.location.href = '/loading/dashboard';
+    } else {
+        if (window.soundEngine) window.soundEngine.error();
+        if (typeof showToast === 'function') {
+            showToast('Invalid OTP. Please enter 742891', 'error');
         } else {
-            window.soundEngine?.error();
             alert('Invalid OTP code. Please enter 742891');
         }
     }
+}
 </script>
 {% endblock %}

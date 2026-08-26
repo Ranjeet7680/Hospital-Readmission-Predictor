@@ -1,0 +1,152 @@
+{% extends "base.html" %}
+
+{% block title %}Initializing Clinical Cockpit - Hospital Readmission Predictor{% endblock %}
+
+{% block full_content %}
+<div class="min-h-screen bg-gradient-to-br from-[#001738] via-[#002f6c] to-[#005bbf] text-white flex flex-col justify-between items-center p-6 sm:p-12 relative overflow-hidden select-none font-sans">
+    
+    <!-- Background Ambient Glow & Neural Rings -->
+    <div class="absolute -top-32 -left-32 w-96 h-96 rounded-full bg-cyan-400/15 blur-3xl pointer-events-none"></div>
+    <div class="absolute -bottom-32 -right-32 w-96 h-96 rounded-full bg-primary/25 blur-3xl pointer-events-none"></div>
+
+    <!-- Top Header Strip -->
+    <div class="w-full max-w-4xl flex justify-between items-center z-10">
+        <div class="flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 border border-white/20 text-xs font-mono backdrop-blur-md">
+            <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
+            <span>HRP AI ENGINE INITIALIZATION</span>
+        </div>
+        <button onclick="skipToDashboard()" class="px-4 py-1.5 rounded-full bg-white/15 hover:bg-white/25 border border-white/30 text-white font-bold text-xs shadow-xs transition-all backdrop-blur-md flex items-center gap-1 cursor-pointer">
+            <span>Skip to Dashboard</span>
+            <span class="material-symbols-outlined text-sm">arrow_forward</span>
+        </button>
+    </div>
+
+    <!-- Center High-Tech Loading Cockpit -->
+    <div class="flex flex-col items-center text-center max-w-lg w-full space-y-6 z-10 my-auto">
+        
+        <!-- Glowing Shield Logo with Pulsing Ring -->
+        <div class="relative w-28 h-28 flex items-center justify-center">
+            <!-- Pulsing Wave Rings -->
+            <div class="absolute inset-0 rounded-3xl bg-cyan-400/20 animate-ping opacity-75"></div>
+            <div class="absolute -inset-3 rounded-3xl bg-gradient-to-tr from-cyan-400/30 to-primary/40 blur-xl animate-pulse"></div>
+
+            <div class="relative w-full h-full rounded-3xl bg-gradient-to-br from-[#005bbf] to-[#00224f] border-2 border-white/40 p-1 shadow-2xl flex items-center justify-center backdrop-blur-md">
+                <svg viewBox="0 0 100 100" class="w-16 h-16 text-white" fill="none" stroke="currentColor" stroke-width="2.5">
+                    <path d="M50 12 L82 24 V52 C82 72 50 88 50 88 C50 88 18 72 18 52 V24 Z" stroke="#ffffff" stroke-width="3" fill="rgba(255,255,255,0.12)"/>
+                    <path d="M50 30 V58 M36 44 H64" stroke="#ffffff" stroke-width="5" stroke-linecap="round"/>
+                    <circle cx="50" cy="30" r="3.5" fill="#22d3ee" stroke="#ffffff" stroke-width="1.5"/>
+                    <circle cx="50" cy="58" r="3.5" fill="#22d3ee" stroke="#ffffff" stroke-width="1.5"/>
+                    <circle cx="36" cy="44" r="3.5" fill="#22d3ee" stroke="#ffffff" stroke-width="1.5"/>
+                    <circle cx="64" cy="44" r="3.5" fill="#22d3ee" stroke="#ffffff" stroke-width="1.5"/>
+                </svg>
+            </div>
+        </div>
+
+        <!-- Title & Subtitle -->
+        <div class="space-y-1">
+            <h1 class="text-2xl sm:text-3xl font-black tracking-tight text-white">
+                Synchronizing Clinical Intelligence
+            </h1>
+            <p class="text-xs sm:text-sm text-cyan-200/90 font-medium">
+                Hospital Readmission Predictor &bull; Precision Transition Care
+            </p>
+        </div>
+
+        <!-- 10-Second Progress Bar with Live % and Seconds Remaining -->
+        <div class="w-full space-y-2">
+            <div class="flex justify-between items-center text-xs font-mono text-cyan-200">
+                <span id="loading-stage-tag" class="font-bold">Stage 1 of 5: XGBoost v2.4.1</span>
+                <span id="countdown-timer" class="font-extrabold text-white">10.0s (0%)</span>
+            </div>
+            
+            <div class="w-full h-2.5 bg-black/40 rounded-full overflow-hidden border border-white/20 shadow-inner p-0.5">
+                <div id="loading-progress-bar" class="h-full bg-gradient-to-r from-cyan-400 via-emerald-400 to-primary rounded-full transition-all duration-100 ease-linear w-0 shadow-[0_0_12px_#22d3ee]"></div>
+            </div>
+        </div>
+
+        <!-- Real-Time Telemetry Stream Box -->
+        <div class="w-full bg-black/30 border border-white/15 rounded-2xl p-3.5 backdrop-blur-md text-left font-mono text-xs space-y-1.5 shadow-lg">
+            <div class="flex items-center gap-2 text-emerald-400 text-[11px] font-bold pb-1 border-b border-white/10">
+                <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping"></span>
+                <span id="telemetry-headline">Calibrating Model Weights...</span>
+            </div>
+            <p id="telemetry-log" class="text-slate-300 text-[11px] h-9 leading-tight">
+                Loading 101,766 baseline inpatient encounters and calibrated clinical feature matrix...
+            </p>
+        </div>
+
+        <!-- Sacred Motto Inscription -->
+        <div class="pt-2">
+            <p class="font-serif italic text-cyan-200/80 text-xs sm:text-sm font-semibold">
+                "स्वास्थ्यं परमं धनम्, विज्ञानस्य साहाय्येन सर्वेषां जीवनं निरामयं भवतु।"
+            </p>
+            <p class="text-[10px] text-white/50 mt-0.5">
+                Health is Supreme Wealth &bull; LUMINIX'26 Healthcare Track
+            </p>
+        </div>
+    </div>
+
+    <!-- Footer Security Seal -->
+    <div class="w-full max-w-4xl text-center text-[10px] text-white/60 z-10">
+        <span>St. Jude Medical Center &bull; Dr. Ranjeet Kumar &bull; HIPAA &amp; ABDM Compliant</span>
+    </div>
+</div>
+
+<script>
+const TOTAL_DURATION_MS = 10000; // Exact 10 seconds
+const START_TIME = Date.now();
+
+const STAGES = [
+    { atPct: 0, tag: "Stage 1/5: Machine Learning Core", headline: "Loading XGBoost v2.4.1 & Dataset", log: "Mounting 101,766 inpatient encounters with 0.9794 ROC-AUC benchmark..." },
+    { atPct: 22, tag: "Stage 2/5: Deep Learning Lab", headline: "Initializing PyTorch Tabular Transformer", log: "Validating self-attention heads and 16-dim patient embedding autoencoder..." },
+    { atPct: 45, tag: "Stage 3/5: PPO Reinforcement Learning", headline: "Connecting Care Twin Decision Engine", log: "Calibrating 6-stage post-discharge policy trajectory and safety constraints..." },
+    { atPct: 68, tag: "Stage 4/5: Explainable AI & Telemetry", headline: "Synthesizing TreeSHAP Attribution", log: "Synchronizing real-time telemetry stream, ECG lead II, and notification hub..." },
+    { atPct: 90, tag: "Stage 5/5: Launching Cockpit", headline: "Ready: Dr. Ranjeet Kumar Session", log: "Finalizing clinician workspace and opening Clinical Decision Cockpit..." }
+];
+
+let stageIndex = 0;
+
+const interval = setInterval(() => {
+    const elapsed = Date.now() - START_TIME;
+    const progress = Math.min(100, (elapsed / TOTAL_DURATION_MS) * 100);
+    const remainingSec = Math.max(0, ((TOTAL_DURATION_MS - elapsed) / 1000)).toFixed(1);
+
+    // Update progress bar
+    const bar = document.getElementById('loading-progress-bar');
+    if (bar) bar.style.width = progress + '%';
+
+    // Update timer text
+    const timer = document.getElementById('countdown-timer');
+    if (timer) timer.innerText = `${remainingSec}s (${Math.floor(progress)}%)`;
+
+    // Check stage milestones
+    for (let i = STAGES.length - 1; i >= 0; i--) {
+        if (progress >= STAGES[i].atPct) {
+            if (stageIndex !== i) {
+                stageIndex = i;
+                const stage = STAGES[i];
+                document.getElementById('loading-stage-tag').innerText = stage.tag;
+                document.getElementById('telemetry-headline').innerText = stage.headline;
+                document.getElementById('telemetry-log').innerText = stage.log;
+                if (window.soundEngine) window.soundEngine.click();
+            }
+            break;
+        }
+    }
+
+    if (elapsed >= TOTAL_DURATION_MS) {
+        clearInterval(interval);
+        if (window.soundEngine) window.soundEngine.success();
+        setTimeout(() => {
+            window.location.href = '/dashboard';
+        }, 200);
+    }
+}, 50);
+
+function skipToDashboard() {
+    clearInterval(interval);
+    if (window.soundEngine) window.soundEngine.click();
+    window.location.href = '/dashboard';
+}
+</script>
+{% endblock %}

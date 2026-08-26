@@ -210,6 +210,8 @@ def test_all_web_routes():
         "/rl/architecture",
         "/consultation/careai",
         "/notifications",
+        "/loading/dashboard",
+        "/auth/mfa",
         "/portal/patient",
         "/portal/coordinator",
         "/admin/users",

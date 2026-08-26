@@ -107,6 +107,10 @@ async def handle_login(request: Request, email: str = Form(...), password: str =
 async def mfa_otp_page(request: Request):
     return templates.TemplateResponse(request=request, name="auth/mfa_otp.html", context={"hide_nav": True})
 
+@app.get("/loading/dashboard", response_class=HTMLResponse)
+async def loading_dashboard_page(request: Request):
+    return templates.TemplateResponse(request=request, name="loading_dashboard.html", context={"hide_nav": True})
+
 @app.get("/auth/forgot-password", response_class=HTMLResponse)
 async def forgot_password_page(request: Request):
     return templates.TemplateResponse(request=request, name="auth/forgot_password.html", context={"hide_nav": True})

@@ -5,36 +5,10 @@
 {% block full_content %}
 <div class="bg-[#f8f9fd] text-[#1b1b1f] min-h-screen flex flex-col font-sans antialiased selection:bg-primary selection:text-white relative overflow-x-hidden">
 
-    {% if logged_out %}
-    <!-- LOGOUT SUCCESS NOTIFICATION TOAST -->
-    <div id="logout-toast" class="sticky top-0 z-[110] bg-gradient-to-r from-emerald-600 via-teal-600 to-cyan-700 text-white px-4 py-3 shadow-xl border-b border-white/20 animate-slide-down">
-        <div class="max-w-6xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-3">
-            <div class="flex items-center gap-3">
-                <div class="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center font-bold text-sm shadow-inner">
-                    <span class="material-symbols-outlined text-lg">check_circle</span>
-                </div>
-                <div>
-                    <p class="font-bold text-sm leading-tight">You have been securely signed out.</p>
-                    <p class="text-xs text-white/90 font-serif">स्वास्थ्यं परमं धनम्, विज्ञानस्य साहाय्येन सर्वेषां जीवनं निरामयं भवतु।</p>
-                </div>
-            </div>
-            <div class="flex items-center gap-2.5">
-                <a href="/login" class="px-4 py-1.5 bg-white text-teal-800 hover:bg-white/90 rounded-full font-bold text-xs shadow-xs transition-all flex items-center gap-1.5">
-                    <span class="material-symbols-outlined text-sm">login</span>
-                    <span>Sign In Again</span>
-                </a>
-                <button onclick="document.getElementById('logout-toast').remove()" class="text-white/80 hover:text-white p-1" title="Dismiss">
-                    <span class="material-symbols-outlined text-lg">close</span>
-                </button>
-            </div>
-        </div>
-    </div>
-    {% endif %}
-
     <!-- ========================================================================= -->
-    <!-- 1. FULL-SCREEN ANIMATED SPLASH / WELCOME SCREEN (0–2500ms auto/skip)      -->
+    <!-- 1. FULL-SCREEN ANIMATED SPLASH / STARTUP SCREEN (Solid Opaque, Zero Ghosting) -->
     <!-- ========================================================================= -->
-    <div id="splash-screen" class="fixed inset-0 z-[100] bg-white flex flex-col justify-between items-center p-6 sm:p-10 transition-all duration-700 select-none">
+    <div id="splash-screen" class="fixed inset-0 z-[99999] flex flex-col justify-between items-center p-6 sm:p-10 transition-all duration-700 select-none" style="background:#ffffff !important;">
         <!-- Top Controls: Language & Skip -->
         <div class="w-full flex justify-between items-center max-w-6xl">
             <div class="flex items-center gap-2">
@@ -43,13 +17,14 @@
             </div>
 
             <div class="flex items-center gap-3">
-                <button onclick="window.i18n.toggle()" class="px-3 py-1 rounded-full bg-surface-container-low hover:bg-surface-container-high border border-outline-variant/60 text-xs font-bold text-primary transition-all flex items-center gap-1">
+                <button onclick="window.i18n.toggle()" class="px-3 py-1 rounded-full bg-slate-100 hover:bg-slate-200 border border-slate-300 text-xs font-bold text-primary transition-all flex items-center gap-1 cursor-pointer">
                     <span class="material-symbols-outlined text-[14px]">translate</span>
                     <span class="lang-indicator-text">English | हिन्दी</span>
                 </button>
-                <button onclick="skipSplash()" class="px-3.5 py-1 rounded-full bg-surface-container-high hover:bg-surface-container-highest text-secondary hover:text-on-surface text-xs font-semibold transition-all">
-                    Skip Intro &rarr;
-                </button>
+                <a href="/login" class="px-4 py-1.5 rounded-full bg-primary hover:bg-primary/90 text-white font-extrabold text-xs shadow-sm transition-all flex items-center gap-1">
+                    <span>Sign In</span>
+                    <span class="material-symbols-outlined text-sm">login</span>
+                </a>
             </div>
         </div>
 
@@ -167,6 +142,32 @@
             </p>
         </div>
     </div>
+
+    {% if logged_out %}
+    <!-- LOGOUT SUCCESS NOTIFICATION TOAST (Displayed inside tour page without splash screen overlap) -->
+    <div id="logout-toast" class="bg-gradient-to-r from-emerald-600 via-teal-600 to-cyan-700 text-white px-4 py-3 shadow-lg border-b border-white/20">
+        <div class="max-w-6xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-3">
+            <div class="flex items-center gap-3">
+                <div class="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center font-bold text-sm shadow-inner">
+                    <span class="material-symbols-outlined text-lg">check_circle</span>
+                </div>
+                <div>
+                    <p class="font-bold text-sm leading-tight">You have been securely signed out.</p>
+                    <p class="text-xs text-white/90 font-serif">स्वास्थ्यं परमं धनम्, विज्ञानस्य साहाय्येन सर्वेषां जीवनं निरामयं भवतु।</p>
+                </div>
+            </div>
+            <div class="flex items-center gap-2.5">
+                <a href="/login" class="px-4 py-1.5 bg-white text-teal-800 hover:bg-white/90 rounded-full font-bold text-xs shadow-xs transition-all flex items-center gap-1.5">
+                    <span class="material-symbols-outlined text-sm">login</span>
+                    <span>Sign In Again</span>
+                </a>
+                <button onclick="document.getElementById('logout-toast').remove()" class="text-white/80 hover:text-white p-1 cursor-pointer" title="Dismiss">
+                    <span class="material-symbols-outlined text-lg">close</span>
+                </button>
+            </div>
+        </div>
+    </div>
+    {% endif %}
 
     <!-- ========================================================================= -->
     <!-- 3. SMART RETURN BANNER (Shows for returning sessions)                     -->
