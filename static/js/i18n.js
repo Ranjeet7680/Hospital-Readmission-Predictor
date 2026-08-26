@@ -1518,76 +1518,55 @@ class I18nEngine {
     universalTranslateDOM(lang, phraseMap) {
         if (!document.body) return;
 
-        // TreeWalker over all DOM text nodes
-        const walker = document.createTreeWalker(
-            document.body,
-            NodeFilter.SHOW_TEXT,
-            {
-                acceptNode(node) {
-                    const parent = node.parentElement;
-                    if (!parent) return NodeFilter.FILTER_REJECT;
-                    const tag = parent.tagName;
-                    if (['SCRIPT', 'STYLE', 'SVG', 'CANVAS', 'CODE', 'NOSCRIPT'].includes(tag)) {
-                        return NodeFilter.FILTER_REJECT;
+        const elements = document.body.querySelectorAll('*');
+        for (let i = 0; i < elements.length; i++) {
+            const el = elements[i];
+            const tag = el.tagName;
+            if (tag === 'SCRIPT' || tag === 'STYLE' || tag === 'SVG' || tag === 'CANVAS' || tag === 'CODE' || tag === 'NOSCRIPT') continue;
+            if (el.classList && el.classList.contains('material-symbols-outlined')) continue;
+            if (el.closest && el.closest('#lang-dropdown-menu')) continue;
+            if (el.classList && el.classList.contains('lang-indicator-text')) continue;
+
+            // Translate all direct text child nodes
+            const childNodes = el.childNodes;
+            for (let j = 0; j < childNodes.length; j++) {
+                const node = childNodes[j];
+                if (node.nodeType === 3) { // Node.TEXT_NODE
+                    if (node._origText === undefined) {
+                        node._origText = node.nodeValue;
                     }
-                    if (parent.classList.contains('material-symbols-outlined') || 
-                        parent.closest('#lang-dropdown-menu') ||
-                        parent.classList.contains('lang-indicator-text') ||
-                        parent.hasAttribute('data-i18n')) {
-                        return NodeFilter.FILTER_REJECT;
+                    const originalText = node._origText;
+                    const trimmedOrig = originalText.trim();
+                    if (!trimmedOrig || trimmedOrig.length === 0 || /^[0-9\s.,%:+/()\-–—#•]+$/.test(trimmedOrig)) continue;
+
+                    if (lang === 'en') {
+                        node.nodeValue = originalText;
+                        continue;
                     }
-                    const val = node.nodeValue.trim();
-                    if (!val || val.length === 0 || /^[0-9\s.,%:+/()\-–—#]+$/.test(val)) {
-                        return NodeFilter.FILTER_REJECT;
-                    }
-                    return NodeFilter.FILTER_ACCEPT;
-                }
-            },
-            false
-        );
 
-        const textNodes = [];
-        let currentNode;
-        while ((currentNode = walker.nextNode())) {
-            textNodes.push(currentNode);
-        }
-
-        for (const node of textNodes) {
-            if (node._origText === undefined) {
-                node._origText = node.nodeValue;
-            }
-            const originalText = node._origText;
-            const trimmedOrig = originalText.trim();
-            const normOrig = trimmedOrig.toLowerCase();
-
-            if (lang === 'en') {
-                node.nodeValue = originalText;
-                continue;
-            }
-
-            // Direct exact match
-            const entry = phraseMap.get(normOrig);
-            if (entry && (entry[lang] || entry['en'])) {
-                const translation = entry[lang] || entry['en'];
-                node.nodeValue = originalText.replace(trimmedOrig, translation);
-                continue;
-            }
-
-            // Substring search for multi-word clinical phrases
-            let translatedText = originalText;
-            let replaced = false;
-            for (const [key, langMap] of phraseMap.entries()) {
-                if (key.length > 3 && normOrig.includes(key)) {
-                    const trans = langMap[lang];
-                    if (trans && trans !== key) {
-                        const regex = new RegExp(escapeRegExp(key), 'gi');
-                        translatedText = translatedText.replace(regex, trans);
-                        replaced = true;
+                    const normOrig = trimmedOrig.toLowerCase();
+                    const entry = phraseMap.get(normOrig);
+                    if (entry && (entry[lang] || entry['en'])) {
+                        const translation = entry[lang] || entry['en'];
+                        node.nodeValue = originalText.replace(trimmedOrig, translation);
+                    } else {
+                        let text = originalText;
+                        let replaced = false;
+                        for (const [key, langMap] of phraseMap.entries()) {
+                            if (key.length > 3 && normOrig.includes(key)) {
+                                const trans = langMap[lang];
+                                if (trans && trans !== key) {
+                                    const regex = new RegExp(escapeRegExp(key), 'gi');
+                                    text = text.replace(regex, trans);
+                                    replaced = true;
+                                }
+                            }
+                        }
+                        if (replaced) {
+                            node.nodeValue = text;
+                        }
                     }
                 }
-            }
-            if (replaced) {
-                node.nodeValue = translatedText;
             }
         }
 
