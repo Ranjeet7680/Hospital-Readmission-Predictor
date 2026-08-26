@@ -1347,6 +1347,7 @@ class I18nEngine {
     constructor() {
         this.currentLang = this.getSavedLanguage();
         this.observer = null;
+        this.phraseMap = null;
     }
 
     getSavedLanguage() {
@@ -1358,7 +1359,40 @@ class I18nEngine {
         return SUPPORTED_LANGS.includes(stored) ? stored : 'en';
     }
 
+    getPhraseMap() {
+        if (this.phraseMap) return this.phraseMap;
+        const map = new Map();
+
+        // 1. Index CLINICAL_AUTO_MAP
+        if (typeof CLINICAL_AUTO_MAP !== 'undefined') {
+            for (const [key, langMap] of Object.entries(CLINICAL_AUTO_MAP)) {
+                map.set(key.toLowerCase().trim(), langMap);
+                for (const [, val] of Object.entries(langMap)) {
+                    if (val) map.set(val.toLowerCase().trim(), langMap);
+                }
+            }
+        }
+
+        // 2. Index all translation keys from translations object
+        const enDict = translations['en'] || {};
+        for (const [k, enVal] of Object.entries(enDict)) {
+            if (typeof enVal === 'string' && enVal.trim()) {
+                const norm = enVal.toLowerCase().trim();
+                const phraseLangs = {};
+                for (const l of SUPPORTED_LANGS) {
+                    phraseLangs[l] = translations[l]?.[k] || translations['en']?.[k] || enVal;
+                }
+                map.set(norm, phraseLangs);
+                map.set(k.toLowerCase().trim(), phraseLangs);
+            }
+        }
+
+        this.phraseMap = map;
+        return map;
+    }
+
     init() {
+        this.getPhraseMap();
         this.applyLanguage(this.currentLang, false);
         this.initMutationObserver();
     }
@@ -1394,8 +1428,9 @@ class I18nEngine {
     applyLanguage(lang, notify = false) {
         document.documentElement.lang = lang;
         const dict = translations[lang] || translations['en'];
+        const phraseMap = this.getPhraseMap();
 
-        // 1. Update [data-i18n]
+        // 1. Direct [data-i18n] Tags
         document.querySelectorAll('[data-i18n]').forEach(el => {
             const key = el.getAttribute('data-i18n');
             if (dict[key]) {
@@ -1407,18 +1442,18 @@ class I18nEngine {
             }
         });
 
-        // 2. Update [data-i18n-placeholder]
+        // 2. Direct [data-i18n-placeholder]
         document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
             const key = el.getAttribute('data-i18n-placeholder');
             if (dict[key]) el.placeholder = dict[key];
         });
 
-        // 3. Topbar & Header indicator text
+        // 3. Topbar indicator text
         document.querySelectorAll('.lang-indicator-text').forEach(el => {
             el.textContent = SHORT_CODES[lang] || 'English';
         });
 
-        // 4. Update dropdown checks and active states
+        // 4. Dropdown checkmarks & active states
         document.querySelectorAll('[data-lang-check]').forEach(el => {
             const target = el.getAttribute('data-lang-check');
             el.classList.toggle('hidden', target !== lang);
@@ -1427,35 +1462,65 @@ class I18nEngine {
             const target = btn.getAttribute('data-lang-select');
             if (target === lang) {
                 btn.classList.add('bg-primary/10', 'text-primary', 'font-bold');
-                btn.classList.remove('text-secondary');
+                btn.classList.remove('text-secondary', 'text-slate-800');
             } else {
                 btn.classList.remove('bg-primary/10', 'text-primary', 'font-bold');
-                btn.classList.add('text-secondary');
+                btn.classList.add('text-slate-800');
             }
         });
 
-        // 5. Intelligent DOM Auto-Translation
-        this.autoTranslateUntaggedNodes(lang);
+        // 5. Universal End-to-End DOM Text Translation
+        this.universalTranslateDOM(lang, phraseMap);
 
         if (notify) {
             window.soundEngine?.click();
-            const msg = `🌐 Language: ${LANG_LABELS[lang] || lang}`;
+            const msg = `🌐 Language Switched: ${LANG_LABELS[lang] || lang}`;
             if (typeof window.showToast === 'function') {
                 window.showToast(msg, 'info');
             }
         }
     }
 
-    autoTranslateUntaggedNodes(lang) {
-        document.querySelectorAll('.badge, .chip, [class*="risk-badge"], span.rounded-full, td, th, [data-auto-i18n]').forEach(el => {
+    universalTranslateDOM(lang, phraseMap) {
+        const selectors = 'h1, h2, h3, h4, h5, h6, button, a, span, p, label, td, th, li, dt, dd, option, .btn, .badge, .chip, [class*="risk-badge"]';
+        
+        document.querySelectorAll(selectors).forEach(el => {
+            // Ignore icons or dropdown menu items to preserve layouts
+            if (el.classList.contains('material-symbols-outlined') || el.closest('#lang-dropdown-menu')) return;
+
+            // Only translate leaf nodes (elements with direct text and no inner markup trees)
             if (el.children.length === 0 && el.textContent) {
-                const trimmed = el.textContent.trim();
-                for (const [canonical, map] of Object.entries(CLINICAL_AUTO_MAP)) {
-                    for (const l of SUPPORTED_LANGS) {
-                        if (trimmed === map[l] || trimmed === canonical) {
-                            el.textContent = map[lang] || map['en'];
-                            return;
-                        }
+                const currentText = el.textContent.trim();
+                if (!currentText || currentText.length > 250 || /^[0-9\s.,%:+/-]+$/.test(currentText)) return;
+
+                // Stash initial English text
+                if (!el.hasAttribute('data-orig-text')) {
+                    el.setAttribute('data-orig-text', currentText);
+                }
+
+                const origText = el.getAttribute('data-orig-text');
+                const normOrig = origText.toLowerCase().trim();
+                const normCurrent = currentText.toLowerCase().trim();
+
+                const entry = phraseMap.get(normOrig) || phraseMap.get(normCurrent);
+
+                if (entry) {
+                    const translated = entry[lang] || entry['en'];
+                    if (translated && el.textContent !== translated) {
+                        el.textContent = translated;
+                    }
+                } else if (lang === 'en' && origText) {
+                    el.textContent = origText;
+                }
+            } else if (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA') {
+                if (el.placeholder) {
+                    if (!el.hasAttribute('data-orig-placeholder')) {
+                        el.setAttribute('data-orig-placeholder', el.placeholder);
+                    }
+                    const origPh = el.getAttribute('data-orig-placeholder');
+                    const entry = phraseMap.get(origPh.toLowerCase().trim());
+                    if (entry) {
+                        el.placeholder = entry[lang] || entry['en'] || origPh;
                     }
                 }
             }
@@ -1472,7 +1537,7 @@ class I18nEngine {
                     break;
                 }
             }
-            if (hasNewNodes) {
+            if (hasNewNodes && this.currentLang !== 'en') {
                 this.applyLanguage(this.currentLang, false);
             }
         });
