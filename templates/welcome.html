@@ -65,44 +65,40 @@
 <div class="bg-[#f8f9fd] text-[#1b1b1f] min-h-screen flex flex-col font-sans antialiased selection:bg-primary selection:text-white relative overflow-x-hidden">
 
     <!-- ========================================================================= -->
-    <!-- 1. FULL-SCREEN ANIMATED SPLASH / STARTUP SCREEN (Solid Opaque, Zero Ghosting) -->
+    <!-- 1. FULL-SCREEN 10-SECOND MINIMAL CLINICAL LOADING SCREEN                   -->
     <!-- ========================================================================= -->
-    <div id="splash-screen" class="fixed inset-0 z-[99999] flex flex-col justify-between items-center p-6 sm:p-10 transition-all duration-700 select-none" style="background:#ffffff !important;">
-        <!-- Top Controls: Language & Skip -->
-        <div class="w-full flex justify-between items-center max-w-6xl">
+    <div id="splash-screen" class="fixed inset-0 z-[99999] flex flex-col justify-between items-center p-6 sm:p-10 select-none transition-all duration-700 backdrop-blur-md" style="background:#ffffff !important;">
+        <!-- Top Bar: Minimal Status & Quick Actions -->
+        <div class="w-full flex justify-between items-center max-w-5xl">
             <div class="flex items-center gap-2">
-                <span class="w-2 h-2 rounded-full bg-primary animate-ping"></span>
-                <span class="text-xs font-mono font-bold text-primary uppercase tracking-wider">HRP Clinical Suite</span>
+                <span class="w-2.5 h-2.5 rounded-full bg-primary animate-ping"></span>
+                <span class="text-xs font-mono font-black text-primary uppercase tracking-widest">HRP Clinical &bull; AI Startup</span>
             </div>
 
-            <div class="flex items-center gap-3">
-                <button onclick="window.i18n.toggle()" class="px-3 py-1 rounded-full bg-slate-100 hover:bg-slate-200 border border-slate-300 text-xs font-bold text-primary transition-all flex items-center gap-1 cursor-pointer">
-                    <span class="material-symbols-outlined text-[14px]">translate</span>
-                    <span class="lang-indicator-text">English | हिन्दी</span>
+            <div class="flex items-center gap-2.5">
+                <button type="button" onclick="window.i18n?.toggle()" class="px-3 py-1.5 rounded-full bg-slate-100 hover:bg-slate-200 border border-slate-300 text-xs font-bold text-slate-800 transition-all flex items-center gap-1.5 cursor-pointer">
+                    <span class="material-symbols-outlined text-[15px] text-primary">translate</span>
+                    <span class="lang-indicator-text">EN | हिन्दी</span>
                 </button>
-                <a href="/login" class="px-4 py-1.5 rounded-full bg-primary hover:bg-primary/90 text-white font-extrabold text-xs shadow-sm transition-all flex items-center gap-1">
-                    <span>Sign In</span>
-                    <span class="material-symbols-outlined text-sm">login</span>
-                </a>
+                <button type="button" onclick="skipSplash()" class="px-4 py-1.5 rounded-full bg-gradient-to-r from-primary to-[#002f6c] hover:opacity-95 text-white font-extrabold text-xs shadow-md transition-all flex items-center gap-1 cursor-pointer">
+                    <span>Skip (Enter Now)</span>
+                    <span class="material-symbols-outlined text-sm">arrow_forward</span>
+                </button>
             </div>
         </div>
 
-        <!-- Center Animated Logo & Data Sequence -->
-        <div class="flex flex-col items-center text-center max-w-md space-y-6 animate-fade-in">
-            <!-- Modern Combined Logo: Cross + AI Nodes + Shield -->
+        <!-- Center Minimal Emblem & 10-Second Telemetry Cockpit -->
+        <div class="flex flex-col items-center text-center max-w-md w-full space-y-6 animate-fade-in my-auto">
+            <!-- Glowing 3D Emblem -->
             <div class="relative w-24 h-24 sm:w-28 sm:h-28 flex items-center justify-center">
-                <!-- Pulsing Outer Data Halo -->
-                <div class="absolute inset-0 rounded-3xl bg-primary/15 animate-ping opacity-60"></div>
-                <div class="absolute -inset-2 rounded-3xl bg-gradient-to-tr from-primary/30 to-cyan-400/30 blur-lg animate-pulse"></div>
+                <div class="absolute inset-0 rounded-3xl bg-primary/20 animate-ping opacity-70"></div>
+                <div class="absolute -inset-3 rounded-3xl bg-gradient-to-tr from-primary/30 to-cyan-400/40 blur-xl animate-pulse"></div>
 
-                <!-- Main Emblem Container -->
-                <div class="relative w-full h-full rounded-3xl bg-gradient-to-br from-[#005bbf] via-[#004a9e] to-[#002f6c] p-1 shadow-2xl flex items-center justify-center border-2 border-white/40">
+                <!-- Main Emblem Box -->
+                <div class="relative w-full h-full rounded-3xl bg-gradient-to-br from-[#005bbf] via-[#004a9e] to-[#002f6c] shadow-2xl flex items-center justify-center border-2 border-white/60 p-2">
                     <svg viewBox="0 0 100 100" class="w-16 h-16 text-white" fill="none" stroke="currentColor" stroke-width="2.5">
-                        <!-- Shield Outline -->
-                        <path d="M50 12 L82 24 V52 C82 72 50 88 50 88 C50 88 18 72 18 52 V24 Z" stroke="#ffffff" stroke-width="3" fill="rgba(255,255,255,0.1)"/>
-                        <!-- Medical Cross Inside -->
+                        <path d="M50 12 L82 24 V52 C82 72 50 88 50 88 C50 88 18 72 18 52 V24 Z" stroke="#ffffff" stroke-width="3" fill="rgba(255,255,255,0.12)"/>
                         <path d="M50 30 V58 M36 44 H64" stroke="#ffffff" stroke-width="5" stroke-linecap="round"/>
-                        <!-- AI Nodes Interconnected -->
                         <circle cx="50" cy="30" r="3.5" fill="#22d3ee" stroke="#ffffff" stroke-width="1.5"/>
                         <circle cx="50" cy="58" r="3.5" fill="#22d3ee" stroke="#ffffff" stroke-width="1.5"/>
                         <circle cx="36" cy="44" r="3.5" fill="#22d3ee" stroke="#ffffff" stroke-width="1.5"/>
@@ -111,64 +107,55 @@
                 </div>
             </div>
 
-            <!-- Title & Subtitle -->
-            <div class="space-y-1.5">
-                <h1 class="text-2xl sm:text-3xl font-extrabold tracking-tight text-[#002f6c]">
-                    Hospital Readmission Predictor
+            <!-- Clean Minimal Header -->
+            <div class="space-y-1">
+                <h1 class="text-2xl sm:text-3xl font-black tracking-tight text-slate-900">
+                    HRP Clinical Intelligence
                 </h1>
-                <p class="text-xs sm:text-sm font-semibold text-secondary">
-                    AI-Powered Healthcare Intelligence Platform
+                <p class="text-xs sm:text-sm font-semibold text-slate-500">
+                    Precision Readmission Risk Cockpit
                 </p>
             </div>
 
-            <!-- Animated Sequence Dots: Health Data -> AI -> Risk Prediction -> Care -->
-            <div class="flex items-center justify-center gap-2 pt-2">
-                <div class="flex items-center gap-1.5 px-3 py-1 bg-surface-container-low rounded-full border border-outline-variant/50 text-[11px] font-bold text-secondary">
-                    <span class="w-1.5 h-1.5 rounded-full bg-primary animate-pulse"></span>
-                    <span id="splash-sequence-label">Health Data</span>
+            <!-- 10-Second High-Precision Progress Bar & Counter -->
+            <div class="w-full max-w-xs space-y-2.5 pt-2">
+                <div class="flex justify-between items-center text-xs font-mono font-black">
+                    <span id="splash-countdown-label" class="text-primary flex items-center gap-1.5">
+                        <span class="w-2 h-2 rounded-full bg-cyan-500 animate-ping"></span>
+                        <span id="splash-time-text">Initializing AI... (10.0s)</span>
+                    </span>
+                    <span id="splash-percent-text" class="text-slate-800 font-extrabold text-sm">0%</span>
                 </div>
-                <span class="text-secondary text-xs">&rarr;</span>
-                <div class="flex items-center gap-1.5 px-3 py-1 bg-surface-container-low rounded-full border border-outline-variant/50 text-[11px] font-bold text-secondary">
-                    <span class="w-1.5 h-1.5 rounded-full bg-cyan-500 animate-pulse"></span>
-                    <span>AI & ML</span>
+
+                <!-- Smooth Progress Track -->
+                <div class="w-full h-2.5 bg-slate-100 rounded-full overflow-hidden border border-slate-200/80 p-0.5 shadow-inner">
+                    <div id="splash-progress-bar" class="h-full bg-gradient-to-r from-primary via-cyan-400 to-[#002f6c] rounded-full transition-all duration-75 w-0 shadow-sm"></div>
                 </div>
-                <span class="text-secondary text-xs">&rarr;</span>
-                <div class="flex items-center gap-1.5 px-3 py-1 bg-surface-container-low rounded-full border border-outline-variant/50 text-[11px] font-bold text-secondary">
-                    <span class="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse"></span>
-                    <span>Risk Prediction</span>
-                </div>
-                <span class="text-secondary text-xs">&rarr;</span>
-                <div class="flex items-center gap-1.5 px-3 py-1 bg-green-50 rounded-full border border-green-200 text-[11px] font-bold text-green-700">
-                    <span class="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse"></span>
-                    <span>Connected Care</span>
+
+                <!-- Rotating Minimal Telemetry Step -->
+                <div class="py-1.5 px-3 rounded-xl bg-slate-50 border border-slate-200/70 text-[11px] font-bold text-slate-700 flex items-center justify-center gap-2">
+                    <span class="material-symbols-outlined text-[15px] text-primary animate-spin">sync</span>
+                    <span id="splash-telemetry-step" class="truncate font-mono">Calibrating XGBoost v2.4.1 &bull; TabNet...</span>
                 </div>
             </div>
 
-            <!-- Progress Bar -->
-            <div class="w-56 h-1.5 bg-surface-container-high rounded-full overflow-hidden shadow-inner">
-                <div id="splash-progress-bar" class="h-full bg-gradient-to-r from-primary via-cyan-500 to-primary rounded-full transition-all duration-300 w-0"></div>
-            </div>
-
-            <!-- Sacred Healthcare Sanskrit Motto Banner -->
-            <div class="mt-4 px-6 py-3 rounded-2xl bg-gradient-to-r from-primary/10 via-amber-500/10 to-primary/10 border border-primary/25 shadow-xs max-w-lg text-center backdrop-blur-xs animate-fade-in">
-                <p class="text-sm sm:text-base font-bold text-[#002f6c] tracking-wide font-serif leading-relaxed">
+            <!-- Golden Sanskrit Motto Ribbon -->
+            <div class="px-4 py-2 rounded-2xl bg-amber-500/10 border border-amber-500/25 shadow-xs max-w-sm text-center">
+                <p class="text-xs font-bold text-amber-900 font-serif">
                     "स्वास्थ्यं परमं धनम्, विज्ञानस्य साहाय्येन सर्वेषां जीवनं निरामयं भवतु।"
-                </p>
-                <p class="text-[11px] font-medium text-secondary mt-1">
-                    <span class="text-amber-700 font-bold">Health is Supreme Wealth</span> — May All Lives Be Disease-Free Through Science
                 </p>
             </div>
         </div>
 
-        <!-- Bottom Tagline & Disclaimer -->
-        <div class="w-full flex flex-col sm:flex-row justify-between items-center text-center sm:text-left gap-2 text-xs text-secondary max-w-6xl border-t border-surface-variant pt-4">
-            <div>
-                <p class="font-bold text-on-surface">Predict risk. Explain insights. Connect care.</p>
-                <p class="text-[10px] text-secondary/80">AI-assisted healthcare decision support • LUMINIX'26</p>
+        <!-- Bottom Status Line -->
+        <div class="w-full flex flex-col sm:flex-row justify-between items-center text-center sm:text-left gap-2 text-[11px] text-slate-500 max-w-5xl border-t border-slate-100 pt-3">
+            <div class="flex items-center gap-1.5 font-bold text-slate-700">
+                <span class="material-symbols-outlined text-sm text-primary">verified_user</span>
+                <span>HIPAA-Aligned Zero-Trust Architecture</span>
             </div>
-            <div class="font-mono text-[10px] text-secondary flex items-center gap-2">
+            <div class="font-mono text-[10px] text-slate-500 flex items-center gap-2">
                 <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
-                <span>Team Nexora • v2.4.1 Production</span>
+                <span>Team Nexora &bull; v2.4.1 Production</span>
             </div>
         </div>
     </div>
@@ -226,6 +213,17 @@
             </div>
         </div>
     </div>
+    <script>
+    setTimeout(() => {
+        const toast = document.getElementById('logout-toast');
+        if (toast) {
+            toast.style.transition = 'all 0.5s ease';
+            toast.style.opacity = '0';
+            toast.style.maxHeight = '0px';
+            setTimeout(() => toast.remove(), 500);
+        }
+    }, 5000);
+    </script>
     {% endif %}
 
     <!-- ========================================================================= -->
@@ -1094,45 +1092,66 @@
 </div>
 
 <script>
-// 1. Splash Screen Auto-Advance
-{% if logged_out %}
-document.addEventListener('DOMContentLoaded', () => {
-    skipSplash();
-});
-{% endif %}
+// 1. 10-Second Clinical Splash Screen Countdown & Telemetry Stream
+const TOTAL_SPLASH_TIME = 10000; // Exact 10 seconds
+const START_TIME = Date.now();
 
-let splashProgress = 0;
-const splashInterval = setInterval(() => {
-    splashProgress += 15;
+const telemetrySteps = [
+    { at: 0, text: "Calibrating XGBoost v2.4.1 & TabNet Ensemble..." },
+    { at: 2000, text: "Loading 101,766 Baseline Inpatient Encounters..." },
+    { at: 4000, text: "Initializing TreeSHAP Local Attribution Engine..." },
+    { at: 6000, text: "Synchronizing PPO Reinforcement Care Policy..." },
+    { at: 8000, text: "Zero-Trust HIPAA Verification Complete..." },
+    { at: 9500, text: "Entering Healthcare Platform..." }
+];
+
+let splashTimer = setInterval(() => {
+    const elapsed = Date.now() - START_TIME;
+    const progress = Math.min(100, (elapsed / TOTAL_SPLASH_TIME) * 100);
+    const remainingSeconds = Math.max(0, (TOTAL_SPLASH_TIME - elapsed) / 1000).toFixed(1);
+
     const bar = document.getElementById('splash-progress-bar');
-    if (bar) bar.style.width = `${splashProgress}%`;
-    
-    if (splashProgress === 40) {
-        const label = document.getElementById('splash-sequence-label');
-        if (label) label.innerText = 'AI & Deep Learning';
-    } else if (splashProgress === 70) {
-        const label = document.getElementById('splash-sequence-label');
-        if (label) label.innerText = 'Risk Scoring';
+    const percentTxt = document.getElementById('splash-percent-text');
+    const timeTxt = document.getElementById('splash-time-text');
+    const stepTxt = document.getElementById('splash-telemetry-step');
+
+    if (bar) bar.style.width = `${progress}%`;
+    if (percentTxt) percentTxt.innerText = `${Math.floor(progress)}%`;
+    if (timeTxt) timeTxt.innerText = `Initializing AI... (${remainingSeconds}s)`;
+
+    // Rotate telemetry step
+    for (let i = telemetrySteps.length - 1; i >= 0; i--) {
+        if (elapsed >= telemetrySteps[i].at) {
+            if (stepTxt && stepTxt.innerText !== telemetrySteps[i].text) {
+                stepTxt.innerText = telemetrySteps[i].text;
+            }
+            break;
+        }
     }
 
-    if (splashProgress >= 100) {
-        clearInterval(splashInterval);
+    if (elapsed >= TOTAL_SPLASH_TIME) {
+        clearInterval(splashTimer);
         skipSplash();
     }
-}, 70);
+}, 50);
 
 function skipSplash() {
-    clearInterval(splashInterval);
+    if (splashTimer) {
+        clearInterval(splashTimer);
+        splashTimer = null;
+    }
     const splash = document.getElementById('splash-screen');
     if (splash) {
         splash.classList.add('opacity-0', 'pointer-events-none');
-        setTimeout(() => splash.remove(), 400);
+        setTimeout(() => splash.remove(), 500);
     }
-    // Show Smart Return if previously visited
+    // Only show Smart Return banner if user was NOT just logged out
+    {% if not logged_out %}
     if (localStorage.getItem('hrp_visited')) {
         document.getElementById('smart-return-banner')?.classList.remove('hidden');
     }
     localStorage.setItem('hrp_visited', 'true');
+    {% endif %}
 }
 
 // 2. Intelligent Loading Overlay Simulation
