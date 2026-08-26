@@ -216,7 +216,7 @@ const translations = {
         "header_title": "अस्पताल पुनः भर्ती जोखिम भविष्यवक्ता",
         "search_placeholder": "रोगी, डॉक्टर या रिकॉर्ड खोजें...",
         "search_mobile_placeholder": "रोगी, दस्तावेज, इतिहास खोजें...",
-        "dr_name": "डॉ. रंजीत कुमार, एमडी",
+        "dr_name": "डॉ. रंजीत कुमार",
         "dr_title": "प्रमुख एआई वास्तुकार • सेंट ज्यूड",
         "doctor_id": "चिकित्सक डिजिटल आईडी",
         "edit_profile": "डॉक्टर प्रोफाइल संपादित करें",
@@ -402,7 +402,7 @@ const translations = {
         "header_title": "மறுஅனுமதி ஆபத்து கணிப்பான்",
         "search_placeholder": "நோயாளி, மருத்துவர் தேடவும்...",
         "search_mobile_placeholder": "நோயாளி, ஆவணங்களை தேடவும்...",
-        "dr_name": "டாக்டர் ரஞ்சீத் குமார், MD",
+        "dr_name": "டாக்டர் ரஞ்சீத் குமார்",
         "dr_title": "தலைமை AI வடிவமைப்பாளர்",
         "doctor_id": "மருத்துவர் டிஜிட்டல் ஐடி",
         "edit_profile": "சுயவிவரத்தை திருத்துக",
@@ -582,7 +582,7 @@ const translations = {
         "header_title": "ಆಸ್ಪತ್ರೆ ಮರುದಾಖಲಾತಿ ಅಪಾಯ ಮುನ್ಸೂಚಕ",
         "search_placeholder": "ರೋಗಿ, ವೈದ್ಯರನ್ನು ಹುಡುಕಿ...",
         "search_mobile_placeholder": "ರೋಗಿ, ದಾಖಲೆಗಳನ್ನು ಹುಡುಕಿ...",
-        "dr_name": "ಡಾ. ರಂಜೀತ್ ಕುಮಾರ್, MD",
+        "dr_name": "ಡಾ. ರಂಜೀತ್ ಕುಮಾರ್",
         "dr_title": "ಮುಖ್ಯ AI ವಾಸ್ತುಶಿಲ್ಪಿ",
         "doctor_id": "ವೈದ್ಯರ ಡಿಜಿಟಲ್ ಐಡಿ",
         "edit_profile": "ಪ್ರೊಫೈಲ್ ಸಂಪಾದಿಸಿ",
@@ -762,7 +762,7 @@ const translations = {
         "header_title": "ആശുപത്രി പുനഃപ്രവേശന അപകടസാധ്യത പ്രവചനം",
         "search_placeholder": "രോഗി, ഡോക്ടറെ തിരയുക...",
         "search_mobile_placeholder": "രോഗി, രേഖകൾ തിരയുക...",
-        "dr_name": "ഡോ. രഞ്ജിത് കുമാർ, MD",
+        "dr_name": "ഡോ. രഞ്ജിത് കുമാർ",
         "dr_title": "ലീഡ് AI ആർക്കിടെക്റ്റ്",
         "doctor_id": "ഡോക്ടർ ഡിജിറ്റൽ ഐഡി",
         "edit_profile": "പ്രൊഫൈൽ തിരുത്തുക",
@@ -854,7 +854,7 @@ const translations = {
         "view_assessment": "വിലയിരുത്തൽ കാണുക",
         "view_profile": "പ്രൊഫൈൽ കാണുക",
         "export_report": "റിപ്പോർട്ട് ഡൗൺലോഡ് ചെയ്യുക (CSV/PDF)",
-        "save_assessment": "വിലയിരുത്തൽ സംരക്ഷിക്കുക",
+        "save_assessment": "వിലയിരുത്തൽ സംരക്ഷിക്കുക",
         "apply_filters": "ഫിൽട്ടറുകൾ പ്രയോഗിക്കുക",
         "approve": "അംഗീകരിക്കുക",
         "reject": "നിരസിക്കുക",
@@ -942,7 +942,7 @@ const translations = {
         "header_title": "ఆసుపత్రి రీఅడ్మిషన్ రిస్క్ ప్రిడిక్టర్",
         "search_placeholder": "రోగి, వైద్యుడిని శోధించండి...",
         "search_mobile_placeholder": "రోగి, పత్రాలు శోధించండి...",
-        "dr_name": "డా. రంజీత్ కుమార్, MD",
+        "dr_name": "డా. రంజీత్ కుమార్",
         "dr_title": "ప్రధాన AI ఆర్కిటెక్ట్",
         "doctor_id": "డాక్టర్ డిజిటల్ ID",
         "edit_profile": "ప్రొఫైల్ సవరించండి",
@@ -1122,7 +1122,7 @@ const translations = {
         "header_title": "হাসপাতাল রিঅ্যাডমিশন ঝুঁকি পূর্বাভাস",
         "search_placeholder": "রোগী, ডাক্তার বা রেকর্ড খুঁজুন...",
         "search_mobile_placeholder": "রোগী, নথি খুঁজুন...",
-        "dr_name": "ডা. রঞ্জিত কুমার, এমডি",
+        "dr_name": "ডা. রঞ্জিত কুমার",
         "dr_title": "প্রধান এআই স্থপতি",
         "doctor_id": "ডাক্তার ডিজিটাল আইডি",
         "edit_profile": "প্রোফাইল সম্পাদনা করুন",
@@ -1300,11 +1300,23 @@ const translations = {
  * Clinical Dictionary for Auto-Translation of untagged text nodes & badges (7 Languages)
  */
 const CLINICAL_AUTO_MAP = {
+    "Welcome back, Dr. Ranjeet Kumar": { en: "Welcome back, Dr. Ranjeet Kumar", hi: "पुनः स्वागत है, डॉ. रंजीत कुमार", ta: "மீண்டும் வருக, டாக்டர் ரஞ்சீத் குமார்", kn: "ಮರಳಿ ಸ್ವಾಗತ, ಡಾ. ರಂಜಿತ್ ಕುಮಾರ್", ml: "സ്വാഗതം, ഡോ. രഞ്ജീത് കുമാർ", te: "తిరిగి స్వాగతం, డాక్టర్ రంజీత్ కుమార్", bn: "স্বাগতম, ডাঃ রঞ্জিত কুমার" },
+    "Welcome back": { en: "Welcome back", hi: "पुनः स्वागत है", ta: "மீண்டும் வருக", kn: "ಮರಳಿ ಸ್ವಾಗತ", ml: "സ്വാഗതം", te: "తిరిగి స్వాగతం", bn: "স্বাগতম" },
+    "CareAI Telehealth": { en: "CareAI Telehealth", hi: "केयर-एआई टेलीहेल्थ", ta: "கேர்-AI டெலிஹெல்த்", kn: "ಕೇರ್-AI ಟೆಲಿಹೆಲ್ತ್", ml: "കെയർ-AI ടെലിഹെൽത്ത്", te: "కేర్-AI టెలిహెల్త్", bn: "কেয়ার-এআই টেলিহেলথ" },
+    "Patient Archive": { en: "Patient Archive", hi: "रोगी संग्रह (आर्काइव)", ta: "நோயாளி காப்பகம்", kn: "ರೋಗಿಗಳ ದಾಖಲೆ", ml: "രോഗികളുടെ ശേഖരം", te: "రోగుల ఆర్కైవ్", bn: "রোগীর সংরক্ষণাগার" },
+    "New Risk Assessment": { en: "New Risk Assessment", hi: "नया जोखिम मूल्यांकन", ta: "புதிய ஆபத்து மதிப்பீடு", kn: "ಹೊಸ ಅಪಾಯ ಮೌಲ್ಯಮಾಪನ", ml: "പുതിയ അപകടസാധ്യത വിലയിരുത്തൽ", te: "కొత్త ప్రమాద అంచనా", bn: "নতুন ঝুঁকি মূল্যায়ন" },
+    "Total Patients Screened": { en: "Total Patients Screened", hi: "कुल मूल्यांकित मरीज", ta: "பரிசோதிக்கப்பட்ட நோயாளிகள்", kn: "ಒಟ್ಟು ತಪಾಸಣೆ ಮಾಡಿದ ರೋಗಿಗಳು", ml: "ആകെ പരിശോധിച്ച രോഗികൾ", te: "మొత్తం స్క్రీనింగ్ చేసిన రోగులు", bn: "মোট স্ক্রিন করা রোগী" },
+    "High Risk Cohort": { en: "High Risk Cohort", hi: "उच्च जोखिम समूह", ta: "அதிக ஆபத்துள்ள குழு", kn: "ಹೆಚ್ಚಿನ ಅಪಾಯದ ಗುಂಪು", ml: "ഉയർന്ന അപകടസാധ്യതയുള്ള വിഭാഗം", te: "అధిక ప్రమాద సమూహం", bn: "উচ্চ ঝুঁকি দল" },
+    "Readmission Reduction": { en: "Readmission Reduction", hi: "पुनः भर्ती में कमी", ta: "மறுஅனுமதி குறைப்பு", kn: "ಮರುಪ್ರವೇಶ ಕಡಿತ", ml: "പുനഃപ്രവേശന കുറവ്", te: "తిరిగి చేరిక తగ్గింపు", bn: "পুনরায় ভর্তি হ্রাস" },
+    "Population Risk Breakdown": { en: "Population Risk Breakdown", hi: "जनसंख्या जोखिम विभाजन", ta: "மக்கள் தொகை ஆபத்து விவரம்", kn: "ಜನಸಂಖ್ಯೆಯ ಅಪಾಯ ವಿಭಜನೆ", ml: "ജനസംഖ്യാ അപകടസാധ്യത വിശകലനം", te: "జనాభా ప్రమాద విభజన", bn: "জনসংখ্যার ঝুঁকি বিভাজন" },
+    "Priority Discharge Intervention Queue": { en: "Priority Discharge Intervention Queue", hi: "प्राथमिकता डिस्चार्ज हस्तक्षेप कतार", ta: "முன்னுரிமை டிஸ்சார்ஜ் வரிசை", kn: "ಆದ್ಯತೆಯ ಡಿಸ್ಚಾರ್ಜ್ ಸಾಲು", ml: "മുൻഗണനാ ഡിസ്ചാർജ് ക്യൂ", te: "ప్రాధాన్యతా డిశ్చార్జ్ క్యూ", bn: "অগ্রাধিকার ডিসচার্জ সারি" },
+    "Top Risk Drivers": { en: "Top Risk Drivers", hi: "प्रमुख जोखिम कारक", ta: "முக்கிய ஆபத்து காரணிகள்", kn: "ಪ್ರಮುಖ ಅಪಾಯಕಾರಿ ಅಂಶಗಳು", ml: "പ്രധാന അപകട ഘടകങ്ങൾ", te: "ప్రధాన ప్రమాద కారకాలు", bn: "প্রধান ঝুঁকির কারণসমূহ" },
+    "TreeSHAP Local Attribution": { en: "TreeSHAP Local Attribution", hi: "TreeSHAP स्थानीय विशेषता", ta: "TreeSHAP உள்ளூர் காரணம்", kn: "TreeSHAP ಸ್ಥಳೀಯ ಲಕ್ಷಣ", ml: "TreeSHAP പ്രാദേശിക വിവരണം", te: "TreeSHAP స్థానిక లక్షణం", bn: "TreeSHAP স্থানীয় বৈশিষ্ট্য" },
     "High Risk": { en: "High Risk", hi: "उच्च जोखिम", ta: "அதிக ஆபத்து", kn: "ಹೆಚ್ಚಿನ ಅಪಾಯ", ml: "ഉയർന്ന അപകടസാധ്യത", te: "అధిక ప్రమాదం", bn: "উচ্চ ঝুঁকি" },
     "Moderate Risk": { en: "Moderate Risk", hi: "मध्यम जोखिम", ta: "நடுத்தர ஆபத்து", kn: "ಮಧ್ಯಮ ಅಪಾಯ", ml: "ഇടത്തരം അപകടസാധ്യത", te: "మధ్యస్థ ప్రమాదం", bn: "মাঝারি ঝুঁকি" },
     "Low Risk": { en: "Low Risk", hi: "कम जोखिम", ta: "குறைந்த ஆபத்து", kn: "ಕಡಿಮೆ ಅಪಾಯ", ml: "കുറഞ്ഞ അപകടസാധ്യത", te: "తక్కువ ప్రమాదం", bn: "কম ঝুঁকি" },
     "Reviewed": { en: "Reviewed", hi: "समीक्षित", ta: "மதிப்பாய்வு செய்யப்பட்டது", kn: "ಪರಿಶೀಲಿಸಲಾಗಿದೆ", ml: "അവലോകനം ചെയ്തു", te: "సమీక్షించబడింది", bn: "পর্যালোচিত" },
-    "Pending": { en: "Pending", hi: "लंबित", ta: "நிலುவையில் உள்ளது", kn: "ಬಾಕಿ ಉಳಿದಿದೆ", ml: "തീർപ്പുകಲ್പ്പിക്കാത്തത്", te: "పెండింగ్‌లో ఉంది", bn: "মুলতুবি" },
+    "Pending": { en: "Pending", hi: "लंबित", ta: "நிலுவையில் உள்ளது", kn: "ಬಾಕಿ ಉಳಿದಿದೆ", ml: "തീർപ്പുകൽപ്പിക്കാത്തത്", te: "పెండింగ్‌లో ఉంది", bn: "মুলতুবি" },
     "Actioned": { en: "Actioned", hi: "कार्रवाई की गई", ta: "நடவடிக்கை எடுக்கப்பட்டது", kn: "ಕ್ರಮ ಕೈಗೊಳ್ಳಲಾಗಿದೆ", ml: "നടപടി സ്വീകരിച്ചു", te: "చర్య తీసుకోబడింది", bn: "পদক্ষেপ নেওয়া হয়েছে" },
     "Male": { en: "Male", hi: "पुरुष", ta: "ஆண்", kn: "ಪುರುಷ", ml: "പുരുഷൻ", te: "పురుషుడు", bn: "পুরুষ" },
     "Female": { en: "Female", hi: "महिला", ta: "பெண்", kn: "ಮಹಿಳೆ", ml: "സ്ത്രീ", te: "స్త్రీ", bn: "মহিলা" },
@@ -1314,10 +1326,21 @@ const CLINICAL_AUTO_MAP = {
     "Pulmonology": { en: "Pulmonology", hi: "श्वसन रोग", ta: "நுரையீரல் துறை", kn: "ಶ್ವಾಸಕೋಶ ಶಾಸ್ತ್ರ", ml: "ശ്വാസകോശ വിഭാഗം", te: "పల్మోనాలజీ", bn: "পালমোনোলজি" },
     "Nephrology": { en: "Nephrology", hi: "गुर्दा रोग विभाग", ta: "சிறுநீரகவியல்", kn: "ಮೂತ್ರಪಿಂಡ ಶಾಸ್ತ್ರ", ml: "വൃക്കരോഗ വിഭാഗം", te: "నెఫ్రాలజీ", bn: "নেফ্রোলজি" },
     "Dashboard": { en: "Dashboard", hi: "डैशबोर्ड", ta: "டாஷ்போர்டு", kn: "ಡ್ಯಾಶ್‌ಬೋರ್ಡ್", ml: "ഡാഷ്‌ബോർഡ്", te: "డ్యాష్‌బోర్డ్", bn: "ড্যাশবোর্ড" },
-    "New Prediction": { en: "New Prediction", hi: "नया पूर्वानुमान", ta: "புதிய கணிப்பு", kn: "ಹೊಸ ಮುನ್ಸೂಚನೆ", ml: "പുതിയ ಪ್ರವಚನ", te: "కొత్త అంచనా", bn: "নতুন পূর্বাভাস" },
+    "New Prediction": { en: "New Prediction", hi: "नया पूर्वानुमान", ta: "புதிய கணிப்பு", kn: "ಹೊಸ ಮುನ್ಸೂಚನೆ", ml: "പുതിയ പ്രവചനം", te: "కొత్త అంచనా", bn: "নতুন পূর্বাভাস" },
     "Patients": { en: "Patients", hi: "मरीज", ta: "நோயாளிகள்", kn: "ರೋಗಿಗಳು", ml: "രോഗികൾ", te: "రోగులు", bn: "রোগী" },
     "Prediction History": { en: "Prediction History", hi: "पूर्वानुमान इतिहास", ta: "கணிப்பு வரலாறு", kn: "ಮುನ್ಸೂಚನೆ ಇತಿಹಾಸ", ml: "പ്രവചന ചരിത്രം", te: "అంచనా చరిత్ర", bn: "পূর্বাভাস ইতিহাস" },
-    "Analytics": { en: "Clinical Analytics", hi: "क्लिनिकल विश्लेषण", ta: "சிகிச்சை பகுப்பாய்வு", kn: "ಕ್ಲಿನಿಕಲ್ ವಿಶ್ಲೇಷಣೆ", ml: "ക്ലിനിക്കൽ വിശകലനം", te: "క్లినికల్ విశ్లేషణ", bn: "ক্লিনিক্যাল বিশ্লেষণ" },
+    "Clinical Analytics": { en: "Clinical Analytics", hi: "क्लिनिकल विश्लेषण", ta: "சிகிச்சை பகுப்பாய்வு", kn: "ಕ್ಲಿನಿಕಲ್ ವಿಶ್ಲೇಷಣೆ", ml: "ക്ലിനിക്കൽ വിശകലനം", te: "క్లినికల్ విశ్లేషణ", bn: "ক্লিনিক্যাল বিশ্লেষণ" },
+    "Medical Documents": { en: "Medical Documents", hi: "चिकित्सा दस्तावेज", ta: "மருத்துவ ஆவணங்கள்", kn: "ವೈದ್ಯಕೀಯ ದಾಖಲೆಗಳು", ml: "മെഡിക്കൽ രേഖകൾ", te: "వైద్య పత్రాలు", bn: "চিকিৎসা সংক্রান্ত নথি" },
+    "My Documents": { en: "My Documents", hi: "मेरे दस्तावेज", ta: "என் ஆவணங்கள்", kn: "ನನ್ನ ದಾಖಲೆಗಳು", ml: "എന്റെ രേഖകൾ", te: "నా పత్రాలు", bn: "আমার নথি" },
+    "Doctor Digital Identity & Badge": { en: "Doctor Digital Identity & Badge", hi: "चिकित्सक डिजिटल पहचान एवं बैज", ta: "மருத்துவர் டிஜிட்டல் அடையாளம் & பேட்ஜ்", kn: "ವೈದ್ಯರ ಡಿಜಿಟಲ್ ಗುರುತು ಮತ್ತು ಬ್ಯಾಡ್ಜ್", ml: "ഡോക്ടർ ഡിജിറ്റൽ തിരിച്ചറിയൽ കാർഡ്", te: "వైద్యుల డిజిటల్ గుర్తింపు & బ్యాడ్జ్", bn: "ডাক্তার ডিজিটাল পরিচয় ও ব্যাজ" },
+    "Scan a Healthcare QR Code": { en: "Scan a Healthcare QR Code", hi: "हेल्थकेयर क्यूआर कोड स्कैन करें", ta: "சுகாதார QR குறியீட்டை ஸ்கேன் செய்க", kn: "ಆರೋಗ್ಯ QR ಕೋಡ್ ಸ್ಕ್ಯಾನ್ ಮಾಡಿ", ml: "ഹെൽത്ത് കെയർ QR കോഡ് സ്കാൻ ചെയ്യുക", te: "హెల్త్‌కేర్ QR కోడ్‌ని స్కాన్ చేయండి", bn: "স্বাস্থ্যসেবা QR কোড স্ক্যান করুন" },
+    "Start Live Camera": { en: "Start Live Camera", hi: "लाइव कैमरा शुरू करें", ta: "நேரலை கேமராவைத் தொடங்கு", kn: "ಲೈವ್ ಕ್ಯಾಮೆರಾ ಪ್ರಾರಂಭಿಸಿ", ml: "ലൈവ് ക്യാമറ ആരംഭിക്കുക", te: "లైవ్ కెమెరాను ప్రారంభించండి", bn: "লাইভ ক্যামেরা शुरू करें" },
+    "Stop Camera": { en: "Stop Camera", hi: "कैमरा बंद करें", ta: "கேமராவை நிறுத்து", kn: "ಕ್ಯಾಮೆರಾ ನಿಲ್ಲಿಸಿ", ml: "ക്യാമറ നിർത്തുക", te: "కెమెరాను ఆపండి", bn: "ক্যামেরা বন্ধ করুন" },
+    "Upload QR Image": { en: "Upload QR Image", hi: "क्यूआर छवि अपलोड करें", ta: "QR படத்தை பதிவேற்றவும்", kn: "QR ಚಿತ್ರವನ್ನು ಅಪ್‌ಲೋಡ್ ಮಾಡಿ", ml: "QR ചിത്രം അപ്‌ലോഡ് ചെയ്യുക", te: "QR చిత్రాన్ని అప్‌లోడ్ చేయండి", bn: "QR ছবি আপলোড করুন" },
+    "Explore Platform": { en: "Explore Platform", hi: "प्लेटफ़ॉर्म एक्सप्लोर करें", ta: "தளத்தை ஆராயுங்கள்", kn: "ಪ್ಲಾಟ್‌ಫಾರ್ಮ್ ಅನ್ವೇಷಿಸಿ", ml: "പ്ലാറ്റ്‌ഫോം പര്യവേಕ್ಷണം ചെയ്യുക", te: "ప్లాట్‌ఫారమ్‌ను అన్వేషించండి", bn: "প্ল্যাটফর্ম অন্বেষণ করুন" },
+    "Get Started": { en: "Get Started", hi: "शुरू करें", ta: "தொடங்குங்கள்", kn: "ಪ್ರಾರಂಭಿಸಿ", ml: "ಆരംഭിക്കുക", te: "ప్రారంభించండి", bn: "শুরু করুন" },
+    "Master eBook (88 Ch)": { en: "Master eBook (88 Ch)", hi: "मास्टर ई-बुक (88 अध्याय)", ta: "முழு மருத்துவ மின்புத்தகம் (88 அத்தியாயம்)", kn: "ಮಾಸ್ಟರ್ ಇ-ಬುಕ್ (88 ಅಧ್ಯಾಯ)", ml: "മാസ്റ്റർ ഇ-ಬುക്ക് (88 അധ്യായങ്ങൾ)", te: "మాస్టర్ ఈబుక్ (88 అధ్యాయాలు)", bn: "মাস্টার ই-বুক (৮৮ অধ্যায়)" },
+    "Interactive Tour": { en: "Interactive Tour", hi: "इंटरैक्टिव टूर", ta: "ஊடாடும் சுற்றுலா", kn: "ಸಂವಾದಾತ್ಮಕ ಪ್ರವಾಸ", ml: "സംവേദനാത്മക ടൂർ", te: "ఇంటరాక్టివ్ టూర్", bn: "ইন্টারেক্টিভ ট্যুর" },
     "Settings": { en: "Settings", hi: "सेटिंग्स", ta: "அமைப்புகள்", kn: "ಸೆಟ್ಟಿಂಗ್‌ಗಳು", ml: "ക്രമീകരണങ്ങൾ", te: "సెట్టింగ్‌లు", bn: "সেটিংস" },
     "Help & Support": { en: "Help & Support", hi: "सहायता एवं मार्गदर्शन", ta: "உதவி & ஆதரவு", kn: "ಸಹಾಯ & ಬೆಂಬಲ", ml: "സഹായവും പിന്തുണയും", te: "సహాయం & మద్దతు", bn: "সহায়তা ও সমর্থন" }
 };
@@ -1343,6 +1366,10 @@ const SHORT_CODES = {
     bn: 'বাংলা'
 };
 
+function escapeRegExp(string) {
+    return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
+
 class I18nEngine {
     constructor() {
         this.currentLang = this.getSavedLanguage();
@@ -1357,6 +1384,10 @@ class I18nEngine {
         }
         const stored = localStorage.getItem('hrp_lang');
         return SUPPORTED_LANGS.includes(stored) ? stored : 'en';
+    }
+
+    getLanguageName(lang) {
+        return LANG_LABELS[lang] || lang;
     }
 
     getPhraseMap() {
@@ -1374,16 +1405,18 @@ class I18nEngine {
         }
 
         // 2. Index all translation keys from translations object
-        const enDict = translations['en'] || {};
-        for (const [k, enVal] of Object.entries(enDict)) {
-            if (typeof enVal === 'string' && enVal.trim()) {
-                const norm = enVal.toLowerCase().trim();
-                const phraseLangs = {};
-                for (const l of SUPPORTED_LANGS) {
-                    phraseLangs[l] = translations[l]?.[k] || translations['en']?.[k] || enVal;
+        if (typeof translations !== 'undefined') {
+            const enDict = translations['en'] || {};
+            for (const [k, enVal] of Object.entries(enDict)) {
+                if (typeof enVal === 'string' && enVal.trim()) {
+                    const norm = enVal.toLowerCase().trim();
+                    const phraseLangs = {};
+                    for (const l of SUPPORTED_LANGS) {
+                        phraseLangs[l] = translations[l]?.[k] || translations['en']?.[k] || enVal;
+                    }
+                    map.set(norm, phraseLangs);
+                    map.set(k.toLowerCase().trim(), phraseLangs);
                 }
-                map.set(norm, phraseLangs);
-                map.set(k.toLowerCase().trim(), phraseLangs);
             }
         }
 
@@ -1422,12 +1455,13 @@ class I18nEngine {
     }
 
     t(key) {
+        if (typeof translations === 'undefined') return key;
         return translations[this.currentLang]?.[key] || translations['en']?.[key] || key;
     }
 
     applyLanguage(lang, notify = false) {
         document.documentElement.lang = lang;
-        const dict = translations[lang] || translations['en'];
+        const dict = (typeof translations !== 'undefined' && translations[lang]) ? translations[lang] : (typeof translations !== 'undefined' ? translations['en'] : {});
         const phraseMap = this.getPhraseMap();
 
         // 1. Direct [data-i18n] Tags
@@ -1469,7 +1503,7 @@ class I18nEngine {
             }
         });
 
-        // 5. Universal End-to-End DOM Text Translation
+        // 5. Universal End-to-End DOM Text-Node Walker Translation
         this.universalTranslateDOM(lang, phraseMap);
 
         if (notify) {
@@ -1482,45 +1516,94 @@ class I18nEngine {
     }
 
     universalTranslateDOM(lang, phraseMap) {
-        const selectors = 'h1, h2, h3, h4, h5, h6, button, a, span, p, label, td, th, li, dt, dd, option, .btn, .badge, .chip, [class*="risk-badge"]';
-        
-        document.querySelectorAll(selectors).forEach(el => {
-            // Ignore icons or dropdown menu items to preserve layouts
-            if (el.classList.contains('material-symbols-outlined') || el.closest('#lang-dropdown-menu')) return;
+        if (!document.body) return;
 
-            // Only translate leaf nodes (elements with direct text and no inner markup trees)
-            if (el.children.length === 0 && el.textContent) {
-                const currentText = el.textContent.trim();
-                if (!currentText || currentText.length > 250 || /^[0-9\s.,%:+/-]+$/.test(currentText)) return;
-
-                // Stash initial English text
-                if (!el.hasAttribute('data-orig-text')) {
-                    el.setAttribute('data-orig-text', currentText);
-                }
-
-                const origText = el.getAttribute('data-orig-text');
-                const normOrig = origText.toLowerCase().trim();
-                const normCurrent = currentText.toLowerCase().trim();
-
-                const entry = phraseMap.get(normOrig) || phraseMap.get(normCurrent);
-
-                if (entry) {
-                    const translated = entry[lang] || entry['en'];
-                    if (translated && el.textContent !== translated) {
-                        el.textContent = translated;
+        // TreeWalker over all DOM text nodes
+        const walker = document.createTreeWalker(
+            document.body,
+            NodeFilter.SHOW_TEXT,
+            {
+                acceptNode(node) {
+                    const parent = node.parentElement;
+                    if (!parent) return NodeFilter.FILTER_REJECT;
+                    const tag = parent.tagName;
+                    if (['SCRIPT', 'STYLE', 'SVG', 'CANVAS', 'CODE', 'NOSCRIPT'].includes(tag)) {
+                        return NodeFilter.FILTER_REJECT;
                     }
-                } else if (lang === 'en' && origText) {
-                    el.textContent = origText;
-                }
-            } else if (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA') {
-                if (el.placeholder) {
-                    if (!el.hasAttribute('data-orig-placeholder')) {
-                        el.setAttribute('data-orig-placeholder', el.placeholder);
+                    if (parent.classList.contains('material-symbols-outlined') || 
+                        parent.closest('#lang-dropdown-menu') ||
+                        parent.classList.contains('lang-indicator-text') ||
+                        parent.hasAttribute('data-i18n')) {
+                        return NodeFilter.FILTER_REJECT;
                     }
-                    const origPh = el.getAttribute('data-orig-placeholder');
-                    const entry = phraseMap.get(origPh.toLowerCase().trim());
-                    if (entry) {
-                        el.placeholder = entry[lang] || entry['en'] || origPh;
+                    const val = node.nodeValue.trim();
+                    if (!val || val.length === 0 || /^[0-9\s.,%:+/()\-–—#]+$/.test(val)) {
+                        return NodeFilter.FILTER_REJECT;
+                    }
+                    return NodeFilter.FILTER_ACCEPT;
+                }
+            },
+            false
+        );
+
+        const textNodes = [];
+        let currentNode;
+        while ((currentNode = walker.nextNode())) {
+            textNodes.push(currentNode);
+        }
+
+        for (const node of textNodes) {
+            if (node._origText === undefined) {
+                node._origText = node.nodeValue;
+            }
+            const originalText = node._origText;
+            const trimmedOrig = originalText.trim();
+            const normOrig = trimmedOrig.toLowerCase();
+
+            if (lang === 'en') {
+                node.nodeValue = originalText;
+                continue;
+            }
+
+            // Direct exact match
+            const entry = phraseMap.get(normOrig);
+            if (entry && (entry[lang] || entry['en'])) {
+                const translation = entry[lang] || entry['en'];
+                node.nodeValue = originalText.replace(trimmedOrig, translation);
+                continue;
+            }
+
+            // Substring search for multi-word clinical phrases
+            let translatedText = originalText;
+            let replaced = false;
+            for (const [key, langMap] of phraseMap.entries()) {
+                if (key.length > 3 && normOrig.includes(key)) {
+                    const trans = langMap[lang];
+                    if (trans && trans !== key) {
+                        const regex = new RegExp(escapeRegExp(key), 'gi');
+                        translatedText = translatedText.replace(regex, trans);
+                        replaced = true;
+                    }
+                }
+            }
+            if (replaced) {
+                node.nodeValue = translatedText;
+            }
+        }
+
+        // Input & Textarea Placeholders
+        document.querySelectorAll('input, textarea').forEach(el => {
+            if (el.placeholder) {
+                if (el._origPlaceholder === undefined) {
+                    el._origPlaceholder = el.placeholder;
+                }
+                const origPh = el._origPlaceholder.trim();
+                if (lang === 'en') {
+                    el.placeholder = el._origPlaceholder;
+                } else {
+                    const entry = phraseMap.get(origPh.toLowerCase());
+                    if (entry && (entry[lang] || entry['en'])) {
+                        el.placeholder = entry[lang] || entry['en'];
                     }
                 }
             }
@@ -1528,7 +1611,7 @@ class I18nEngine {
     }
 
     initMutationObserver() {
-        if (this.observer) return;
+        if (this.observer || !document.body) return;
         this.observer = new MutationObserver((mutations) => {
             let hasNewNodes = false;
             for (const mutation of mutations) {
