@@ -209,6 +209,7 @@ def test_all_web_routes():
         "/rl/human-review",
         "/rl/architecture",
         "/consultation/careai",
+        "/notifications",
         "/portal/patient",
         "/portal/coordinator",
         "/admin/users",
@@ -218,3 +219,27 @@ def test_all_web_routes():
     for r in routes:
         res = client.get(r)
         assert res.status_code == 200, f"Route {r} returned status {res.status_code}"
+
+def test_notifications_system():
+    # 1. Test get list
+    res = client.get("/api/notifications/list")
+    assert res.status_code == 200
+    data = res.json()
+    assert "notifications" in data
+    assert len(data["notifications"]) >= 1
+
+    # 2. Test mark read
+    first_id = data["notifications"][0]["id"]
+    res = client.post("/api/notifications/mark-read", json={"notif_id": first_id})
+    assert res.status_code == 200
+
+    # 3. Test mark all read
+    res = client.post("/api/notifications/mark-all-read")
+    assert res.status_code == 200
+    assert res.json()["unread_count"] == 0
+
+    # 4. Test simulate new alert
+    res = client.post("/api/notifications/simulate")
+    assert res.status_code == 200
+    sim_data = res.json()
+    assert "NOTIF-" in sim_data["id"]

@@ -141,6 +141,14 @@
                             <span data-i18n="dashboard">Dashboard</span>
                         </a>
 
+                        <a href="/notifications" class="flex items-center justify-between px-3 py-2 rounded-xl transition-all font-semibold nav-item-hover {% if active_page == 'notifications' %}nav-active-pill text-primary font-bold{% else %}text-on-surface-variant{% endif %}">
+                            <div class="flex items-center gap-2.5">
+                                <span class="material-symbols-outlined text-[18px] {% if active_page == 'notifications' %}fill-icon{% endif %}">notifications</span>
+                                <span data-i18n="notifications">Notifications &amp; Alerts</span>
+                            </div>
+                            <span class="px-1.5 py-0.5 rounded-full bg-red-100 text-red-700 font-extrabold text-[10px]">3</span>
+                        </a>
+
                         <a href="/prediction/new" class="flex items-center gap-2.5 px-3 py-2 rounded-xl transition-all font-semibold nav-item-hover {% if active_page == 'new_prediction' %}nav-active-pill text-primary font-bold{% else %}text-on-surface-variant{% endif %}">
                             <span class="material-symbols-outlined text-[18px] {% if active_page == 'new_prediction' %}fill-icon{% endif %}">add_circle</span>
                             <span data-i18n="new_prediction">New Prediction</span>
@@ -530,11 +538,66 @@
                         <span class="material-symbols-outlined text-[20px]">search</span>
                     </button>
 
-                    <!-- Notification Button with Halo Badge -->
-                    <button onclick="window.soundEngine?.message(); showToast('ML Model v2.4.1 &amp; RL PPO Policy Active.', 'info');" aria-label="Notifications" class="p-2.5 text-secondary hover:text-primary hover:bg-primary/10 rounded-full transition-all relative" style="min-height:44px;min-width:44px;">
-                        <span class="material-symbols-outlined text-[20px]">notifications</span>
-                        <span class="absolute top-2 right-2 w-2 h-2 bg-error rounded-full badge-halo"></span>
-                    </button>
+                    <!-- Notification Bell & Quick Dropdown Popover -->
+                    <div class="relative">
+                        <button onclick="toggleNotificationDropdown()" aria-label="Notifications" class="p-2.5 text-secondary hover:text-primary hover:bg-primary/10 rounded-full transition-all relative" style="min-height:44px;min-width:44px;">
+                            <span class="material-symbols-outlined text-[20px]">notifications</span>
+                            <span class="absolute top-2 right-2 w-2 h-2 bg-error rounded-full badge-halo"></span>
+                        </button>
+
+                        <!-- Notification Dropdown Popover (Solid Opaque, High-Z) -->
+                        <div id="notifications-dropdown-menu" class="hidden absolute right-0 mt-2 w-80 sm:w-96 rounded-3xl p-3 z-[9999] animate-scale-up space-y-2" style="background:#ffffff !important; border:1px solid #cbd5e1 !important; box-shadow: 0 20px 40px -10px rgba(0,0,0,0.22), 0 0 0 1px rgba(0,0,0,0.06) !important;">
+                            <div class="flex items-center justify-between px-2.5 py-1.5 border-b border-surface-variant">
+                                <div class="flex items-center gap-1.5">
+                                    <span class="material-symbols-outlined text-primary text-base">notifications_active</span>
+                                    <h4 class="text-xs font-extrabold text-on-surface">Clinical Alerts</h4>
+                                </div>
+                                <a href="/notifications" class="text-[10px] font-bold text-primary hover:underline">Center &rarr;</a>
+                            </div>
+
+                            <div class="space-y-1.5 max-h-72 overflow-y-auto">
+                                <a href="/patient/PT-84729" class="flex items-start gap-2.5 p-2.5 rounded-2xl bg-red-50/60 hover:bg-red-100/60 border border-red-200/60 transition-all text-left block">
+                                    <span class="material-symbols-outlined text-red-600 text-lg flex-shrink-0 mt-0.5">warning</span>
+                                    <div class="flex-1 min-w-0">
+                                        <div class="flex justify-between items-center">
+                                            <p class="text-xs font-bold text-red-900 truncate">High Risk: Eleanor Vance</p>
+                                            <span class="text-[9px] text-red-600 font-mono">2m</span>
+                                        </div>
+                                        <p class="text-[10px] text-red-700/90 line-clamp-2">68.4% readmission risk. Elevated creatinine (1.60 mg/dL).</p>
+                                    </div>
+                                </a>
+
+                                <a href="/rl/dashboard" class="flex items-start gap-2.5 p-2.5 rounded-2xl bg-amber-50/60 hover:bg-amber-100/60 border border-amber-200/60 transition-all text-left block">
+                                    <span class="material-symbols-outlined text-amber-600 text-lg flex-shrink-0 mt-0.5">route</span>
+                                    <div class="flex-1 min-w-0">
+                                        <div class="flex justify-between items-center">
+                                            <p class="text-xs font-bold text-amber-900 truncate">PPO RL Pathway</p>
+                                            <span class="text-[9px] text-amber-700 font-mono">12m</span>
+                                        </div>
+                                        <p class="text-[10px] text-amber-800/90 line-clamp-2">Intensive home tele-monitoring protocol recommended.</p>
+                                    </div>
+                                </a>
+
+                                <a href="/consultation/careai" class="flex items-start gap-2.5 p-2.5 rounded-2xl bg-blue-50/60 hover:bg-blue-100/60 border border-blue-200/60 transition-all text-left block">
+                                    <span class="material-symbols-outlined text-primary text-lg flex-shrink-0 mt-0.5">videocam</span>
+                                    <div class="flex-1 min-w-0">
+                                        <div class="flex justify-between items-center">
+                                            <p class="text-xs font-bold text-primary truncate">CareAI Telehealth Ready</p>
+                                            <span class="text-[9px] text-primary/80 font-mono">28m</span>
+                                        </div>
+                                        <p class="text-[10px] text-slate-600 line-clamp-2">Dr. CareAI video session with Lead II ECG telemetry.</p>
+                                    </div>
+                                </a>
+                            </div>
+
+                            <div class="pt-1.5 border-t border-surface-variant flex justify-between items-center px-1">
+                                <span class="text-[10px] text-secondary font-semibold">3 Unread Alerts</span>
+                                <a href="/notifications" class="px-3 py-1 rounded-xl bg-primary text-white font-extrabold text-[10px] hover:bg-primary/90 shadow-2xs">
+                                    View All
+                                </a>
+                            </div>
+                        </div>
+                    </div>
 
                     <!-- Profile Avatar & Quick Action Dropdown -->
                     <div class="relative">
@@ -643,6 +706,13 @@
                                 <a href="/dashboard" class="flex items-center gap-2.5 px-3 py-2 rounded-xl text-on-surface hover:bg-surface-container">
                                     <span class="material-symbols-outlined text-[18px] text-primary">dashboard</span>
                                     <span>Dashboard</span>
+                                </a>
+                                <a href="/notifications" class="flex items-center justify-between px-3 py-2 rounded-xl text-on-surface hover:bg-surface-container">
+                                    <div class="flex items-center gap-2.5">
+                                        <span class="material-symbols-outlined text-[18px] text-primary">notifications</span>
+                                        <span>Alerts &amp; Notifications</span>
+                                    </div>
+                                    <span class="px-1.5 py-0.5 rounded-full bg-red-100 text-red-700 font-extrabold text-[10px]">3</span>
                                 </a>
                                 <a href="/patients" class="flex items-center gap-2.5 px-3 py-2 rounded-xl text-on-surface hover:bg-surface-container">
                                     <span class="material-symbols-outlined text-[18px] text-primary">group</span>
@@ -986,6 +1056,15 @@
             if (menu) menu.classList.add('hidden');
         }
 
+        // Notification Dropdown Menu Toggle
+        function toggleNotificationDropdown() {
+            const menu = document.getElementById('notifications-dropdown-menu');
+            if (menu) {
+                menu.classList.toggle('hidden');
+                window.soundEngine?.click();
+            }
+        }
+
         // User Dropdown Menu Toggle
         function toggleUserDropdown() {
             const menu = document.getElementById('user-profile-menu');
@@ -999,6 +1078,12 @@
             if (userMenu && !userMenu.classList.contains('hidden')) {
                 if (!e.target.closest('#user-profile-menu') && !e.target.closest('[aria-label="User menu"]')) {
                     userMenu.classList.add('hidden');
+                }
+            }
+            const notifMenu = document.getElementById('notifications-dropdown-menu');
+            if (notifMenu && !notifMenu.classList.contains('hidden')) {
+                if (!e.target.closest('#notifications-dropdown-menu') && !e.target.closest('[aria-label="Notifications"]')) {
+                    notifMenu.classList.add('hidden');
                 }
             }
             const langMenu = document.getElementById('lang-dropdown-menu');

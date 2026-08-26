@@ -20,6 +20,7 @@ from app.database import db
 from app.auth import auth_manager
 from app.qr_engine import qr_engine
 from app.account_manager import account_manager
+from app.notification_manager import notification_manager
 from ml.predictor import predictor
 from ml.dataset_engine import dataset_engine
 from ml.model_hub import model_hub
@@ -886,6 +887,73 @@ async def verify_share_endpoint(request: Request, token_id: str):
         "result": res,
         "token": res.get("token")
     })
+
+# ==========================================
+# 9.5. CLINICAL ALERT & NOTIFICATION CENTER
+# ==========================================
+
+@app.get("/notifications", response_class=HTMLResponse)
+async def notifications_page(request: Request, category: Optional[str] = "all"):
+    notifs = notification_manager.get_all(category=category)
+    unread = notification_manager.get_unread_count()
+    return templates.TemplateResponse(request=request, name="notifications.html", context={
+        "active_page": "notifications",
+        "notifications": notifs,
+        "unread_count": unread,
+        "active_category": category
+    })
+
+@app.get("/api/notifications/list")
+async def api_notifications_list(category: Optional[str] = "all", unread_only: bool = False):
+    return {
+        "notifications": notification_manager.get_all(category=category, unread_only=unread_only),
+        "unread_count": notification_manager.get_unread_count()
+    }
+
+@app.post("/api/notifications/mark-read")
+async def api_notifications_mark_read(request: Request):
+    data = await request.json()
+    nid = data.get("notif_id")
+    if nid:
+        notification_manager.mark_as_read(nid)
+    return {"status": "ok", "unread_count": notification_manager.get_unread_count()}
+
+@app.post("/api/notifications/mark-all-read")
+async def api_notifications_mark_all_read():
+    notification_manager.mark_all_read()
+    return {"status": "ok", "unread_count": 0}
+
+@app.post("/api/notifications/delete")
+async def api_notifications_delete(request: Request):
+    data = await request.json()
+    nid = data.get("notif_id")
+    if nid:
+        notification_manager.delete_notification(nid)
+    return {"status": "ok", "unread_count": notification_manager.get_unread_count()}
+
+@app.post("/api/notifications/clear-all")
+async def api_notifications_clear_all():
+    notification_manager.clear_all()
+    return {"status": "ok", "unread_count": 0}
+
+@app.post("/api/notifications/simulate")
+async def api_notifications_simulate():
+    alerts_pool = [
+        ("High Readmission Risk: John Doe (PT-19482)", "XGBoost calculated 73.2% readmission likelihood. Acute telemetry review advised.", "clinical", "critical", "/patient/PT-19482", "Review Patient"),
+        ("PPO RL Pathway: Home Oxygen & SpO2 Titration", "Reinforcement learning policy adjusted care trajectory for post-CHF discharge.", "clinical", "warning", "/rl/dashboard", "View RL Policy"),
+        ("CareAI Telehealth Follow-up Scheduled", "Tele-consultation session booked for tomorrow morning at 10:00 AM.", "telehealth", "info", "/consultation/careai", "Join Video Call"),
+        ("Model Hub: Neural Ensemble Calibrated", "Deep Tabular Transformer ensemble weights updated across 101k patient encounters.", "ai_ml", "success", "/ml-dashboard", "Model Hub")
+    ]
+    chosen = random.choice(alerts_pool)
+    notif = notification_manager.add_notification(
+        title=chosen[0],
+        message=chosen[1],
+        category=chosen[2],
+        priority=chosen[3],
+        action_url=chosen[4],
+        action_label=chosen[5]
+    )
+    return notif
 
 # ==========================================
 # 10. COMPREHENSIVE SETTINGS & ACCOUNT HUB
