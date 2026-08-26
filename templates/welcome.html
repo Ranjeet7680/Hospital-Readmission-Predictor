@@ -2,6 +2,65 @@
 
 {% block title %}Hospital Readmission Predictor - AI Healthcare Intelligence Platform{% endblock %}
 
+{% block extra_head %}
+<style>
+@keyframes float3D {
+    0%, 100% { transform: translateY(0px) rotate(0deg) translateZ(20px); }
+    50% { transform: translateY(-10px) rotate(1.5deg) translateZ(35px); }
+}
+@keyframes pulseGlow {
+    0%, 100% { filter: drop-shadow(0 0 15px rgba(34,211,238,0.35)) drop-shadow(0 15px 30px rgba(0,47,108,0.2)); }
+    50% { filter: drop-shadow(0 0 25px rgba(0,91,191,0.6)) drop-shadow(0 20px 40px rgba(0,47,108,0.3)); }
+}
+@keyframes ecgPulse {
+    0% { stroke-dashoffset: 200; }
+    100% { stroke-dashoffset: 0; }
+}
+.card-3d-wrap {
+    perspective: 1200px;
+    transform-style: preserve-3d;
+}
+.card-3d-inner {
+    transition: transform 0.25s cubic-bezier(0.2, 0, 0, 1), box-shadow 0.25s ease;
+    transform-style: preserve-3d;
+}
+.floating-3d-badge {
+    animation: float3D 5s ease-in-out infinite;
+    transform-style: preserve-3d;
+}
+.glow-3d {
+    animation: pulseGlow 4s ease-in-out infinite;
+}
+.btn-3d-primary {
+    background: linear-gradient(135deg, #0066cc 0%, #004085 100%);
+    box-shadow: 0 8px 20px -4px rgba(0, 102, 204, 0.45), 0 3px 6px -2px rgba(0, 0, 0, 0.12), inset 0 1px 1px rgba(255, 255, 255, 0.35);
+    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.btn-3d-primary:hover {
+    transform: translateY(-3px) scale(1.02);
+    box-shadow: 0 14px 28px -6px rgba(0, 102, 204, 0.55), 0 6px 10px -3px rgba(0, 0, 0, 0.15), inset 0 1px 1px rgba(255, 255, 255, 0.45);
+}
+.btn-3d-primary:active {
+    transform: translateY(1px) scale(0.98);
+    box-shadow: 0 3px 8px -2px rgba(0, 102, 204, 0.35);
+}
+.btn-3d-secondary {
+    background: #ffffff;
+    box-shadow: 0 6px 16px -3px rgba(0, 0, 0, 0.08), 0 2px 4px -1px rgba(0, 0, 0, 0.04), inset 0 1px 0 rgba(255, 255, 255, 0.9);
+    border: 1px solid rgba(203, 213, 225, 0.8);
+    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.btn-3d-secondary:hover {
+    transform: translateY(-2px) scale(1.01);
+    box-shadow: 0 10px 22px -4px rgba(0, 0, 0, 0.12), 0 4px 6px -2px rgba(0, 0, 0, 0.06);
+    border-color: #94a3b8;
+}
+.btn-3d-secondary:active {
+    transform: translateY(1px) scale(0.98);
+}
+</style>
+{% endblock %}
+
 {% block full_content %}
 <div class="bg-[#f8f9fd] text-[#1b1b1f] min-h-screen flex flex-col font-sans antialiased selection:bg-primary selection:text-white relative overflow-x-hidden">
 
@@ -245,155 +304,189 @@
     </header>
 
     <!-- ========================================================================= -->
-    <!-- 5. HERO SECTION & INTERACTIVE FLOATING VISUALIZATION                      -->
+    <!-- 5. 3D HERO SECTION & INTERACTIVE FLOATING CLINICAL VISUALIZATION          -->
     <!-- ========================================================================= -->
-    <section class="py-12 sm:py-20 px-4 sm:px-8 bg-gradient-to-b from-white via-surface-container-lowest to-[#f4f6fb] border-b border-outline-variant/40">
-        <div class="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+    <section class="py-12 sm:py-20 px-4 sm:px-8 bg-gradient-to-b from-white via-surface-container-lowest to-[#f4f6fb] border-b border-outline-variant/40 relative overflow-hidden">
+        
+        <!-- Ambient 3D Neon Glow Spheres -->
+        <div class="absolute -top-32 -left-32 w-96 h-96 rounded-full bg-cyan-400/10 blur-3xl pointer-events-none"></div>
+        <div class="absolute top-1/2 -right-32 w-96 h-96 rounded-full bg-primary/10 blur-3xl pointer-events-none"></div>
+
+        <div class="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-14 items-center relative z-10">
             
-            <!-- Left Hero Text (Span 6) -->
+            <!-- Left Hero Text & 3D Tactile Action Deck (Span 6) -->
             <div class="lg:col-span-6 space-y-6">
-                <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 text-primary border border-primary/20 text-xs font-bold shadow-xs">
-                    <span class="material-symbols-outlined text-[16px]">verified</span>
-                    <span>Precision AI & Clinical Workflow Platform v2.4.1</span>
+                <!-- 3D Holographic Pill Badge -->
+                <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-primary/10 text-primary border border-primary/25 text-xs font-black shadow-xs backdrop-blur-md hover:scale-105 transition-transform cursor-default">
+                    <span class="w-2 h-2 rounded-full bg-emerald-500 animate-ping"></span>
+                    <span>Precision AI &amp; Clinical Workflow Platform v2.4.1</span>
                 </div>
 
+                <!-- 3D Gradient Headline Typography -->
                 <div class="space-y-2">
-                    <h1 class="text-3xl sm:text-5xl font-black text-on-surface tracking-tight leading-[1.15]">
+                    <h1 class="text-3xl sm:text-5xl font-black text-slate-900 tracking-tight leading-[1.12]">
                         Predict Hospital Readmission Risk.
                     </h1>
-                    <h2 class="text-2xl sm:text-4xl font-extrabold text-primary tracking-tight">
+                    <h2 class="text-2xl sm:text-4xl font-extrabold bg-gradient-to-r from-primary via-[#005bbf] to-teal-700 bg-clip-text text-transparent tracking-tight">
                         Understand. Connect. Care.
                     </h2>
                 </div>
 
-                <p class="text-sm sm:text-base text-secondary leading-relaxed max-w-xl">
-                    An AI-powered healthcare platform combining machine learning, deep learning, explainable AI, and intelligent care workflows to support better clinical decision-making.
+                <p class="text-sm sm:text-base text-slate-600 leading-relaxed max-w-xl font-medium">
+                    An AI-powered healthcare intelligence cockpit combining machine learning, deep tabular transformers, explainable AI, and connected telemedicine for 30-day post-discharge safety.
                 </p>
 
-                <!-- CTA Buttons -->
-                <div class="flex flex-wrap items-center gap-3 pt-2">
-                    <a href="/prediction/new" class="px-6 py-3 rounded-2xl bg-primary hover:bg-primary/90 text-white font-bold text-xs sm:text-sm shadow-md flex items-center gap-2 transition-all group">
+                <!-- 3D Tactile CTA Buttons (2x2 Grid on Mobile, Flex on Desktop) -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2 max-w-lg">
+                    <a href="/prediction/new" class="btn-3d-primary px-6 py-3.5 rounded-2xl text-white font-extrabold text-xs sm:text-sm flex items-center justify-center gap-2 cursor-pointer">
                         <span>Get Started</span>
-                        <span class="material-symbols-outlined text-lg group-hover:translate-x-1 transition-transform">arrow_forward</span>
+                        <span class="material-symbols-outlined text-base">arrow_forward</span>
                     </a>
 
-                    <a href="/dashboard" class="px-6 py-3 rounded-2xl bg-surface-container-high hover:bg-surface-container-highest text-on-surface font-bold text-xs sm:text-sm border border-outline-variant/60 shadow-xs flex items-center gap-2 transition-all">
-                        <span class="material-symbols-outlined text-lg text-primary">dashboard</span>
+                    <a href="/dashboard" class="btn-3d-secondary px-6 py-3.5 rounded-2xl text-slate-800 font-extrabold text-xs sm:text-sm flex items-center justify-center gap-2 cursor-pointer">
+                        <span class="material-symbols-outlined text-base text-primary">dashboard</span>
                         <span>Explore Platform</span>
                     </a>
 
-                    <a href="/ebook" target="_blank" class="px-5 py-3 rounded-2xl bg-primary/10 hover:bg-primary/20 text-primary font-bold text-xs sm:text-sm border border-primary/30 shadow-xs flex items-center gap-2 transition-all">
-                        <span class="material-symbols-outlined text-lg">menu_book</span>
+                    <a href="/ebook" target="_blank" class="btn-3d-secondary px-5 py-3 rounded-2xl text-primary font-bold text-xs flex items-center justify-center gap-2 cursor-pointer hover:bg-primary/5">
+                        <span class="material-symbols-outlined text-base">menu_book</span>
                         <span>Master eBook (88 Ch)</span>
                     </a>
 
-                    <button onclick="openProductTour()" class="px-4 py-3 rounded-2xl bg-white hover:bg-surface-container-low text-secondary hover:text-primary font-bold text-xs sm:text-sm border border-outline-variant/60 shadow-xs flex items-center gap-2 transition-all">
-                        <span class="material-symbols-outlined text-primary text-xl">play_circle</span>
-                        <span>Interactive Product Tour</span>
+                    <button onclick="openProductTour()" class="btn-3d-secondary px-4 py-3 rounded-2xl text-slate-700 hover:text-primary font-bold text-xs flex items-center justify-center gap-2 cursor-pointer">
+                        <span class="material-symbols-outlined text-primary text-lg">play_circle</span>
+                        <span>Interactive Tour</span>
                     </button>
                 </div>
 
-                <!-- Verified Stats Strip -->
-                <div class="grid grid-cols-3 gap-3 pt-4 border-t border-surface-variant">
-                    <div>
-                        <span class="text-xl sm:text-2xl font-black text-primary block">0.9794</span>
-                        <span class="text-[11px] font-semibold text-secondary">ROC-AUC Score</span>
+                <!-- 3D Verified Metrics Floating Strip -->
+                <div class="grid grid-cols-3 gap-3 pt-4 border-t border-slate-200">
+                    <div class="p-3 rounded-2xl bg-white border border-slate-200/80 shadow-xs hover:shadow-md hover:-translate-y-1 transition-all">
+                        <span class="text-xl sm:text-2xl font-black text-primary block leading-none">0.9794</span>
+                        <span class="text-[10px] sm:text-[11px] font-bold text-slate-500 uppercase tracking-wider mt-1 block">ROC-AUC Score</span>
                     </div>
-                    <div>
-                        <span class="text-xl sm:text-2xl font-black text-on-surface block">101,766</span>
-                        <span class="text-[11px] font-semibold text-secondary">Inpatient Cohort</span>
+                    <div class="p-3 rounded-2xl bg-white border border-slate-200/80 shadow-xs hover:shadow-md hover:-translate-y-1 transition-all">
+                        <span class="text-xl sm:text-2xl font-black text-slate-900 block leading-none">101,766</span>
+                        <span class="text-[10px] sm:text-[11px] font-bold text-slate-500 uppercase tracking-wider mt-1 block">Cohort Size</span>
                     </div>
-                    <div>
-                        <span class="text-xl sm:text-2xl font-black text-[#146c2e] block">100%</span>
-                        <span class="text-[11px] font-semibold text-secondary">Human-in-the-Loop</span>
+                    <div class="p-3 rounded-2xl bg-white border border-slate-200/80 shadow-xs hover:shadow-md hover:-translate-y-1 transition-all">
+                        <span class="text-xl sm:text-2xl font-black text-emerald-700 block leading-none">100%</span>
+                        <span class="text-[10px] sm:text-[11px] font-bold text-slate-500 uppercase tracking-wider mt-1 block">Human-in-Loop</span>
                     </div>
+                </div>
+
+                <!-- Golden Sanskrit Motto 3D Card Ribbon -->
+                <div class="p-3.5 rounded-2xl bg-gradient-to-r from-amber-500/10 via-primary/5 to-amber-500/10 border border-amber-500/30 shadow-xs backdrop-blur-md">
+                    <p class="font-serif italic text-xs sm:text-sm text-[#002f6c] font-bold text-center">
+                        "स्वास्थ्यं परमं धनम्, विज्ञानस्य साहाय्येन सर्वेषां जीवनं निरामयं भवतु।"
+                    </p>
+                    <p class="text-[10px] text-slate-500 text-center mt-0.5">Health is Supreme Wealth &bull; Team Nexora &bull; LUMINIX'26</p>
                 </div>
             </div>
 
-            <!-- Right Hero Visual: Connected Medical AI Flow Canvas (Span 6) -->
-            <div class="lg:col-span-6 relative">
-                <!-- Floating Dashboard Card Container -->
-                <div class="relative bg-white border-2 border-primary/30 rounded-3xl p-6 shadow-2xl space-y-5 backdrop-blur-md">
+            <!-- Right Hero 3D Interactive Floating Hologram Canvas (Span 6) -->
+            <div class="lg:col-span-6 relative card-3d-wrap py-6">
+                
+                <!-- Floating 3D Micro-Badge 1 (Top Left) -->
+                <div class="floating-3d-badge absolute -top-2 -left-3 sm:-left-6 z-30 px-3 py-1.5 rounded-2xl bg-white/95 border border-cyan-300 shadow-xl text-[11px] font-black text-slate-800 flex items-center gap-1.5 backdrop-blur-md">
+                    <span class="w-2 h-2 rounded-full bg-cyan-500 animate-pulse"></span>
+                    <span>XGBoost v2.4.1 Calibrated</span>
+                </div>
+
+                <!-- Floating 3D Micro-Badge 2 (Bottom Right) -->
+                <div class="floating-3d-badge absolute -bottom-3 -right-2 sm:-right-4 z-30 px-3 py-1.5 rounded-2xl bg-white/95 border border-emerald-300 shadow-xl text-[11px] font-black text-emerald-800 flex items-center gap-1.5 backdrop-blur-md" style="animation-delay: -2.5s;">
+                    <span class="material-symbols-outlined text-emerald-600 text-sm">verified</span>
+                    <span>TreeSHAP Attribution 100%</span>
+                </div>
+
+                <!-- Main 3D Card with Tilt Effect -->
+                <div id="hero-3d-card" onmousemove="handle3DTilt(event, this)" onmouseleave="reset3DTilt(this)" class="card-3d-inner glow-3d relative bg-white border-2 border-primary/30 rounded-3xl p-6 sm:p-7 shadow-2xl space-y-5 backdrop-blur-md transform transition-all duration-200 ease-out">
+                    
                     <!-- Top Card Header -->
-                    <div class="flex justify-between items-center border-b border-surface-variant pb-3">
-                        <div class="flex items-center gap-2.5">
-                            <div class="w-9 h-9 rounded-xl bg-error-container text-error flex items-center justify-center font-bold">
-                                <span class="material-symbols-outlined text-xl">warning</span>
+                    <div class="flex justify-between items-center border-b border-slate-100 pb-3">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 rounded-2xl bg-red-100 text-red-700 flex items-center justify-center font-bold shadow-inner">
+                                <span class="material-symbols-outlined text-2xl">warning</span>
                             </div>
                             <div>
-                                <h4 class="text-xs font-bold text-on-surface">Eleanor Vance (#PT-84729)</h4>
-                                <p class="text-[10px] text-secondary">Cardiology Ward 4B • Age 71</p>
+                                <h4 class="text-sm font-black text-slate-900">Eleanor Vance (#PT-84729)</h4>
+                                <p class="text-[11px] text-slate-500 font-semibold">Cardiology Ward 4B &bull; Age 71 &bull; Heart Failure</p>
                             </div>
                         </div>
-                        <span class="px-2.5 py-1 rounded-full bg-error text-white text-[10px] font-bold uppercase tracking-wider animate-pulse">
+                        <span class="px-3 py-1 rounded-full bg-red-600 text-white text-[10px] font-black uppercase tracking-wider shadow-sm animate-pulse">
                             68.4% High Risk
                         </span>
                     </div>
 
-                    <!-- Middle: SVG Risk Gauge & XAI Highlights -->
+                    <!-- Middle: 3D Gauge & XAI Highlights -->
                     <div class="grid grid-cols-12 gap-4 items-center">
-                        <!-- Gauge (Span 5) -->
-                        <div class="col-span-5 flex flex-col items-center justify-center p-2 bg-surface-container-low rounded-2xl border border-outline-variant/60">
-                            <div class="relative w-24 h-24 flex items-center justify-center">
-                                <svg class="w-24 h-24 transform -rotate-90" viewBox="0 0 100 100">
-                                    <circle cx="50" cy="50" r="42" stroke="#e8e9ee" stroke-width="8" fill="none"/>
-                                    <circle cx="50" cy="50" r="42" stroke="#ba1a1a" stroke-width="8" stroke-dasharray="264" stroke-dashoffset="84" stroke-linecap="round" fill="none" class="transition-all duration-1000"/>
+                        <!-- 3D Circular Radial Gauge (Span 5) -->
+                        <div class="col-span-12 sm:col-span-5 flex flex-col items-center justify-center p-3 bg-slate-50 rounded-2xl border border-slate-200/80 shadow-inner">
+                            <div class="relative w-28 h-28 flex items-center justify-center">
+                                <svg class="w-28 h-28 transform -rotate-90" viewBox="0 0 100 100">
+                                    <circle cx="50" cy="50" r="40" stroke="#e2e8f0" stroke-width="8" fill="none"/>
+                                    <circle cx="50" cy="50" r="40" stroke="#dc2626" stroke-width="8" stroke-dasharray="251.2" stroke-dashoffset="79.4" stroke-linecap="round" fill="none" class="transition-all duration-1000"/>
                                 </svg>
                                 <div class="absolute inset-0 flex flex-col items-center justify-center">
-                                    <span class="text-lg font-black text-on-surface">68%</span>
-                                    <span class="text-[8px] font-bold uppercase text-error">High Risk</span>
+                                    <span class="text-2xl font-black text-slate-900">68%</span>
+                                    <span class="text-[8px] font-black uppercase text-red-600 tracking-wider">High Risk</span>
                                 </div>
                             </div>
-                            <span class="text-[9px] font-semibold text-secondary mt-1">30-Day Readmission</span>
+                            <span class="text-[10px] font-bold text-slate-500 mt-1.5">30-Day Readmission</span>
                         </div>
 
-                        <!-- Model Insights (Span 7) -->
-                        <div class="col-span-7 space-y-2 text-xs">
-                            <span class="text-[10px] font-bold uppercase tracking-wider text-secondary flex items-center gap-1">
-                                <span class="material-symbols-outlined text-primary text-[14px]">psychology</span>
-                                Top Model-Associated Factors
+                        <!-- Model Feature Insights (Span 7) -->
+                        <div class="col-span-12 sm:col-span-7 space-y-2 text-xs">
+                            <span class="text-[10px] font-black uppercase tracking-wider text-slate-500 flex items-center gap-1">
+                                <span class="material-symbols-outlined text-primary text-[15px]">psychology</span>
+                                <span>Top Associated Risk Drivers</span>
                             </span>
 
-                            <div class="space-y-1.5">
-                                <div class="flex justify-between p-1.5 rounded-lg bg-surface-container-lowest border border-outline-variant/50">
-                                    <span class="text-secondary text-[11px]">Prior Inpatient Visits (2x)</span>
-                                    <span class="font-bold text-error font-mono">+24.0%</span>
+                            <div class="space-y-1.5 font-medium">
+                                <div class="flex justify-between items-center p-2 rounded-xl bg-red-50/70 border border-red-200/60">
+                                    <span class="text-slate-700 text-[11px] font-semibold">Prior Inpatient Visits (2x)</span>
+                                    <span class="font-mono font-black text-red-700">+24.0%</span>
                                 </div>
-                                <div class="flex justify-between p-1.5 rounded-lg bg-surface-container-lowest border border-outline-variant/50">
-                                    <span class="text-secondary text-[11px]">Elevated Creatinine (1.60)</span>
-                                    <span class="font-bold text-amber-600 font-mono">+16.0%</span>
+                                <div class="flex justify-between items-center p-2 rounded-xl bg-amber-50/70 border border-amber-200/60">
+                                    <span class="text-slate-700 text-[11px] font-semibold">Serum Creatinine (1.60 mg/dL)</span>
+                                    <span class="font-mono font-black text-amber-700">+16.0%</span>
                                 </div>
-                                <div class="flex justify-between p-1.5 rounded-lg bg-surface-container-lowest border border-outline-variant/50">
-                                    <span class="text-secondary text-[11px]">Polypharmacy (8 Meds)</span>
-                                    <span class="font-bold text-amber-600 font-mono">+10.2%</span>
+                                <div class="flex justify-between items-center p-2 rounded-xl bg-slate-50 border border-slate-200/70">
+                                    <span class="text-slate-700 text-[11px] font-semibold">Polypharmacy (8 Medications)</span>
+                                    <span class="font-mono font-black text-amber-600">+10.2%</span>
                                 </div>
                             </div>
                         </div>
                     </div>
 
-                    <!-- Bottom Connected Flow: Patient Data -> AI -> Risk -> Doctor -> Care -->
-                    <div class="p-3 bg-surface-container-low rounded-2xl border border-outline-variant/60 space-y-1.5">
-                        <div class="flex justify-between items-center text-[10px] font-bold text-secondary">
-                            <span>Clinical Closed-Loop Workflow</span>
-                            <span class="text-primary font-mono">PPO RL Policy Active</span>
+                    <!-- Live Animated Telemetry ECG Ribbon -->
+                    <div class="pt-2 border-t border-slate-100 flex items-center justify-between text-[11px]">
+                        <div class="flex items-center gap-2">
+                            <span class="w-2 h-2 rounded-full bg-emerald-500 animate-ping"></span>
+                            <span class="font-bold text-slate-700">Live ECG Stream &bull; Lead II</span>
                         </div>
-                        <div class="flex items-center justify-between text-[9px] font-bold text-on-surface">
-                            <span class="p-1 bg-white rounded border border-outline-variant">1. Inpatient Data</span>
-                            <span class="text-primary">&rarr;</span>
-                            <span class="p-1 bg-white rounded border border-outline-variant">2. ML / DL Risk</span>
-                            <span class="text-primary">&rarr;</span>
-                            <span class="p-1 bg-white rounded border border-outline-variant">3. XAI Factors</span>
-                            <span class="text-primary">&rarr;</span>
-                            <span class="p-1 bg-white rounded border border-primary text-primary font-bold">4. Dr. Review</span>
-                            <span class="text-primary">&rarr;</span>
-                            <span class="p-1 bg-green-100 text-green-800 rounded border border-green-300">5. Follow-up</span>
-                        </div>
+                        <span class="font-mono font-bold text-primary">74 BPM (Normal Sinus)</span>
                     </div>
                 </div>
             </div>
-
         </div>
     </section>
+
+    <script>
+    function handle3DTilt(e, card) {
+        const rect = card.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
+        const centerX = rect.width / 2;
+        const centerY = rect.height / 2;
+        const rotateX = ((y - centerY) / centerY) * -8;
+        const rotateY = ((x - centerX) / centerX) * 8;
+        card.style.transform = `perspective(1000px) rotateX(${rotateX.toFixed(2)}deg) rotateY(${rotateY.toFixed(2)}deg) translateZ(10px)`;
+    }
+    function reset3DTilt(card) {
+        card.style.transform = 'perspective(1000px) rotateX(0deg) rotateY(0deg) translateZ(0px)';
+    }
+    </script>
 
     <!-- ========================================================================= -->
     <!-- 6. TRUST STRIP SECTION (6 Minimal Line Cards)                             -->
