@@ -660,6 +660,14 @@ async def video_consultation_page(request: Request):
         "active_page": "video_consult"
     })
 
+@app.get("/telemedicine")
+async def telemedicine_alias():
+    return RedirectResponse(url="/consultation/careai", status_code=303)
+
+@app.get("/consultation")
+async def consultation_alias():
+    return RedirectResponse(url="/consultation/careai", status_code=303)
+
 @app.get("/portal/patient", response_class=HTMLResponse)
 async def patient_portal_page(request: Request):
     return templates.TemplateResponse(request=request, name="portal/patient_portal.html", context={
