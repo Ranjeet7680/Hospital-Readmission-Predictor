@@ -59,10 +59,25 @@ template_dir = next((d for d in possible_template_dirs if os.path.exists(d)), os
 templates = Jinja2Templates(directory=template_dir)
 
 @app.get("/favicon.ico")
-async def favicon():
+async def favicon_ico():
     favicon_path = os.path.join(BASE_DIR, "static", "favicon.ico")
     if os.path.exists(favicon_path):
         return FileResponse(favicon_path, media_type="image/x-icon")
+    return FileResponse(os.path.join(BASE_DIR, "static", "favicon.svg"), media_type="image/svg+xml")
+
+@app.get("/favicon.png")
+@app.get("/favicon-32x32.png")
+@app.get("/favicon-16x16.png")
+@app.get("/apple-touch-icon.png")
+@app.get("/apple-touch-icon-precomposed.png")
+async def favicon_png():
+    png_path = os.path.join(BASE_DIR, "static", "favicon.png")
+    if os.path.exists(png_path):
+        return FileResponse(png_path, media_type="image/png")
+    return FileResponse(os.path.join(BASE_DIR, "static", "favicon.svg"), media_type="image/svg+xml")
+
+@app.get("/favicon.svg")
+async def favicon_svg():
     return FileResponse(os.path.join(BASE_DIR, "static", "favicon.svg"), media_type="image/svg+xml")
 
 @app.get("/ebook", response_class=HTMLResponse)
