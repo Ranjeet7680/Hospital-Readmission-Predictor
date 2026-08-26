@@ -167,17 +167,17 @@
                 <div>
                     <span class="px-3 text-[10px] font-bold uppercase tracking-wider text-secondary/80 block mb-1" data-i18n="medical_documents">Medical Documents</span>
                     <div class="space-y-0.5">
-                        <a href="/documents" class="flex items-center gap-2.5 px-3 py-2 rounded-xl transition-all font-semibold nav-item-hover {% if  %}nav-active-pill text-primary font-bold{% else %}text-on-surface-variant{% endif %}">
+                        <a href="/documents" class="flex items-center gap-2.5 px-3 py-2 rounded-xl transition-all font-semibold nav-item-hover {% if active_page == 'documents' %}nav-active-pill text-primary font-bold{% else %}text-on-surface-variant{% endif %}">
                             <span class="material-symbols-outlined text-[18px]">folder</span>
                             <span data-i18n="my_documents">My Documents</span>
                         </a>
 
-                        <a href="/documents/analyze/DOC-84729-LAB" class="flex items-center gap-2.5 px-3 py-2 rounded-xl transition-all font-semibold nav-item-hover {% if  %}nav-active-pill text-primary font-bold{% else %}text-on-surface-variant{% endif %}">
+                        <a href="/documents/analyze/DOC-84729-LAB" class="flex items-center gap-2.5 px-3 py-2 rounded-xl transition-all font-semibold nav-item-hover {% if active_page == 'analyze_report' %}nav-active-pill text-primary font-bold{% else %}text-on-surface-variant{% endif %}">
                             <span class="material-symbols-outlined text-[18px]">document_scanner</span>
                             <span data-i18n="lab_reports">Lab & Report Analysis</span>
                         </a>
 
-                        <a href="/certificates" class="flex items-center gap-2.5 px-3 py-2 rounded-xl transition-all font-semibold nav-item-hover {% if  %}nav-active-pill text-primary font-bold{% else %}text-on-surface-variant{% endif %}">
+                        <a href="/certificates" class="flex items-center gap-2.5 px-3 py-2 rounded-xl transition-all font-semibold nav-item-hover {% if active_page == 'certificates' %}nav-active-pill text-primary font-bold{% else %}text-on-surface-variant{% endif %}">
                             <span class="material-symbols-outlined text-[18px]">verified</span>
                             <span data-i18n="medical_certificates">Medical Certificates</span>
                         </a>
@@ -188,62 +188,62 @@
                 <div>
                     <span class="px-3 text-[10px] font-bold uppercase tracking-wider text-secondary/80 block mb-1" data-i18n="ai_and_ml">AI & ML Intelligence</span>
                     <div class="space-y-0.5">
-                        <a href="/ml-dashboard" class="flex items-center gap-2.5 px-3 py-2 rounded-xl transition-all font-semibold nav-item-hover {% if  %}nav-active-pill text-primary font-bold{% else %}text-on-surface-variant{% endif %}">
+                        <a href="/ml-dashboard" class="flex items-center gap-2.5 px-3 py-2 rounded-xl transition-all font-semibold nav-item-hover {% if active_page == 'ml_dashboard' %}nav-active-pill text-primary font-bold{% else %}text-on-surface-variant{% endif %}">
                             <span class="material-symbols-outlined text-[18px]">psychology</span>
                             <span data-i18n="ml_dashboard">ML Dashboard</span>
                         </a>
 
-                        <a href="/ml/dataset" class="flex items-center gap-2.5 px-3 py-2 rounded-xl transition-all font-semibold nav-item-hover {% if  %}nav-active-pill text-primary font-bold{% else %}text-on-surface-variant{% endif %}">
+                        <a href="/ml/dataset" class="flex items-center gap-2.5 px-3 py-2 rounded-xl transition-all font-semibold nav-item-hover {% if active_page == 'dataset' %}nav-active-pill text-primary font-bold{% else %}text-on-surface-variant{% endif %}">
                             <span class="material-symbols-outlined text-[18px]">dataset</span>
                             <span data-i18n="dataset_workspace">Dataset Workspace</span>
                         </a>
 
-                        <a href="/ml/preprocessing" class="flex items-center gap-2.5 px-3 py-2 rounded-xl transition-all font-semibold nav-item-hover {% if  %}nav-active-pill text-primary font-bold{% else %}text-on-surface-variant{% endif %}">
+                        <a href="/ml/preprocessing" class="flex items-center gap-2.5 px-3 py-2 rounded-xl transition-all font-semibold nav-item-hover {% if active_page == 'preprocessing' %}nav-active-pill text-primary font-bold{% else %}text-on-surface-variant{% endif %}">
                             <span class="material-symbols-outlined text-[18px]">account_tree</span>
                             <span data-i18n="preprocessing">Preprocessing (10-Stage)</span>
                         </a>
 
-                        <a href="/ml/training" class="flex items-center gap-2.5 px-3 py-2 rounded-xl transition-all font-semibold nav-item-hover {% if  %}nav-active-pill text-primary font-bold{% else %}text-on-surface-variant{% endif %}">
+                        <a href="/ml/training" class="flex items-center gap-2.5 px-3 py-2 rounded-xl transition-all font-semibold nav-item-hover {% if active_page == 'training_studio' %}nav-active-pill text-primary font-bold{% else %}text-on-surface-variant{% endif %}">
                             <span class="material-symbols-outlined text-[18px]">model_training</span>
                             <span data-i18n="model_training">Training Studio</span>
                         </a>
 
-                        <a href="/ml/deep-learning" class="flex items-center gap-2.5 px-3 py-2 rounded-xl transition-all font-semibold nav-item-hover {% if  %}nav-active-pill text-primary font-bold{% else %}text-on-surface-variant{% endif %}">
+                        <a href="/ml/deep-learning" class="flex items-center gap-2.5 px-3 py-2 rounded-xl transition-all font-semibold nav-item-hover {% if active_page == 'dl_lab' %}nav-active-pill text-primary font-bold{% else %}text-on-surface-variant{% endif %}">
                             <span class="material-symbols-outlined text-[18px]">hub</span>
                             <span>Deep Learning Lab</span>
                         </a>
 
-                        <a href="/ml/comparison" class="flex items-center gap-2.5 px-3 py-2 rounded-xl transition-all font-semibold nav-item-hover {% if  %}nav-active-pill text-primary font-bold{% else %}text-on-surface-variant{% endif %}">
+                        <a href="/ml/comparison" class="flex items-center gap-2.5 px-3 py-2 rounded-xl transition-all font-semibold nav-item-hover {% if active_page == 'comparison' %}nav-active-pill text-primary font-bold{% else %}text-on-surface-variant{% endif %}">
                             <span class="material-symbols-outlined text-[18px]">compare_arrows</span>
                             <span data-i18n="model_comparison">Model Comparison</span>
                         </a>
 
-                        <a href="/ml/xai" class="flex items-center gap-2.5 px-3 py-2 rounded-xl transition-all font-semibold nav-item-hover {% if  %}nav-active-pill text-primary font-bold{% else %}text-on-surface-variant{% endif %}">
+                        <a href="/ml/xai" class="flex items-center gap-2.5 px-3 py-2 rounded-xl transition-all font-semibold nav-item-hover {% if active_page == 'xai' %}nav-active-pill text-primary font-bold{% else %}text-on-surface-variant{% endif %}">
                             <span class="material-symbols-outlined text-[18px]">waterfall_chart</span>
                             <span data-i18n="explainable_ai">Explainable AI (SHAP)</span>
                         </a>
 
-                        <a href="/ml/embeddings" class="flex items-center gap-2.5 px-3 py-2 rounded-xl transition-all font-semibold nav-item-hover {% if  %}nav-active-pill text-primary font-bold{% else %}text-on-surface-variant{% endif %}">
+                        <a href="/ml/embeddings" class="flex items-center gap-2.5 px-3 py-2 rounded-xl transition-all font-semibold nav-item-hover {% if active_page == 'embeddings' %}nav-active-pill text-primary font-bold{% else %}text-on-surface-variant{% endif %}">
                             <span class="material-symbols-outlined text-[18px]">bubble_chart</span>
                             <span data-i18n="patient_embeddings">Patient Embeddings (2D)</span>
                         </a>
 
-                        <a href="/ml/ensemble" class="flex items-center gap-2.5 px-3 py-2 rounded-xl transition-all font-semibold nav-item-hover {% if  %}nav-active-pill text-primary font-bold{% else %}text-on-surface-variant{% endif %}">
+                        <a href="/ml/ensemble" class="flex items-center gap-2.5 px-3 py-2 rounded-xl transition-all font-semibold nav-item-hover {% if active_page == 'ensemble' %}nav-active-pill text-primary font-bold{% else %}text-on-surface-variant{% endif %}">
                             <span class="material-symbols-outlined text-[18px]">join</span>
                             <span data-i18n="ensemble_uncertainty">Ensemble & Uncertainty</span>
                         </a>
 
-                        <a href="/ml/monitoring" class="flex items-center gap-2.5 px-3 py-2 rounded-xl transition-all font-semibold nav-item-hover {% if  %}nav-active-pill text-primary font-bold{% else %}text-on-surface-variant{% endif %}">
+                        <a href="/ml/monitoring" class="flex items-center gap-2.5 px-3 py-2 rounded-xl transition-all font-semibold nav-item-hover {% if active_page == 'monitoring' %}nav-active-pill text-primary font-bold{% else %}text-on-surface-variant{% endif %}">
                             <span class="material-symbols-outlined text-[18px]">monitoring</span>
                             <span data-i18n="model_monitoring">Model Drift Monitoring</span>
                         </a>
 
-                        <a href="/ml/registry" class="flex items-center gap-2.5 px-3 py-2 rounded-xl transition-all font-semibold nav-item-hover {% if  %}nav-active-pill text-primary font-bold{% else %}text-on-surface-variant{% endif %}">
+                        <a href="/ml/registry" class="flex items-center gap-2.5 px-3 py-2 rounded-xl transition-all font-semibold nav-item-hover {% if active_page == 'registry' %}nav-active-pill text-primary font-bold{% else %}text-on-surface-variant{% endif %}">
                             <span class="material-symbols-outlined text-[18px]">app_registration</span>
                             <span data-i18n="model_registry">Model Registry</span>
                         </a>
 
-                        <a href="/ml/chat" class="flex items-center gap-2.5 px-3 py-2 rounded-xl transition-all font-semibold nav-item-hover {% if  %}nav-active-pill text-primary font-bold{% else %}text-on-surface-variant{% endif %}">
+                        <a href="/ml/chat" class="flex items-center gap-2.5 px-3 py-2 rounded-xl transition-all font-semibold nav-item-hover {% if active_page == 'model_chat' %}nav-active-pill text-primary font-bold{% else %}text-on-surface-variant{% endif %}">
                             <span class="material-symbols-outlined text-[18px]">chat</span>
                             <span data-i18n="ask_the_model">Ask the Model</span>
                         </a>
@@ -254,37 +254,37 @@
                 <div>
                     <span class="px-3 text-[10px] font-bold uppercase tracking-wider text-secondary/80 block mb-1" data-i18n="reinforcement_learning">Reinforcement Learning</span>
                     <div class="space-y-0.5">
-                        <a href="/rl/dashboard" class="flex items-center gap-2.5 px-3 py-2 rounded-xl transition-all font-semibold nav-item-hover {% if  %}nav-active-pill text-primary font-bold{% else %}text-on-surface-variant{% endif %}">
+                        <a href="/rl/dashboard" class="flex items-center gap-2.5 px-3 py-2 rounded-xl transition-all font-semibold nav-item-hover {% if active_page == 'rl_dashboard' %}nav-active-pill text-primary font-bold{% else %}text-on-surface-variant{% endif %}">
                             <span class="material-symbols-outlined text-[18px]">smart_toy</span>
                             <span data-i18n="rl_dashboard">RL Dashboard</span>
                         </a>
 
-                        <a href="/rl/environment" class="flex items-center gap-2.5 px-3 py-2 rounded-xl transition-all font-semibold nav-item-hover {% if  %}nav-active-pill text-primary font-bold{% else %}text-on-surface-variant{% endif %}">
+                        <a href="/rl/environment" class="flex items-center gap-2.5 px-3 py-2 rounded-xl transition-all font-semibold nav-item-hover {% if active_page == 'rl_env' %}nav-active-pill text-primary font-bold{% else %}text-on-surface-variant{% endif %}">
                             <span class="material-symbols-outlined text-[18px]">view_timeline</span>
                             <span data-i18n="patient_environment">Care Journey Env</span>
                         </a>
 
-                        <a href="/rl/care-pathway" class="flex items-center gap-2.5 px-3 py-2 rounded-xl transition-all font-semibold nav-item-hover {% if  %}nav-active-pill text-primary font-bold{% else %}text-on-surface-variant{% endif %}">
+                        <a href="/rl/care-pathway" class="flex items-center gap-2.5 px-3 py-2 rounded-xl transition-all font-semibold nav-item-hover {% if active_page == 'care_pathway' %}nav-active-pill text-primary font-bold{% else %}text-on-surface-variant{% endif %}">
                             <span class="material-symbols-outlined text-[18px]">route</span>
                             <span data-i18n="care_pathway_opt">Care Pathway Optimizer</span>
                         </a>
 
-                        <a href="/rl/simulation" class="flex items-center gap-2.5 px-3 py-2 rounded-xl transition-all font-semibold nav-item-hover {% if  %}nav-active-pill text-primary font-bold{% else %}text-on-surface-variant{% endif %}">
+                        <a href="/rl/simulation" class="flex items-center gap-2.5 px-3 py-2 rounded-xl transition-all font-semibold nav-item-hover {% if active_page == 'simulation_twin' %}nav-active-pill text-primary font-bold{% else %}text-on-surface-variant{% endif %}">
                             <span class="material-symbols-outlined text-[18px]">tune</span>
                             <span data-i18n="digital_twin_sim">Digital Twin Sim (What-If)</span>
                         </a>
 
-                        <a href="/rl/safety" class="flex items-center gap-2.5 px-3 py-2 rounded-xl transition-all font-semibold nav-item-hover {% if  %}nav-active-pill text-primary font-bold{% else %}text-on-surface-variant{% endif %}">
+                        <a href="/rl/safety" class="flex items-center gap-2.5 px-3 py-2 rounded-xl transition-all font-semibold nav-item-hover {% if active_page == 'safety_constraints' %}nav-active-pill text-primary font-bold{% else %}text-on-surface-variant{% endif %}">
                             <span class="material-symbols-outlined text-[18px]">shield</span>
                             <span data-i18n="safety_constraints">Safety Constraint Engine</span>
                         </a>
 
-                        <a href="/rl/human-review" class="flex items-center gap-2.5 px-3 py-2 rounded-xl transition-all font-semibold nav-item-hover {% if  %}nav-active-pill text-primary font-bold{% else %}text-on-surface-variant{% endif %}">
+                        <a href="/rl/human-review" class="flex items-center gap-2.5 px-3 py-2 rounded-xl transition-all font-semibold nav-item-hover {% if active_page == 'human_review' %}nav-active-pill text-primary font-bold{% else %}text-on-surface-variant{% endif %}">
                             <span class="material-symbols-outlined text-[18px]">how_to_reg</span>
                             <span data-i18n="human_review">Human-in-the-Loop</span>
                         </a>
 
-                        <a href="/rl/architecture" class="flex items-center gap-2.5 px-3 py-2 rounded-xl transition-all font-semibold nav-item-hover {% if  %}nav-active-pill text-primary font-bold{% else %}text-on-surface-variant{% endif %}">
+                        <a href="/rl/architecture" class="flex items-center gap-2.5 px-3 py-2 rounded-xl transition-all font-semibold nav-item-hover {% if active_page == 'rl_arch' %}nav-active-pill text-primary font-bold{% else %}text-on-surface-variant{% endif %}">
                             <span class="material-symbols-outlined text-[18px]">layers</span>
                             <span data-i18n="stack_architecture">8-Layer AI Stack</span>
                         </a>
@@ -295,32 +295,32 @@
                 <div>
                     <span class="px-3 text-[10px] font-bold uppercase tracking-wider text-secondary/80 block mb-1">Portals & Telehealth</span>
                     <div class="space-y-0.5">
-                        <a href="/consultation/careai" class="flex items-center gap-2.5 px-3 py-2 rounded-xl transition-all font-semibold nav-item-hover {% if  %}nav-active-pill text-primary font-bold{% else %}text-on-surface-variant{% endif %}">
+                        <a href="/consultation/careai" class="flex items-center gap-2.5 px-3 py-2 rounded-xl transition-all font-semibold nav-item-hover {% if active_page == 'video_consult' %}nav-active-pill text-primary font-bold{% else %}text-on-surface-variant{% endif %}">
                             <span class="material-symbols-outlined text-[18px]">videocam</span>
                             <span data-i18n="video_consultation">CareAI Video Call</span>
                         </a>
 
-                        <a href="/portal/patient" class="flex items-center gap-2.5 px-3 py-2 rounded-xl transition-all font-semibold nav-item-hover {% if  %}nav-active-pill text-primary font-bold{% else %}text-on-surface-variant{% endif %}">
+                        <a href="/portal/patient" class="flex items-center gap-2.5 px-3 py-2 rounded-xl transition-all font-semibold nav-item-hover {% if active_page == 'patient_portal' %}nav-active-pill text-primary font-bold{% else %}text-on-surface-variant{% endif %}">
                             <span class="material-symbols-outlined text-[18px]">badge</span>
                             <span data-i18n="patient_portal">Patient Portal</span>
                         </a>
 
-                        <a href="/portal/coordinator" class="flex items-center gap-2.5 px-3 py-2 rounded-xl transition-all font-semibold nav-item-hover {% if  %}nav-active-pill text-primary font-bold{% else %}text-on-surface-variant{% endif %}">
+                        <a href="/portal/coordinator" class="flex items-center gap-2.5 px-3 py-2 rounded-xl transition-all font-semibold nav-item-hover {% if active_page == 'care_coordinator' %}nav-active-pill text-primary font-bold{% else %}text-on-surface-variant{% endif %}">
                             <span class="material-symbols-outlined text-[18px]">checklist</span>
                             <span data-i18n="care_coordinator">Care Coordinator</span>
                         </a>
 
-                        <a href="/admin/users" class="flex items-center gap-2.5 px-3 py-2 rounded-xl transition-all font-semibold nav-item-hover {% if  %}nav-active-pill text-primary font-bold{% else %}text-on-surface-variant{% endif %}">
+                        <a href="/admin/users" class="flex items-center gap-2.5 px-3 py-2 rounded-xl transition-all font-semibold nav-item-hover {% if active_page == 'admin_users' %}nav-active-pill text-primary font-bold{% else %}text-on-surface-variant{% endif %}">
                             <span class="material-symbols-outlined text-[18px]">manage_accounts</span>
                             <span data-i18n="user_management">User Management</span>
                         </a>
 
-                        <a href="/admin/doctor-verification" class="flex items-center gap-2.5 px-3 py-2 rounded-xl transition-all font-semibold nav-item-hover {% if  %}nav-active-pill text-primary font-bold{% else %}text-on-surface-variant{% endif %}">
+                        <a href="/admin/doctor-verification" class="flex items-center gap-2.5 px-3 py-2 rounded-xl transition-all font-semibold nav-item-hover {% if active_page == 'dr_verification' %}nav-active-pill text-primary font-bold{% else %}text-on-surface-variant{% endif %}">
                             <span class="material-symbols-outlined text-[18px]">verified_user</span>
                             <span data-i18n="doctor_verification">Doctor Verification</span>
                         </a>
 
-                        <a href="/admin/audit-logs" class="flex items-center gap-2.5 px-3 py-2 rounded-xl transition-all font-semibold nav-item-hover {% if  %}nav-active-pill text-primary font-bold{% else %}text-on-surface-variant{% endif %}">
+                        <a href="/admin/audit-logs" class="flex items-center gap-2.5 px-3 py-2 rounded-xl transition-all font-semibold nav-item-hover {% if active_page == 'audit_logs' %}nav-active-pill text-primary font-bold{% else %}text-on-surface-variant{% endif %}">
                             <span class="material-symbols-outlined text-[18px]">security_update_good</span>
                             <span data-i18n="security_audit_logs">Security Audit Logs</span>
                         </a>
@@ -331,27 +331,27 @@
                 <div>
                     <span class="px-3 text-[10px] font-bold uppercase tracking-wider text-secondary/80 block mb-1">Health ID & Passes</span>
                     <div class="space-y-0.5">
-                        <a href="/health-id" class="flex items-center gap-2.5 px-3 py-2 rounded-xl transition-all font-semibold nav-item-hover {% if  %}nav-active-pill text-primary font-bold{% else %}text-on-surface-variant{% endif %}">
+                        <a href="/health-id" class="flex items-center gap-2.5 px-3 py-2 rounded-xl transition-all font-semibold nav-item-hover {% if active_page == 'health_id' %}nav-active-pill text-primary font-bold{% else %}text-on-surface-variant{% endif %}">
                             <span class="material-symbols-outlined text-[18px]">badge</span>
                             <span>My Health ID</span>
                         </a>
 
-                        <a href="/doctor-id" class="flex items-center gap-2.5 px-3 py-2 rounded-xl transition-all font-semibold nav-item-hover {% if  %}nav-active-pill text-primary font-bold{% else %}text-on-surface-variant{% endif %}">
+                        <a href="/doctor-id" class="flex items-center gap-2.5 px-3 py-2 rounded-xl transition-all font-semibold nav-item-hover {% if active_page == 'doctor_id' %}nav-active-pill text-primary font-bold{% else %}text-on-surface-variant{% endif %}">
                             <span class="material-symbols-outlined text-[18px]">medical_information</span>
                             <span>Doctor ID Card</span>
                         </a>
 
-                        <a href="/wallet" class="flex items-center gap-2.5 px-3 py-2 rounded-xl transition-all font-semibold nav-item-hover {% if  %}nav-active-pill text-primary font-bold{% else %}text-on-surface-variant{% endif %}">
+                        <a href="/wallet" class="flex items-center gap-2.5 px-3 py-2 rounded-xl transition-all font-semibold nav-item-hover {% if active_page == 'wallet' %}nav-active-pill text-primary font-bold{% else %}text-on-surface-variant{% endif %}">
                             <span class="material-symbols-outlined text-[18px]">account_balance_wallet</span>
                             <span>Digital Wallet</span>
                         </a>
 
-                        <a href="/qr/scanner" class="flex items-center gap-2.5 px-3 py-2 rounded-xl transition-all font-semibold nav-item-hover {% if  %}nav-active-pill text-primary font-bold{% else %}text-on-surface-variant{% endif %}">
+                        <a href="/qr/scanner" class="flex items-center gap-2.5 px-3 py-2 rounded-xl transition-all font-semibold nav-item-hover {% if active_page == 'qr_scanner' %}nav-active-pill text-primary font-bold{% else %}text-on-surface-variant{% endif %}">
                             <span class="material-symbols-outlined text-[18px]">qr_code_scanner</span>
                             <span>Scan QR Code</span>
                         </a>
 
-                        <a href="/qr/temporary-share" class="flex items-center gap-2.5 px-3 py-2 rounded-xl transition-all font-semibold nav-item-hover {% if  %}nav-active-pill text-primary font-bold{% else %}text-on-surface-variant{% endif %}">
+                        <a href="/qr/temporary-share" class="flex items-center gap-2.5 px-3 py-2 rounded-xl transition-all font-semibold nav-item-hover {% if active_page == 'temporary_share' %}nav-active-pill text-primary font-bold{% else %}text-on-surface-variant{% endif %}">
                             <span class="material-symbols-outlined text-[18px]">share</span>
                             <span>Temporary Sharing</span>
                         </a>
@@ -362,7 +362,7 @@
                 <div>
                     <span class="px-3 text-[10px] font-bold uppercase tracking-wider text-secondary/80 block mb-1">System & Account</span>
                     <div class="space-y-0.5">
-                        <a href="/settings" class="flex items-center gap-2.5 px-3 py-2 rounded-xl transition-all font-semibold nav-item-hover {% if  %}nav-active-pill text-primary font-bold{% else %}text-on-surface-variant{% endif %}">
+                        <a href="/settings" class="flex items-center gap-2.5 px-3 py-2 rounded-xl transition-all font-semibold nav-item-hover {% if active_page == 'settings' %}nav-active-pill text-primary font-bold{% else %}text-on-surface-variant{% endif %}">
                             <span class="material-symbols-outlined text-[18px]">settings</span>
                             <span data-i18n="settings">Account & Settings</span>
                         </a>
@@ -373,12 +373,12 @@
                             <span class="ml-auto text-[10px] bg-primary text-white px-1.5 py-0.5 rounded-full font-bold">NEW</span>
                         </a>
 
-                        <a href="/auth/sessions" class="flex items-center gap-2.5 px-3 py-2 rounded-xl transition-all font-semibold nav-item-hover {% if  %}nav-active-pill text-primary font-bold{% else %}text-on-surface-variant{% endif %}">
+                        <a href="/auth/sessions" class="flex items-center gap-2.5 px-3 py-2 rounded-xl transition-all font-semibold nav-item-hover {% if active_page == 'sessions' %}nav-active-pill text-primary font-bold{% else %}text-on-surface-variant{% endif %}">
                             <span class="material-symbols-outlined text-[18px]">devices</span>
                             <span>Active Sessions</span>
                         </a>
 
-                        <a href="/help" class="flex items-center gap-2.5 px-3 py-2 rounded-xl transition-all font-semibold nav-item-hover {% if  %}nav-active-pill text-primary font-bold{% else %}text-on-surface-variant{% endif %}">
+                        <a href="/help" class="flex items-center gap-2.5 px-3 py-2 rounded-xl transition-all font-semibold nav-item-hover {% if active_page == 'help' %}nav-active-pill text-primary font-bold{% else %}text-on-surface-variant{% endif %}">
                             <span class="material-symbols-outlined text-[18px]">help</span>
                             <span data-i18n="help">Help & Support</span>
                         </a>

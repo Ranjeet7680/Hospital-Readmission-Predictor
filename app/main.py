@@ -35,16 +35,26 @@ app = FastAPI(
 
 # Mount Static Assets & Templates with Serverless Path Resolution
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-static_dir = os.path.join(BASE_DIR, "static")
-if not os.path.exists(static_dir):
-    static_dir = os.path.join(os.getcwd(), "static")
 
+possible_static_dirs = [
+    os.path.join(BASE_DIR, "static"),
+    os.path.join(os.getcwd(), "static"),
+    os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "static"),
+    os.path.join(os.path.dirname(os.path.abspath(__file__)), "static"),
+    "/var/task/static"
+]
+static_dir = next((d for d in possible_static_dirs if os.path.exists(d)), os.path.join(BASE_DIR, "static"))
 if os.path.exists(static_dir):
     app.mount("/static", StaticFiles(directory=static_dir), name="static")
 
-template_dir = os.path.join(BASE_DIR, "templates")
-if not os.path.exists(template_dir):
-    template_dir = os.path.join(os.getcwd(), "templates")
+possible_template_dirs = [
+    os.path.join(BASE_DIR, "templates"),
+    os.path.join(os.getcwd(), "templates"),
+    os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "templates"),
+    os.path.join(os.path.dirname(os.path.abspath(__file__)), "templates"),
+    "/var/task/templates"
+]
+template_dir = next((d for d in possible_template_dirs if os.path.exists(d)), os.path.join(BASE_DIR, "templates"))
 templates = Jinja2Templates(directory=template_dir)
 
 @app.get("/favicon.ico")
