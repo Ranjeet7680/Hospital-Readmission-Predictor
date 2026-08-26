@@ -440,62 +440,78 @@
 
                     <!-- Language Switcher Popover -->
                     <div class="relative">
-                        <button onclick="toggleLangMenu()" id="lang-menu-btn" class="flex items-center gap-1.5 px-2.5 py-1.5 glass-card hover:shadow-premium rounded-full text-xs font-bold text-primary transition-all active:scale-95 cursor-pointer" style="min-height:36px;" aria-label="Select Language">
-                            <span class="material-symbols-outlined text-[15px]">translate</span>
+                        <button onclick="toggleLangMenu()" id="lang-menu-btn" class="flex items-center gap-1.5 px-3 py-1.5 bg-white/90 hover:bg-white dark:bg-slate-800 shadow-sm hover:shadow-md border border-slate-200 dark:border-slate-700 rounded-full text-xs font-bold text-primary transition-all active:scale-95 cursor-pointer" style="min-height:36px;" aria-label="Select Language">
+                            <span class="material-symbols-outlined text-[16px]">translate</span>
                             <span class="lang-indicator-text hidden sm:inline">English</span>
-                            <span class="lang-indicator-text sm:hidden">EN/HI</span>
+                            <span class="lang-indicator-text sm:hidden">EN</span>
                             <span class="material-symbols-outlined text-[14px] text-secondary">expand_more</span>
                         </button>
-                        <!-- Language Menu Dropdown (5 Languages) -->
-                        <div id="lang-dropdown-menu" class="hidden absolute right-0 mt-2 w-52 glass-card rounded-2xl shadow-premium p-2 z-50 animate-scale-up space-y-1">
-                            <div class="px-2 py-1 border-b border-surface-variant mb-1 flex items-center justify-between">
-                                <span class="text-[10px] font-bold uppercase tracking-wider text-secondary">Choose Language</span>
-                                <span class="text-[9px] text-primary font-mono font-bold">Multi-Lingual</span>
+                        <!-- Language Menu Dropdown (7 Languages) — Solid Opaque Card -->
+                        <div id="lang-dropdown-menu" class="hidden absolute right-0 mt-2 w-56 sm:w-60 rounded-2xl p-2.5 z-[9999] animate-scale-up space-y-1" style="background:#ffffff !important; border:1px solid #cbd5e1 !important; box-shadow: 0 20px 40px -10px rgba(0,0,0,0.22), 0 0 0 1px rgba(0,0,0,0.06) !important;">
+                            <div class="px-2.5 py-1.5 border-b border-slate-100 mb-1 flex items-center justify-between">
+                                <span class="text-[10px] font-extrabold uppercase tracking-wider text-secondary" data-i18n="language">Choose Language</span>
+                                <span class="text-[9px] text-primary font-mono font-extrabold bg-primary/10 px-1.5 py-0.5 rounded-full">7 Languages</span>
                             </div>
                             <!-- 1. English -->
-                            <button type="button" onclick="window.i18n.setLanguage('en'); closeLangMenu();" data-lang-select="en" class="w-full flex items-center justify-between px-2.5 py-1.5 rounded-xl text-xs font-semibold hover:bg-primary/10 transition-all text-left">
-                                <div class="flex items-center gap-2">
-                                    <span class="text-sm">🇬🇧</span>
+                            <button type="button" onclick="window.i18n.setLanguage('en'); closeLangMenu();" data-lang-select="en" class="w-full flex items-center justify-between px-3 py-2 rounded-xl text-xs font-bold hover:bg-primary/10 transition-all text-left text-slate-800">
+                                <div class="flex items-center gap-2.5">
+                                    <span class="text-base">🇬🇧</span>
                                     <span>English</span>
                                 </div>
                                 <span class="material-symbols-outlined text-[16px] text-primary" data-lang-check="en">check</span>
                             </button>
                             <!-- 2. Hindi -->
-                            <button type="button" onclick="window.i18n.setLanguage('hi'); closeLangMenu();" data-lang-select="hi" class="w-full flex items-center justify-between px-2.5 py-1.5 rounded-xl text-xs font-semibold hover:bg-primary/10 transition-all text-left">
-                                <div class="flex items-center gap-2">
-                                    <span class="text-sm">🇮🇳</span>
+                            <button type="button" onclick="window.i18n.setLanguage('hi'); closeLangMenu();" data-lang-select="hi" class="w-full flex items-center justify-between px-3 py-2 rounded-xl text-xs font-bold hover:bg-primary/10 transition-all text-left text-slate-800">
+                                <div class="flex items-center gap-2.5">
+                                    <span class="text-base">🇮🇳</span>
                                     <span>हिन्दी (Hindi)</span>
                                 </div>
                                 <span class="material-symbols-outlined text-[16px] text-primary hidden" data-lang-check="hi">check</span>
                             </button>
                             <!-- 3. Tamil -->
-                            <button type="button" onclick="window.i18n.setLanguage('ta'); closeLangMenu();" data-lang-select="ta" class="w-full flex items-center justify-between px-2.5 py-1.5 rounded-xl text-xs font-semibold hover:bg-primary/10 transition-all text-left">
-                                <div class="flex items-center gap-2">
-                                    <span class="text-sm">🇮🇳</span>
+                            <button type="button" onclick="window.i18n.setLanguage('ta'); closeLangMenu();" data-lang-select="ta" class="w-full flex items-center justify-between px-3 py-2 rounded-xl text-xs font-bold hover:bg-primary/10 transition-all text-left text-slate-800">
+                                <div class="flex items-center gap-2.5">
+                                    <span class="text-base">🇮🇳</span>
                                     <span>தமிழ் (Tamil)</span>
                                 </div>
                                 <span class="material-symbols-outlined text-[16px] text-primary hidden" data-lang-check="ta">check</span>
                             </button>
                             <!-- 4. Kannada -->
-                            <button type="button" onclick="window.i18n.setLanguage('kn'); closeLangMenu();" data-lang-select="kn" class="w-full flex items-center justify-between px-2.5 py-1.5 rounded-xl text-xs font-semibold hover:bg-primary/10 transition-all text-left">
-                                <div class="flex items-center gap-2">
-                                    <span class="text-sm">🇮🇳</span>
+                            <button type="button" onclick="window.i18n.setLanguage('kn'); closeLangMenu();" data-lang-select="kn" class="w-full flex items-center justify-between px-3 py-2 rounded-xl text-xs font-bold hover:bg-primary/10 transition-all text-left text-slate-800">
+                                <div class="flex items-center gap-2.5">
+                                    <span class="text-base">🇮🇳</span>
                                     <span>ಕನ್ನಡ (Kannada)</span>
                                 </div>
                                 <span class="material-symbols-outlined text-[16px] text-primary hidden" data-lang-check="kn">check</span>
                             </button>
                             <!-- 5. Malayalam -->
-                            <button type="button" onclick="window.i18n.setLanguage('ml'); closeLangMenu();" data-lang-select="ml" class="w-full flex items-center justify-between px-2.5 py-1.5 rounded-xl text-xs font-semibold hover:bg-primary/10 transition-all text-left">
-                                <div class="flex items-center gap-2">
-                                    <span class="text-sm">🇮🇳</span>
+                            <button type="button" onclick="window.i18n.setLanguage('ml'); closeLangMenu();" data-lang-select="ml" class="w-full flex items-center justify-between px-3 py-2 rounded-xl text-xs font-bold hover:bg-primary/10 transition-all text-left text-slate-800">
+                                <div class="flex items-center gap-2.5">
+                                    <span class="text-base">🇮🇳</span>
                                     <span>മലയാളം (Malayalam)</span>
                                 </div>
                                 <span class="material-symbols-outlined text-[16px] text-primary hidden" data-lang-check="ml">check</span>
                             </button>
-                            <div class="border-t border-surface-variant pt-1 mt-1">
-                                <button type="button" onclick="window.i18n.speak(document.querySelector('h1, h2, h3')?.textContent || 'HRP Clinical'); closeLangMenu();" class="w-full flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-[10px] font-bold text-secondary hover:text-primary hover:bg-primary/5 transition-all">
-                                    <span class="material-symbols-outlined text-[14px]">volume_up</span>
-                                    <span>Read Page Aloud (TTS)</span>
+                            <!-- 6. Telugu -->
+                            <button type="button" onclick="window.i18n.setLanguage('te'); closeLangMenu();" data-lang-select="te" class="w-full flex items-center justify-between px-3 py-2 rounded-xl text-xs font-bold hover:bg-primary/10 transition-all text-left text-slate-800">
+                                <div class="flex items-center gap-2.5">
+                                    <span class="text-base">🇮🇳</span>
+                                    <span>తెలుగు (Telugu)</span>
+                                </div>
+                                <span class="material-symbols-outlined text-[16px] text-primary hidden" data-lang-check="te">check</span>
+                            </button>
+                            <!-- 7. Bengali -->
+                            <button type="button" onclick="window.i18n.setLanguage('bn'); closeLangMenu();" data-lang-select="bn" class="w-full flex items-center justify-between px-3 py-2 rounded-xl text-xs font-bold hover:bg-primary/10 transition-all text-left text-slate-800">
+                                <div class="flex items-center gap-2.5">
+                                    <span class="text-base">🇮🇳</span>
+                                    <span>বাংলা (Bengali)</span>
+                                </div>
+                                <span class="material-symbols-outlined text-[16px] text-primary hidden" data-lang-check="bn">check</span>
+                            </button>
+                            <div class="border-t border-slate-100 pt-1.5 mt-1">
+                                <button type="button" onclick="window.i18n.speak(document.querySelector('h1, h2, h3')?.textContent || 'HRP Clinical'); closeLangMenu();" class="w-full flex items-center gap-2 px-2.5 py-2 rounded-xl text-[11px] font-bold text-slate-600 hover:text-primary hover:bg-primary/5 transition-all">
+                                    <span class="material-symbols-outlined text-[16px] text-primary">volume_up</span>
+                                    <span data-i18n="read_aloud">Read Page Aloud (TTS)</span>
                                 </button>
                             </div>
                         </div>
@@ -505,7 +521,7 @@
                     <div class="relative hidden sm:block">
                         <form action="/history" method="get" class="flex items-center">
                             <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-secondary text-[16px]">search</span>
-                            <input name="search" data-i18n-placeholder="search_placeholder" class="pl-8 pr-3 py-1.5 glass-card rounded-full text-xs focus:border-primary focus:ring-2 focus:ring-primary/30 outline-none transition-all w-36 md:w-52 placeholder:text-secondary/60" placeholder="Search patient, doc..." type="text"/>
+                            <input name="search" data-i18n-placeholder="search_placeholder" class="pl-8 pr-3 py-1.5 bg-white/90 border border-slate-200 rounded-full text-xs focus:border-primary focus:ring-2 focus:ring-primary/30 outline-none transition-all w-36 md:w-52 placeholder:text-secondary/60 font-medium" placeholder="Search patient, doc..." type="text"/>
                         </form>
                     </div>
 
@@ -522,16 +538,16 @@
 
                     <!-- Profile Avatar & Quick Action Dropdown -->
                     <div class="relative">
-                        <button onclick="toggleUserDropdown()" class="flex items-center gap-2 p-1 pr-2.5 glass-card rounded-full hover:shadow-premium transition-all cursor-pointer" aria-label="User menu" style="min-height:40px;">
-                            <div class="w-7 h-7 rounded-full text-white flex items-center justify-center font-bold text-[10px] shadow-md" style="background:linear-gradient(135deg,#005bbf,#002f6c);">
+                        <button onclick="toggleUserDropdown()" class="flex items-center gap-2 p-1 pr-2.5 bg-white/90 hover:bg-white border border-slate-200 rounded-full hover:shadow-md transition-all cursor-pointer" aria-label="User menu" style="min-height:40px;">
+                            <div class="w-7 h-7 rounded-full text-white flex items-center justify-center font-bold text-[10px] shadow-sm" style="background:linear-gradient(135deg,#005bbf,#002f6c);">
                                 RK
                             </div>
                             <span class="text-xs font-bold text-on-surface hidden lg:block">Dr. Ranjeet Kumar</span>
                             <span class="material-symbols-outlined text-sm text-secondary">expand_more</span>
                         </button>
 
-                        <!-- User Profile Dropdown Menu -->
-                        <div id="user-profile-menu" class="hidden absolute right-0 mt-2 w-64 glass-card rounded-2xl shadow-premium p-2 z-50 animate-scale-up space-y-1">
+                        <!-- User Profile Dropdown Menu — Solid Opaque Card -->
+                        <div id="user-profile-menu" class="hidden absolute right-0 mt-2 w-64 rounded-2xl p-2.5 z-[9999] animate-scale-up space-y-1" style="background:#ffffff !important; border:1px solid #cbd5e1 !important; box-shadow: 0 20px 40px -10px rgba(0,0,0,0.22), 0 0 0 1px rgba(0,0,0,0.06) !important;">
                             <div class="px-3 py-2.5 border-b border-surface-variant mb-1">
                                 <div class="flex items-center gap-2.5 mb-1">
                                     <div class="w-9 h-9 rounded-full flex items-center justify-center text-white font-bold text-sm shadow" style="background:linear-gradient(135deg,#005bbf,#002f6c);">RK</div>
@@ -568,8 +584,8 @@
                 </div>
             </header>
 
-            <!-- Scrollable Content Canvas (Responsive Bottom Padding on Mobile) -->
-            <main class="flex-1 overflow-y-auto bg-background p-3 sm:p-6 md:p-8 pb-24 md:pb-12">
+            <!-- Scrollable Content Canvas (Ample Bottom Padding for Mobile Navigation Clearance) -->
+            <main class="flex-1 overflow-y-auto bg-background p-3 sm:p-6 md:p-8 pb-32 md:pb-12">
                 {% block content %}{% endblock %}
             </main>
 
@@ -721,8 +737,27 @@
                                 </a>
                                 <a href="/help" class="flex items-center gap-2.5 px-3 py-2 rounded-xl text-on-surface hover:bg-surface-container">
                                     <span class="material-symbols-outlined text-[18px] text-secondary">help</span>
-                                    <span>Help & Support</span>
+                                    <span data-i18n="help">Help & Support</span>
                                 </a>
+                            </div>
+                        </div>
+
+                        <!-- Mobile Drawer Language Selector -->
+                        <div class="bg-primary/5 p-3 rounded-2xl border border-primary/20 space-y-2">
+                            <div class="flex justify-between items-center">
+                                <span class="text-[10px] font-extrabold text-primary uppercase" data-i18n="language">Select Language</span>
+                                <button type="button" onclick="window.i18n.speak(document.querySelector('h1, h2, h3')?.textContent || 'HRP Clinical'); closeMobileDrawer();" class="text-[10px] text-primary font-bold hover:underline flex items-center gap-1">
+                                    <span class="material-symbols-outlined text-[14px]">volume_up</span> TTS
+                                </button>
+                            </div>
+                            <div class="grid grid-cols-4 gap-1 text-[10px] font-bold text-center">
+                                <button onclick="window.i18n.setLanguage('en'); closeMobileDrawer();" class="py-1 rounded-lg bg-surface hover:bg-primary/10 transition-colors">EN</button>
+                                <button onclick="window.i18n.setLanguage('hi'); closeMobileDrawer();" class="py-1 rounded-lg bg-surface hover:bg-primary/10 transition-colors">हिन्दी</button>
+                                <button onclick="window.i18n.setLanguage('ta'); closeMobileDrawer();" class="py-1 rounded-lg bg-surface hover:bg-primary/10 transition-colors">தமிழ்</button>
+                                <button onclick="window.i18n.setLanguage('kn'); closeMobileDrawer();" class="py-1 rounded-lg bg-surface hover:bg-primary/10 transition-colors">ಕನ್ನಡ</button>
+                                <button onclick="window.i18n.setLanguage('ml'); closeMobileDrawer();" class="py-1 rounded-lg bg-surface hover:bg-primary/10 transition-colors">മലയാളം</button>
+                                <button onclick="window.i18n.setLanguage('te'); closeMobileDrawer();" class="py-1 rounded-lg bg-surface hover:bg-primary/10 transition-colors">తెలుగు</button>
+                                <button onclick="window.i18n.setLanguage('bn'); closeMobileDrawer();" class="py-1 rounded-lg bg-surface hover:bg-primary/10 transition-colors">বাংলা</button>
                             </div>
                         </div>
                     </div>
@@ -732,7 +767,7 @@
                 <div class="pt-3 border-t border-surface-variant mt-4">
                     <a href="/logout" class="flex items-center gap-2 px-3 py-2.5 text-error font-bold text-xs hover:bg-error-container/30 rounded-xl transition-colors">
                         <span class="material-symbols-outlined text-base">logout</span>
-                        <span>Sign Out / Lock Session</span>
+                        <span data-i18n="logout">Sign Out / Lock Session</span>
                     </a>
                 </div>
 
@@ -742,60 +777,57 @@
         <!-- ================================================================= -->
         <!-- MOBILE BOTTOM NAVIGATION (Enhanced — Glass, Pill Indicator, FAB)  -->
         <!-- ================================================================= -->
-        <nav class="fixed bottom-0 left-0 w-full z-40 flex justify-around items-end
-                    px-1 md:hidden"
-             style="padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 6px);
-                    padding-top: 6px;
-                    background: rgba(255,255,255,0.92);
+        <nav class="fixed bottom-0 left-0 w-full z-40 flex justify-around items-center
+                    px-2 md:hidden"
+             style="height: 64px;
+                    padding-bottom: env(safe-area-inset-bottom, 4px);
+                    background: rgba(255, 255, 255, 0.96);
                     backdrop-filter: blur(20px) saturate(180%);
                     -webkit-backdrop-filter: blur(20px) saturate(180%);
-                    border-top: 1px solid rgba(193,198,214,0.5);
-                    box-shadow: 0 -4px 20px rgba(0,0,0,0.08);">
+                    border-top: 1px solid rgba(203, 213, 225, 0.8);
+                    box-shadow: 0 -4px 20px rgba(0,0,0,0.06);">
 
             <!-- 1. Home -->
-            <a href="/dashboard" class="bottom-nav-item flex flex-col items-center justify-center relative"
-               style="min-width:56px; min-height:52px; padding:8px 4px;">
-                <span class="material-symbols-outlined text-[24px] transition-all
-                    {% if active_page == 'dashboard' %}fill-icon mobile-nav-active{% else %}text-secondary{% endif %}">dashboard</span>
-                <span class="text-[10px] mt-0.5 font-semibold transition-colors
-                    {% if active_page == 'dashboard' %}text-primary{% else %}text-secondary{% endif %}" data-i18n="nav_home">Home</span>
-                {% if active_page == 'dashboard' %}<span class="mobile-nav-pill"></span>{% endif %}
+            <a href="/dashboard" class="bottom-nav-item flex flex-col items-center justify-center relative flex-1"
+               style="min-height:48px;">
+                <span class="material-symbols-outlined text-[22px] transition-all
+                    {% if active_page == 'dashboard' %}text-primary fill-icon font-bold{% else %}text-slate-500{% endif %}">dashboard</span>
+                <span class="text-[10px] mt-0.5 font-bold transition-colors
+                    {% if active_page == 'dashboard' %}text-primary{% else %}text-slate-500{% endif %}" data-i18n="nav_home">Home</span>
             </a>
 
             <!-- 2. Patients -->
-            <a href="/patients" class="bottom-nav-item flex flex-col items-center justify-center relative"
-               style="min-width:56px; min-height:52px; padding:8px 4px;">
-                <span class="material-symbols-outlined text-[24px] transition-all
-                    {% if active_page == 'patients' %}fill-icon mobile-nav-active{% else %}text-secondary{% endif %}">group</span>
-                <span class="text-[10px] mt-0.5 font-semibold transition-colors
-                    {% if active_page == 'patients' %}text-primary{% else %}text-secondary{% endif %}" data-i18n="nav_patients">Patients</span>
-                {% if active_page == 'patients' %}<span class="mobile-nav-pill"></span>{% endif %}
+            <a href="/patients" class="bottom-nav-item flex flex-col items-center justify-center relative flex-1"
+               style="min-height:48px;">
+                <span class="material-symbols-outlined text-[22px] transition-all
+                    {% if active_page == 'patients' %}text-primary fill-icon font-bold{% else %}text-slate-500{% endif %}">group</span>
+                <span class="text-[10px] mt-0.5 font-bold transition-colors
+                    {% if active_page == 'patients' %}text-primary{% else %}text-slate-500{% endif %}" data-i18n="nav_patients">Patients</span>
             </a>
 
             <!-- 3. Elevated Center FAB — New Prediction -->
-            <a href="/prediction/new" class="flex flex-col items-center justify-center -mt-7 group"
-               style="min-width:64px;">
-                <div class="fab-gradient w-14 h-14 rounded-full text-white flex items-center justify-center">
-                    <span class="material-symbols-outlined text-[26px]">add_chart</span>
+            <a href="/prediction/new" class="flex flex-col items-center justify-center -mt-5 relative z-10 flex-1 group"
+               style="min-width:56px;">
+                <div class="w-12 h-12 rounded-full text-white flex items-center justify-center shadow-lg active:scale-95 transition-all" style="background:linear-gradient(135deg,#005bbf,#002f6c); box-shadow: 0 6px 16px rgba(0, 91, 191, 0.4);">
+                    <span class="material-symbols-outlined text-[22px]">add_chart</span>
                 </div>
-                <span class="text-[10px] font-extrabold text-primary mt-1.5 tracking-tight" data-i18n="nav_predict">Predict</span>
+                <span class="text-[9px] font-extrabold text-primary mt-1 tracking-tight" data-i18n="nav_predict">Predict</span>
             </a>
 
             <!-- 4. Telehealth -->
-            <a href="/consultation/careai" class="bottom-nav-item flex flex-col items-center justify-center relative"
-               style="min-width:56px; min-height:52px; padding:8px 4px;">
-                <span class="material-symbols-outlined text-[24px] transition-all
-                    {% if active_page == 'video_consult' %}fill-icon mobile-nav-active{% else %}text-secondary{% endif %}">videocam</span>
-                <span class="text-[10px] mt-0.5 font-semibold transition-colors
-                    {% if active_page == 'video_consult' %}text-primary{% else %}text-secondary{% endif %}" data-i18n="nav_telehealth">Telehealth</span>
-                {% if active_page == 'video_consult' %}<span class="mobile-nav-pill"></span>{% endif %}
+            <a href="/consultation/careai" class="bottom-nav-item flex flex-col items-center justify-center relative flex-1"
+               style="min-height:48px;">
+                <span class="material-symbols-outlined text-[22px] transition-all
+                    {% if active_page == 'video_consult' %}text-primary fill-icon font-bold{% else %}text-slate-500{% endif %}">videocam</span>
+                <span class="text-[10px] mt-0.5 font-bold transition-colors
+                    {% if active_page == 'video_consult' %}text-primary{% else %}text-slate-500{% endif %}" data-i18n="nav_telehealth">Telehealth</span>
             </a>
 
             <!-- 5. More / Drawer -->
-            <button onclick="openMobileDrawer()" class="bottom-nav-item flex flex-col items-center justify-center relative text-secondary hover:text-primary transition-colors"
-                    style="min-width:56px; min-height:52px; padding:8px 4px;">
-                <span class="material-symbols-outlined text-[24px]">menu</span>
-                <span class="text-[10px] mt-0.5 font-semibold" data-i18n="nav_more">More</span>
+            <button onclick="openMobileDrawer()" class="bottom-nav-item flex flex-col items-center justify-center relative text-slate-500 hover:text-primary transition-colors flex-1"
+                    style="min-height:48px;">
+                <span class="material-symbols-outlined text-[22px]">menu</span>
+                <span class="text-[10px] mt-0.5 font-bold" data-i18n="nav_more">More</span>
             </button>
         </nav>
     </div>
@@ -803,22 +835,31 @@
         {% block full_content %}{% endblock %}
     {% endif %}
 
-    <!-- Mobile Search Overlay -->
-    <div id="mobile-search-overlay" class="fixed inset-0 z-[9999] hidden animate-fade-in"
-         style="background:rgba(0,0,0,0.5);backdrop-filter:blur(8px);"
+    <!-- Mobile Search Overlay — High Contrast Opaque Modal -->
+    <div id="mobile-search-overlay" class="fixed inset-0 z-[99999] hidden animate-fade-in bg-slate-900/60 backdrop-blur-sm"
          onclick="closeMobileSearch()">
-        <div class="absolute top-0 left-0 right-0 p-4 animate-slide-down" onclick="event.stopPropagation()">
+        <div class="w-full max-w-lg mx-auto p-4 animate-slide-down" onclick="event.stopPropagation()">
             <form action="/history" method="get"
-                  class="flex items-center gap-2 glass-card rounded-2xl px-4 py-3 shadow-premium">
-                <span class="material-symbols-outlined text-primary text-xl">search</span>
+                  class="flex items-center gap-3 bg-white rounded-2xl px-4 py-3.5 shadow-2xl border border-slate-200">
+                <span class="material-symbols-outlined text-primary text-2xl">search</span>
                 <input id="mobile-search-input" name="search" type="text"
-                       class="flex-1 bg-transparent text-sm outline-none placeholder:text-secondary/60"
+                       class="flex-1 bg-transparent text-sm font-bold text-slate-800 outline-none placeholder:text-slate-400"
                        placeholder="Search patient, document, history..."/>
                 <button type="button" onclick="closeMobileSearch()"
-                        class="text-secondary hover:text-error transition-colors">
-                    <span class="material-symbols-outlined">close</span>
+                        class="p-1 rounded-full text-slate-400 hover:text-error hover:bg-slate-100 transition-colors">
+                    <span class="material-symbols-outlined text-xl">close</span>
                 </button>
             </form>
+            <!-- Quick Search Suggestion Chips -->
+            <div class="mt-2.5 bg-white rounded-2xl p-3 shadow-xl border border-slate-200 space-y-2">
+                <p class="text-[10px] font-extrabold uppercase tracking-wider text-secondary px-1">Quick Clinical Searches</p>
+                <div class="flex flex-wrap gap-1.5">
+                    <a href="/history?search=Eleanor" class="px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-primary/10 hover:text-primary text-xs font-bold text-slate-700 transition-colors">Eleanor Vance (PT-84729)</a>
+                    <a href="/history?search=CHF" class="px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-primary/10 hover:text-primary text-xs font-bold text-slate-700 transition-colors">Heart Failure (CHF)</a>
+                    <a href="/history?search=High" class="px-3 py-1.5 rounded-xl bg-red-50 text-red-700 hover:bg-red-100 text-xs font-bold transition-colors">High Risk Patients</a>
+                    <a href="/history?search=Cardiology" class="px-3 py-1.5 rounded-xl bg-blue-50 text-primary hover:bg-blue-100 text-xs font-bold transition-colors">Cardiology Unit</a>
+                </div>
+            </div>
         </div>
     </div>
 

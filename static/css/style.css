@@ -350,3 +350,33 @@
     border-radius: 2px;
     margin: 0 auto 12px;
 }
+
+/* ---------- AI Doctor Video Call & Telehealth Styles ---------- */
+#ai-doctor-canvas {
+    filter: drop-shadow(0 4px 20px rgba(0, 91, 191, 0.25));
+}
+
+#ecg-canvas {
+    image-rendering: pixelated;
+}
+
+@keyframes voiceGlow {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(0, 91, 191, 0.6); }
+    50% { box-shadow: 0 0 0 8px rgba(0, 91, 191, 0); }
+}
+.voice-recording-active {
+    animation: voiceGlow 1.5s infinite;
+    background: #ba1a1a !important;
+}
+
+/* Dynamic prescription printable styling */
+@media print {
+    #rx-modal {
+        position: static !important;
+        display: block !important;
+        background: white !important;
+        box-shadow: none !important;
+        padding: 0 !important;
+    }
+}
+

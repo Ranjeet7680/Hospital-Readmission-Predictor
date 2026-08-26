@@ -1004,7 +1004,7 @@ async def start_consultation_session(request: Request):
         "session_id": session_id,
         "patient_id":   body.get("patient_id",   "PT-84729"),
         "patient_name": body.get("patient_name", "Eleanor Vance"),
-        "doctor":       body.get("doctor",       "Dr. J. Aris"),
+        "doctor":       body.get("doctor",       "Dr. CareAI & Dr. J. Aris"),
         "started_at":   datetime.now().isoformat(),
         "ended_at":     None,
         "duration_seconds": 0,
@@ -1022,7 +1022,6 @@ async def end_consultation_session(request: Request):
     session_id = body.get("session_id", "")
     session = _consult_sessions.get(session_id)
     if not session:
-        # Graceful: create a dummy completion record
         return JSONResponse({
             "success": True, "session_id": session_id,
             "duration_seconds": 0, "duration_label": "0m 0s"
@@ -1059,51 +1058,80 @@ async def save_consultation_notes(request: Request):
     })
 
 
+@app.get("/api/consultation/vitals")
+async def get_consultation_vitals(patient_id: str = Query("PT-84729")):
+    """Simulated real-time live telemetry stream."""
+    return JSONResponse({
+        "patient_id": patient_id,
+        "heart_rate": random.randint(74, 82),
+        "blood_pressure": f"{random.randint(132, 138)}/{random.randint(82, 88)}",
+        "oxygen_sat": random.randint(93, 96),
+        "resp_rate": random.randint(17, 20),
+        "temperature": round(random.uniform(98.4, 98.8), 1),
+        "creatinine": 1.60,
+        "status": "Stable (High Risk Profile)"
+    })
+
+
 @app.get("/api/consultation/ai-suggest")
 async def ai_consultation_suggest(
     request: Request,
-    q: str = Query("Summarize key clinical findings"),
+    q: Optional[str] = Query(None),
     lang: Optional[str] = Query(None)
 ):
-    """Return a CareAI-generated clinical suggestion for the active consultation."""
+    """Return a CareAI-generated clinical suggestion across 7 supported languages."""
     target_lang = lang or request.cookies.get("hrp_lang") or "en"
-    if target_lang not in ["en", "hi", "ta", "kn", "ml"]:
+    if target_lang not in ["en", "hi", "ta", "kn", "ml", "te", "bn"]:
         target_lang = "en"
 
     suggestions_en = [
         "Based on elevated creatinine (1.60 mg/dL) and prior 30-day admission, recommend immediate diuretic reconciliation.",
         "Patient reports exertional dyspnea — consider ordering BNP/NT-proBNP and echocardiogram follow-up within 48h.",
         "PPO RL Policy recommends: 72-hour PCP follow-up + pharmacist medication review to reduce readmission risk by 34%.",
-        "SpO2 at 94% — supplemental oxygen therapy should be evaluated. Alert on-call respiratory therapist.",
-        "CHF management protocol: Continue Furosemide 40mg, restrict sodium to <2 g/day, daily weight monitoring."
+        "SpO2 at 94% with mild crackles — evaluate supplemental low-flow O2 and sodium restriction to <2g/day.",
+        "CHF protocol active: Continue Furosemide 40mg daily, monitor potassium levels, and schedule tele-monitoring."
     ]
     suggestions_hi = [
         "क्रिएटिनिन 1.60 mg/dL और पिछले 30 दिनों में भर्ती के आधार पर, तत्काल डाइयूरेटिक समीक्षा की सिफारिश की जाती है।",
         "रोगी सीढ़ियाँ चढ़ते समय सांस फूलने की शिकायत करता है — 48 घंटों के भीतर BNP और इकोकार्डियोग्राम की जाँच की सिफारिश।",
         "PPO RL नीति अनुशंसा: 72 घंटे में PCP अनुवर्ती + दवा समीक्षा, पुनः भर्ती जोखिम 34% कम होगा।",
-        "SpO2 94% है — ऑक्सीजन थेरेपी का मूल्यांकन करें। श्वसन चिकित्सक को सतर्क करें।",
-        "CHF प्रबंधन: Furosemide 40mg जारी रखें, सोडियम <2g/दिन, दैनिक वजन की निगरानी।"
+        "SpO2 94% है — सोडियम सेवन <2g/दिन सीमित करें और नियमित वजन की निगरानी सुनिश्चित करें।",
+        "CHF प्रबंधन: Furosemide 40mg जारी रखें, पोटेशियम की निगरानी करें और टेली-मॉनिटरिंग शेड्यूल करें।"
     ]
     suggestions_ta = [
         "கிரியேட்டினின் 1.60 mg/dL மற்றும் முந்தைய 30 நாள் சேர்க்கையின் அடிப்படையில், உடனடி டையூரிடிக் மறுசீரமைப்பு பரிந்துரைக்கப்படுகிறது.",
         "நோயாளி மூச்சுத்திணறலை தெரிவிக்கிறார் — 48 மணி நேரத்திற்குள் BNP மற்றும் எக்கோ கார்டியோகிராம் பரிசோதனை தேவை.",
         "PPO RL கொள்கை பரிந்துரை: 72 மணி நேரத்தில் PCP பின்தொடர்தல் + மருந்தாளுநர் ஆய்வு, மறுஅனுமதி அபாயத்தை 34% குறைக்கும்.",
-        "SpO2 94% — கூடுதல் ஆக்ஸிஜன் சிகிச்சை பரிசீலிக்கப்பட வேண்டும். சுவாச சிகிச்சையாளரை எச்சரிக்கவும்.",
-        "CHF நெறிமுறை: ஃபுரோஸ்மைடு 40mg தொடரவும், சோடியம் <2g/நாள் கட்டுப்படுத்தவும்."
+        "SpO2 94% — கூடுதல் ஆக்ஸிஜன் மற்றும் சோடியம் <2g/நாள் கட்டுப்பாடு பரிசீலிக்கப்பட வேண்டும்.",
+        "CHF நெறிமுறை: ஃபுரோஸ்மைடு 40mg தொடரவும் மற்றும் தினசரி எடையை கண்காணிக்கவும்."
     ]
     suggestions_kn = [
         "ಕ್ರಿಯೇಟಿನೈನ್ 1.60 mg/dL ಮತ್ತು ಹಿಂದಿನ 30 ದಿನಗಳ ದಾಖಲಾತಿಯ ಆಧಾರದ ಮೇಲೆ, ತಕ್ಷಣದ ಮೂತ್ರವರ್ಧಕ ಸಮನ್ವಯವನ್ನು ಶಿಫಾರಸು ಮಾಡಲಾಗಿದೆ.",
         "ರೋಗಿಯು ಉಸಿರಾಟದ ತೊಂದರೆಯನ್ನು ವರದಿ ಮಾಡುತ್ತಿದ್ದಾರೆ — 48 ಗಂಟೆಗಳ ಒಳಗೆ BNP ಮತ್ತು ಎಕೋಕಾರ್ಡಿಯೋಗ್ರಾಮ್ ಪರೀಕ್ಷೆ ಅಗತ್ಯವಿದೆ.",
         "PPO RL ನೀತಿ ಶಿಫಾರಸು: 72 ಗಂಟೆಗಳಲ್ಲಿ PCP ಫಾಲೋ-ಅಪ್ + ಔಷಧ ಪರಿಶೀಲನೆ, ಮರುದಾಖಲಾತಿ ಅಪಾಯವನ್ನು 34% ಕಡಿಮೆ ಮಾಡುತ್ತದೆ.",
-        "SpO2 94% — ಆಮ್ಲಜನಕ ಚಿಕಿತ್ಸೆಯನ್ನು ಮೌಲ್ಯಮಾಪನ ಮಾಡಬೇಕು.",
-        "CHF ಪ್ರೋಟೋಕಾಲ್: ಫ್ಯೂರೋಸೆಮೈಡ್ 40mg ಮುಂದುವರಿಸಿ, ಸೋಡಿಯಂ <2g/ದಿನ ನಿರ್ಬಂಧಿಸಿ."
+        "SpO2 94% — ಸೋಡಿಯಂ <2g/ದಿನ ನಿರ್ಬಂಧಿಸಿ ಮತ್ತು ದೈನಂದಿನ ತೂಕವನ್ನು ಮೇಲ್ವಿಚಾರಣೆ ಮಾಡಿ.",
+        "CHF ಪ್ರೋಟೋಕಾಲ್: ಫ್ಯೂರೋಸೆಮೈಡ್ 40mg ಮುಂದುವರಿಸಿ ಮತ್ತು ನಿಯಮಿತ ತಪಾಸಣೆ ನಡೆಸಿ."
     ]
     suggestions_ml = [
         "ക്രിയാറ്റിനിൻ 1.60 mg/dL ഉം മുൻപത്തെ അഡ്മിഷനും അടിസ്ഥാനമാക്കി, അടിയന്തിര ഡൈയൂററ്റിക് പുനരവലോകനം ശുപാർശ ചെയ്യുന്നു.",
         "രോഗിക്ക് ശ്വാസതടസ്സം അനുഭവപ്പെടുന്നു — 48 മണിക്കൂറിനുള്ളിൽ BNP, എക്കോകാർഡിയോഗ്രാം പരിശോധനകൾ നടത്തുക.",
         "PPO RL നയം: 72 മണിക്കൂറിനുള്ളിൽ PCP ഫോളോ-അപ്പ് + മരുന്ന് അവലോകനം, പുനഃപ്രവേശന സാധ്യത 34% കുറയ്ക്കും.",
-        "SpO2 94% — ഓക്സിജൻ തെറാപ്പി വിലയിരുത്തണം.",
-        "CHF പ്രോട്ടോക്കോൾ: ഫ്യൂറോസെമൈഡ് 40mg തുടരുക, ഉപ്പ് <2g/ദിവസം പരിമിതപ്പെടുത്തുക."
+        "SpO2 94% — ഉപ്പ് <2g/ദിവസം പരിമിതപ്പെടുത്തുക, പ്രതിദിന ഭാരം നിരീക്ഷിക്കുക.",
+        "CHF പ്രോട്ടോക്കോൾ: ഫ്യൂറോസെമൈഡ് 40mg തുടരുക, ടെലി-മോണിറ്ററിംഗ് ഷെഡ്യൂൾ ചെയ്യുക."
+    ]
+    suggestions_te = [
+        "క్రియాటినిన్ 1.60 mg/dL మరియు మునుపటి 30 రోజుల అడ్మిషన్ ఆధారంగా, తక్షణ మూత్రవిసర్జన ఔషధ సమీక్ష సిఫార్సు చేయబడింది.",
+        "రోగి శ్వాస తీసుకోవడంలో ఇబ్బందిని నివేదిస్తున్నారు — 48 గంటల్లో BNP మరియు ఎకోకార్డియోగ్రామ్ పరీక్ష అవసరం.",
+        "PPO RL విధానం: 72 గంటల్లో PCP ఫాలో-అప్ + ఫార్మసిస్ట్ ఔషధ సమీక్ష రీఅడ్మిషన్ ప్రమాదాన్ని 34% తగ్గిస్తుంది.",
+        "SpO2 94% — సోడియం <2g/రోజుకు పరిమితం చేయండి మరియు రోజువారీ బరువును పర్యవేక్షించండి.",
+        "CHF నిర్వహణ: ఫ్యూరోసెమైడ్ 40mg కొనసాగించండి మరియు టెలి-మానిటరింగ్ నిర్వహించండి."
+    ]
+    suggestions_bn = [
+        "ক্রিয়েটিনিন ১.৬০ mg/dL এবং পূর্ববর্তী ৩০ দিনের ভর্তির ভিত্তিতে, অবিলম্বে ডাইউরেটিক পর্যালোচনার সুপারিশ করা হচ্ছে।",
+        "রোগী শ্বাসকষ্টের কথা জানিয়েছেন — ৪৮ ঘণ্টার মধ্যে BNP এবং ইকোকার্ডিওগ্রাম পরীক্ষা করা প্রয়োজন।",
+        "PPO RL নীতি: ৭২ ঘণ্টায় PCP ফলো-আপ + ফার্মাসিস্ট পর্যালোচনা রিঅ্যাডমিশন ঝুঁকি ৩৪% হ্রাস করবে।",
+        "SpO2 ৯৪% — সোডিয়াম গ্রহণ <২ গ্রাম/দিনে সীমাবদ্ধ করুন এবং দৈনিক ওজন পর্যবেক্ষণ করুন।",
+        "CHF প্রোটোকল: ফুরোসেমাইড ৪০mg চালিয়ে যান এবং টেলি-মনিটরিং শিডিউল করুন।"
     ]
 
     pool_map = {
@@ -1111,21 +1139,66 @@ async def ai_consultation_suggest(
         "hi": suggestions_hi,
         "ta": suggestions_ta,
         "kn": suggestions_kn,
-        "ml": suggestions_ml
+        "ml": suggestions_ml,
+        "te": suggestions_te,
+        "bn": suggestions_bn
     }
     pool = pool_map.get(target_lang, suggestions_en)
-    selected = random.choice(pool)
+    
+    if q:
+        # Custom query answering
+        q_lower = q.lower()
+        if "breath" in q_lower or "saans" in q_lower or "dyspnea" in q_lower or "మూత్రం" in q_lower:
+            selected = pool[1]
+        elif "pathway" in q_lower or "ppo" in q_lower or "rl" in q_lower:
+            selected = pool[2]
+        elif "oxygen" in q_lower or "spo2" in q_lower:
+            selected = pool[3]
+        else:
+            selected = random.choice(pool)
+    else:
+        selected = random.choice(pool)
+
     return JSONResponse({
         "suggestion": selected,
         "lang": target_lang,
-        "confidence": round(random.uniform(0.91, 0.97), 2),
+        "confidence": round(random.uniform(0.92, 0.98), 2),
         "model": "CareAI-Copilot-v2.4.1"
+    })
+
+
+@app.post("/api/consultation/prescriptions/generate")
+async def generate_consultation_prescription(request: Request):
+    """Generate structured medical prescription order from consultation."""
+    body = await request.json()
+    patient_id = body.get("patient_id", "PT-84729")
+    patient_name = body.get("patient_name", "Eleanor Vance")
+    rx_id = f"RX-{datetime.now().strftime('%Y%m%d')}-{random.randint(1000, 9999)}"
+    
+    medications = [
+        {"name": "Furosemide (Lasix)", "dosage": "40 mg", "frequency": "Once daily (Morning)", "route": "Oral", "duration": "30 Days"},
+        {"name": "Lisinopril", "dosage": "5 mg", "frequency": "Once daily", "route": "Oral", "duration": "30 Days"},
+        {"name": "Potassium Chloride ER", "dosage": "10 mEq", "frequency": "Once daily with food", "route": "Oral", "duration": "30 Days"},
+        {"name": "Dietary Sodium Restriction", "dosage": "< 2,000 mg/day", "frequency": "Daily", "route": "Dietary", "duration": "Continuous"}
+    ]
+    
+    return JSONResponse({
+        "success": True,
+        "rx_id": rx_id,
+        "patient_id": patient_id,
+        "patient_name": patient_name,
+        "prescribed_by": "Dr. Ranjeet Kumar, MD (CareAI Certified)",
+        "date": datetime.now().strftime("%d %B %Y"),
+        "diagnosis": "Congestive Heart Failure (CHF) with Exertional Dyspnea",
+        "medications": medications,
+        "instructions": "Take Furosemide in the morning. Weigh daily before breakfast. Report weight gain >2 lbs in 24 hours.",
+        "follow_up": "72-Hour Primary Care Tele-Health Checkup"
     })
 
 
 @app.post("/api/consultation/translate")
 async def translate_consultation_notes(request: Request):
-    """Translate consultation notes across supported languages."""
+    """Translate consultation notes across 7 supported languages."""
     body = await request.json()
     text        = body.get("text", "")
     target_lang = body.get("target", "hi")
@@ -1135,6 +1208,8 @@ async def translate_consultation_notes(request: Request):
         "ta": "CareAI மருத்துவ சுருக்கம்: 71 வயது பெண், CHF வரலாறு. படிக்கட்டுகளில் ஏறும் போது மூச்சுத்திணறல். சீரம் கிரியேட்டினின் 1.60 mg/dL. திட்டம்: ஃபுரோஸ்மைடு 40mg தொடரவும், 72 மணி நேரத்தில் PCP பின்தொடரவும்.",
         "kn": "CareAI ಕ್ಲಿನಿಕಲ್ ಸಾರಾಂಶ: 71 ವರ್ಷದ ಮಹಿಳೆ, CHF ಇತಿಹಾಸ. ಮೆಟ್ಟಿಲು ಹತ್ತುವಾಗ ಉಸಿರಾಟದ ತೊಂದರೆ. ಸೀರಮ್ ಕ್ರಿಯೇಟಿನೈನ್ 1.60 mg/dL. ಯೋಜನೆ: ಫ್ಯೂರೋಸೆಮೈಡ್ 40mg ಮುಂದುವರಿಸಿ ಮತ್ತು 72 ಗಂಟೆಗಳಲ್ಲಿ PCP ಫಾಲೋ-ಅಪ್ ಮಾಡಿ.",
         "ml": "CareAI ക്ലിനിക്കൽ സംഗ്രഹം: 71 വയസ്സുള്ള സ്ത്രീ, CHF ചരിത്രം. പടികൾ കയറുമ്പോൾ ശ്വാസതടസ്സം. ക്രിയാറ്റിനിൻ 1.60 mg/dL. പ്ലാൻ: ഫ്യൂറോസെമൈഡ് 40mg തുടരുക, 72 മണിക്കൂറിൽ PCP ഫോളോ-അപ്പ് ചെയ്യുക.",
+        "te": "CareAI క్లినికల్ సారాంశం: 71 సంవత్సరాల మహిళ, CHF చరిత్ర. మెట్లు ఎక్కేటప్పుడు శ్వాస తీసుకోవడంలో ఇబ్బంది. సీరం క్రియాటినిన్ 1.60 mg/dL. ప్రణాళిక: ఫ్యూరోసెమైడ్ 40mg కొనసాగించండి మరియు 72 గంటల్లో PCP ఫాలో-అప్ చేయండి.",
+        "bn": "CareAI ক্লিনিক্যাল সারসংক্ষেপ: ৭১ বছর বয়সী মহিলা, CHF ইতিহাস। সিঁড়ি ওঠার সময় শ্বাসকষ্টের অভিযোগ। সিরাম ক্রিয়েটিনিন ১.৬০ mg/dL। পরিকল্পনা: ফুরোসেমাইড ৪০mg চালিয়ে যান এবং ৭২ ঘণ্টায় PCP ফলো-আপ নিশ্চিত করুন।",
         "en": "CareAI Clinical Summary: 71-year-old female with CHF history. Reports exertional dyspnea on stair climbing. Creatinine 1.60 mg/dL. Plan: Continue Furosemide 40mg and schedule 72-hour primary care follow-up."
     }
     translated = translations_map.get(target_lang, translations_map["en"])
@@ -1167,13 +1242,13 @@ async def log_confirmed_action(request: Request):
 
 @app.post("/api/i18n/set-language")
 async def set_language_endpoint(request: Request):
-    """Persist user language preference across 5 supported languages."""
+    """Persist user language preference across 7 supported languages."""
     try:
         body = await request.json()
         lang = body.get("lang", "en")
     except Exception:
         lang = "en"
-    if lang not in ["en", "hi", "ta", "kn", "ml"]:
+    if lang not in ["en", "hi", "ta", "kn", "ml", "te", "bn"]:
         lang = "en"
     
     labels = {
@@ -1181,7 +1256,9 @@ async def set_language_endpoint(request: Request):
         "hi": "हिन्दी (Hindi)",
         "ta": "தமிழ் (Tamil)",
         "kn": "ಕನ್ನಡ (Kannada)",
-        "ml": "മലയാളം (Malayalam)"
+        "ml": "മലയാളം (Malayalam)",
+        "te": "తెలుగు (Telugu)",
+        "bn": "বাংলা (Bengali)"
     }
     
     response = JSONResponse({
@@ -1202,9 +1279,9 @@ async def set_language_endpoint(request: Request):
 
 @app.get("/api/i18n/translations")
 async def get_translations_endpoint(lang: Optional[str] = Query(None), request: Request = None):
-    """Return platform clinical translations metadata for 5 supported languages."""
+    """Return platform clinical translations metadata for 7 supported languages."""
     target_lang = lang or (request.cookies.get("hrp_lang") if request else None) or "en"
-    if target_lang not in ["en", "hi", "ta", "kn", "ml"]:
+    if target_lang not in ["en", "hi", "ta", "kn", "ml", "te", "bn"]:
         target_lang = "en"
     
     meta = {
@@ -1212,13 +1289,16 @@ async def get_translations_endpoint(lang: Optional[str] = Query(None), request: 
         "hi": { "locale": "hi-IN", "name": "हिन्दी", "direction": "ltr" },
         "ta": { "locale": "ta-IN", "name": "தமிழ்", "direction": "ltr" },
         "kn": { "locale": "kn-IN", "name": "ಕನ್ನಡ", "direction": "ltr" },
-        "ml": { "locale": "ml-IN", "name": "മലയാളം", "direction": "ltr" }
+        "ml": { "locale": "ml-IN", "name": "മലയാളം", "direction": "ltr" },
+        "te": { "locale": "te-IN", "name": "తెలుగు", "direction": "ltr" },
+        "bn": { "locale": "bn-IN", "name": "বাংলা", "direction": "ltr" }
     }
     return JSONResponse({
         "current_lang": target_lang,
-        "supported": ["en", "hi", "ta", "kn", "ml"],
+        "supported": ["en", "hi", "ta", "kn", "ml", "te", "bn"],
         "metadata": meta.get(target_lang, meta["en"])
     })
+
 
 
 

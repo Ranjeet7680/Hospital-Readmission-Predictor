@@ -42,70 +42,66 @@
             </div>
 
             <!-- CSS 3D Card Container -->
-            <div class="perspective-1000 w-full max-w-[460px] h-[280px] cursor-pointer group" onclick="toggleCardFlip()">
+            <div class="perspective-1000 w-full max-w-[440px] h-[260px] sm:h-[280px] cursor-pointer group" onclick="toggleCardFlip()">
                 <div id="health-id-card-inner" class="relative w-full h-full duration-700 transform-style-3d transition-transform shadow-xl rounded-3xl">
                     
                     <!-- ================= CARD FRONT ================= -->
-                    <div class="absolute inset-0 w-full h-full rounded-3xl p-6 bg-gradient-to-br from-[#005bbf] via-[#004a9e] to-[#002f6c] text-white flex flex-col justify-between backface-hidden border border-white/20 shadow-2xl overflow-hidden">
+                    <div class="absolute inset-0 w-full h-full rounded-3xl p-4 sm:p-6 bg-gradient-to-br from-[#005bbf] via-[#004a9e] to-[#002f6c] text-white flex flex-col justify-between backface-hidden border border-white/20 shadow-2xl overflow-hidden">
                         <!-- Holographic Background Mesh -->
                         <div class="absolute -right-16 -bottom-16 w-56 h-56 rounded-full bg-white/10 blur-2xl pointer-events-none"></div>
                         <div class="absolute top-0 right-0 p-4 opacity-15">
-                            <span class="material-symbols-outlined text-[110px] text-white">local_hospital</span>
+                            <span class="material-symbols-outlined text-[90px] sm:text-[110px] text-white">local_hospital</span>
                         </div>
 
                         <!-- Top Header -->
                         <div class="flex justify-between items-start relative z-10">
-                            <div class="flex items-center gap-2.5">
-                                <div class="w-10 h-10 rounded-2xl bg-white/20 backdrop-blur-md flex items-center justify-center border border-white/30 shadow-inner">
-                                    <span class="material-symbols-outlined text-2xl text-white">health_and_safety</span>
+                            <div class="flex items-center gap-2">
+                                <div class="w-8 h-8 sm:w-10 sm:h-10 rounded-xl sm:rounded-2xl bg-white/20 backdrop-blur-md flex items-center justify-center border border-white/30 shadow-inner">
+                                    <span class="material-symbols-outlined text-lg sm:text-2xl text-white">health_and_safety</span>
                                 </div>
                                 <div>
-                                    <h3 class="text-xs font-bold uppercase tracking-widest text-white/80">Metro General Hospital</h3>
-                                    <h2 class="text-base font-extrabold tracking-wide text-white">Digital Health ID</h2>
+                                    <h3 class="text-[9px] sm:text-xs font-bold uppercase tracking-widest text-white/80">Metro General Hospital</h3>
+                                    <h2 class="text-sm sm:text-base font-extrabold tracking-wide text-white">Digital Health ID</h2>
                                 </div>
                             </div>
-                            <span class="px-2 py-0.5 rounded-full bg-white/25 backdrop-blur-md text-[10px] font-extrabold tracking-wide uppercase border border-white/30 flex items-center gap-1">
+                            <span class="px-2 py-0.5 rounded-full bg-white/25 backdrop-blur-md text-[9px] sm:text-[10px] font-extrabold tracking-wide uppercase border border-white/30 flex items-center gap-1">
                                 <span class="w-1.5 h-1.5 rounded-full bg-green-400 animate-pulse"></span>
                                 {{ profile.verification_status.overall }}
                             </span>
                         </div>
 
-                        <!-- Middle Identity Info -->
-                        <div class="grid grid-cols-12 gap-3 items-center relative z-10 py-1">
+                        <!-- Middle Identity Info (Flex Layout to prevent QR truncation) -->
+                        <div class="flex items-center justify-between gap-2.5 relative z-10 py-1">
                             <!-- Avatar -->
-                            <div class="col-span-3 flex justify-center">
-                                <div class="w-16 h-16 rounded-2xl bg-gradient-to-tr from-amber-200 to-amber-400 text-[#002f6c] font-black text-2xl flex items-center justify-center shadow-md border-2 border-white/50">
-                                    {{ profile.initials }}
-                                </div>
+                            <div class="w-12 h-12 sm:w-16 sm:h-16 rounded-xl sm:rounded-2xl bg-gradient-to-tr from-amber-200 to-amber-400 text-[#002f6c] font-black text-lg sm:text-2xl flex items-center justify-center shadow-md border-2 border-white/50 flex-shrink-0">
+                                {{ profile.initials }}
                             </div>
                             <!-- Patient Details -->
-                            <div class="col-span-6 space-y-0.5">
-                                <h4 class="text-lg font-bold text-white leading-snug">{{ profile.full_name }}</h4>
-                                <p class="text-xs font-mono text-white/80 tracking-wider font-semibold">{{ profile.health_id }}</p>
-                                <div class="flex items-center gap-3 text-[11px] text-white/75 pt-0.5">
+                            <div class="flex-1 min-w-0 space-y-0.5">
+                                <h4 class="text-sm sm:text-lg font-bold text-white leading-snug truncate">{{ profile.full_name }}</h4>
+                                <p class="text-[10px] sm:text-xs font-mono text-white/90 tracking-wider font-semibold truncate">{{ profile.health_id }}</p>
+                                <div class="flex items-center gap-1.5 sm:gap-2 text-[10px] sm:text-[11px] text-white/80 pt-0.5">
                                     <span>DOB: <strong class="text-white">{{ profile.dob }}</strong></span>
                                     <span>•</span>
                                     <span>Blood: <strong class="text-white">{{ profile.blood_group }}</strong></span>
                                 </div>
                             </div>
                             <!-- QR Code Preview -->
-                            <div class="col-span-3 flex justify-end">
-                                <div class="w-16 h-16 bg-white p-1 rounded-xl shadow-lg border border-white/40 flex items-center justify-center">
-                                    <div class="w-full h-full transform scale-90">
-                                        {{ qr_svg|safe }}
-                                    </div>
+                            <div class="w-14 h-14 sm:w-16 sm:h-16 bg-white p-1 rounded-xl shadow-lg border border-white/40 flex items-center justify-center flex-shrink-0">
+                                <div class="w-full h-full flex items-center justify-center transform scale-90">
+                                    {{ qr_svg|safe }}
                                 </div>
                             </div>
                         </div>
 
                         <!-- Bottom Footer -->
-                        <div class="flex justify-between items-end text-[10px] text-white/80 border-t border-white/15 pt-2 relative z-10">
+                        <div class="flex justify-between items-end text-[9px] sm:text-[10px] text-white/80 border-t border-white/15 pt-1.5 sm:pt-2 relative z-10">
                             <div>
-                                <span class="block text-[9px] uppercase tracking-wider text-white/60">Emergency Contact</span>
-                                <span class="font-semibold text-white truncate max-w-[200px] block">Robert Vance (Spouse)</span>
+                                <span class="block text-[8px] sm:text-[9px] uppercase tracking-wider text-white/60">Emergency Contact</span>
+                                <span class="font-semibold text-white truncate max-w-[150px] sm:max-w-[200px] block">Robert Vance (Spouse)</span>
                             </div>
                             <div class="text-right">
-                                <span class="block text-[9px] uppercase tracking-wider text-white/60">Account Type</span>
+                                <span class="block text-[8px] sm:text-[9px] uppercase tracking-wider text-white/60">Account Type</span>
                                 <span class="font-bold text-white uppercase">{{ profile.account_type }}</span>
                             </div>
                         </div>

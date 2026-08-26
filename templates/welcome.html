@@ -997,16 +997,21 @@
                     </button>
                 </div>
             </div>
-        </div>
-    </div>
+</div>
 
 <script>
-// 1. Splash Screen Auto-Advance (2500ms)
+// 1. Splash Screen Auto-Advance
+{% if logged_out %}
+document.addEventListener('DOMContentLoaded', () => {
+    skipSplash();
+});
+{% endif %}
+
 let splashProgress = 0;
 const splashInterval = setInterval(() => {
-    splashProgress += 10;
+    splashProgress += 15;
     const bar = document.getElementById('splash-progress-bar');
-    if (bar) bar.style.width = splashProgress + '%';
+    if (bar) bar.style.width = `${splashProgress}%`;
     
     if (splashProgress === 40) {
         const label = document.getElementById('splash-sequence-label');
@@ -1020,14 +1025,14 @@ const splashInterval = setInterval(() => {
         clearInterval(splashInterval);
         skipSplash();
     }
-}, 180);
+}, 70);
 
 function skipSplash() {
     clearInterval(splashInterval);
     const splash = document.getElementById('splash-screen');
     if (splash) {
         splash.classList.add('opacity-0', 'pointer-events-none');
-        setTimeout(() => splash.remove(), 700);
+        setTimeout(() => splash.remove(), 400);
     }
     // Show Smart Return if previously visited
     if (localStorage.getItem('hrp_visited')) {
