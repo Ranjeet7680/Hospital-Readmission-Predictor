@@ -29,7 +29,7 @@ const translations = {
         "header_title": "Hospital Readmission Predictor",
         "search_placeholder": "Search patient, document, history...",
         "search_mobile_placeholder": "Search patient, document, history...",
-        "dr_name": "Dr. Ranjeet Kumar, MD",
+        "dr_name": "Dr. Ranjeet Kumar",
         "dr_title": "Lead AI Architect • St. Jude",
         "doctor_id": "Doctor Digital ID",
         "edit_profile": "Edit Doctor Profile",
@@ -1544,8 +1544,11 @@ class I18nEngine {
         this.observer.observe(document.body, { childList: true, subtree: true });
     }
 
-    speak(text, lang = null) {
-        if (!('speechSynthesis' in window)) return null;
+    speak(text = null, lang = null) {
+        if (!('speechSynthesis' in window)) {
+            if (typeof showToast === 'function') showToast('Speech Synthesis is not supported in this browser.', 'warning');
+            return null;
+        }
         window.speechSynthesis.cancel();
 
         const targetLang = lang || this.currentLang;
@@ -1560,7 +1563,14 @@ class I18nEngine {
         };
         const targetLocale = localeMap[targetLang] || 'en-US';
 
-        const utterance = new SpeechSynthesisUtterance(text);
+        let speechText = text;
+        if (!speechText || speechText.trim().length === 0) {
+            const h1 = document.querySelector('h1')?.textContent?.trim() || '';
+            const p = document.querySelector('main p, .max-w-7xl p, .max-w-6xl p, .space-y-2 p')?.textContent?.trim() || '';
+            speechText = `${h1}. ${p}`.trim() || 'Hospital Readmission Predictor. Precision Healthcare Intelligence.';
+        }
+
+        const utterance = new SpeechSynthesisUtterance(speechText);
         utterance.lang = targetLocale;
         utterance.rate = targetLang === 'en' ? 1.0 : 0.92;
         utterance.pitch = 1.0;
@@ -1568,6 +1578,10 @@ class I18nEngine {
         const voices = window.speechSynthesis.getVoices();
         const matchingVoice = voices.find(v => v.lang.startsWith(targetLang) || v.lang === targetLocale);
         if (matchingVoice) utterance.voice = matchingVoice;
+
+        if (typeof showToast === 'function') {
+            showToast(`Reading page aloud in ${this.getLanguageName(targetLang)}...`, 'info');
+        }
 
         window.speechSynthesis.speak(utterance);
         return utterance;
