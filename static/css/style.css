@@ -1,26 +1,352 @@
-/* Additional clinical styling for HRP Clinical */
+/* ============================================================
+   HRP Clinical — Global Stylesheet v3.0
+   Enhanced UI: Glassmorphism · Ripple · 3D Tilt · Animations
+   Mobile-first: Active pill · Safe-area · Touch targets
+   ============================================================ */
 
+/* ---------- Gauge Ring ---------- */
 @keyframes pulseGlow {
     0%, 100% { transform: scale(1); opacity: 0.9; }
-    50% { transform: scale(1.05); opacity: 1; }
+    50%       { transform: scale(1.05); opacity: 1; }
 }
-
-.pulse-high-risk {
-    animation: pulseGlow 2s infinite ease-in-out;
-}
+.pulse-high-risk { animation: pulseGlow 2s infinite ease-in-out; }
 
 .gauge-ring {
     transform-origin: center;
     transition: stroke-dashoffset 1.4s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-@media print {
-    nav, header, button, .no-print {
-        display: none !important;
+/* Halo ring around high-risk gauge */
+@keyframes gaugeHalo {
+    0%, 100% { opacity: 0.3; r: 44; }
+    50%       { opacity: 0.7; r: 48; }
+}
+.gauge-halo { animation: gaugeHalo 2.2s ease-in-out infinite; }
+
+/* ---------- Page Progress Loader ---------- */
+#page-progress-bar {
+    position: fixed;
+    top: 0; left: 0;
+    height: 3px;
+    width: 0%;
+    background: linear-gradient(90deg, #005bbf, #22d3ee, #005bbf);
+    background-size: 200% 100%;
+    animation: progressShimmer 1.5s linear infinite;
+    z-index: 9999;
+    transition: width 0.3s ease, opacity 0.4s ease;
+    border-radius: 0 2px 2px 0;
+    box-shadow: 0 0 8px rgba(0, 91, 191, 0.6);
+}
+@keyframes progressShimmer {
+    0%   { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
+}
+
+/* ---------- Glassmorphism Utilities ---------- */
+.glass {
+    background: rgba(248, 249, 250, 0.72);
+    backdrop-filter: blur(16px) saturate(180%);
+    -webkit-backdrop-filter: blur(16px) saturate(180%);
+    border: 1px solid rgba(255, 255, 255, 0.55);
+}
+.glass-dark {
+    background: rgba(30, 41, 59, 0.75);
+    backdrop-filter: blur(20px) saturate(200%);
+    -webkit-backdrop-filter: blur(20px) saturate(200%);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+}
+.glass-card {
+    background: rgba(255, 255, 255, 0.85);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(193, 198, 214, 0.5);
+    box-shadow:
+        0 1px 2px rgba(0,0,0,0.04),
+        0 4px 16px rgba(0, 91, 191, 0.06),
+        0 0 0 1px rgba(255,255,255,0.6) inset;
+}
+
+/* ---------- Sidebar Glassmorphism ---------- */
+.nav-glass {
+    background: linear-gradient(180deg,
+        rgba(248, 249, 250, 0.95) 0%,
+        rgba(243, 244, 245, 0.92) 100%);
+    backdrop-filter: blur(20px) saturate(160%);
+    -webkit-backdrop-filter: blur(20px) saturate(160%);
+    border-right: 1px solid rgba(193, 198, 214, 0.6);
+    box-shadow: 4px 0 24px rgba(0, 91, 191, 0.05);
+}
+
+/* Animated sliding nav active pill */
+.nav-active-pill {
+    position: relative;
+    overflow: hidden;
+}
+.nav-active-pill::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: 0.75rem;
+    background: linear-gradient(135deg, rgba(0,91,191,0.12) 0%, rgba(26,115,232,0.08) 100%);
+    border: 1px solid rgba(0,91,191,0.2);
+    box-shadow: 0 2px 8px rgba(0,91,191,0.12);
+    z-index: 0;
+}
+.nav-active-pill > * { position: relative; z-index: 1; }
+
+/* Nav item hover glow */
+.nav-item-hover {
+    transition: all 200ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+.nav-item-hover:hover {
+    background: rgba(0, 91, 191, 0.06) !important;
+    transform: translateX(2px);
+}
+
+/* ---------- Header Glassmorphism ---------- */
+.header-glass {
+    background: rgba(248, 249, 250, 0.88);
+    backdrop-filter: blur(20px) saturate(180%);
+    -webkit-backdrop-filter: blur(20px) saturate(180%);
+    border-bottom: 1px solid rgba(193, 198, 214, 0.5);
+    box-shadow: 0 1px 12px rgba(0, 0, 0, 0.06);
+}
+
+/* ---------- Material Design 3 Ripple ---------- */
+.ripple-container { position: relative; overflow: hidden; }
+
+.ripple-wave {
+    position: absolute;
+    border-radius: 50%;
+    background: rgba(0, 91, 191, 0.18);
+    transform: scale(0);
+    animation: rippleExpand 600ms cubic-bezier(0.4, 0, 0.2, 1) forwards;
+    pointer-events: none;
+}
+@keyframes rippleExpand {
+    to { transform: scale(4); opacity: 0; }
+}
+
+/* ---------- 3D Perspective Card Tilt ---------- */
+.tilt-card {
+    transform-style: preserve-3d;
+    transition: transform 300ms cubic-bezier(0.16, 1, 0.3, 1), box-shadow 300ms ease;
+    will-change: transform;
+}
+.tilt-card:hover {
+    box-shadow:
+        0 8px 30px rgba(0, 91, 191, 0.12),
+        0 2px 8px rgba(0,0,0,0.06);
+}
+
+/* Premium multi-layer card shadow */
+.shadow-premium {
+    box-shadow:
+        0 1px 2px rgba(0,0,0,0.04),
+        0 4px 12px rgba(0,0,0,0.06),
+        0 12px 32px rgba(0, 91, 191, 0.08);
+}
+.shadow-premium-hover:hover {
+    box-shadow:
+        0 2px 4px rgba(0,0,0,0.04),
+        0 8px 24px rgba(0,0,0,0.08),
+        0 20px 48px rgba(0, 91, 191, 0.12);
+}
+
+/* ---------- Scroll Reveal System ---------- */
+.reveal-init {
+    opacity: 0;
+    transform: translateY(16px);
+    transition:
+        opacity 550ms cubic-bezier(0.16, 1, 0.3, 1),
+        transform 550ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+.is-revealed {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* ---------- Floating & Shimmer ---------- */
+@keyframes floatSlow {
+    0%, 100% { transform: translateY(0px); }
+    50%       { transform: translateY(-6px); }
+}
+.animate-float { animation: floatSlow 4s ease-in-out infinite; }
+
+@keyframes shimmer {
+    0%   { background-position: -200% 0; }
+    100% { background-position: 200% 0; }
+}
+.animate-shimmer {
+    background: linear-gradient(90deg,
+        rgba(255,255,255,0) 0%,
+        rgba(255,255,255,0.5) 50%,
+        rgba(255,255,255,0) 100%);
+    background-size: 200% 100%;
+    animation: shimmer 2.5s infinite;
+}
+
+/* Skeleton loading shimmer */
+.skeleton {
+    background: linear-gradient(90deg,
+        #e1e3e4 25%,
+        #eff0f1 50%,
+        #e1e3e4 75%);
+    background-size: 200% 100%;
+    animation: shimmer 1.6s infinite;
+    border-radius: 6px;
+}
+
+/* ---------- Slide & Scale Animations ---------- */
+@keyframes slideDown {
+    from { transform: translateY(-100%); opacity: 0; }
+    to   { transform: translateY(0);     opacity: 1; }
+}
+.animate-slide-down { animation: slideDown 350ms cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+
+@keyframes slideUp {
+    from { transform: translateY(20px); opacity: 0; }
+    to   { transform: translateY(0);    opacity: 1; }
+}
+.animate-slide-up { animation: slideUp 350ms cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+
+@keyframes scaleUp {
+    from { transform: scale(0.94); opacity: 0; }
+    to   { transform: scale(1);    opacity: 1; }
+}
+.animate-scale-up { animation: scaleUp 250ms cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+}
+.animate-fade-in { animation: fadeIn 300ms ease forwards; }
+
+/* ---------- Mobile Bottom Nav Active Pill ---------- */
+.mobile-nav-pill {
+    position: absolute;
+    bottom: 4px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 24px; height: 3px;
+    background: #005bbf;
+    border-radius: 2px;
+    transition: all 300ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Active bottom nav item glow */
+.mobile-nav-active {
+    color: #005bbf;
+    filter: drop-shadow(0 0 6px rgba(0, 91, 191, 0.4));
+}
+
+/* Bottom nav FAB gradient */
+.fab-gradient {
+    background: linear-gradient(135deg, #005bbf 0%, #002f6c 100%);
+    box-shadow:
+        0 4px 16px rgba(0, 91, 191, 0.45),
+        0 1px 4px rgba(0,0,0,0.2),
+        0 0 0 3px rgba(255,255,255,0.9),
+        0 0 0 5px rgba(0, 91, 191, 0.2);
+    transition: all 250ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+.fab-gradient:hover  { box-shadow: 0 6px 24px rgba(0,91,191,0.55), 0 0 0 3px white, 0 0 0 5px rgba(0,91,191,0.25); transform: scale(1.06); }
+.fab-gradient:active { transform: scale(0.94); }
+
+/* ---------- Bottom Sheet Animation ---------- */
+.bottom-sheet {
+    transform: translateY(100%);
+    opacity: 0;
+    transition:
+        transform 380ms cubic-bezier(0.16, 1, 0.3, 1),
+        opacity 280ms ease;
+}
+.bottom-sheet.is-open {
+    transform: translateY(0);
+    opacity: 1;
+}
+.bottom-sheet-overlay {
+    opacity: 0;
+    transition: opacity 280ms ease;
+}
+.bottom-sheet-overlay.is-open { opacity: 1; }
+
+/* ---------- Mobile Touch Targets ---------- */
+@media (max-width: 767px) {
+    button, a, [role="button"] {
+        min-height: 44px;
     }
+    .bottom-nav-item {
+        min-width: 56px;
+        min-height: 52px;
+        padding: 8px 4px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        position: relative;
+    }
+}
+
+/* ---------- Fluid Typography ---------- */
+.text-fluid-sm  { font-size: clamp(0.7rem,  1.5vw, 0.85rem); }
+.text-fluid-base{ font-size: clamp(0.85rem, 2vw,   1rem); }
+.text-fluid-lg  { font-size: clamp(1rem,    2.5vw, 1.25rem); }
+.text-fluid-xl  { font-size: clamp(1.2rem,  3vw,   1.75rem); }
+.text-fluid-2xl { font-size: clamp(1.5rem,  4vw,   2.25rem); }
+
+/* ---------- Notification Badge Halo ---------- */
+@keyframes badgeHalo {
+    0%, 100% { box-shadow: 0 0 0 0   rgba(186, 26, 26, 0.5); }
+    50%       { box-shadow: 0 0 0 5px rgba(186, 26, 26, 0);   }
+}
+.badge-halo {
+    animation: badgeHalo 2s ease-out infinite;
+}
+
+/* ---------- Scrollbar ---------- */
+::-webkit-scrollbar       { width: 5px; height: 5px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: #c1c6d6; border-radius: 4px; }
+::-webkit-scrollbar-thumb:hover { background: #727785; }
+
+/* ---------- Print ---------- */
+@media print {
+    nav, header, button, .no-print { display: none !important; }
     body, main {
         background: white !important;
         color: black !important;
         padding: 0 !important;
     }
+}
+
+/* ---------- Reduce Motion ---------- */
+.reduce-motion *,
+.reduce-motion *::before,
+.reduce-motion *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+}
+
+/* ---------- Gradient text ---------- */
+.gradient-text {
+    background: linear-gradient(135deg, #005bbf, #1a73e8);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+.gradient-text-gold {
+    background: linear-gradient(135deg, #b45309, #d97706, #92400e);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+/* ---------- Drawer Swipe Hint ---------- */
+.drawer-handle {
+    width: 36px; height: 4px;
+    background: rgba(0,0,0,0.15);
+    border-radius: 2px;
+    margin: 0 auto 12px;
 }

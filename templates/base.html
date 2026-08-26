@@ -91,6 +91,7 @@
             }
         };
     </script>
+    <link rel="stylesheet" href="/static/css/style.css"/>
     <style>
         body { font-family: 'Open Sans', sans-serif; }
         .material-symbols-outlined {
@@ -99,72 +100,10 @@
         .material-symbols-outlined[data-weight="fill"], .fill-icon {
             font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
         }
-        /* Custom scrollbar */
-        ::-webkit-scrollbar { width: 5px; height: 5px; }
-        ::-webkit-scrollbar-track { background: transparent; }
-        ::-webkit-scrollbar-thumb { background: #c1c6d6; border-radius: 4px; }
-        ::-webkit-scrollbar-thumb:hover { background: #727785; }
-
         .gauge-ring {
             stroke-dasharray: 283;
             stroke-dashoffset: 283;
             transition: stroke-dashoffset 1.4s cubic-bezier(0.16, 1, 0.3, 1);
-        }
-
-        /* Staggered Scroll Reveals */
-        .reveal-init {
-            opacity: 0;
-            transform: translateY(14px);
-            transition: opacity 500ms cubic-bezier(0.16, 1, 0.3, 1), transform 500ms cubic-bezier(0.16, 1, 0.3, 1);
-        }
-        .is-revealed {
-            opacity: 1;
-            transform: translateY(0);
-        }
-
-        /* Gentle Floating Physics */
-        @keyframes floatSlow {
-            0%, 100% { transform: translateY(0px); }
-            50% { transform: translateY(-6px); }
-        }
-        .animate-float {
-            animation: floatSlow 4s ease-in-out infinite;
-        }
-
-        /* Shimmer Wave */
-        @keyframes shimmer {
-            0% { background-position: -200% 0; }
-            100% { background-position: 200% 0; }
-        }
-        .animate-shimmer {
-            background: linear-gradient(90deg, rgba(255,255,255,0) 0%, rgba(255,255,255,0.4) 50%, rgba(255,255,255,0) 100%);
-            background-size: 200% 100%;
-            animation: shimmer 2.5s infinite;
-        }
-
-        /* Smooth Slide Down for Banners & Alerts */
-        @keyframes slideDown {
-            from { transform: translateY(-100%); opacity: 0; }
-            to { transform: translateY(0); opacity: 1; }
-        }
-        .animate-slide-down {
-            animation: slideDown 350ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
-        }
-
-        /* Scale Up for Modals & Overlays */
-        @keyframes scaleUp {
-            from { transform: scale(0.95); opacity: 0; }
-            to { transform: scale(1); opacity: 1; }
-        }
-        .animate-scale-up {
-            animation: scaleUp 250ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
-        }
-
-        /* Reduce Motion accessibility */
-        .reduce-motion *, .reduce-motion *::before, .reduce-motion *::after {
-            animation-duration: 0.001ms !important;
-            animation-iteration-count: 1 !important;
-            transition-duration: 0.001ms !important;
         }
     </style>
     <!-- Include Sound Engine, i18n & Animation Utilities -->
@@ -178,15 +117,15 @@
     {% if not hide_nav %}
     <div class="flex min-h-screen">
         <!-- Desktop Side Navigation -->
-        <nav class="hidden md:flex flex-col h-screen p-3 space-y-1 bg-surface-container-low w-64 flex-shrink-0 sticky top-0 border-r border-surface-variant z-40 overflow-y-auto">
+        <nav class="hidden md:flex flex-col h-screen p-3 space-y-1 nav-glass w-64 flex-shrink-0 sticky top-0 z-40 overflow-y-auto">
             <!-- Brand Header -->
-            <a href="/dashboard" class="flex items-center gap-2 mb-4 px-2 pt-2 group">
-                <div class="w-10 h-10 rounded-xl bg-primary-container flex items-center justify-center text-on-primary-container shadow-sm group-hover:scale-105 transition-transform">
+            <a href="/dashboard" class="flex items-center gap-2.5 mb-4 px-2 pt-2 group">
+                <div class="w-10 h-10 rounded-xl flex items-center justify-center text-white shadow-md group-hover:scale-105 transition-transform" style="background: linear-gradient(135deg,#005bbf,#002f6c);">
                     <span class="material-symbols-outlined fill-icon text-2xl">local_hospital</span>
                 </div>
                 <div>
-                    <h1 class="text-sm font-bold text-primary" data-i18n="brand_name">HRP Clinical</h1>
-                    <p class="text-[11px] text-secondary font-medium" data-i18n="brand_subtitle">Precision Care & AI</p>
+                    <h1 class="text-sm font-extrabold gradient-text" data-i18n="brand_name">HRP Clinical</h1>
+                    <p class="text-[11px] text-secondary font-semibold tracking-wide" data-i18n="brand_subtitle">Precision Care &amp; AI</p>
                 </div>
             </a>
 
@@ -197,27 +136,27 @@
                 <div>
                     <span class="px-3 text-[10px] font-bold uppercase tracking-wider text-secondary/80 block mb-1">Clinical Care</span>
                     <div class="space-y-0.5">
-                        <a href="/dashboard" class="flex items-center gap-2.5 px-3 py-2 rounded-xl transition-colors font-semibold {% if active_page == 'dashboard' %}text-primary bg-secondary-container font-bold{% else %}text-on-surface-variant hover:bg-surface-container-high{% endif %}">
+                        <a href="/dashboard" class="flex items-center gap-2.5 px-3 py-2 rounded-xl transition-all font-semibold nav-item-hover {% if active_page == 'dashboard' %}nav-active-pill text-primary font-bold{% else %}text-on-surface-variant{% endif %}">
                             <span class="material-symbols-outlined text-[18px] {% if active_page == 'dashboard' %}fill-icon{% endif %}">dashboard</span>
                             <span data-i18n="dashboard">Dashboard</span>
                         </a>
 
-                        <a href="/prediction/new" class="flex items-center gap-2.5 px-3 py-2 rounded-xl transition-colors font-semibold {% if active_page == 'new_prediction' %}text-primary bg-secondary-container font-bold{% else %}text-on-surface-variant hover:bg-surface-container-high{% endif %}">
+                        <a href="/prediction/new" class="flex items-center gap-2.5 px-3 py-2 rounded-xl transition-all font-semibold nav-item-hover {% if active_page == 'new_prediction' %}nav-active-pill text-primary font-bold{% else %}text-on-surface-variant{% endif %}">
                             <span class="material-symbols-outlined text-[18px] {% if active_page == 'new_prediction' %}fill-icon{% endif %}">add_circle</span>
                             <span data-i18n="new_prediction">New Prediction</span>
                         </a>
 
-                        <a href="/patients" class="flex items-center gap-2.5 px-3 py-2 rounded-xl transition-colors font-semibold {% if active_page == 'patients' %}text-primary bg-secondary-container font-bold{% else %}text-on-surface-variant hover:bg-surface-container-high{% endif %}">
+                        <a href="/patients" class="flex items-center gap-2.5 px-3 py-2 rounded-xl transition-all font-semibold nav-item-hover {% if active_page == 'patients' %}nav-active-pill text-primary font-bold{% else %}text-on-surface-variant{% endif %}">
                             <span class="material-symbols-outlined text-[18px] {% if active_page == 'patients' %}fill-icon{% endif %}">person</span>
                             <span data-i18n="patients">Patients</span>
                         </a>
 
-                        <a href="/history" class="flex items-center gap-2.5 px-3 py-2 rounded-xl transition-colors font-semibold {% if active_page == 'history' %}text-primary bg-secondary-container font-bold{% else %}text-on-surface-variant hover:bg-surface-container-high{% endif %}">
+                        <a href="/history" class="flex items-center gap-2.5 px-3 py-2 rounded-xl transition-all font-semibold nav-item-hover {% if active_page == 'history' %}nav-active-pill text-primary font-bold{% else %}text-on-surface-variant{% endif %}">
                             <span class="material-symbols-outlined text-[18px] {% if active_page == 'history' %}fill-icon{% endif %}">history</span>
                             <span data-i18n="prediction_history">Prediction History</span>
                         </a>
 
-                        <a href="/analytics" class="flex items-center gap-2.5 px-3 py-2 rounded-xl transition-colors font-semibold {% if active_page == 'analytics' %}text-primary bg-secondary-container font-bold{% else %}text-on-surface-variant hover:bg-surface-container-high{% endif %}">
+                        <a href="/analytics" class="flex items-center gap-2.5 px-3 py-2 rounded-xl transition-all font-semibold nav-item-hover {% if active_page == 'analytics' %}nav-active-pill text-primary font-bold{% else %}text-on-surface-variant{% endif %}">
                             <span class="material-symbols-outlined text-[18px] {% if active_page == 'analytics' %}fill-icon{% endif %}">analytics</span>
                             <span data-i18n="analytics">Analytics</span>
                         </a>
@@ -228,17 +167,17 @@
                 <div>
                     <span class="px-3 text-[10px] font-bold uppercase tracking-wider text-secondary/80 block mb-1" data-i18n="medical_documents">Medical Documents</span>
                     <div class="space-y-0.5">
-                        <a href="/documents" class="flex items-center gap-2.5 px-3 py-2 rounded-xl transition-colors font-semibold {% if active_page == 'documents' %}text-primary bg-secondary-container font-bold{% else %}text-on-surface-variant hover:bg-surface-container-high{% endif %}">
+                        <a href="/documents" class="flex items-center gap-2.5 px-3 py-2 rounded-xl transition-all font-semibold nav-item-hover {% if  %}nav-active-pill text-primary font-bold{% else %}text-on-surface-variant{% endif %}">
                             <span class="material-symbols-outlined text-[18px]">folder</span>
                             <span data-i18n="my_documents">My Documents</span>
                         </a>
 
-                        <a href="/documents/analyze/DOC-84729-LAB" class="flex items-center gap-2.5 px-3 py-2 rounded-xl transition-colors font-semibold {% if active_page == 'analyze_report' %}text-primary bg-secondary-container font-bold{% else %}text-on-surface-variant hover:bg-surface-container-high{% endif %}">
+                        <a href="/documents/analyze/DOC-84729-LAB" class="flex items-center gap-2.5 px-3 py-2 rounded-xl transition-all font-semibold nav-item-hover {% if  %}nav-active-pill text-primary font-bold{% else %}text-on-surface-variant{% endif %}">
                             <span class="material-symbols-outlined text-[18px]">document_scanner</span>
                             <span data-i18n="lab_reports">Lab & Report Analysis</span>
                         </a>
 
-                        <a href="/certificates" class="flex items-center gap-2.5 px-3 py-2 rounded-xl transition-colors font-semibold {% if active_page == 'certificates' %}text-primary bg-secondary-container font-bold{% else %}text-on-surface-variant hover:bg-surface-container-high{% endif %}">
+                        <a href="/certificates" class="flex items-center gap-2.5 px-3 py-2 rounded-xl transition-all font-semibold nav-item-hover {% if  %}nav-active-pill text-primary font-bold{% else %}text-on-surface-variant{% endif %}">
                             <span class="material-symbols-outlined text-[18px]">verified</span>
                             <span data-i18n="medical_certificates">Medical Certificates</span>
                         </a>
@@ -249,62 +188,62 @@
                 <div>
                     <span class="px-3 text-[10px] font-bold uppercase tracking-wider text-secondary/80 block mb-1" data-i18n="ai_and_ml">AI & ML Intelligence</span>
                     <div class="space-y-0.5">
-                        <a href="/ml-dashboard" class="flex items-center gap-2.5 px-3 py-2 rounded-xl transition-colors font-semibold {% if active_page == 'ml_dashboard' %}text-primary bg-secondary-container font-bold{% else %}text-on-surface-variant hover:bg-surface-container-high{% endif %}">
+                        <a href="/ml-dashboard" class="flex items-center gap-2.5 px-3 py-2 rounded-xl transition-all font-semibold nav-item-hover {% if  %}nav-active-pill text-primary font-bold{% else %}text-on-surface-variant{% endif %}">
                             <span class="material-symbols-outlined text-[18px]">psychology</span>
                             <span data-i18n="ml_dashboard">ML Dashboard</span>
                         </a>
 
-                        <a href="/ml/dataset" class="flex items-center gap-2.5 px-3 py-2 rounded-xl transition-colors font-semibold {% if active_page == 'dataset' %}text-primary bg-secondary-container font-bold{% else %}text-on-surface-variant hover:bg-surface-container-high{% endif %}">
+                        <a href="/ml/dataset" class="flex items-center gap-2.5 px-3 py-2 rounded-xl transition-all font-semibold nav-item-hover {% if  %}nav-active-pill text-primary font-bold{% else %}text-on-surface-variant{% endif %}">
                             <span class="material-symbols-outlined text-[18px]">dataset</span>
                             <span data-i18n="dataset_workspace">Dataset Workspace</span>
                         </a>
 
-                        <a href="/ml/preprocessing" class="flex items-center gap-2.5 px-3 py-2 rounded-xl transition-colors font-semibold {% if active_page == 'preprocessing' %}text-primary bg-secondary-container font-bold{% else %}text-on-surface-variant hover:bg-surface-container-high{% endif %}">
+                        <a href="/ml/preprocessing" class="flex items-center gap-2.5 px-3 py-2 rounded-xl transition-all font-semibold nav-item-hover {% if  %}nav-active-pill text-primary font-bold{% else %}text-on-surface-variant{% endif %}">
                             <span class="material-symbols-outlined text-[18px]">account_tree</span>
                             <span data-i18n="preprocessing">Preprocessing (10-Stage)</span>
                         </a>
 
-                        <a href="/ml/training" class="flex items-center gap-2.5 px-3 py-2 rounded-xl transition-colors font-semibold {% if active_page == 'training_studio' %}text-primary bg-secondary-container font-bold{% else %}text-on-surface-variant hover:bg-surface-container-high{% endif %}">
+                        <a href="/ml/training" class="flex items-center gap-2.5 px-3 py-2 rounded-xl transition-all font-semibold nav-item-hover {% if  %}nav-active-pill text-primary font-bold{% else %}text-on-surface-variant{% endif %}">
                             <span class="material-symbols-outlined text-[18px]">model_training</span>
                             <span data-i18n="model_training">Training Studio</span>
                         </a>
 
-                        <a href="/ml/deep-learning" class="flex items-center gap-2.5 px-3 py-2 rounded-xl transition-colors font-semibold {% if active_page == 'dl_lab' %}text-primary bg-secondary-container font-bold{% else %}text-on-surface-variant hover:bg-surface-container-high{% endif %}">
+                        <a href="/ml/deep-learning" class="flex items-center gap-2.5 px-3 py-2 rounded-xl transition-all font-semibold nav-item-hover {% if  %}nav-active-pill text-primary font-bold{% else %}text-on-surface-variant{% endif %}">
                             <span class="material-symbols-outlined text-[18px]">hub</span>
                             <span>Deep Learning Lab</span>
                         </a>
 
-                        <a href="/ml/comparison" class="flex items-center gap-2.5 px-3 py-2 rounded-xl transition-colors font-semibold {% if active_page == 'comparison' %}text-primary bg-secondary-container font-bold{% else %}text-on-surface-variant hover:bg-surface-container-high{% endif %}">
+                        <a href="/ml/comparison" class="flex items-center gap-2.5 px-3 py-2 rounded-xl transition-all font-semibold nav-item-hover {% if  %}nav-active-pill text-primary font-bold{% else %}text-on-surface-variant{% endif %}">
                             <span class="material-symbols-outlined text-[18px]">compare_arrows</span>
                             <span data-i18n="model_comparison">Model Comparison</span>
                         </a>
 
-                        <a href="/ml/xai" class="flex items-center gap-2.5 px-3 py-2 rounded-xl transition-colors font-semibold {% if active_page == 'xai' %}text-primary bg-secondary-container font-bold{% else %}text-on-surface-variant hover:bg-surface-container-high{% endif %}">
+                        <a href="/ml/xai" class="flex items-center gap-2.5 px-3 py-2 rounded-xl transition-all font-semibold nav-item-hover {% if  %}nav-active-pill text-primary font-bold{% else %}text-on-surface-variant{% endif %}">
                             <span class="material-symbols-outlined text-[18px]">waterfall_chart</span>
                             <span data-i18n="explainable_ai">Explainable AI (SHAP)</span>
                         </a>
 
-                        <a href="/ml/embeddings" class="flex items-center gap-2.5 px-3 py-2 rounded-xl transition-colors font-semibold {% if active_page == 'embeddings' %}text-primary bg-secondary-container font-bold{% else %}text-on-surface-variant hover:bg-surface-container-high{% endif %}">
+                        <a href="/ml/embeddings" class="flex items-center gap-2.5 px-3 py-2 rounded-xl transition-all font-semibold nav-item-hover {% if  %}nav-active-pill text-primary font-bold{% else %}text-on-surface-variant{% endif %}">
                             <span class="material-symbols-outlined text-[18px]">bubble_chart</span>
                             <span data-i18n="patient_embeddings">Patient Embeddings (2D)</span>
                         </a>
 
-                        <a href="/ml/ensemble" class="flex items-center gap-2.5 px-3 py-2 rounded-xl transition-colors font-semibold {% if active_page == 'ensemble' %}text-primary bg-secondary-container font-bold{% else %}text-on-surface-variant hover:bg-surface-container-high{% endif %}">
+                        <a href="/ml/ensemble" class="flex items-center gap-2.5 px-3 py-2 rounded-xl transition-all font-semibold nav-item-hover {% if  %}nav-active-pill text-primary font-bold{% else %}text-on-surface-variant{% endif %}">
                             <span class="material-symbols-outlined text-[18px]">join</span>
                             <span data-i18n="ensemble_uncertainty">Ensemble & Uncertainty</span>
                         </a>
 
-                        <a href="/ml/monitoring" class="flex items-center gap-2.5 px-3 py-2 rounded-xl transition-colors font-semibold {% if active_page == 'monitoring' %}text-primary bg-secondary-container font-bold{% else %}text-on-surface-variant hover:bg-surface-container-high{% endif %}">
+                        <a href="/ml/monitoring" class="flex items-center gap-2.5 px-3 py-2 rounded-xl transition-all font-semibold nav-item-hover {% if  %}nav-active-pill text-primary font-bold{% else %}text-on-surface-variant{% endif %}">
                             <span class="material-symbols-outlined text-[18px]">monitoring</span>
                             <span data-i18n="model_monitoring">Model Drift Monitoring</span>
                         </a>
 
-                        <a href="/ml/registry" class="flex items-center gap-2.5 px-3 py-2 rounded-xl transition-colors font-semibold {% if active_page == 'registry' %}text-primary bg-secondary-container font-bold{% else %}text-on-surface-variant hover:bg-surface-container-high{% endif %}">
+                        <a href="/ml/registry" class="flex items-center gap-2.5 px-3 py-2 rounded-xl transition-all font-semibold nav-item-hover {% if  %}nav-active-pill text-primary font-bold{% else %}text-on-surface-variant{% endif %}">
                             <span class="material-symbols-outlined text-[18px]">app_registration</span>
                             <span data-i18n="model_registry">Model Registry</span>
                         </a>
 
-                        <a href="/ml/chat" class="flex items-center gap-2.5 px-3 py-2 rounded-xl transition-colors font-semibold {% if active_page == 'model_chat' %}text-primary bg-secondary-container font-bold{% else %}text-on-surface-variant hover:bg-surface-container-high{% endif %}">
+                        <a href="/ml/chat" class="flex items-center gap-2.5 px-3 py-2 rounded-xl transition-all font-semibold nav-item-hover {% if  %}nav-active-pill text-primary font-bold{% else %}text-on-surface-variant{% endif %}">
                             <span class="material-symbols-outlined text-[18px]">chat</span>
                             <span data-i18n="ask_the_model">Ask the Model</span>
                         </a>
@@ -315,37 +254,37 @@
                 <div>
                     <span class="px-3 text-[10px] font-bold uppercase tracking-wider text-secondary/80 block mb-1" data-i18n="reinforcement_learning">Reinforcement Learning</span>
                     <div class="space-y-0.5">
-                        <a href="/rl/dashboard" class="flex items-center gap-2.5 px-3 py-2 rounded-xl transition-colors font-semibold {% if active_page == 'rl_dashboard' %}text-primary bg-secondary-container font-bold{% else %}text-on-surface-variant hover:bg-surface-container-high{% endif %}">
+                        <a href="/rl/dashboard" class="flex items-center gap-2.5 px-3 py-2 rounded-xl transition-all font-semibold nav-item-hover {% if  %}nav-active-pill text-primary font-bold{% else %}text-on-surface-variant{% endif %}">
                             <span class="material-symbols-outlined text-[18px]">smart_toy</span>
                             <span data-i18n="rl_dashboard">RL Dashboard</span>
                         </a>
 
-                        <a href="/rl/environment" class="flex items-center gap-2.5 px-3 py-2 rounded-xl transition-colors font-semibold {% if active_page == 'rl_env' %}text-primary bg-secondary-container font-bold{% else %}text-on-surface-variant hover:bg-surface-container-high{% endif %}">
+                        <a href="/rl/environment" class="flex items-center gap-2.5 px-3 py-2 rounded-xl transition-all font-semibold nav-item-hover {% if  %}nav-active-pill text-primary font-bold{% else %}text-on-surface-variant{% endif %}">
                             <span class="material-symbols-outlined text-[18px]">view_timeline</span>
                             <span data-i18n="patient_environment">Care Journey Env</span>
                         </a>
 
-                        <a href="/rl/care-pathway" class="flex items-center gap-2.5 px-3 py-2 rounded-xl transition-colors font-semibold {% if active_page == 'care_pathway' %}text-primary bg-secondary-container font-bold{% else %}text-on-surface-variant hover:bg-surface-container-high{% endif %}">
+                        <a href="/rl/care-pathway" class="flex items-center gap-2.5 px-3 py-2 rounded-xl transition-all font-semibold nav-item-hover {% if  %}nav-active-pill text-primary font-bold{% else %}text-on-surface-variant{% endif %}">
                             <span class="material-symbols-outlined text-[18px]">route</span>
                             <span data-i18n="care_pathway_opt">Care Pathway Optimizer</span>
                         </a>
 
-                        <a href="/rl/simulation" class="flex items-center gap-2.5 px-3 py-2 rounded-xl transition-colors font-semibold {% if active_page == 'simulation_twin' %}text-primary bg-secondary-container font-bold{% else %}text-on-surface-variant hover:bg-surface-container-high{% endif %}">
+                        <a href="/rl/simulation" class="flex items-center gap-2.5 px-3 py-2 rounded-xl transition-all font-semibold nav-item-hover {% if  %}nav-active-pill text-primary font-bold{% else %}text-on-surface-variant{% endif %}">
                             <span class="material-symbols-outlined text-[18px]">tune</span>
                             <span data-i18n="digital_twin_sim">Digital Twin Sim (What-If)</span>
                         </a>
 
-                        <a href="/rl/safety" class="flex items-center gap-2.5 px-3 py-2 rounded-xl transition-colors font-semibold {% if active_page == 'safety_constraints' %}text-primary bg-secondary-container font-bold{% else %}text-on-surface-variant hover:bg-surface-container-high{% endif %}">
+                        <a href="/rl/safety" class="flex items-center gap-2.5 px-3 py-2 rounded-xl transition-all font-semibold nav-item-hover {% if  %}nav-active-pill text-primary font-bold{% else %}text-on-surface-variant{% endif %}">
                             <span class="material-symbols-outlined text-[18px]">shield</span>
                             <span data-i18n="safety_constraints">Safety Constraint Engine</span>
                         </a>
 
-                        <a href="/rl/human-review" class="flex items-center gap-2.5 px-3 py-2 rounded-xl transition-colors font-semibold {% if active_page == 'human_review' %}text-primary bg-secondary-container font-bold{% else %}text-on-surface-variant hover:bg-surface-container-high{% endif %}">
+                        <a href="/rl/human-review" class="flex items-center gap-2.5 px-3 py-2 rounded-xl transition-all font-semibold nav-item-hover {% if  %}nav-active-pill text-primary font-bold{% else %}text-on-surface-variant{% endif %}">
                             <span class="material-symbols-outlined text-[18px]">how_to_reg</span>
                             <span data-i18n="human_review">Human-in-the-Loop</span>
                         </a>
 
-                        <a href="/rl/architecture" class="flex items-center gap-2.5 px-3 py-2 rounded-xl transition-colors font-semibold {% if active_page == 'rl_arch' %}text-primary bg-secondary-container font-bold{% else %}text-on-surface-variant hover:bg-surface-container-high{% endif %}">
+                        <a href="/rl/architecture" class="flex items-center gap-2.5 px-3 py-2 rounded-xl transition-all font-semibold nav-item-hover {% if  %}nav-active-pill text-primary font-bold{% else %}text-on-surface-variant{% endif %}">
                             <span class="material-symbols-outlined text-[18px]">layers</span>
                             <span data-i18n="stack_architecture">8-Layer AI Stack</span>
                         </a>
@@ -356,32 +295,32 @@
                 <div>
                     <span class="px-3 text-[10px] font-bold uppercase tracking-wider text-secondary/80 block mb-1">Portals & Telehealth</span>
                     <div class="space-y-0.5">
-                        <a href="/consultation/careai" class="flex items-center gap-2.5 px-3 py-2 rounded-xl transition-colors font-semibold {% if active_page == 'video_consult' %}text-primary bg-secondary-container font-bold{% else %}text-on-surface-variant hover:bg-surface-container-high{% endif %}">
+                        <a href="/consultation/careai" class="flex items-center gap-2.5 px-3 py-2 rounded-xl transition-all font-semibold nav-item-hover {% if  %}nav-active-pill text-primary font-bold{% else %}text-on-surface-variant{% endif %}">
                             <span class="material-symbols-outlined text-[18px]">videocam</span>
                             <span data-i18n="video_consultation">CareAI Video Call</span>
                         </a>
 
-                        <a href="/portal/patient" class="flex items-center gap-2.5 px-3 py-2 rounded-xl transition-colors font-semibold {% if active_page == 'patient_portal' %}text-primary bg-secondary-container font-bold{% else %}text-on-surface-variant hover:bg-surface-container-high{% endif %}">
+                        <a href="/portal/patient" class="flex items-center gap-2.5 px-3 py-2 rounded-xl transition-all font-semibold nav-item-hover {% if  %}nav-active-pill text-primary font-bold{% else %}text-on-surface-variant{% endif %}">
                             <span class="material-symbols-outlined text-[18px]">badge</span>
                             <span data-i18n="patient_portal">Patient Portal</span>
                         </a>
 
-                        <a href="/portal/coordinator" class="flex items-center gap-2.5 px-3 py-2 rounded-xl transition-colors font-semibold {% if active_page == 'care_coordinator' %}text-primary bg-secondary-container font-bold{% else %}text-on-surface-variant hover:bg-surface-container-high{% endif %}">
+                        <a href="/portal/coordinator" class="flex items-center gap-2.5 px-3 py-2 rounded-xl transition-all font-semibold nav-item-hover {% if  %}nav-active-pill text-primary font-bold{% else %}text-on-surface-variant{% endif %}">
                             <span class="material-symbols-outlined text-[18px]">checklist</span>
                             <span data-i18n="care_coordinator">Care Coordinator</span>
                         </a>
 
-                        <a href="/admin/users" class="flex items-center gap-2.5 px-3 py-2 rounded-xl transition-colors font-semibold {% if active_page == 'admin_users' %}text-primary bg-secondary-container font-bold{% else %}text-on-surface-variant hover:bg-surface-container-high{% endif %}">
+                        <a href="/admin/users" class="flex items-center gap-2.5 px-3 py-2 rounded-xl transition-all font-semibold nav-item-hover {% if  %}nav-active-pill text-primary font-bold{% else %}text-on-surface-variant{% endif %}">
                             <span class="material-symbols-outlined text-[18px]">manage_accounts</span>
                             <span data-i18n="user_management">User Management</span>
                         </a>
 
-                        <a href="/admin/doctor-verification" class="flex items-center gap-2.5 px-3 py-2 rounded-xl transition-colors font-semibold {% if active_page == 'dr_verification' %}text-primary bg-secondary-container font-bold{% else %}text-on-surface-variant hover:bg-surface-container-high{% endif %}">
+                        <a href="/admin/doctor-verification" class="flex items-center gap-2.5 px-3 py-2 rounded-xl transition-all font-semibold nav-item-hover {% if  %}nav-active-pill text-primary font-bold{% else %}text-on-surface-variant{% endif %}">
                             <span class="material-symbols-outlined text-[18px]">verified_user</span>
                             <span data-i18n="doctor_verification">Doctor Verification</span>
                         </a>
 
-                        <a href="/admin/audit-logs" class="flex items-center gap-2.5 px-3 py-2 rounded-xl transition-colors font-semibold {% if active_page == 'audit_logs' %}text-primary bg-secondary-container font-bold{% else %}text-on-surface-variant hover:bg-surface-container-high{% endif %}">
+                        <a href="/admin/audit-logs" class="flex items-center gap-2.5 px-3 py-2 rounded-xl transition-all font-semibold nav-item-hover {% if  %}nav-active-pill text-primary font-bold{% else %}text-on-surface-variant{% endif %}">
                             <span class="material-symbols-outlined text-[18px]">security_update_good</span>
                             <span data-i18n="security_audit_logs">Security Audit Logs</span>
                         </a>
@@ -392,27 +331,27 @@
                 <div>
                     <span class="px-3 text-[10px] font-bold uppercase tracking-wider text-secondary/80 block mb-1">Health ID & Passes</span>
                     <div class="space-y-0.5">
-                        <a href="/health-id" class="flex items-center gap-2.5 px-3 py-2 rounded-xl transition-colors font-semibold {% if active_page == 'health_id' %}text-primary bg-secondary-container font-bold{% else %}text-on-surface-variant hover:bg-surface-container-high{% endif %}">
+                        <a href="/health-id" class="flex items-center gap-2.5 px-3 py-2 rounded-xl transition-all font-semibold nav-item-hover {% if  %}nav-active-pill text-primary font-bold{% else %}text-on-surface-variant{% endif %}">
                             <span class="material-symbols-outlined text-[18px]">badge</span>
                             <span>My Health ID</span>
                         </a>
 
-                        <a href="/doctor-id" class="flex items-center gap-2.5 px-3 py-2 rounded-xl transition-colors font-semibold {% if active_page == 'doctor_id' %}text-primary bg-secondary-container font-bold{% else %}text-on-surface-variant hover:bg-surface-container-high{% endif %}">
+                        <a href="/doctor-id" class="flex items-center gap-2.5 px-3 py-2 rounded-xl transition-all font-semibold nav-item-hover {% if  %}nav-active-pill text-primary font-bold{% else %}text-on-surface-variant{% endif %}">
                             <span class="material-symbols-outlined text-[18px]">medical_information</span>
                             <span>Doctor ID Card</span>
                         </a>
 
-                        <a href="/wallet" class="flex items-center gap-2.5 px-3 py-2 rounded-xl transition-colors font-semibold {% if active_page == 'wallet' %}text-primary bg-secondary-container font-bold{% else %}text-on-surface-variant hover:bg-surface-container-high{% endif %}">
+                        <a href="/wallet" class="flex items-center gap-2.5 px-3 py-2 rounded-xl transition-all font-semibold nav-item-hover {% if  %}nav-active-pill text-primary font-bold{% else %}text-on-surface-variant{% endif %}">
                             <span class="material-symbols-outlined text-[18px]">account_balance_wallet</span>
                             <span>Digital Wallet</span>
                         </a>
 
-                        <a href="/qr/scanner" class="flex items-center gap-2.5 px-3 py-2 rounded-xl transition-colors font-semibold {% if active_page == 'qr_scanner' %}text-primary bg-secondary-container font-bold{% else %}text-on-surface-variant hover:bg-surface-container-high{% endif %}">
+                        <a href="/qr/scanner" class="flex items-center gap-2.5 px-3 py-2 rounded-xl transition-all font-semibold nav-item-hover {% if  %}nav-active-pill text-primary font-bold{% else %}text-on-surface-variant{% endif %}">
                             <span class="material-symbols-outlined text-[18px]">qr_code_scanner</span>
                             <span>Scan QR Code</span>
                         </a>
 
-                        <a href="/qr/temporary-share" class="flex items-center gap-2.5 px-3 py-2 rounded-xl transition-colors font-semibold {% if active_page == 'temporary_share' %}text-primary bg-secondary-container font-bold{% else %}text-on-surface-variant hover:bg-surface-container-high{% endif %}">
+                        <a href="/qr/temporary-share" class="flex items-center gap-2.5 px-3 py-2 rounded-xl transition-all font-semibold nav-item-hover {% if  %}nav-active-pill text-primary font-bold{% else %}text-on-surface-variant{% endif %}">
                             <span class="material-symbols-outlined text-[18px]">share</span>
                             <span>Temporary Sharing</span>
                         </a>
@@ -423,7 +362,7 @@
                 <div>
                     <span class="px-3 text-[10px] font-bold uppercase tracking-wider text-secondary/80 block mb-1">System & Account</span>
                     <div class="space-y-0.5">
-                        <a href="/settings" class="flex items-center gap-2.5 px-3 py-2 rounded-xl transition-colors font-semibold {% if active_page == 'settings' %}text-primary bg-secondary-container font-bold{% else %}text-on-surface-variant hover:bg-surface-container-high{% endif %}">
+                        <a href="/settings" class="flex items-center gap-2.5 px-3 py-2 rounded-xl transition-all font-semibold nav-item-hover {% if  %}nav-active-pill text-primary font-bold{% else %}text-on-surface-variant{% endif %}">
                             <span class="material-symbols-outlined text-[18px]">settings</span>
                             <span data-i18n="settings">Account & Settings</span>
                         </a>
@@ -434,12 +373,12 @@
                             <span class="ml-auto text-[10px] bg-primary text-white px-1.5 py-0.5 rounded-full font-bold">NEW</span>
                         </a>
 
-                        <a href="/auth/sessions" class="flex items-center gap-2.5 px-3 py-2 rounded-xl transition-colors font-semibold {% if active_page == 'sessions' %}text-primary bg-secondary-container font-bold{% else %}text-on-surface-variant hover:bg-surface-container-high{% endif %}">
+                        <a href="/auth/sessions" class="flex items-center gap-2.5 px-3 py-2 rounded-xl transition-all font-semibold nav-item-hover {% if  %}nav-active-pill text-primary font-bold{% else %}text-on-surface-variant{% endif %}">
                             <span class="material-symbols-outlined text-[18px]">devices</span>
                             <span>Active Sessions</span>
                         </a>
 
-                        <a href="/help" class="flex items-center gap-2.5 px-3 py-2 rounded-xl transition-colors font-semibold {% if active_page == 'help' %}text-primary bg-secondary-container font-bold{% else %}text-on-surface-variant hover:bg-surface-container-high{% endif %}">
+                        <a href="/help" class="flex items-center gap-2.5 px-3 py-2 rounded-xl transition-all font-semibold nav-item-hover {% if  %}nav-active-pill text-primary font-bold{% else %}text-on-surface-variant{% endif %}">
                             <span class="material-symbols-outlined text-[18px]">help</span>
                             <span data-i18n="help">Help & Support</span>
                         </a>
@@ -462,7 +401,7 @@
             <div id="network-offline-banner" class="bg-amber-500 text-slate-950 px-4 py-2 text-xs font-bold flex items-center justify-between hidden z-50 sticky top-0 shadow-md">
                 <div class="flex items-center gap-2">
                     <span class="material-symbols-outlined text-[18px]">wifi_off</span>
-                    <span>Offline Mode Active — Live AI and Video calls paused. Local records available.</span>
+                    <span>Offline Mode Active â€” Live AI and Video calls paused. Local records available.</span>
                 </div>
                 <button onclick="checkNetworkStatus()" class="px-2.5 py-1 bg-slate-950 text-white rounded-lg text-[10px] uppercase font-mono tracking-wider hover:bg-slate-900 transition-colors">
                     Reconnect
@@ -470,20 +409,20 @@
             </div>
 
             <!-- Top App Bar (Responsive for Desktop, Tablet, and Mobile) -->
-            <header class="bg-surface flex justify-between items-center w-full px-3 sm:px-6 py-2.5 sticky top-0 z-30 border-b border-surface-variant shadow-xs">
+            <header class="header-glass flex justify-between items-center w-full px-3 sm:px-6 py-2.5 sticky top-0 z-30">
                 <!-- Left: Hamburger (Mobile/Tablet) + Title/Brand -->
                 <div class="flex items-center gap-2 sm:gap-3">
                     <!-- Mobile / Tablet Hamburger Toggle Button -->
-                    <button onclick="openMobileDrawer()" class="md:hidden p-2 text-secondary hover:text-on-surface hover:bg-surface-container-low rounded-xl transition-colors" aria-label="Open Navigation Menu">
+                    <button onclick="openMobileDrawer()" class="md:hidden p-2.5 text-secondary hover:text-primary hover:bg-primary/10 rounded-xl transition-all active:scale-95" aria-label="Open Navigation Menu" style="min-height:44px;min-width:44px;">
                         <span class="material-symbols-outlined text-2xl">menu</span>
                     </button>
 
                     <!-- Mobile Brand Logo -->
-                    <div class="md:hidden flex items-center gap-1.5">
-                        <div class="w-8 h-8 rounded-xl bg-primary flex items-center justify-center text-white shadow-xs">
+                    <div class="md:hidden flex items-center gap-2">
+                        <div class="w-8 h-8 rounded-xl flex items-center justify-center text-white shadow-md" style="background:linear-gradient(135deg,#005bbf,#002f6c);">
                             <span class="material-symbols-outlined text-lg fill-icon">local_hospital</span>
                         </div>
-                        <a href="/dashboard" class="text-sm font-bold text-primary tracking-tight">HRP Clinical</a>
+                        <a href="/dashboard" class="text-sm font-extrabold gradient-text tracking-tight">HRP Clinical</a>
                     </div>
 
                     <!-- Desktop & Tablet Header Title -->
@@ -493,37 +432,98 @@
                 </div>
 
                 <!-- Right Controls: Audio, Language, Search, Notifications & Profile -->
-                <div class="flex items-center gap-1.5 sm:gap-3">
+                <div class="flex items-center gap-1 sm:gap-2">
                     <!-- Audio Sound Feedback Toggle -->
-                    <button id="sound-toggle-btn" onclick="toggleAudioMute()" aria-label="Toggle Sound" class="p-2 text-secondary hover:bg-surface-container-low rounded-full transition-colors relative" title="Toggle Sound Feedback">
+                    <button id="sound-toggle-btn" onclick="toggleAudioMute()" aria-label="Toggle Sound" class="p-2.5 text-secondary hover:text-primary hover:bg-primary/10 rounded-full transition-all" title="Toggle Sound Feedback" style="min-height:44px;min-width:44px;">
                         <span class="material-symbols-outlined text-[20px]" id="sound-icon">volume_up</span>
                     </button>
 
-                    <!-- Language Switcher (English ↔ हिन्दी) -->
-                    <button onclick="window.i18n.toggle()" class="flex items-center gap-1 px-2.5 py-1 bg-surface-container-low hover:bg-surface-container-high rounded-full border border-outline-variant/50 text-xs font-bold text-primary transition-all">
-                        <span class="material-symbols-outlined text-[15px]">translate</span>
-                        <span class="lang-indicator-text hidden sm:inline">English</span>
-                        <span class="lang-indicator-text sm:hidden">EN/HI</span>
-                    </button>
+                    <!-- Language Switcher Popover -->
+                    <div class="relative">
+                        <button onclick="toggleLangMenu()" id="lang-menu-btn" class="flex items-center gap-1.5 px-2.5 py-1.5 glass-card hover:shadow-premium rounded-full text-xs font-bold text-primary transition-all active:scale-95 cursor-pointer" style="min-height:36px;" aria-label="Select Language">
+                            <span class="material-symbols-outlined text-[15px]">translate</span>
+                            <span class="lang-indicator-text hidden sm:inline">English</span>
+                            <span class="lang-indicator-text sm:hidden">EN/HI</span>
+                            <span class="material-symbols-outlined text-[14px] text-secondary">expand_more</span>
+                        </button>
+                        <!-- Language Menu Dropdown (5 Languages) -->
+                        <div id="lang-dropdown-menu" class="hidden absolute right-0 mt-2 w-52 glass-card rounded-2xl shadow-premium p-2 z-50 animate-scale-up space-y-1">
+                            <div class="px-2 py-1 border-b border-surface-variant mb-1 flex items-center justify-between">
+                                <span class="text-[10px] font-bold uppercase tracking-wider text-secondary">Choose Language</span>
+                                <span class="text-[9px] text-primary font-mono font-bold">Multi-Lingual</span>
+                            </div>
+                            <!-- 1. English -->
+                            <button type="button" onclick="window.i18n.setLanguage('en'); closeLangMenu();" data-lang-select="en" class="w-full flex items-center justify-between px-2.5 py-1.5 rounded-xl text-xs font-semibold hover:bg-primary/10 transition-all text-left">
+                                <div class="flex items-center gap-2">
+                                    <span class="text-sm">🇬🇧</span>
+                                    <span>English</span>
+                                </div>
+                                <span class="material-symbols-outlined text-[16px] text-primary" data-lang-check="en">check</span>
+                            </button>
+                            <!-- 2. Hindi -->
+                            <button type="button" onclick="window.i18n.setLanguage('hi'); closeLangMenu();" data-lang-select="hi" class="w-full flex items-center justify-between px-2.5 py-1.5 rounded-xl text-xs font-semibold hover:bg-primary/10 transition-all text-left">
+                                <div class="flex items-center gap-2">
+                                    <span class="text-sm">🇮🇳</span>
+                                    <span>हिन्दी (Hindi)</span>
+                                </div>
+                                <span class="material-symbols-outlined text-[16px] text-primary hidden" data-lang-check="hi">check</span>
+                            </button>
+                            <!-- 3. Tamil -->
+                            <button type="button" onclick="window.i18n.setLanguage('ta'); closeLangMenu();" data-lang-select="ta" class="w-full flex items-center justify-between px-2.5 py-1.5 rounded-xl text-xs font-semibold hover:bg-primary/10 transition-all text-left">
+                                <div class="flex items-center gap-2">
+                                    <span class="text-sm">🇮🇳</span>
+                                    <span>தமிழ் (Tamil)</span>
+                                </div>
+                                <span class="material-symbols-outlined text-[16px] text-primary hidden" data-lang-check="ta">check</span>
+                            </button>
+                            <!-- 4. Kannada -->
+                            <button type="button" onclick="window.i18n.setLanguage('kn'); closeLangMenu();" data-lang-select="kn" class="w-full flex items-center justify-between px-2.5 py-1.5 rounded-xl text-xs font-semibold hover:bg-primary/10 transition-all text-left">
+                                <div class="flex items-center gap-2">
+                                    <span class="text-sm">🇮🇳</span>
+                                    <span>ಕನ್ನಡ (Kannada)</span>
+                                </div>
+                                <span class="material-symbols-outlined text-[16px] text-primary hidden" data-lang-check="kn">check</span>
+                            </button>
+                            <!-- 5. Malayalam -->
+                            <button type="button" onclick="window.i18n.setLanguage('ml'); closeLangMenu();" data-lang-select="ml" class="w-full flex items-center justify-between px-2.5 py-1.5 rounded-xl text-xs font-semibold hover:bg-primary/10 transition-all text-left">
+                                <div class="flex items-center gap-2">
+                                    <span class="text-sm">🇮🇳</span>
+                                    <span>മലയാളം (Malayalam)</span>
+                                </div>
+                                <span class="material-symbols-outlined text-[16px] text-primary hidden" data-lang-check="ml">check</span>
+                            </button>
+                            <div class="border-t border-surface-variant pt-1 mt-1">
+                                <button type="button" onclick="window.i18n.speak(document.querySelector('h1, h2, h3')?.textContent || 'HRP Clinical'); closeLangMenu();" class="w-full flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-[10px] font-bold text-secondary hover:text-primary hover:bg-primary/5 transition-all">
+                                    <span class="material-symbols-outlined text-[14px]">volume_up</span>
+                                    <span>Read Page Aloud (TTS)</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
 
                     <!-- Search (Desktop & Tablet) -->
                     <div class="relative hidden sm:block">
                         <form action="/history" method="get" class="flex items-center">
                             <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-secondary text-[16px]">search</span>
-                            <input name="search" class="pl-8 pr-3 py-1.5 bg-surface-container-low border border-outline-variant rounded-full text-xs focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all w-36 md:w-52" placeholder="Search patient, doc..." type="text"/>
+                            <input name="search" data-i18n-placeholder="search_placeholder" class="pl-8 pr-3 py-1.5 glass-card rounded-full text-xs focus:border-primary focus:ring-2 focus:ring-primary/30 outline-none transition-all w-36 md:w-52 placeholder:text-secondary/60" placeholder="Search patient, doc..." type="text"/>
                         </form>
                     </div>
 
-                    <!-- Notification Button with Sound Tone -->
-                    <button onclick="window.soundEngine?.message(); alert('Notification: ML Model v2.4.1 & RL PPO Policy Active.');" aria-label="Notifications" class="p-2 text-secondary hover:bg-surface-container-low rounded-full transition-colors relative">
+                    <!-- Mobile Search Button -->
+                    <button onclick="openMobileSearch()" class="sm:hidden p-2.5 text-secondary hover:text-primary hover:bg-primary/10 rounded-full transition-all" aria-label="Search" style="min-height:44px;min-width:44px;">
+                        <span class="material-symbols-outlined text-[20px]">search</span>
+                    </button>
+
+                    <!-- Notification Button with Halo Badge -->
+                    <button onclick="window.soundEngine?.message(); showToast('ML Model v2.4.1 &amp; RL PPO Policy Active.', 'info');" aria-label="Notifications" class="p-2.5 text-secondary hover:text-primary hover:bg-primary/10 rounded-full transition-all relative" style="min-height:44px;min-width:44px;">
                         <span class="material-symbols-outlined text-[20px]">notifications</span>
-                        <span class="absolute top-1.5 right-1.5 w-2 h-2 bg-error rounded-full animate-pulse"></span>
+                        <span class="absolute top-2 right-2 w-2 h-2 bg-error rounded-full badge-halo"></span>
                     </button>
 
                     <!-- Profile Avatar & Quick Action Dropdown -->
                     <div class="relative">
-                        <button onclick="toggleUserDropdown()" class="flex items-center gap-2 p-1 pr-2.5 bg-surface-container-low rounded-full hover:bg-surface-container-high transition-colors cursor-pointer border border-outline-variant/40" aria-label="User menu">
-                            <div class="w-7 h-7 rounded-full bg-gradient-to-tr from-primary to-[#002f6c] text-white flex items-center justify-center font-bold text-[10px] shadow-xs">
+                        <button onclick="toggleUserDropdown()" class="flex items-center gap-2 p-1 pr-2.5 glass-card rounded-full hover:shadow-premium transition-all cursor-pointer" aria-label="User menu" style="min-height:40px;">
+                            <div class="w-7 h-7 rounded-full text-white flex items-center justify-center font-bold text-[10px] shadow-md" style="background:linear-gradient(135deg,#005bbf,#002f6c);">
                                 RK
                             </div>
                             <span class="text-xs font-bold text-on-surface hidden lg:block">Dr. Ranjeet Kumar</span>
@@ -531,22 +531,27 @@
                         </button>
 
                         <!-- User Profile Dropdown Menu -->
-                        <div id="user-profile-menu" class="hidden absolute right-0 mt-2 w-64 bg-white border border-outline-variant/80 rounded-2xl shadow-xl p-2 z-50 animate-scale-up space-y-1">
-                            <div class="px-3 py-2 border-b border-surface-variant">
-                                <p class="text-xs font-bold text-on-surface">Dr. Ranjeet Kumar, MD</p>
-                                <p class="text-[10px] text-secondary">Lead AI Architect • St. Jude / Team Nexora</p>
+                        <div id="user-profile-menu" class="hidden absolute right-0 mt-2 w-64 glass-card rounded-2xl shadow-premium p-2 z-50 animate-scale-up space-y-1">
+                            <div class="px-3 py-2.5 border-b border-surface-variant mb-1">
+                                <div class="flex items-center gap-2.5 mb-1">
+                                    <div class="w-9 h-9 rounded-full flex items-center justify-center text-white font-bold text-sm shadow" style="background:linear-gradient(135deg,#005bbf,#002f6c);">RK</div>
+                                    <div>
+                                        <p class="text-xs font-bold text-on-surface">Dr. Ranjeet Kumar, MD</p>
+                                        <p class="text-[10px] text-secondary">Lead AI Architect • St. Jude</p>
+                                    </div>
+                                </div>
                             </div>
-                            <a href="/doctor-id" class="flex items-center gap-2 px-3 py-2 text-xs font-semibold text-secondary hover:text-primary hover:bg-surface-container-low rounded-xl transition-all">
+                            <a href="/doctor-id" class="flex items-center gap-2 px-3 py-2 text-xs font-semibold text-secondary hover:text-primary hover:bg-primary/8 rounded-xl transition-all nav-item-hover">
                                 <span class="material-symbols-outlined text-base">badge</span>
                                 <span>Doctor Digital ID</span>
                             </a>
-                            <a href="/doctor-profile/edit" class="flex items-center gap-2 px-3 py-2 text-xs font-semibold text-secondary hover:text-primary hover:bg-surface-container-low rounded-xl transition-all">
+                            <a href="/doctor-profile/edit" class="flex items-center gap-2 px-3 py-2 text-xs font-semibold text-secondary hover:text-primary hover:bg-primary/8 rounded-xl transition-all nav-item-hover">
                                 <span class="material-symbols-outlined text-base">edit</span>
                                 <span>Edit Doctor Profile</span>
                             </a>
-                            <a href="/settings" class="flex items-center gap-2 px-3 py-2 text-xs font-semibold text-secondary hover:text-primary hover:bg-surface-container-low rounded-xl transition-all">
+                            <a href="/settings" class="flex items-center gap-2 px-3 py-2 text-xs font-semibold text-secondary hover:text-primary hover:bg-primary/8 rounded-xl transition-all nav-item-hover">
                                 <span class="material-symbols-outlined text-base">settings</span>
-                                <span>Account & Settings</span>
+                                <span>Account &amp; Settings</span>
                             </a>
                             <a href="/ebook" target="_blank" class="flex items-center gap-2 px-3 py-2 text-xs font-bold text-primary hover:bg-primary/10 rounded-xl transition-all">
                                 <span class="material-symbols-outlined text-base">menu_book</span>
@@ -569,40 +574,46 @@
             </main>
 
             <!-- Footer Component (Desktop & Tablet) with Sanskrit Healthcare Shloka -->
-            <footer class="w-full py-3 px-4 sm:px-6 flex flex-col md:flex-row justify-between items-center text-center bg-surface-container-lowest border-t border-surface-variant text-secondary text-xs">
+            <footer class="w-full py-3 px-4 sm:px-6 flex flex-col md:flex-row justify-between items-center text-center text-secondary text-xs"
+                    style="background:rgba(248,249,250,0.9);backdrop-filter:blur(12px);border-top:1px solid rgba(193,198,214,0.5);">
                 <div class="flex flex-col sm:flex-row items-center gap-1 sm:gap-2 mb-2 md:mb-0">
-                    <span class="font-bold text-primary">HRP Clinical v2.4.1</span>
-                    <span class="hidden sm:inline">|</span>
-                    <span class="font-serif text-[11px] text-[#002f6c] font-semibold">"स्वास्थ्यं परमं धनम्, विज्ञानस्य साहाय्येन सर्वेषां जीवनं निरामयं भवतु।"</span>
+                    <span class="font-extrabold gradient-text">HRP Clinical v2.4.1</span>
+                    <span class="hidden sm:inline text-outline-variant">|</span>
+                    <span class="font-serif text-[11px] gradient-text-gold font-semibold italic">"स्वास्थ्यं परमं धनम्, विज्ञानस्य साहाय्येन सर्वेषां जीवनं निरामयं भवतु।"</span>
                 </div>
                 <div class="flex flex-wrap justify-center gap-3 sm:gap-4 text-[11px]">
-                    <a class="text-secondary hover:text-primary underline transition-colors" href="/welcome">Welcome Tour</a>
-                    <a class="text-secondary hover:text-primary underline transition-colors" href="/ebook" target="_blank">Master eBook</a>
-                    <a class="text-secondary hover:text-primary underline transition-colors" href="/help">Privacy & Safety</a>
+                    <a class="text-secondary hover:text-primary transition-colors" href="/welcome">Welcome Tour</a>
+                    <a class="text-secondary hover:text-primary transition-colors" href="/ebook" target="_blank">Master eBook</a>
+                    <a class="text-secondary hover:text-primary transition-colors" href="/help">Privacy &amp; Safety</a>
                     <a class="text-error hover:underline transition-colors font-semibold" href="/logout">Sign Out</a>
                 </div>
             </footer>
         </div>
 
-        <!-- ========================================================================= -->
-        <!-- MOBILE SLIDING DRAWER NAVIGATION OVERLAY (< 768px)                       -->
-        <!-- ========================================================================= -->
-        <div id="mobile-drawer-overlay" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 hidden transition-opacity" onclick="closeMobileDrawer()">
-            <div id="mobile-drawer" class="w-72 max-w-[85vw] h-full bg-surface-container-lowest shadow-2xl p-4 overflow-y-auto transform -translate-x-full transition-transform duration-300 flex flex-col justify-between" onclick="event.stopPropagation()">
-                
+        <!-- =========================================================================== -->
+        <!-- MOBILE SLIDING DRAWER NAVIGATION OVERLAY (< 768px) — Enhanced Glass        -->
+        <!-- =========================================================================== -->
+        <div id="mobile-drawer-overlay" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 hidden transition-opacity" onclick="closeMobileDrawer()">
+            <div id="mobile-drawer" class="w-72 max-w-[85vw] h-full shadow-2xl overflow-y-auto transform -translate-x-full transition-transform duration-300 flex flex-col justify-between"
+                 style="background: rgba(248,249,250,0.96); backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px); border-right: 1px solid rgba(193,198,214,0.5);"
+                 onclick="event.stopPropagation()">
+
+                <!-- Swipe handle (visual hint) -->
+                <div class="drawer-handle mt-3"></div>
+
                 <!-- Drawer Header -->
-                <div>
+                <div class="px-4">
                     <div class="flex items-center justify-between border-b border-surface-variant pb-3 mb-3">
-                        <div class="flex items-center gap-2">
-                            <div class="w-8 h-8 rounded-xl bg-primary flex items-center justify-center text-white">
+                        <div class="flex items-center gap-2.5">
+                            <div class="w-9 h-9 rounded-xl flex items-center justify-center text-white shadow-md" style="background:linear-gradient(135deg,#005bbf,#002f6c);">
                                 <span class="material-symbols-outlined text-lg fill-icon">local_hospital</span>
                             </div>
                             <div>
-                                <h3 class="text-xs font-extrabold text-primary">HRP Clinical</h3>
-                                <p class="text-[10px] text-secondary">Healthcare Suite</p>
+                                <h3 class="text-sm font-extrabold gradient-text">HRP Clinical</h3>
+                                <p class="text-[10px] text-secondary font-semibold">Healthcare Suite</p>
                             </div>
                         </div>
-                        <button onclick="closeMobileDrawer()" class="p-1.5 rounded-full hover:bg-surface-container text-secondary hover:text-on-surface">
+                        <button onclick="closeMobileDrawer()" class="p-2 rounded-full hover:bg-error-container/30 text-secondary hover:text-error transition-all" style="min-height:44px;min-width:44px;">
                             <span class="material-symbols-outlined text-xl">close</span>
                         </button>
                     </div>
@@ -728,40 +739,63 @@
             </div>
         </div>
 
-        <!-- ========================================================================= -->
-        <!-- MOBILE BOTTOM NAVIGATION (Fixed above safe-area)                          -->
-        <!-- ========================================================================= -->
-        <nav class="fixed bottom-0 left-0 w-full z-40 flex justify-around items-center px-2 pb-[calc(env(safe-area-inset-bottom,0px)+8px)] pt-2 md:hidden bg-white/95 backdrop-blur-md shadow-[0_-4px_16px_rgba(0,0,0,0.08)] border-t border-surface-variant">
+        <!-- ================================================================= -->
+        <!-- MOBILE BOTTOM NAVIGATION (Enhanced — Glass, Pill Indicator, FAB)  -->
+        <!-- ================================================================= -->
+        <nav class="fixed bottom-0 left-0 w-full z-40 flex justify-around items-end
+                    px-1 md:hidden"
+             style="padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 6px);
+                    padding-top: 6px;
+                    background: rgba(255,255,255,0.92);
+                    backdrop-filter: blur(20px) saturate(180%);
+                    -webkit-backdrop-filter: blur(20px) saturate(180%);
+                    border-top: 1px solid rgba(193,198,214,0.5);
+                    box-shadow: 0 -4px 20px rgba(0,0,0,0.08);">
+
             <!-- 1. Home -->
-            <a href="/dashboard" class="flex flex-col items-center justify-center w-14 py-1 {% if active_page == 'dashboard' %}text-primary font-bold{% else %}text-secondary{% endif %}">
-                <span class="material-symbols-outlined text-[22px] {% if active_page == 'dashboard' %}fill-icon{% endif %}">dashboard</span>
-                <span class="text-[10px] mt-0.5">Home</span>
+            <a href="/dashboard" class="bottom-nav-item flex flex-col items-center justify-center relative"
+               style="min-width:56px; min-height:52px; padding:8px 4px;">
+                <span class="material-symbols-outlined text-[24px] transition-all
+                    {% if active_page == 'dashboard' %}fill-icon mobile-nav-active{% else %}text-secondary{% endif %}">dashboard</span>
+                <span class="text-[10px] mt-0.5 font-semibold transition-colors
+                    {% if active_page == 'dashboard' %}text-primary{% else %}text-secondary{% endif %}" data-i18n="nav_home">Home</span>
+                {% if active_page == 'dashboard' %}<span class="mobile-nav-pill"></span>{% endif %}
             </a>
 
             <!-- 2. Patients -->
-            <a href="/patients" class="flex flex-col items-center justify-center w-14 py-1 {% if active_page == 'patients' %}text-primary font-bold{% else %}text-secondary{% endif %}">
-                <span class="material-symbols-outlined text-[22px]">group</span>
-                <span class="text-[10px] mt-0.5">Patients</span>
+            <a href="/patients" class="bottom-nav-item flex flex-col items-center justify-center relative"
+               style="min-width:56px; min-height:52px; padding:8px 4px;">
+                <span class="material-symbols-outlined text-[24px] transition-all
+                    {% if active_page == 'patients' %}fill-icon mobile-nav-active{% else %}text-secondary{% endif %}">group</span>
+                <span class="text-[10px] mt-0.5 font-semibold transition-colors
+                    {% if active_page == 'patients' %}text-primary{% else %}text-secondary{% endif %}" data-i18n="nav_patients">Patients</span>
+                {% if active_page == 'patients' %}<span class="mobile-nav-pill"></span>{% endif %}
             </a>
 
-            <!-- 3. Elevated Center Predict Button -->
-            <a href="/prediction/new" class="flex flex-col items-center justify-center -mt-6 group">
-                <div class="w-13 h-13 p-3 rounded-full bg-gradient-to-br from-primary to-[#002f6c] text-white shadow-xl flex items-center justify-center group-hover:scale-105 group-active:scale-95 transition-all border-2 border-white ring-4 ring-primary/20">
-                    <span class="material-symbols-outlined text-2xl">add_chart</span>
+            <!-- 3. Elevated Center FAB — New Prediction -->
+            <a href="/prediction/new" class="flex flex-col items-center justify-center -mt-7 group"
+               style="min-width:64px;">
+                <div class="fab-gradient w-14 h-14 rounded-full text-white flex items-center justify-center">
+                    <span class="material-symbols-outlined text-[26px]">add_chart</span>
                 </div>
-                <span class="text-[10px] font-extrabold text-primary mt-1">Predict</span>
+                <span class="text-[10px] font-extrabold text-primary mt-1.5 tracking-tight" data-i18n="nav_predict">Predict</span>
             </a>
 
             <!-- 4. Telehealth -->
-            <a href="/telemedicine" class="flex flex-col items-center justify-center w-14 py-1 {% if active_page == 'video_consult' %}text-primary font-bold{% else %}text-secondary{% endif %}">
-                <span class="material-symbols-outlined text-[22px]">video_call</span>
-                <span class="text-[10px] mt-0.5">Telehealth</span>
+            <a href="/consultation/careai" class="bottom-nav-item flex flex-col items-center justify-center relative"
+               style="min-width:56px; min-height:52px; padding:8px 4px;">
+                <span class="material-symbols-outlined text-[24px] transition-all
+                    {% if active_page == 'video_consult' %}fill-icon mobile-nav-active{% else %}text-secondary{% endif %}">videocam</span>
+                <span class="text-[10px] mt-0.5 font-semibold transition-colors
+                    {% if active_page == 'video_consult' %}text-primary{% else %}text-secondary{% endif %}" data-i18n="nav_telehealth">Telehealth</span>
+                {% if active_page == 'video_consult' %}<span class="mobile-nav-pill"></span>{% endif %}
             </a>
 
-            <!-- 5. More / Menu -->
-            <button onclick="openMobileDrawer()" class="flex flex-col items-center justify-center w-14 py-1 text-secondary hover:text-on-surface">
-                <span class="material-symbols-outlined text-[22px]">menu</span>
-                <span class="text-[10px] mt-0.5">Menu</span>
+            <!-- 5. More / Drawer -->
+            <button onclick="openMobileDrawer()" class="bottom-nav-item flex flex-col items-center justify-center relative text-secondary hover:text-primary transition-colors"
+                    style="min-width:56px; min-height:52px; padding:8px 4px;">
+                <span class="material-symbols-outlined text-[24px]">menu</span>
+                <span class="text-[10px] mt-0.5 font-semibold" data-i18n="nav_more">More</span>
             </button>
         </nav>
     </div>
@@ -769,43 +803,103 @@
         {% block full_content %}{% endblock %}
     {% endif %}
 
+    <!-- Mobile Search Overlay -->
+    <div id="mobile-search-overlay" class="fixed inset-0 z-[9999] hidden animate-fade-in"
+         style="background:rgba(0,0,0,0.5);backdrop-filter:blur(8px);"
+         onclick="closeMobileSearch()">
+        <div class="absolute top-0 left-0 right-0 p-4 animate-slide-down" onclick="event.stopPropagation()">
+            <form action="/history" method="get"
+                  class="flex items-center gap-2 glass-card rounded-2xl px-4 py-3 shadow-premium">
+                <span class="material-symbols-outlined text-primary text-xl">search</span>
+                <input id="mobile-search-input" name="search" type="text"
+                       class="flex-1 bg-transparent text-sm outline-none placeholder:text-secondary/60"
+                       placeholder="Search patient, document, history..."/>
+                <button type="button" onclick="closeMobileSearch()"
+                        class="text-secondary hover:text-error transition-colors">
+                    <span class="material-symbols-outlined">close</span>
+                </button>
+            </form>
+        </div>
+    </div>
+
     <script>
         // Sound Engine Mute Toggle
         function toggleAudioMute() {
             const isMuted = !window.soundEngine.muted;
             window.soundEngine.setMuted(isMuted);
             const icon = document.getElementById('sound-icon');
-            if (icon) {
-                icon.textContent = isMuted ? 'volume_off' : 'volume_up';
-            }
+            if (icon) icon.textContent = isMuted ? 'volume_off' : 'volume_up';
             if (!isMuted) window.soundEngine.success();
         }
 
-        // Mobile Navigation Drawer Controls
+        // Mobile Navigation Drawer — Enhanced with spring animation
         function openMobileDrawer() {
             const overlay = document.getElementById('mobile-drawer-overlay');
-            const drawer = document.getElementById('mobile-drawer');
+            const drawer  = document.getElementById('mobile-drawer');
             if (overlay && drawer) {
                 overlay.classList.remove('hidden');
-                setTimeout(() => {
-                    drawer.classList.remove('-translate-x-full');
-                    drawer.classList.add('translate-x-0');
-                }, 10);
+                overlay.style.opacity = '0';
+                // Reset in case partial swipe left it mid-way
+                drawer.style.transform = '';
+                drawer.style.transition = '';
+                requestAnimationFrame(() => {
+                    overlay.style.transition = 'opacity 300ms ease';
+                    overlay.style.opacity    = '1';
+                    setTimeout(() => {
+                        drawer.classList.remove('-translate-x-full');
+                        drawer.classList.add('translate-x-0');
+                    }, 10);
+                });
                 window.soundEngine?.click();
+                document.body.style.overflow = 'hidden';
             }
         }
 
         function closeMobileDrawer() {
             const overlay = document.getElementById('mobile-drawer-overlay');
-            const drawer = document.getElementById('mobile-drawer');
+            const drawer  = document.getElementById('mobile-drawer');
             if (overlay && drawer) {
                 drawer.classList.remove('translate-x-0');
                 drawer.classList.add('-translate-x-full');
+                overlay.style.opacity = '0';
                 setTimeout(() => {
                     overlay.classList.add('hidden');
-                }, 300);
+                    overlay.style.opacity = '';
+                    overlay.style.transition = '';
+                    document.body.style.overflow = '';
+                }, 310);
             }
         }
+
+        // Mobile Search Overlay
+        function openMobileSearch() {
+            const overlay = document.getElementById('mobile-search-overlay');
+            if (overlay) {
+                overlay.classList.remove('hidden');
+                setTimeout(() => {
+                    document.getElementById('mobile-search-input')?.focus();
+                }, 150);
+                window.soundEngine?.click();
+            }
+        }
+        function closeMobileSearch() {
+            const overlay = document.getElementById('mobile-search-overlay');
+            if (overlay) {
+                overlay.style.opacity = '0';
+                overlay.style.transition = 'opacity 200ms ease';
+                setTimeout(() => {
+                    overlay.classList.add('hidden');
+                    overlay.style.opacity = '';
+                    overlay.style.transition = '';
+                }, 210);
+            }
+        }
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                closeMobileSearch();
+                closeMobileDrawer();
+            }
+        });
 
         // Offline & Network Connectivity Monitor
         function checkNetworkStatus() {
@@ -817,24 +911,39 @@
                 window.soundEngine?.success();
             }
         }
-        window.addEventListener('online', checkNetworkStatus);
+        window.addEventListener('online',  checkNetworkStatus);
         window.addEventListener('offline', checkNetworkStatus);
         checkNetworkStatus();
 
-        // Reusable Mobile Bottom Sheet API
+        // Smooth Bottom Sheet API (animation-aware)
         window.openBottomSheet = function(sheetId) {
             const sheet = document.getElementById(sheetId);
             if (sheet) {
                 sheet.classList.remove('hidden');
+                requestAnimationFrame(() => sheet.classList.add('is-open'));
                 window.soundEngine?.click();
             }
         };
         window.closeBottomSheet = function(sheetId) {
             const sheet = document.getElementById(sheetId);
             if (sheet) {
-                sheet.classList.add('hidden');
+                sheet.classList.remove('is-open');
+                setTimeout(() => sheet.classList.add('hidden'), 400);
             }
         };
+
+        // Language Selector Menu Toggle
+        function toggleLangMenu() {
+            const menu = document.getElementById('lang-dropdown-menu');
+            if (menu) {
+                menu.classList.toggle('hidden');
+                window.soundEngine?.click();
+            }
+        }
+        function closeLangMenu() {
+            const menu = document.getElementById('lang-dropdown-menu');
+            if (menu) menu.classList.add('hidden');
+        }
 
         // User Dropdown Menu Toggle
         function toggleUserDropdown() {
@@ -845,14 +954,149 @@
             }
         }
         document.addEventListener('click', function(e) {
-            const menu = document.getElementById('user-profile-menu');
-            if (menu && !menu.classList.contains('hidden')) {
+            const userMenu = document.getElementById('user-profile-menu');
+            if (userMenu && !userMenu.classList.contains('hidden')) {
                 if (!e.target.closest('#user-profile-menu') && !e.target.closest('[aria-label="User menu"]')) {
-                    menu.classList.add('hidden');
+                    userMenu.classList.add('hidden');
+                }
+            }
+            const langMenu = document.getElementById('lang-dropdown-menu');
+            if (langMenu && !langMenu.classList.contains('hidden')) {
+                if (!e.target.closest('#lang-dropdown-menu') && !e.target.closest('#lang-menu-btn')) {
+                    langMenu.classList.add('hidden');
                 }
             }
         });
     </script>
     {% block scripts %}{% endblock %}
+
+    <!-- ================================================================ -->
+    <!-- GLOBAL CONFIRMATION MODAL (window.confirmAction())               -->
+    <!-- ================================================================ -->
+    <div id="confirm-modal-overlay"
+         class="fixed inset-0 z-[99999] hidden items-center justify-center p-4"
+         style="background:rgba(0,0,0,0.55);backdrop-filter:blur(8px);">
+        <div id="confirm-modal-box"
+             class="w-full max-w-sm rounded-3xl shadow-premium p-6"
+             style="background:rgba(255,255,255,0.97);border:1px solid rgba(193,198,214,0.5);">
+            <!-- Icon ring -->
+            <div id="confirm-modal-icon-wrap"
+                 class="w-16 h-16 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                <span id="confirm-modal-icon" class="material-symbols-outlined text-[32px] fill-icon">help</span>
+            </div>
+            <h3 id="confirm-modal-title"
+                class="text-base font-extrabold text-on-surface text-center mb-1.5">Are you sure?</h3>
+            <p id="confirm-modal-msg"
+               class="text-xs text-secondary text-center mb-6 leading-relaxed">This action cannot be undone.</p>
+            <div class="flex gap-3">
+                <button id="confirm-modal-cancel"
+                        class="flex-1 py-3 rounded-2xl border border-outline-variant text-sm font-bold
+                               text-secondary hover:bg-surface-container transition-all active:scale-95">
+                    Cancel
+                </button>
+                <button id="confirm-modal-ok"
+                        class="flex-1 py-3 rounded-2xl text-sm font-bold text-white
+                               shadow-md hover:shadow-lg transition-all active:scale-95"
+                        style="background:linear-gradient(135deg,#005bbf,#002f6c);">
+                    Confirm
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+    /* ------------------------------------------------------------------
+       window.confirmAction({ title, message, icon, danger })
+       Returns Promise<boolean> — true = confirmed, false = cancelled
+    ------------------------------------------------------------------ */
+    window.confirmAction = function({ title = 'Are you sure?',
+                                     message = 'This action cannot be undone.',
+                                     icon = 'help', danger = false } = {}) {
+        return new Promise((resolve) => {
+            const overlay  = document.getElementById('confirm-modal-overlay');
+            const box      = document.getElementById('confirm-modal-box');
+            const iconEl   = document.getElementById('confirm-modal-icon');
+            const iconWrap = document.getElementById('confirm-modal-icon-wrap');
+            const titleEl  = document.getElementById('confirm-modal-title');
+            const msgEl    = document.getElementById('confirm-modal-msg');
+            const okBtn    = document.getElementById('confirm-modal-ok');
+            const cancelBtn= document.getElementById('confirm-modal-cancel');
+
+            iconEl.textContent  = icon;
+            titleEl.textContent = title;
+            msgEl.textContent   = message;
+
+            if (danger) {
+                iconWrap.style.background = 'rgba(186,26,26,0.12)';
+                iconEl.style.color = '#ba1a1a';
+                okBtn.style.background = 'linear-gradient(135deg,#ba1a1a,#7b0000)';
+                okBtn.textContent = 'Yes, Delete';
+            } else {
+                iconWrap.style.background = 'rgba(0,91,191,0.10)';
+                iconEl.style.color = '#005bbf';
+                okBtn.style.background = 'linear-gradient(135deg,#005bbf,#002f6c)';
+                okBtn.textContent = 'Confirm';
+            }
+
+            // Show with flex
+            overlay.style.display = 'flex';
+            overlay.classList.remove('hidden');
+            box.style.transform = 'scale(0.85)';
+            box.style.opacity = '0';
+            box.style.transition = 'transform 280ms cubic-bezier(0.16,1,0.3,1), opacity 200ms ease';
+            requestAnimationFrame(() => {
+                box.style.transform = 'scale(1)';
+                box.style.opacity = '1';
+            });
+
+            const close = (result) => {
+                box.style.transform = 'scale(0.9)';
+                box.style.opacity = '0';
+                setTimeout(() => {
+                    overlay.style.display = 'none';
+                    overlay.classList.add('hidden');
+                    box.style.transform = '';
+                    box.style.opacity = '';
+                    box.style.transition = '';
+                }, 200);
+                okBtn.onclick = null;
+                cancelBtn.onclick = null;
+                overlay.onclick = null;
+                if (result) {
+                    fetch('/api/confirm-action', {
+                        method: 'POST',
+                        headers: {'Content-Type': 'application/json'},
+                        body: JSON.stringify({ action: title, context: { message } })
+                    }).catch(() => {});
+                }
+                resolve(result);
+            };
+
+            okBtn.onclick     = () => close(true);
+            cancelBtn.onclick = () => close(false);
+            overlay.onclick   = (e) => { if (e.target === overlay) close(false); };
+        });
+    };
+
+    /* ------------------------------------------------------------------
+       Form submit loading spinners — prevent double-submit
+    ------------------------------------------------------------------ */
+    document.addEventListener('DOMContentLoaded', () => {
+        document.querySelectorAll('form').forEach(form => {
+            form.addEventListener('submit', () => {
+                const btn = form.querySelector('button[type="submit"], button:not([type])');
+                if (btn && !btn.dataset.noLoader) {
+                    const orig = btn.innerHTML;
+                    btn.disabled = true;
+                    btn.innerHTML = `<span style="display:inline-flex;align-items:center;gap:6px;">
+                        <span style="width:14px;height:14px;border:2px solid rgba(255,255,255,0.5);
+                                     border-top-color:#fff;border-radius:50%;animation:spin 0.7s linear infinite;"></span>
+                        Processing…</span>`;
+                    setTimeout(() => { btn.disabled = false; btn.innerHTML = orig; }, 10000);
+                }
+            });
+        });
+    });
+    </script>
 </body>
 </html>

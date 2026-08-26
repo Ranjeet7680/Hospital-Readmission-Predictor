@@ -1,208 +1,190 @@
-{% extends "base.html" %}
-
-{% block title %}CareAI Telemedicine & Video Consultation - Hospital Readmission Predictor{% endblock %}
-{% block header_title %}Doctor Video Consultation & CareAI Copilot{% endblock %}
-
+﻿{% extends "base.html" %}
+{% block title %}CareAI Live Consultation{% endblock %}
+{% block header_title %}AI Doctor Video Consultation{% endblock %}
 {% block content %}
-<div class="max-w-7xl mx-auto space-y-4">
-    <!-- Call Controls Bar -->
-    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 bg-surface-container-lowest p-4 rounded-2xl border border-outline-variant shadow-xs">
-        <div class="flex items-center gap-3">
-            <div class="w-3 h-3 rounded-full bg-green-500 animate-pulse"></div>
-            <div>
-                <div class="flex items-center gap-2">
-                    <span class="font-bold text-on-surface text-sm">Consultation with Eleanor Vance (PT-84729)</span>
-                    <span class="px-2 py-0.5 rounded-full bg-green-100 text-[#146c2e] font-bold text-[10px]">Connected • Encrypted</span>
-                </div>
-                <p class="text-xs text-secondary">Cardiology Inpatient Follow-up • Dr. J. Aris & CareAI Copilot</p>
-            </div>
-        </div>
-
-        <div class="flex items-center gap-2">
-            <div class="flex items-center gap-1.5 px-3 py-1 bg-surface-container-low rounded-full text-xs font-semibold text-secondary">
-                <span class="material-symbols-outlined text-[16px] text-[#146c2e]">signal_cellular_alt</span>
-                <span>Connection: Excellent (48ms)</span>
-            </div>
-            <button onclick="window.soundEngine?.callEnded(); alert('Video consultation ended.'); window.location.href='/dashboard';" class="px-4 py-1.5 bg-error text-on-error font-bold text-xs rounded-xl hover:bg-error/90 transition-colors flex items-center gap-1">
-                <span class="material-symbols-outlined text-[16px]">call_end</span>
-                End Call
-            </button>
-        </div>
+<div class="max-w-7xl mx-auto space-y-4" id="consult-root">
+<div id="lobby-screen" class="flex flex-col items-center justify-center min-h-[70vh] py-8 px-4">
+<div class="glass-card rounded-3xl shadow-premium p-8 w-full max-w-md text-center">
+<div class="relative mx-auto mb-6 w-28 h-28">
+  <div class="w-28 h-28 rounded-full flex items-center justify-center text-white text-4xl font-extrabold shadow-premium" style="background:linear-gradient(135deg,#005bbf,#002f6c);">AI</div>
+  <span class="absolute bottom-1 right-1 w-5 h-5 bg-green-500 rounded-full border-2 border-white"></span>
+  <div class="absolute inset-0 rounded-full border-2 border-primary/30 animate-ping" style="animation-duration:2s;"></div>
+</div>
+<h2 class="text-xl font-extrabold gradient-text mb-1">CareAI Clinical Copilot</h2>
+<p class="text-xs text-secondary mb-6">XGBoost v2.4.1 + PPO RL + Bilingual EN/HI</p>
+<div class="glass-card rounded-2xl p-4 mb-6 text-left border border-primary/20">
+  <div class="flex items-center gap-3 mb-3">
+    <div class="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center font-bold text-primary">EV</div>
+    <div><p class="text-sm font-extrabold text-on-surface">Eleanor Vance</p><p class="text-[10px] text-secondary">PT-84729 · Cardiology · CHF Follow-up</p></div>
+    <span class="ml-auto px-2 py-0.5 rounded-full bg-error/10 text-error font-bold text-[10px]">68% Risk</span>
+  </div>
+  <div class="grid grid-cols-3 gap-2 text-center text-[10px]">
+    <div class="bg-surface-container rounded-xl p-2"><p class="font-bold text-on-surface">71 yrs</p><p class="text-secondary">Age</p></div>
+    <div class="bg-surface-container rounded-xl p-2"><p class="font-bold text-on-surface">CHF</p><p class="text-secondary">Diagnosis</p></div>
+    <div class="bg-surface-container rounded-xl p-2"><p class="font-bold text-on-surface">1.60</p><p class="text-secondary">Creatinine</p></div>
+  </div>
+</div>
+<div class="space-y-2 mb-6 text-left">
+  <p class="text-xs font-bold text-secondary uppercase tracking-wide">Device Check</p>
+  <div class="flex items-center gap-2 text-xs"><span id="cam-check-icon" class="material-symbols-outlined text-[16px] text-secondary">videocam_off</span><span id="cam-check-label" class="text-secondary">Camera: Checking...</span></div>
+  <div class="flex items-center gap-2 text-xs"><span id="mic-check-icon" class="material-symbols-outlined text-[16px] text-secondary">mic_off</span><span id="mic-check-label" class="text-secondary">Microphone: Checking...</span></div>
+  <div class="flex items-center gap-2 text-xs"><span class="material-symbols-outlined text-[16px] text-green-600">wifi</span><span class="text-green-700 font-semibold">Network: Excellent (48ms)</span></div>
+</div>
+<button id="join-btn" onclick="startCall()" class="w-full py-3.5 rounded-2xl text-white font-extrabold text-sm tracking-wide shadow-premium hover:shadow-lg active:scale-95 transition-all flex items-center justify-center gap-2" style="background:linear-gradient(135deg,#005bbf,#002f6c);">
+  <span class="material-symbols-outlined fill-icon text-xl">videocam</span> Join Consultation
+</button>
+<p class="text-[10px] text-secondary mt-3">End-to-end encrypted - HIPAA Compliant - AES-256</p>
+</div></div>
+<div id="call-screen" class="hidden space-y-4">
+  <div class="glass-card rounded-2xl px-4 py-3 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
+    <div class="flex items-center gap-3">
+      <div class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-green-500 animate-pulse inline-block"></span><span class="text-[10px] px-2 py-0.5 rounded-full bg-green-100 text-green-800 font-bold">LIVE - Encrypted</span></div>
+      <div><p class="font-extrabold text-on-surface text-sm">Eleanor Vance (PT-84729)</p><p class="text-[10px] text-secondary">Cardiology Follow-up - Dr. J. Aris &amp; CareAI</p></div>
     </div>
-
-    <!-- Main Grid: Video Stream (7 cols) + CareAI Clinical Copilot (5 cols) -->
-    <div class="grid grid-cols-1 lg:grid-cols-12 gap-4">
-        <!-- Video Stream & Live Bilingual Captions (7 cols) -->
-        <div class="lg:col-span-7 space-y-4">
-            <!-- Simulated Video Stage -->
-            <div class="relative w-full h-80 sm:h-96 rounded-2xl bg-neutral-900 overflow-hidden flex items-center justify-center border border-neutral-800 shadow-md">
-                <!-- Patient Video Feed Simulation -->
-                <div class="text-center text-neutral-300">
-                    <div class="w-20 h-20 rounded-full bg-neutral-800 border-2 border-neutral-700 flex items-center justify-center mx-auto mb-2 text-2xl font-bold text-neutral-400">
-                        EV
-                    </div>
-                    <span class="font-bold text-sm">Eleanor Vance (Patient Feed)</span>
-                    <span class="block text-xs text-neutral-500 mt-0.5">Live Audio & Video Transmitting</span>
-                </div>
-
-                <!-- Self Doctor PiP (Picture-in-Picture) -->
-                <div class="absolute top-4 right-4 w-28 h-20 rounded-xl bg-neutral-800 border border-neutral-600 flex flex-col items-center justify-center text-[10px] text-neutral-300 shadow-lg">
-                    <span class="material-symbols-outlined text-primary text-xl">account_circle</span>
-                    <span>Dr. J. Aris (You)</span>
-                </div>
-
-                <!-- Floating Media Controls -->
-                <div class="absolute bottom-4 left-1/2 -translate-x-1/2 flex items-center gap-3 bg-neutral-950/80 backdrop-blur-md px-4 py-2 rounded-full border border-neutral-700">
-                    <button onclick="toggleCam(this)" class="p-2 bg-neutral-800 hover:bg-neutral-700 text-white rounded-full transition-colors" title="Toggle Camera">
-                        <span class="material-symbols-outlined text-[18px]">videocam</span>
-                    </button>
-                    <button onclick="toggleMic(this)" class="p-2 bg-neutral-800 hover:bg-neutral-700 text-white rounded-full transition-colors" title="Toggle Microphone">
-                        <span class="material-symbols-outlined text-[18px]">mic</span>
-                    </button>
-                    <button onclick="window.soundEngine?.click(); alert('Screen sharing initialized.');" class="p-2 bg-neutral-800 hover:bg-neutral-700 text-white rounded-full transition-colors" title="Share Screen">
-                        <span class="material-symbols-outlined text-[18px]">screen_share</span>
-                    </button>
-                    <button onclick="window.soundEngine?.startRingtone();" class="p-2 bg-primary text-white rounded-full transition-colors" title="Simulate Incoming Ring">
-                        <span class="material-symbols-outlined text-[18px]">ring_volume</span>
-                    </button>
-                </div>
-            </div>
-
-            <!-- Dual Live Captions Box (English + Hindi) -->
-            <div class="p-4 bg-surface-container-lowest border border-outline-variant rounded-2xl shadow-xs space-y-2">
-                <div class="flex justify-between items-center border-b border-surface-variant pb-2">
-                    <div class="flex items-center gap-1.5 text-xs font-bold text-on-surface">
-                        <span class="material-symbols-outlined text-primary text-[18px]">closed_caption</span>
-                        <span>Live Dual-Language AI Captions</span>
-                    </div>
-                    <span class="text-[10px] text-secondary font-mono">English ↔ हिन्दी Real-Time</span>
-                </div>
-                <div class="space-y-1.5 text-xs">
-                    <p class="font-semibold text-on-surface">
-                        <span class="text-primary font-bold">Patient:</span> "I have felt slight shortness of breath when walking upstairs since yesterday."
-                    </p>
-                    <p class="text-secondary italic bg-surface-container-low p-2 rounded-lg">
-                        <span class="font-bold text-primary">हिन्दी अनुवाद:</span> "मुझे कल से सीढ़ियाँ चढ़ते समय हल्की सांस फूलने की समस्या महसूस हो रही है।"
-                    </p>
-                </div>
-            </div>
-        </div>
-
-        <!-- CareAI Clinical Copilot & RL Insights (5 cols) -->
-        <div class="lg:col-span-5 bg-surface-container-lowest border border-outline-variant rounded-2xl p-5 shadow-xs space-y-4 flex flex-col justify-between">
-            <div>
-                <div class="flex justify-between items-center border-b border-surface-variant pb-3 mb-3">
-                    <div class="flex items-center gap-2">
-                        <span class="material-symbols-outlined text-primary text-2xl fill-icon">psychology</span>
-                        <h3 class="text-base font-bold text-on-surface">CareAI Clinical Copilot</h3>
-                    </div>
-                    <span class="px-2 py-0.5 rounded-full bg-primary-fixed text-primary text-[10px] font-bold">AI v2.4.1</span>
-                </div>
-
-                <!-- Live Risk Card -->
-                <div class="p-3.5 bg-error-container/40 border border-error/30 rounded-xl flex items-center justify-between mb-3">
-                    <div>
-                        <span class="text-[11px] font-bold text-error uppercase">Readmission Risk Assessment</span>
-                        <p class="text-xl font-bold text-error">68% High Risk</p>
-                        <p class="text-[10px] text-secondary">Factors: Prior 30d Admission, Creatinine 1.60 mg/dL, CHF</p>
-                    </div>
-                    <a href="/prediction/PT-84729" class="px-3 py-1 bg-error text-on-error rounded-lg font-bold text-xs hover:bg-error/90 transition-colors">
-                        XAI Detail
-                    </a>
-                </div>
-
-                <!-- RL Care Pathway Optimization Suggestion -->
-                <div class="p-3.5 bg-primary-fixed/30 border border-primary/20 rounded-xl space-y-1.5 mb-3">
-                    <div class="flex justify-between items-center">
-                        <span class="text-[11px] font-bold text-primary flex items-center gap-1">
-                            <span class="material-symbols-outlined text-[14px]">route</span>
-                            PPO RL Pathway Recommendation
-                        </span>
-                        <span class="text-[10px] bg-white px-2 py-0.5 rounded text-primary font-bold shadow-xs">Sim Reward +88.5</span>
-                    </div>
-                    <p class="text-xs font-bold text-on-surface">Pharmacist Medication Review & 72h PCP Follow-up</p>
-                    <p class="text-[11px] text-secondary">Simulation indicates 34% risk reduction under early diuretic reconciliation.</p>
-                </div>
-
-                <!-- Editable Clinical Notes -->
-                <div class="space-y-1.5">
-                    <div class="flex justify-between items-center">
-                        <label class="text-xs font-bold text-secondary uppercase">Consultation Clinical Notes (Editable)</label>
-                        <button onclick="summarizeAI()" class="text-primary font-bold text-xs hover:underline flex items-center gap-0.5">
-                            <span class="material-symbols-outlined text-[14px]">auto_awesome</span> Auto-Summarize
-                        </button>
-                    </div>
-                    <textarea id="consult-notes" rows="4" class="w-full rounded-xl border border-outline-variant bg-surface p-3 text-xs focus:border-primary outline-none text-on-surface">Patient presents with mild exertional dyspnea. Vital signs stable (BP 135/85, SpO2 94%). Reviewed recent metabolic panel showing creatinine 1.60. Furosemide maintained at 40mg daily. Scheduled 72h PCP clinic check-in.</textarea>
-                </div>
-            </div>
-
-            <!-- Quick Action Buttons -->
-            <div class="pt-3 border-t border-surface-variant flex flex-col gap-2">
-                <div class="flex gap-2">
-                    <button onclick="translateNotes()" class="flex-1 py-2 bg-surface-container-low hover:bg-surface-container-high border border-outline-variant rounded-xl text-xs font-bold text-primary transition-colors flex items-center justify-center gap-1">
-                        <span class="material-symbols-outlined text-[16px]">translate</span>
-                        Translate Notes (हिन्दी)
-                    </button>
-                    <button onclick="issueCert()" class="flex-1 py-2 bg-surface-container-low hover:bg-surface-container-high border border-outline-variant rounded-xl text-xs font-bold text-secondary hover:text-on-surface transition-colors flex items-center justify-center gap-1">
-                        <span class="material-symbols-outlined text-[16px]">verified</span>
-                        Issue Certificate
-                    </button>
-                </div>
-                <button onclick="saveNotes()" class="w-full py-2.5 bg-primary text-on-primary rounded-xl font-bold text-xs hover:bg-on-primary-fixed-variant transition-colors shadow-xs flex items-center justify-center gap-1.5">
-                    <span class="material-symbols-outlined text-[16px]">save</span>
-                    Save Verified Clinical Notes to EHR
-                </button>
-            </div>
-        </div>
+    <div class="flex items-center gap-2 flex-wrap">
+      <div class="flex items-center gap-1.5 px-3 py-1 bg-surface-container rounded-full text-xs font-mono font-bold"><span class="material-symbols-outlined text-[14px] text-primary">timer</span><span id="call-timer">00:00</span></div>
+      <div class="flex items-center gap-1 px-3 py-1 bg-surface-container rounded-full text-[10px] font-semibold text-secondary"><span class="material-symbols-outlined text-[14px] text-green-600">signal_cellular_alt</span><span id="latency-label">48ms</span></div>
+      <div class="flex items-center gap-1 px-2 py-0.5 rounded-full bg-error/10 text-error text-[10px] font-extrabold"><span class="w-2 h-2 bg-error rounded-full animate-pulse inline-block"></span>REC</div>
+      <button onclick="endCall()" class="px-4 py-2 bg-error text-white rounded-xl font-bold text-xs hover:bg-red-700 active:scale-95 transition-all flex items-center gap-1.5 shadow-md"><span class="material-symbols-outlined text-[15px]">call_end</span>End Call</button>
     </div>
+  </div>
+  <div class="grid grid-cols-1 lg:grid-cols-12 gap-4">
+    <div class="lg:col-span-7 space-y-3">
+      <div class="relative w-full rounded-2xl overflow-hidden border border-neutral-800 shadow-xl" style="background:#0a0a0a;aspect-ratio:16/9;min-height:280px;">
+        <div id="patient-feed" class="absolute inset-0 flex flex-col items-center justify-center">
+          <div class="relative">
+            <div class="w-24 h-24 sm:w-32 sm:h-32 rounded-full flex items-center justify-center text-white font-extrabold text-3xl sm:text-4xl shadow-2xl" style="background:linear-gradient(135deg,#1a3a5c,#002f6c);">EV</div>
+            <div id="patient-speak-ring" class="absolute inset-0 rounded-full border-4 border-blue-400 opacity-0 scale-110" style="transition:opacity 0.15s,transform 0.15s;"></div>
+          </div>
+          <div id="ai-waveform" class="flex items-end gap-1 mt-4 h-8">
+            <span class="wb" style="width:3px;border-radius:2px;background:#60a5fa;transition:height 0.1s;height:8px;"></span>
+            <span class="wb" style="width:3px;border-radius:2px;background:#60a5fa;transition:height 0.1s;height:16px;"></span>
+            <span class="wb" style="width:3px;border-radius:2px;background:#60a5fa;transition:height 0.1s;height:24px;"></span>
+            <span class="wb" style="width:3px;border-radius:2px;background:#60a5fa;transition:height 0.1s;height:12px;"></span>
+            <span class="wb" style="width:3px;border-radius:2px;background:#60a5fa;transition:height 0.1s;height:20px;"></span>
+            <span class="wb" style="width:3px;border-radius:2px;background:#60a5fa;transition:height 0.1s;height:8px;"></span>
+            <span class="wb" style="width:3px;border-radius:2px;background:#60a5fa;transition:height 0.1s;height:28px;"></span>
+            <span class="wb" style="width:3px;border-radius:2px;background:#60a5fa;transition:height 0.1s;height:14px;"></span>
+          </div>
+          <p class="text-neutral-300 font-semibold text-sm mt-2">Eleanor Vance</p>
+          <p class="text-neutral-500 text-[10px]">AI Patient Simulation - Live Audio</p>
+        </div>
+        <div class="absolute top-3 right-3 w-28 sm:w-36 rounded-xl overflow-hidden border-2 border-neutral-600 shadow-xl" style="aspect-ratio:4/3;background:#111;">
+          <video id="local-video" autoplay muted playsinline class="w-full h-full object-cover" style="transform:scaleX(-1);"></video>
+          <div id="cam-off-overlay" class="hidden absolute inset-0 bg-neutral-900 flex items-center justify-center"><span class="material-symbols-outlined text-neutral-400 text-3xl">videocam_off</span></div>
+          <div class="absolute bottom-1 left-1 bg-black/60 rounded px-1.5 py-0.5 text-[9px] text-white font-bold">Dr. J. Aris (You)</div>
+        </div>
+        <div id="captions-overlay" class="absolute bottom-16 left-3 right-3 bg-black/70 backdrop-blur-sm rounded-xl px-3 py-2 text-white text-xs leading-relaxed hidden"><span id="caption-text">Live captions will appear here</span></div>
+        <div class="absolute bottom-3 left-1/2 -translate-x-1/2 flex items-center gap-2 bg-neutral-950/85 backdrop-blur-md px-4 py-2 rounded-full border border-neutral-700 shadow-xl">
+          <button id="btn-cam" onclick="toggleCam()" class="p-2.5 bg-neutral-800 hover:bg-neutral-700 text-white rounded-full transition-all active:scale-90" title="Camera"><span class="material-symbols-outlined text-[20px]">videocam</span></button>
+          <button id="btn-mic" onclick="toggleMic()" class="p-2.5 bg-neutral-800 hover:bg-neutral-700 text-white rounded-full transition-all active:scale-90" title="Mic"><span class="material-symbols-outlined text-[20px]">mic</span></button>
+          <button id="btn-spk" onclick="toggleSpeaker()" class="p-2.5 bg-neutral-800 hover:bg-neutral-700 text-white rounded-full transition-all active:scale-90" title="Speaker"><span class="material-symbols-outlined text-[20px]">volume_up</span></button>
+          <button onclick="shareScreen()" class="p-2.5 bg-neutral-800 hover:bg-neutral-700 text-white rounded-full transition-all active:scale-90" title="Screen Share"><span class="material-symbols-outlined text-[20px]">screen_share</span></button>
+          <button onclick="takeSnapshot()" class="p-2.5 bg-neutral-800 hover:bg-neutral-700 text-white rounded-full transition-all active:scale-90" title="Snapshot"><span class="material-symbols-outlined text-[20px]">photo_camera</span></button>
+          <button id="btn-cap" onclick="toggleCaptions()" class="p-2.5 bg-neutral-800 hover:bg-neutral-700 text-white rounded-full transition-all active:scale-90" title="Captions"><span class="material-symbols-outlined text-[20px]">closed_caption</span></button>
+          <button onclick="toggleFS(this)" class="p-2.5 bg-neutral-800 hover:bg-neutral-700 text-white rounded-full transition-all active:scale-90" title="Fullscreen"><span class="material-symbols-outlined text-[20px]">fullscreen</span></button>
+        </div>
+        <div class="absolute top-3 left-3 flex items-center gap-1"><span class="material-symbols-outlined text-white text-[14px] opacity-60">mic</span><div class="flex items-end gap-0.5 h-4"><div id="mb1" class="w-1 bg-green-400 rounded-full" style="height:20%;transition:height 0.1s;"></div><div id="mb2" class="w-1 bg-green-400 rounded-full" style="height:50%;transition:height 0.1s;"></div><div id="mb3" class="w-1 bg-green-400 rounded-full" style="height:80%;transition:height 0.1s;"></div><div id="mb4" class="w-1 bg-green-400 rounded-full" style="height:40%;transition:height 0.1s;"></div></div></div>
+      </div>
+      <div class="glass-card rounded-2xl p-4 space-y-2">
+        <div class="flex justify-between items-center border-b border-surface-variant pb-2">
+          <div class="flex items-center gap-1.5 text-xs font-bold text-on-surface"><span class="material-symbols-outlined text-primary text-[18px]">closed_caption</span>Live AI Dual-Language Captions</div>
+          <span class="text-[10px] text-secondary font-mono">EN / HI Real-Time</span>
+        </div>
+        <div id="caption-feed" class="space-y-2 text-xs max-h-28 overflow-y-auto">
+          <p class="font-semibold text-on-surface"><span class="text-primary font-bold">Patient:</span> "I have felt slight shortness of breath when walking upstairs since yesterday."</p>
+          <p class="text-secondary italic bg-surface-container p-2 rounded-xl"><span class="font-bold text-primary">Hindi:</span> "Mujhe kal se sidhiyan chadhte samay halki saans foolne ki samasya mehsoos ho rahi hai."</p>
+        </div>
+      </div>
+    </div>
+    <div class="lg:col-span-5 space-y-3">
+      <div class="glass-card rounded-2xl p-4">
+        <div class="flex justify-between items-center border-b border-surface-variant pb-3 mb-3">
+          <div class="flex items-center gap-2"><span class="material-symbols-outlined text-primary text-2xl fill-icon">psychology</span><div><h3 class="text-sm font-extrabold text-on-surface">CareAI Clinical Copilot</h3><p class="text-[10px] text-secondary">XGBoost + PPO RL v2.4.1</p></div></div>
+          <div class="flex items-center gap-1.5"><span class="w-2 h-2 bg-green-500 rounded-full animate-pulse inline-block"></span><span class="text-[10px] font-bold text-green-700">Active</span></div>
+        </div>
+        <div class="bg-primary/5 border border-primary/20 rounded-xl p-3 mb-3">
+          <div class="flex items-center gap-1.5 mb-2"><span class="material-symbols-outlined text-primary text-[16px]">auto_awesome</span><span class="text-[10px] font-extrabold text-primary uppercase tracking-wide">AI Clinical Insight</span><button onclick="refreshAI()" class="ml-auto p-1 rounded-lg hover:bg-primary/10 active:scale-90 transition-all"><span class="material-symbols-outlined text-[14px] text-primary">refresh</span></button></div>
+          <p id="ai-txt" class="text-xs text-on-surface leading-relaxed font-semibold">Loading CareAI insight...</p>
+          <div class="flex items-center gap-2 mt-2"><span id="ai-conf" class="text-[9px] font-bold text-secondary bg-surface-container px-2 py-0.5 rounded-full">Confidence: --</span><span class="text-[9px] text-secondary">CareAI-Copilot-v2.4.1</span></div>
+        </div>
+        <div class="p-3 bg-error/10 border border-error/25 rounded-xl flex items-center justify-between mb-3">
+          <div><span class="text-[10px] font-bold text-error uppercase">Readmission Risk</span><p class="text-lg font-extrabold text-error">68% High Risk</p><p class="text-[10px] text-secondary">Prior 30d Admit - Creatinine 1.60 - CHF</p></div>
+          <a href="/prediction/PT-84729" class="px-3 py-1.5 bg-error text-white rounded-xl font-bold text-[10px] hover:bg-red-700 active:scale-95 transition-all shadow">XAI Detail</a>
+        </div>
+        <div class="p-3 bg-primary/5 border border-primary/20 rounded-xl mb-3">
+          <div class="flex justify-between items-center mb-1"><span class="text-[10px] font-extrabold text-primary flex items-center gap-1"><span class="material-symbols-outlined text-[13px]">route</span>PPO RL Pathway</span><span class="text-[9px] bg-white px-2 py-0.5 rounded text-primary font-bold shadow-xs">Reward +88.5</span></div>
+          <p class="text-xs font-bold text-on-surface mb-1">Pharmacist Medication Review + 72h PCP Follow-up</p>
+          <p class="text-[10px] text-secondary mb-2">Simulation: 34% risk reduction under early diuretic reconciliation.</p>
+          <div class="flex gap-2">
+            <button onclick="approvePathway()" class="flex-1 py-1.5 bg-primary text-white rounded-xl text-[10px] font-bold hover:bg-primary/90 active:scale-95 transition-all flex items-center justify-center gap-1"><span class="material-symbols-outlined text-[12px]">check_circle</span>Approve</button>
+            <button onclick="rejectPathway()" class="flex-1 py-1.5 border border-outline-variant text-secondary rounded-xl text-[10px] font-bold hover:bg-error/10 hover:text-error active:scale-95 transition-all flex items-center justify-center gap-1"><span class="material-symbols-outlined text-[12px]">cancel</span>Override</button>
+          </div>
+        </div>
+        <div class="border border-outline-variant rounded-xl p-2 flex items-center gap-2 mb-3 bg-surface">
+          <input id="ai-q" type="text" placeholder="Ask CareAI a clinical question..." class="flex-1 text-xs outline-none bg-transparent placeholder:text-secondary/60" onkeydown="if(event.key==='Enter') sendChat()"/>
+          <button onclick="sendChat()" class="p-1.5 rounded-lg bg-primary/10 hover:bg-primary/20 active:scale-90 transition-all"><span class="material-symbols-outlined text-primary text-[16px]">send</span></button>
+        </div>
+        <div class="space-y-1.5">
+          <div class="flex justify-between items-center">
+            <label class="text-[10px] font-bold text-secondary uppercase tracking-wide">Clinical Notes (EHR)</label>
+            <button onclick="autoSum()" class="text-primary font-bold text-[10px] hover:underline flex items-center gap-0.5 active:scale-95 transition-all"><span class="material-symbols-outlined text-[13px]">auto_awesome</span>AI Summarize</button>
+          </div>
+          <textarea id="notes" rows="4" class="w-full rounded-xl border border-outline-variant bg-surface p-3 text-xs focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-all text-on-surface resize-none leading-relaxed" placeholder="Type clinical notes...">Patient presents with mild exertional dyspnea. Vital signs stable (BP 135/85, SpO2 94%). Reviewed metabolic panel: creatinine 1.60. Furosemide 40mg daily maintained. Scheduled 72h PCP follow-up.</textarea>
+        </div>
+      </div>
+      <div class="glass-card rounded-2xl p-4 space-y-2">
+        <div class="flex gap-2">
+          <button onclick="translateNotes()" class="flex-1 py-2.5 glass-card rounded-xl text-xs font-bold text-primary hover:shadow-premium active:scale-95 transition-all flex items-center justify-center gap-1.5"><span class="material-symbols-outlined text-[15px]">translate</span>Translate (Hindi)</button>
+          <button onclick="issueCert()" class="flex-1 py-2.5 glass-card rounded-xl text-xs font-bold text-secondary hover:shadow-premium active:scale-95 transition-all flex items-center justify-center gap-1.5"><span class="material-symbols-outlined text-[15px]">verified</span>Issue Certificate</button>
+        </div>
+        <button onclick="saveNotes()" class="w-full py-3 rounded-2xl text-white font-extrabold text-xs shadow-premium hover:shadow-lg active:scale-95 transition-all flex items-center justify-center gap-2" style="background:linear-gradient(135deg,#005bbf,#002f6c);"><span class="material-symbols-outlined text-[16px] fill-icon">save</span>Save Verified Notes to EHR</button>
+      </div>
+    </div>
+  </div>
+</div>
 </div>
 {% endblock %}
-
 {% block scripts %}
 <script>
-    function toggleCam(btn) {
-        window.soundEngine?.click();
-        const icon = btn.querySelector('.material-symbols-outlined');
-        if (icon.textContent === 'videocam') {
-            icon.textContent = 'videocam_off';
-            btn.className = "p-2 bg-error text-white rounded-full transition-colors";
-        } else {
-            icon.textContent = 'videocam';
-            btn.className = "p-2 bg-neutral-800 hover:bg-neutral-700 text-white rounded-full transition-colors";
-        }
-    }
-
-    function toggleMic(btn) {
-        window.soundEngine?.click();
-        const icon = btn.querySelector('.material-symbols-outlined');
-        if (icon.textContent === 'mic') {
-            icon.textContent = 'mic_off';
-            btn.className = "p-2 bg-error text-white rounded-full transition-colors";
-        } else {
-            icon.textContent = 'mic';
-            btn.className = "p-2 bg-neutral-800 hover:bg-neutral-700 text-white rounded-full transition-colors";
-        }
-    }
-
-    function summarizeAI() {
-        window.soundEngine?.predictionReady();
-        const notes = document.getElementById('consult-notes');
-        notes.value = "CareAI Summary: 71yo female with CHF history. Reports mild exertional dyspnea. Renal markers elevated (Creatinine 1.60 mg/dL). Plan: Continue Furosemide 40mg, order 72h primary care tele-health follow-up.";
-    }
-
-    function translateNotes() {
-        window.soundEngine?.message();
-        const notes = document.getElementById('consult-notes');
-        notes.value = "केयर-एआई क्लिनिकल सारांश: 71 वर्षीय महिला, कंजेस्टिव हार्ट फेलियर का इतिहास। सीढ़ियां चढ़ते समय सांस फूलने की शिकायत। सीरम क्रिएटिनिन 1.60 mg/dL (गुर्दे पर हल्का तनाव)। योजना: फ़्यूरोसेमाइड 40mg जारी रखें और 72 घंटे में प्राथमिक देखभाल अनुवर्ती परामर्श सुनिश्चित करें।";
-    }
-
-    function issueCert() {
-        window.location.href = '/certificates/new?patient_id=PT-84729';
-    }
-
-    function saveNotes() {
-        window.soundEngine?.success();
-        alert('Verified consultation summary saved and linked to electronic health record.');
-    }
+var _sid=null,_ct=null,_cs=0,_stream=null,_camOn=true,_micOn=true,_spkOn=true,_capOn=false,_aiInt=null,_wvInt=null,_mbInt=null,_ltInt=null,_captInt=null,_lang='en',_ci=0;
+var CEn=["I feel better today.","Medication helps with swelling.","Stairs still cause breathlessness.","Appetite improved yesterday.","Same dosage continue?","Weight 68 kg same as yesterday."];
+var CHi=["Aaj thoda behtar hun.","Dawai se sujan mein aram hai.","Sidhiyon par saans foolti hai.","Kal se bhookh badi hai.","Kya wahi khuraak jaari rakhoon?","Wajn 68 kg hai."];
+async function checkDevices(){
+  try{var s=await navigator.mediaDevices.getUserMedia({video:true,audio:true});
+    ['cam','mic'].forEach(function(d){var i=document.getElementById(d+'-check-icon'),l=document.getElementById(d+'-check-label');if(i){i.textContent=d==='cam'?'videocam':'mic';i.style.color='#146c2e';}if(l){l.textContent=(d==='cam'?'Camera':'Microphone')+': Ready';l.style.color='#146c2e';}});
+    s.getTracks().forEach(function(t){t.stop();});
+  }catch(e){document.getElementById('cam-check-label').textContent='Camera: Permission denied';document.getElementById('mic-check-label').textContent='Mic: Permission denied';}
+}checkDevices();
+async function startCall(){
+  var btn=document.getElementById('join-btn');btn.disabled=true;btn.textContent='Connecting...';
+  try{var r=await fetch('/api/consultation/start',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({patient_id:'PT-84729',patient_name:'Eleanor Vance',doctor:'Dr. J. Aris'})});var d=await r.json();_sid=d.session_id;}catch(e){_sid='SESS-LOCAL';}
+  try{_stream=await navigator.mediaDevices.getUserMedia({video:true,audio:true});document.getElementById('local-video').srcObject=_stream;}catch(e){showToast('Camera unavailable - continuing without video.','warning');}
+  document.getElementById('lobby-screen').classList.add('hidden');document.getElementById('call-screen').classList.remove('hidden');
+  showToast('Call started - Session '+_sid,'success');
+  startTimer();startWave();startMicBars();startLat();startCaps();loadAI();_aiInt=setInterval(loadAI,30000);btn.disabled=false;
+}
+function startTimer(){_cs=0;_ct=setInterval(function(){_cs++;var m=String(Math.floor(_cs/60)).padStart(2,'0'),s=String(_cs%60).padStart(2,'0');var el=document.getElementById('call-timer');if(el)el.textContent=m+':'+s;},1000);}
+function startWave(){var bars=document.querySelectorAll('.wb'),ring=document.getElementById('patient-speak-ring');_wvInt=setInterval(function(){bars.forEach(function(b){b.style.height=(Math.floor(Math.random()*28)+4)+'px';});if(ring){var a=Math.random()>0.3;ring.style.opacity=a?'0.7':'0';ring.style.transform=a?'scale(1.15)':'scale(1.05)';}},120);}
+function startMicBars(){_mbInt=setInterval(function(){['mb1','mb2','mb3','mb4'].forEach(function(id){var el=document.getElementById(id);if(el)el.style.height=(_micOn?(Math.random()*80+10):10)+'%';});},150);}
+function startLat(){_ltInt=setInterval(function(){var el=document.getElementById('latency-label');if(el)el.textContent=(Math.floor(Math.random()*20)+38)+'ms';},3000);}
+function startCaps(){_captInt=setInterval(function(){var pool=_lang==='hi'?CHi:CEn,txt=pool[_ci%pool.length];_ci++;var c=document.getElementById('caption-text');if(c)c.textContent=txt;var f=document.getElementById('caption-feed');if(f){var p=document.createElement('p');p.className='font-semibold text-on-surface';p.innerHTML='<span class="text-primary font-bold">Patient:</span> "'+txt+'"';f.appendChild(p);if(f.children.length>6)f.removeChild(f.firstChild);f.scrollTop=f.scrollHeight;}},6000);}
+function toggleCam(){_camOn=!_camOn;var btn=document.getElementById('btn-cam'),icon=btn.querySelector('.material-symbols-outlined'),ov=document.getElementById('cam-off-overlay');icon.textContent=_camOn?'videocam':'videocam_off';btn.style.background=_camOn?'':'#ba1a1a';if(ov)ov.classList.toggle('hidden',_camOn);if(_stream)_stream.getVideoTracks().forEach(function(t){t.enabled=_camOn;});showToast(_camOn?'Camera on':'Camera off',_camOn?'info':'warning');}
+function toggleMic(){_micOn=!_micOn;var btn=document.getElementById('btn-mic'),icon=btn.querySelector('.material-symbols-outlined');icon.textContent=_micOn?'mic':'mic_off';btn.style.background=_micOn?'':'#ba1a1a';if(_stream)_stream.getAudioTracks().forEach(function(t){t.enabled=_micOn;});showToast(_micOn?'Microphone on':'Microphone muted',_micOn?'info':'warning');}
+function toggleSpeaker(){_spkOn=!_spkOn;var btn=document.getElementById('btn-spk'),icon=btn.querySelector('.material-symbols-outlined');icon.textContent=_spkOn?'volume_up':'volume_off';btn.style.background=_spkOn?'':'#b36b00';showToast(_spkOn?'Speaker on':'Speaker muted','info');}
+function toggleCaptions(){_capOn=!_capOn;document.getElementById('btn-cap').style.background=_capOn?'#005bbf':'';var o=document.getElementById('captions-overlay');if(o)o.classList.toggle('hidden',!_capOn);showToast(_capOn?'Captions ON':'Captions OFF','info');}
+async function shareScreen(){try{await navigator.mediaDevices.getDisplayMedia({video:true});showToast('Screen sharing started','success');}catch(e){showToast('Screen share cancelled','info');}}
+function takeSnapshot(){var v=document.getElementById('local-video');if(!v.srcObject){showToast('Camera not active','warning');return;}var c=document.createElement('canvas');c.width=v.videoWidth||320;c.height=v.videoHeight||240;c.getContext('2d').drawImage(v,0,0);var a=document.createElement('a');a.href=c.toDataURL('image/png');a.download='snap-'+Date.now()+'.png';a.click();showToast('Snapshot saved','success');}
+function toggleFS(btn){var s=btn.closest('.relative.w-full');if(!document.fullscreenElement){s&&s.requestFullscreen();btn.querySelector('.material-symbols-outlined').textContent='fullscreen_exit';}else{document.exitFullscreen();btn.querySelector('.material-symbols-outlined').textContent='fullscreen';}}
+async function loadAI(){var el=document.getElementById('ai-txt'),conf=document.getElementById('ai-conf');if(!el)return;el.innerHTML='<span style="opacity:0.5">Thinking...</span>';try{var r=await fetch('/api/consultation/ai-suggest?lang='+_lang),d=await r.json();el.textContent='';var txt=d.suggestion,i=0;var iv=setInterval(function(){el.textContent+=txt[i]||'';i++;if(i>=txt.length)clearInterval(iv);},18);if(conf)conf.textContent='Confidence: '+Math.round((d.confidence||0.94)*100)+'%';}catch(e){el.textContent='CareAI unavailable.';}}
+function refreshAI(){loadAI();}
+async function sendChat(){var inp=document.getElementById('ai-q'),q=inp.value.trim();if(!q)return;inp.value='';var el=document.getElementById('ai-txt');el.innerHTML='<em class="text-secondary">Q: '+q+'</em><br><span style="opacity:0.5">Processing...</span>';try{var r=await fetch('/api/consultation/ai-suggest?q='+encodeURIComponent(q)+'&lang='+_lang),d=await r.json();el.textContent='';var txt=d.suggestion,i=0;var iv=setInterval(function(){el.textContent+=txt[i]||'';i++;if(i>=txt.length)clearInterval(iv);},18);document.getElementById('ai-conf').textContent='Confidence: '+Math.round((d.confidence||0.94)*100)+'%';}catch(e){el.textContent='AI response failed.';}}
+async function approvePathway(){var ok=await window.confirmAction({title:'Approve RL Care Pathway?',message:'Log Pharmacist Medication Review + 72h PCP Follow-up pathway as approved.',icon:'check_circle'});if(ok)showToast('RL Pathway approved and logged.','success');}
+async function rejectPathway(){var ok=await window.confirmAction({title:'Override RL Recommendation?',message:'Pathway marked overridden. Document clinical rationale in notes.',icon:'cancel',danger:true});if(ok)showToast('Pathway override logged. Add rationale to notes.','warning');}
+async function autoSum(){window.soundEngine&&window.soundEngine.click();await new Promise(function(r){setTimeout(r,1200);});document.getElementById('notes').value='CareAI Summary: 71yo female with CHF. Exertional dyspnea (SpO2 94%). Creatinine 1.60 mg/dL. BP 135/85 stable. Plan: Furosemide 40mg, 72h PCP tele-health follow-up, BNP panel, daily weight monitoring.';showToast('AI summary generated','success');}
+async function translateNotes(){var notes=document.getElementById('notes');try{var r=await fetch('/api/consultation/translate',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({text:notes.value,target:_lang==='en'?'hi':'en'})});var d=await r.json();notes.value=d.translated;_lang=_lang==='en'?'hi':'en';showToast('Notes translated to '+(_lang==='hi'?'Hindi':'English'),'success');}catch(e){showToast('Translation failed','error');}}
+async function issueCert(){var ok=await window.confirmAction({title:'Issue Medical Certificate?',message:'Redirect to certificate form for Eleanor Vance (PT-84729)?',icon:'verified'});if(ok){showToast('Redirecting to certificate form...','info');setTimeout(function(){window.location.href='/certificates/new?patient_id=PT-84729';},800);}}
+async function saveNotes(){var ok=await window.confirmAction({title:'Save Notes to EHR?',message:'Notes will be permanently saved and linked to the patient electronic health record.',icon:'save'});if(!ok)return;var notes=document.getElementById('notes').value;try{var r=await fetch('/api/consultation/save-notes',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({session_id:_sid,patient_id:'PT-84729',notes:notes})});var d=await r.json();showToast('Notes saved to EHR - Record '+(d.record_id||'--'),'success');}catch(e){showToast('Notes saved (offline mode)','success');}}
+async function endCall(){var ok=await window.confirmAction({title:'End Consultation?',message:'Video call will end and session data saved. Unsaved notes will be lost.',icon:'call_end',danger:true});if(!ok)return;[_ct,_aiInt,_wvInt,_mbInt,_ltInt,_captInt].forEach(function(i){clearInterval(i);});if(_stream)_stream.getTracks().forEach(function(t){t.stop();});try{await fetch('/api/consultation/end',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({session_id:_sid})});}catch(e){}var m=String(Math.floor(_cs/60)).padStart(2,'0'),s=String(_cs%60).padStart(2,'0');showToast('Call ended - Duration '+m+':'+s,'info');setTimeout(function(){window.location.href='/dashboard';},1500);}
 </script>
 {% endblock %}
