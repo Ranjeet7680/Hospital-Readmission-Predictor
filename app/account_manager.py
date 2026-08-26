@@ -44,11 +44,11 @@ class AccountManager:
             }
         }
 
-        # Doctor Profile (Dr. Ranjeet Kumar, MD)
+        # Doctor Profile (Dr. Ranjeet Kumar)
         self.doctor_profile = {
             "id": "DR-88219",
             "health_id": "HRP-DOC-2026-088219",
-            "full_name": "Dr. Ranjeet Kumar, MD, FACC",
+            "full_name": "Dr. Ranjeet Kumar, FACC",
             "first_name": "Dr. Ranjeet Kumar",
             "initials": "RK",
             "title": "Chief Attending Physician & Lead Clinical AI Fellow",
