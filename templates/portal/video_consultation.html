@@ -1228,8 +1228,40 @@ function printPrescription() {
 }
 
 function downloadPrescriptionPDF() {
-  if (typeof showToast === 'function') showToast('Prescription PDF downloaded successfully.', 'success');
-  closePrescriptionModal();
+  const rxContent = document.querySelector('#rx-modal > div');
+  if (!rxContent) return;
+
+  const opt = {
+    margin: [10, 10, 10, 10],
+    filename: 'Prescription_Eleanor_Vance_PT84729.pdf',
+    image: { type: 'jpeg', quality: 0.98 },
+    html2canvas: { scale: 2, useCORS: true, logging: false },
+    jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+  };
+
+  const generate = () => {
+    if (window.html2pdf) {
+      window.html2pdf().set(opt).from(rxContent).save().then(() => {
+        if (typeof showToast === 'function') showToast('Official Prescription PDF downloaded successfully.', 'success');
+        if (window.soundEngine) window.soundEngine.success();
+      }).catch(err => {
+        console.error(err);
+        window.print();
+      });
+    } else {
+      window.print();
+    }
+  };
+
+  if (!window.html2pdf) {
+    const s = document.createElement('script');
+    s.src = 'https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js';
+    s.onload = generate;
+    s.onerror = () => window.print();
+    document.head.appendChild(s);
+  } else {
+    generate();
+  }
 }
 
 // Clinical EHR Summarize & Translate

@@ -184,10 +184,10 @@
                         <span class="text-[10px] text-secondary">Send secure access link</span>
                     </button>
 
-                    <button onclick="window.print()" class="p-3 rounded-xl bg-surface-container hover:bg-primary/10 border border-outline-variant/70 text-left transition-all group">
+                    <button onclick="downloadIDCardPDF()" class="p-3 rounded-xl bg-surface-container hover:bg-primary/10 border border-outline-variant/70 text-left transition-all group">
                         <span class="material-symbols-outlined text-primary group-hover:scale-110 transition-transform text-xl block mb-1">download</span>
                         <span class="text-xs font-bold text-on-surface block">Download ID</span>
-                        <span class="text-[10px] text-secondary">Save printable PDF / image</span>
+                        <span class="text-[10px] text-secondary">Save printable PDF</span>
                     </button>
 
                     <button onclick="alert('Digital Wallet Pass (.pkpass) generated for Apple Wallet & Google Wallet.')" class="p-3 rounded-xl bg-surface-container hover:bg-primary/10 border border-outline-variant/70 text-left transition-all group">
@@ -365,6 +365,46 @@ function copyShareUrl() {
     setTimeout(() => {
         document.getElementById('copy-btn-text').innerText = 'Copy';
     }, 2000);
+}
+
+function downloadIDCardPDF() {
+    const cardEl = document.getElementById('health-id-card-inner');
+    if (!cardEl) return;
+
+    if (window.soundEngine) window.soundEngine.click();
+    if (typeof showToast === 'function') showToast('Generating Printable Health ID PDF...', 'info');
+
+    const opt = {
+        margin: [15, 15, 15, 15],
+        filename: 'Digital_Health_ID_{{ profile.health_id }}.pdf',
+        image: { type: 'jpeg', quality: 0.98 },
+        html2canvas: { scale: 2, useCORS: true, logging: false },
+        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+    };
+
+    const runPdf = () => {
+        if (window.html2pdf) {
+            window.html2pdf().set(opt).from(cardEl).save().then(() => {
+                if (typeof showToast === 'function') showToast('Health ID Card PDF downloaded!', 'success');
+                if (window.soundEngine) window.soundEngine.success();
+            }).catch(err => {
+                console.error(err);
+                window.print();
+            });
+        } else {
+            window.print();
+        }
+    };
+
+    if (!window.html2pdf) {
+        const s = document.createElement('script');
+        s.src = 'https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js';
+        s.onload = runPdf;
+        s.onerror = () => window.print();
+        document.head.appendChild(s);
+    } else {
+        runPdf();
+    }
 }
 </script>
 
