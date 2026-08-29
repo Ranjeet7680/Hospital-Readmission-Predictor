@@ -27,6 +27,7 @@ from ml.model_hub import model_hub
 from ml.rl_engine import rl_engine
 from ml.doc_engine import doc_engine
 from ml.mlops_manager import mlops_manager
+from ml.careai_voice_brain import careai_voice_brain
 
 app = FastAPI(
     title="Hospital Readmission Predictor (HRP Clinical)",
@@ -1395,5 +1396,57 @@ async def get_translations_endpoint(lang: Optional[str] = Query(None), request: 
     })
 
 
+# ==========================================
+# 11. CAREAI MULTILINGUAL FEMALE VOICE & CHATBOT ROUTES
+# ==========================================
+
+@app.get("/careai", response_class=HTMLResponse)
+async def careai_studio_page(request: Request):
+    """Dedicated full-screen CareAI Voice & Multilingual Clinical Studio."""
+    return templates.TemplateResponse(request=request, name="portal/careai_studio.html", context={
+        "active_page": "careai_studio",
+        "languages": careai_voice_brain.get_supported_languages()["languages"],
+        "metrics": careai_voice_brain.training_metrics
+    })
 
 
+@app.post("/api/careai/chat")
+async def careai_chat_endpoint(request: Request):
+    """
+    Multilingual conversational AI endpoint with female voice prosody optimization.
+    Supports 18+ languages and clinical decision-support reasoning.
+    """
+    try:
+        body = await request.json()
+    except Exception:
+        body = {}
+    
+    message = body.get("message", "")
+    lang = body.get("lang", "en")
+    patient_id = body.get("patient_id")
+    session_id = body.get("session_id", "default")
+    
+    res = careai_voice_brain.process_message(message, lang=lang, patient_id=patient_id, session_id=session_id)
+    return JSONResponse(res)
+
+
+@app.get("/api/careai/languages")
+async def careai_languages_endpoint():
+    """Returns supported languages, locales, and female voice metadata."""
+    return JSONResponse(careai_voice_brain.get_supported_languages())
+
+
+@app.post("/api/careai/train")
+async def careai_train_endpoint(request: Request):
+    """
+    Triggers multilingual intent model training and fine-tuning.
+    Returns convergence metrics and evaluation benchmarks across all language matrices.
+    """
+    try:
+        body = await request.json()
+    except Exception:
+        body = {}
+    
+    custom_dataset = body.get("dataset")
+    res = careai_voice_brain.train_model(custom_dataset)
+    return JSONResponse(res)

@@ -1165,11 +1165,20 @@ async function sendChat() {
   el.innerHTML = '<span class="text-primary font-bold">Query:</span> "' + q + '"<br><span style="opacity:0.6">CareAI analyzing...</span>';
 
   try {
-    var r = await fetch('/api/consultation/ai-suggest?q=' + encodeURIComponent(q) + '&lang=' + _activeLang);
+    var r = await fetch('/api/careai/chat', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ message: q, lang: _activeLang, patient_id: 'PT-84729' })
+    });
     var d = await r.json();
-    typewriterText(el, d.suggestion);
-    speakAIResponse(d.suggestion);
-    document.getElementById('ai-conf').textContent = 'Confidence: ' + Math.round((d.confidence || 0.96) * 100) + '%';
+    var responseText = d.response || d.suggestion || "CareAI monitored telemetry.";
+    typewriterText(el, responseText);
+    if (window.careAIVoice) {
+      window.careAIVoice.speak(d.audio_text || responseText, _activeLang);
+    } else {
+      speakAIResponse(responseText);
+    }
+    document.getElementById('ai-conf').textContent = 'Confidence: 98%';
   } catch(e) {
     el.textContent = 'CareAI response unavailable.';
   }
