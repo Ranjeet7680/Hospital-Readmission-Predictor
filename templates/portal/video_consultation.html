@@ -1079,42 +1079,77 @@ function toggleVoiceSTT() {
 function startVoiceInput() {
   var SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
   if (!SpeechRecognition) {
-    if (typeof showToast === 'function') showToast('Web Speech Recognition not supported in this browser.', 'warning');
+    var promptQuery = prompt("Speech recognition is simulated in this browser. Enter question for Dr. CareAI:", "How are my fluid balance and oxygen levels?");
+    if (promptQuery) {
+      var inp = document.getElementById('ai-q');
+      if (inp) inp.value = promptQuery;
+      sendChat();
+    }
     return;
   }
 
-  var localeMap = { en: 'en-US', hi: 'hi-IN', ta: 'ta-IN', kn: 'kn-IN', ml: 'ml-IN', te: 'te-IN', bn: 'bn-IN' };
+  var localeMap = {
+    en: 'en-US', hi: 'hi-IN', te: 'te-IN', ta: 'ta-IN', kn: 'kn-IN',
+    ml: 'ml-IN', mr: 'mr-IN', gu: 'gu-IN', bn: 'bn-IN', es: 'es-ES',
+    fr: 'fr-FR', de: 'de-DE', ar: 'ar-SA', zh: 'zh-CN', ja: 'ja-JP'
+  };
+  
   _speechRec = new SpeechRecognition();
   _speechRec.lang = localeMap[_activeLang] || 'en-US';
-  _speechRec.interimResults = false;
+  _speechRec.interimResults = true;
 
   _speechRec.onstart = function() {
     _isRecognizing = true;
+    var btn = document.getElementById('btn-talk');
+    if (btn) {
+      btn.style.background = '#ef4444';
+      btn.classList.add('animate-pulse');
+    }
     var icon = document.getElementById('voice-stt-icon');
     if (icon) icon.textContent = 'mic';
     var inp = document.getElementById('ai-q');
-    if (inp) inp.placeholder = '🎙️ Listening... Speak your clinical question now';
-    if (typeof showToast === 'function') showToast('Listening... Speak now (' + _activeLang.toUpperCase() + ')', 'info');
+    if (inp) inp.placeholder = '🎙️ Listening (' + _activeLang.toUpperCase() + ')... Speak your question now';
+    if (typeof showToast === 'function') showToast('🎙️ Listening... Speak now (' + _activeLang.toUpperCase() + ')', 'info');
   };
 
   _speechRec.onresult = function(e) {
-    var transcript = e.results[0][0].transcript;
+    var transcript = '';
+    for (var i = e.resultIndex; i < e.results.length; ++i) {
+      transcript += e.results[i][0].transcript;
+    }
     var inp = document.getElementById('ai-q');
-    if (inp) {
-      inp.value = transcript;
+    if (inp) inp.value = transcript;
+    
+    if (e.results[e.results.length - 1].isFinal) {
+      stopVoiceInput();
       sendChat();
     }
   };
 
-  _speechRec.onerror = function() { stopVoiceInput(); };
-  _speechRec.onend = function() { stopVoiceInput(); };
+  _speechRec.onerror = function(err) {
+    console.warn("Consultation speech rec error:", err);
+    stopVoiceInput();
+  };
 
-  _speechRec.start();
+  _speechRec.onend = function() {
+    stopVoiceInput();
+  };
+
+  try {
+    _speechRec.start();
+  } catch(e) {
+    stopVoiceInput();
+  }
 }
 
 function stopVoiceInput() {
   _isRecognizing = false;
   if (_speechRec) try { _speechRec.stop(); } catch(e) {}
+  var btn = document.getElementById('btn-talk');
+  if (btn) {
+    btn.style.background = '';
+    btn.classList.remove('animate-pulse');
+  }
   var icon = document.getElementById('voice-stt-icon');
   if (icon) icon.textContent = 'record_voice_over';
   var inp = document.getElementById('ai-q');
@@ -1122,20 +1157,44 @@ function stopVoiceInput() {
 }
 
 function speakAIResponse(text) {
-  if (!window.i18n || !_spkOn) return;
+  if (!_spkOn || !text) return;
   _isSpeaking = true;
-  var utt = window.i18n.speak(text, _activeLang);
-  if (utt) {
+
+  // Update Live Captions Bar
+  var capBox = document.getElementById('captions-overlay');
+  var capText = document.getElementById('caption-text');
+  if (capBox) capBox.classList.remove('hidden');
+  if (capText) capText.textContent = text;
+
+  // Use CareAI Voice System with Female Physician Profile
+  if (window.careAIVoice) {
+    window.careAIVoice.speak(text, _activeLang);
+  } else if ('speechSynthesis' in window) {
+    window.speechSynthesis.cancel();
+    var clean = text.replace(/[*_#`~[\]()<>]/g, ' ').trim();
+    var utt = new SpeechSynthesisUtterance(clean);
+    utt.lang = _activeLang === 'hi' ? 'hi-IN' : (_activeLang === 'te' ? 'te-IN' : 'en-US');
+    utt.pitch = 1.08;
+    utt.rate = 0.98;
     utt.onend = function() { _isSpeaking = false; };
     utt.onerror = function() { _isSpeaking = false; };
-  } else {
-    setTimeout(function() { _isSpeaking = false; }, 3500);
+    window.speechSynthesis.speak(utt);
   }
+
+  // Safety fallback for lip sync timing
+  setTimeout(function() {
+    if (!window.speechSynthesis || !window.speechSynthesis.speaking) {
+      _isSpeaking = false;
+    }
+  }, Math.min(Math.max(text.length * 75, 3000), 15000));
 }
 
 function speakCurrentInsight() {
   var txt = document.getElementById('ai-txt')?.textContent;
-  if (txt) speakAIResponse(txt);
+  if (txt) {
+    if (typeof showToast === 'function') showToast('🔊 Dr. CareAI speaking clinical insight...', 'info');
+    speakAIResponse(txt);
+  }
 }
 
 // AI Suggestion Fetcher & Response
@@ -1162,7 +1221,13 @@ async function sendChat() {
   if (!q) return;
   inp.value = '';
   var el = document.getElementById('ai-txt');
-  el.innerHTML = '<span class="text-primary font-bold">Query:</span> "' + q + '"<br><span style="opacity:0.6">CareAI analyzing...</span>';
+  el.innerHTML = '<span class="text-primary font-bold">Query:</span> "' + q + '"<br><span style="opacity:0.6">Dr. CareAI analyzing query...</span>';
+
+  // Live Captions preview
+  var capBox = document.getElementById('captions-overlay');
+  var capText = document.getElementById('caption-text');
+  if (capBox) capBox.classList.remove('hidden');
+  if (capText) capText.textContent = 'You: ' + q;
 
   try {
     var r = await fetch('/api/careai/chat', {
@@ -1171,14 +1236,14 @@ async function sendChat() {
       body: JSON.stringify({ message: q, lang: _activeLang, patient_id: 'PT-84729' })
     });
     var d = await r.json();
-    var responseText = d.response || d.suggestion || "CareAI monitored telemetry.";
+    var responseText = d.response || d.suggestion || "CareAI analyzed clinical telemetry.";
     typewriterText(el, responseText);
-    if (window.careAIVoice) {
-      window.careAIVoice.speak(d.audio_text || responseText, _activeLang);
-    } else {
-      speakAIResponse(responseText);
-    }
-    document.getElementById('ai-conf').textContent = 'Confidence: 98%';
+    
+    // AI Doctor Speaks Aloud with Live Lip-Sync
+    speakAIResponse(d.audio_text || responseText);
+    
+    var conf = document.getElementById('ai-conf');
+    if (conf) conf.textContent = 'Confidence: 98%';
   } catch(e) {
     el.textContent = 'CareAI response unavailable.';
   }
