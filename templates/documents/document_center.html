@@ -79,10 +79,11 @@
 
 <script>
     function handleFileUpload(input) {
-        if (!input.files || !input.files[0]) return;
-        window.soundEngine?.uploadComplete();
-        alert(`File '${input.files[0].name}' uploaded successfully. Optical Character Recognition (OCR) is extracting clinical entities.`);
-        window.location.href = '/documents/analyze/DOC-84729-LAB';
+        if (input.files && input.files[0]) {
+            showToast(`File '${input.files[0].name}' uploaded successfully. Optical Character Recognition (OCR) is extracting clinical entities.`, 'success');
+            window.soundEngine?.uploadComplete();
+            window.location.href = '/documents/analyze/DOC-84729-LAB';
+        }
     }
 </script>
 {% endblock %}

@@ -110,15 +110,22 @@
 <script>
     function approveWorkflow() {
         window.soundEngine?.success();
-        alert('Workflow action approved by attending clinician. Task dispatched to Care Coordination team.');
+        showToast('✓ Workflow action approved by attending clinician. Task dispatched to Care Coordination team.', 'success');
+        window.careAIVoice?.speak('Workflow approved. Medication review task dispatched to Care Coordination team.', window.careAIVoice?.currentLang || 'en');
+        const btn = document.querySelector('button[onclick="approveWorkflow()"]');
+        if (btn) {
+            btn.innerHTML = '<span class="material-symbols-outlined text-[16px]">check_circle</span> Approved & Dispatched';
+            btn.classList.remove('bg-primary');
+            btn.classList.add('bg-emerald-600', 'hover:bg-emerald-700');
+        }
     }
     function modifyWorkflow() {
         window.soundEngine?.click();
-        alert('Workflow modification dialog opened.');
+        showToast('Workflow modification mode active. Adjust sequence parameters as needed.', 'info');
     }
     function rejectWorkflow() {
         window.soundEngine?.error();
-        alert('RL workflow recommendation dismissed.');
+        showToast('RL workflow recommendation dismissed by attending clinician.', 'warning');
     }
 </script>
 {% endblock %}
