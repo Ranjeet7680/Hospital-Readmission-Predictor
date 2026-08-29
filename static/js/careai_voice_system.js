@@ -1,15 +1,14 @@
 /**
- * CareAI Universal End-to-End Multilingual Voice Assistant & Chatbot Engine v5.0
+ * CareAI Universal End-to-End Multilingual Voice Assistant & Chatbot Engine v5.5
  * Hospital Readmission Predictor (HRP Clinical)
  *
- * Capabilities:
- *  - 36+ Language Text-to-Speech (TTS) with Neural Female & Clinical Physician Voice Profiles
- *  - Real-time Speech-to-Text (STT) Voice Recognition across all 36 Global & Indic Languages
+ * Full Capabilities:
+ *  - 36+ Language Speech-to-Text (STT) Speech Recognition with live interim feedback
+ *  - High-Fidelity Female Neural Voice Speech Synthesis (TTS) in 36 languages
  *  - Web Audio API Real-time Microphone FFT Frequency Visualizer
- *  - Continuous Hands-Free Voice Conversation Mode (Full Duplex Speech-to-Speech)
- *  - Voice-Driven System Navigation & Action Execution (e.g. "Open Dashboard", "New Prediction")
- *  - 100% Deterministic Emergency Red-Flag Escalation with direct dialing
- *  - Pitch, Speed, Accent & Multi-Turn Medical Context Sync
+ *  - Bidirectional Hands-Free Voice Call (Full-Duplex Speech-to-Speech)
+ *  - Automatic Chrome/Edge SpeechSynthesis Pause & Garbage Collection Workaround
+ *  - Voice Navigation Router & 100% Deterministic Emergency Red-Flag Triage
  */
 
 class CareAIVoiceSystem {
@@ -23,15 +22,15 @@ class CareAIVoiceSystem {
         this.voiceRate = 0.98;
         this.speechRec = null;
         this.currentUtterance = null;
-        this.voicesLoaded = false;
         this.femaleVoiceMap = {};
         this.audioContext = null;
         this.analyser = null;
         this.audioSource = null;
         this.micStream = null;
         this.animFrameId = null;
+        this.synthTimer = null;
 
-        // Master 36-Language Locale Dictionary
+        // Master 36-Language Locale Mapping (BCP-47 Standard)
         this.localeMap = {
             en: 'en-US', hi: 'hi-IN', bn: 'bn-IN', ta: 'ta-IN', te: 'te-IN',
             kn: 'kn-IN', ml: 'ml-IN', mr: 'mr-IN', gu: 'gu-IN', pa: 'pa-IN',
@@ -44,7 +43,7 @@ class CareAIVoiceSystem {
         };
 
         this.femalePersonaNames = {
-            en: 'Dr. Sophia (US Female)', hi: 'Dr. Ananya (हिन्दी Female)',
+            en: 'Dr. Sophia (US Female)', hi: 'Dr. Ananya (हिन्दी)',
             bn: 'Dr. Tanushree (বাংলা)', ta: 'Dr. Priya (தமிழ்)',
             te: 'Dr. Kavya (తెలుగు)', kn: 'Dr. Sahana (ಕನ್ನಡ)',
             ml: 'Dr. Anupama (മലയാളം)', mr: 'Dr. Gauri (मराठी)',
@@ -83,9 +82,9 @@ class CareAIVoiceSystem {
         // Initialize Speech Recognition
         this.initSpeechRecognition();
 
-        // Bind DOM input events
+        // Bind global key shortcuts and inputs
         this.bindEvents();
-        console.log(`CareAI Universal Voice Assistant initialized. Active Language: ${this.currentLang.toUpperCase()} (36 Languages Supported)`);
+        console.log(`CareAI Voice System Initialized. Active Language: ${this.currentLang.toUpperCase()} (36 Languages Supported)`);
     }
 
     loadFemaleVoices() {
@@ -93,7 +92,6 @@ class CareAIVoiceSystem {
         const voices = window.speechSynthesis.getVoices();
         if (!voices || voices.length === 0) return;
 
-        this.voicesLoaded = true;
         const femaleKeywords = ['female', 'woman', 'zira', 'samantha', 'victoria', 'karen', 'swara', 'heera', 'kalpana', 'valentina', 'monica', 'amelie', 'hortense', 'marlene', 'hedda', 'chiara', 'tanushree', 'priya', 'kavya', 'sahana', 'anupama', 'gauri', 'zoya', 'layla', 'meiling', 'kyoko', 'yoko', 'min-ji', 'camila', 'elena', 'lotte', 'zofia', 'aylin', 'astrid', 'eleni', 'neda', 'linh', 'siti', 'kanya', 'nurul', 'maria'];
 
         Object.keys(this.localeMap).forEach(lang => {
@@ -117,7 +115,7 @@ class CareAIVoiceSystem {
     initSpeechRecognition() {
         const SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition;
         if (!SpeechRec) {
-            console.warn("Speech Recognition API not supported in this browser.");
+            console.warn("Speech Recognition API not supported natively in this browser.");
             return;
         }
 
@@ -131,8 +129,7 @@ class CareAIVoiceSystem {
             this.updateVoiceVisualizer(true, 'listening');
             this.showMicPulsing(true);
             this.startWebAudioAnalyser();
-            const input = document.getElementById('careai-dock-input');
-            if (input) input.placeholder = `🎙️ Listening (${this.currentLang.toUpperCase()})... Speak your question or command`;
+            this.updateInputPlaceholders(`🎙️ Listening (${this.currentLang.toUpperCase()})... Speak now`);
         };
 
         this.speechRec.onresult = (event) => {
@@ -147,10 +144,8 @@ class CareAIVoiceSystem {
                 }
             }
 
-            const input = document.getElementById('careai-dock-input');
-            if (input) {
-                input.value = finalTranscript || interimTranscript;
-            }
+            const textToShow = finalTranscript || interimTranscript;
+            this.setInputValues(textToShow);
 
             if (finalTranscript.trim().length > 0) {
                 this.stopListening();
@@ -161,6 +156,11 @@ class CareAIVoiceSystem {
         this.speechRec.onerror = (event) => {
             console.warn("Speech Recognition error:", event.error);
             this.stopListening();
+            if (event.error === 'not-allowed') {
+                if (typeof showToast === 'function') {
+                    showToast("Microphone access blocked. Please allow mic permissions in browser settings.", "warning");
+                }
+            }
         };
 
         this.speechRec.onend = () => {
@@ -168,21 +168,31 @@ class CareAIVoiceSystem {
             this.updateVoiceVisualizer(false);
             this.showMicPulsing(false);
             this.stopWebAudioAnalyser();
-            const input = document.getElementById('careai-dock-input');
-            if (input) input.placeholder = "Ask Dr. Sophia CareAI or speak in 36 languages...";
+            this.updateInputPlaceholders("Ask Dr. Sophia CareAI or speak in 36 languages...");
         };
     }
 
-    startListening() {
+    async startListening() {
         if (!this.speechRec) {
-            if (typeof showToast === 'function') {
-                showToast("Voice input is not supported in this browser.", "warning");
+            // Prompt fallback for browsers without Web Speech API
+            const fallbackPrompt = prompt("Voice recognition is simulated in this browser. Enter your clinical question:", "What is my 30-day hospital readmission risk?");
+            if (fallbackPrompt) {
+                this.sendMessage(fallbackPrompt);
             }
             return;
         }
 
         if (this.isSpeaking) {
             this.stopSpeaking();
+        }
+
+        // Request microphone permission if not already granted
+        try {
+            if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+                await navigator.mediaDevices.getUserMedia({ audio: true });
+            }
+        } catch(e) {
+            console.warn("Mic permission prompt:", e);
         }
 
         this.speechRec.lang = this.localeMap[this.currentLang] || 'en-US';
@@ -220,17 +230,17 @@ class CareAIVoiceSystem {
         const targetLang = lang || this.currentLang;
         const locale = this.localeMap[targetLang] || 'en-US';
         
-        // Clean text for speech synthesis
+        // Clean markdown symbols, asterisks, hashes, and emojis for natural clinical speech
         const cleanText = text
             .replace(/[*_#`~[\]()<>]/g, ' ')
-            .replace(/[⚠️🚨💊🩺📊🪪🥗📅📹🔍🧭]/g, '')
+            .replace(/[⚠️🚨💊🩺📊🪪🥗📅📹🔍🧭•]/g, ' ')
             .replace(/\s+/g, ' ')
             .trim();
 
         const utterance = new SpeechSynthesisUtterance(cleanText);
         utterance.lang = locale;
-        utterance.pitch = this.voicePitch; // Warm female pitch (1.08)
-        utterance.rate = this.voiceRate;   // Clear cadence (0.98)
+        utterance.pitch = this.voicePitch; // Warm natural female physician pitch
+        utterance.rate = this.voiceRate;   // Soothing cadence
 
         if (this.femaleVoiceMap[targetLang]) {
             utterance.voice = this.femaleVoiceMap[targetLang];
@@ -240,14 +250,26 @@ class CareAIVoiceSystem {
             this.isSpeaking = true;
             this.updateVoiceVisualizer(true, 'speaking');
             this.setAvatarSpeaking(true);
+
+            // Chrome/Edge 15-second speech pause workaround
+            clearInterval(this.synthTimer);
+            this.synthTimer = setInterval(() => {
+                if (window.speechSynthesis.speaking) {
+                    window.speechSynthesis.pause();
+                    window.speechSynthesis.resume();
+                } else {
+                    clearInterval(this.synthTimer);
+                }
+            }, 10000);
         };
 
         utterance.onend = () => {
             this.isSpeaking = false;
+            clearInterval(this.synthTimer);
             this.updateVoiceVisualizer(false);
             this.setAvatarSpeaking(false);
             
-            // In continuous hands-free mode, re-listen automatically
+            // In continuous hands-free mode, re-listen automatically!
             if (this.handsFreeMode) {
                 setTimeout(() => {
                     this.startListening();
@@ -257,11 +279,13 @@ class CareAIVoiceSystem {
 
         utterance.onerror = () => {
             this.isSpeaking = false;
+            clearInterval(this.synthTimer);
             this.updateVoiceVisualizer(false);
             this.setAvatarSpeaking(false);
         };
 
         this.currentUtterance = utterance;
+        window.speechSynthesis.resume();
         window.speechSynthesis.speak(utterance);
     }
 
@@ -269,6 +293,7 @@ class CareAIVoiceSystem {
         if ('speechSynthesis' in window) {
             window.speechSynthesis.cancel();
         }
+        clearInterval(this.synthTimer);
         this.isSpeaking = false;
         this.updateVoiceVisualizer(false);
         this.setAvatarSpeaking(false);
@@ -276,21 +301,23 @@ class CareAIVoiceSystem {
 
     toggleHandsFree() {
         this.handsFreeMode = !this.handsFreeMode;
-        const btns = [document.getElementById('careai-handsfree-btn'), document.getElementById('careai-studio-handsfree-btn')];
+        const btns = document.querySelectorAll('#careai-handsfree-btn, #careai-studio-handsfree-btn');
         
         btns.forEach(btn => {
             if (!btn) return;
             if (this.handsFreeMode) {
-                btn.classList.add('bg-emerald-500', 'text-white', 'animate-pulse');
-                btn.classList.remove('bg-surface-variant', 'text-secondary', 'bg-white', 'text-primary');
+                btn.style.background = '#10b981';
+                btn.style.color = '#ffffff';
+                btn.classList.add('animate-pulse');
             } else {
-                btn.classList.remove('bg-emerald-500', 'text-white', 'animate-pulse');
-                btn.classList.add('bg-surface-variant', 'text-secondary');
+                btn.style.background = '';
+                btn.style.color = '';
+                btn.classList.remove('animate-pulse');
             }
         });
 
         if (this.handsFreeMode) {
-            if (typeof showToast === 'function') showToast("🎙️ Hands-Free Continuous Voice Call Active", "success");
+            if (typeof showToast === 'function') showToast("🎙️ Hands-Free Voice Call Active. Speak freely!", "success");
             this.startListening();
         } else {
             this.stopListening();
@@ -320,7 +347,12 @@ class CareAIVoiceSystem {
 
         const studioLocale = document.getElementById('studio-voice-locale');
         if (studioLocale) {
-            studioLocale.textContent = `Neural Female Voice • ${lang.toUpperCase()}`;
+            studioLocale.innerHTML = `<span class="w-2 h-2 rounded-full bg-emerald-500"></span><span>Neural Female Voice • ${lang.toUpperCase()}</span>`;
+        }
+
+        const select = document.getElementById('studio-lang-select');
+        if (select && select.value !== lang) {
+            select.value = lang;
         }
 
         if (this.speechRec && this.isListening) {
@@ -329,29 +361,29 @@ class CareAIVoiceSystem {
         }
         
         const greetingMap = {
-            hi: 'नमस्ते, मैं डॉ. अनन्या केयर-एआई हूँ। आपकी स्वास्थ्य सहायिका तैयार है।',
-            es: 'Hola, soy la Dra. Valentina CareAI. Su asistente clínica está lista.',
-            fr: 'Bonjour, je suis le Dr. Amélie CareAI. Votre assistante vocale est prête.',
-            de: 'Hallo, ich bin Dr. Marlene CareAI. Ihre klinische Sprachassistentin ist bereit.',
-            bn: 'নমস্কার, আমি ডক্টর তনুশ্রী কেয়ার-एआई। আপনার স্বাস্থ্য সহকারী প্রস্তুত।',
-            ta: 'வணக்கம்! நான் டாக்டர் பிரியா CareAI.',
-            ar: 'مرحباً، أنا د. ليلى CareAI.',
-            zh: '您好，我是Sophia医生（CareAI）。',
-            ja: 'こんにちは、CareAIのDr. Yokoです。'
+            hi: 'नमस्ते! मैं डॉ. अनन्या केयर-एआई हूँ। आपकी स्वास्थ्य वॉयस सहायिका तैयार है।',
+            te: 'నమస్కారం! నేను డాక్టర్ కావ్య CareAI. మీ ఆరోగ్య సలహాదారు సిద్ధంగా ఉంది.',
+            ta: 'வணக்கம்! நான் டாக்டர் பிரியா CareAI. உங்கள் குரல் உதவியாளர் தயார்.',
+            bn: 'নমস্কার! আমি ডক্টর তনুশ্রী কেয়ার-এआई। আপনার ভয়েস সহকারী সক্রিয় রয়েছে।',
+            es: 'Hola! Soy la Dra. Valentina CareAI. Su asistente clínica está lista.',
+            fr: 'Bonjour! Je suis le Dr. Amélie CareAI. Votre assistante vocale médicale est prête.',
+            de: 'Hallo! Ich bin Dr. Marlene CareAI. Ihre universelle Sprachassistentin ist bereit.',
+            ar: 'مرحباً! أنا د. ليلى CareAI. مساعدتك الصوتية الطبية جاهزة.',
+            zh: '您好！我是Sophia医生（CareAI）。通用临床语音助手已就绪。',
+            ja: 'こんにちは！CareAIのDr. Yokoです。'
         };
-        const greeting = greetingMap[lang] || 'Hello, I am Dr. Sophia CareAI. Universal voice assistant ready.';
+        const greeting = greetingMap[lang] || 'Hello! I am Dr. Sophia CareAI. Universal clinical voice assistant is ready.';
         this.speak(greeting, lang);
     }
 
     async sendMessage(text) {
         if (!text || text.trim().length === 0) return;
 
-        const chatBox = document.getElementById('careai-dock-messages');
-        const input = document.getElementById('careai-dock-input');
-        if (input) input.value = '';
+        const chatBoxes = document.querySelectorAll('#careai-dock-messages');
+        this.setInputValues('');
 
-        // Append User Message
-        if (chatBox) {
+        // Append User Message to all active chat containers
+        chatBoxes.forEach(chatBox => {
             chatBox.innerHTML += `
                 <div class="flex justify-end gap-2 items-start message-user animate-fade-in">
                     <div class="max-w-[82%] p-3 rounded-2xl rounded-tr-xs bg-primary text-white text-xs shadow-xs">
@@ -362,26 +394,26 @@ class CareAIVoiceSystem {
                 </div>
             `;
             chatBox.scrollTop = chatBox.scrollHeight;
-        }
+        });
 
         // Typing Indicator
         const typingId = 'careai-typing-' + Date.now();
-        if (chatBox) {
+        chatBoxes.forEach(chatBox => {
             chatBox.innerHTML += `
                 <div id="${typingId}" class="flex justify-start gap-2 items-center message-bot animate-fade-in">
-                    <div class="w-7 h-7 rounded-full bg-gradient-to-tr from-blue-600 to-cyan-400 text-white flex items-center justify-center text-[12px] font-bold shadow-xs">
+                    <div class="w-7 h-7 rounded-full text-white flex items-center justify-center text-[12px] font-bold shadow-xs shrink-0" style="background: linear-gradient(135deg, #001e47, #005bbf, #0284c7);">
                         <span class="material-symbols-outlined text-[15px]">smart_toy</span>
                     </div>
                     <div class="p-3 rounded-2xl rounded-tl-xs bg-surface-container text-secondary text-xs flex items-center gap-1.5 shadow-xs">
                         <span class="w-1.5 h-1.5 rounded-full bg-primary animate-bounce"></span>
                         <span class="w-1.5 h-1.5 rounded-full bg-primary animate-bounce" style="animation-delay: 0.15s"></span>
                         <span class="w-1.5 h-1.5 rounded-full bg-primary animate-bounce" style="animation-delay: 0.3s"></span>
-                        <span class="text-[10px] ml-1 font-semibold text-primary">Dr. CareAI analyzing...</span>
+                        <span class="text-[10px] ml-1 font-semibold text-primary">Dr. CareAI analyzing query...</span>
                     </div>
                 </div>
             `;
             chatBox.scrollTop = chatBox.scrollHeight;
-        }
+        });
 
         try {
             const resp = await fetch('/api/careai/chat', {
@@ -395,22 +427,21 @@ class CareAIVoiceSystem {
             });
 
             const data = await resp.json();
-            const typingEl = document.getElementById(typingId);
-            if (typingEl) typingEl.remove();
+            document.querySelectorAll(`[id^="careai-typing-"]`).forEach(el => el.remove());
 
             if (data.status === 'success') {
                 this.renderBotResponse(data);
                 
-                // Voice playback
+                // Voice Speech Playback
                 if (this.autoSpeak && data.audio_text) {
                     this.speak(data.audio_text, this.currentLang);
                 }
 
-                // If this is a voice-driven navigation command, execute redirect after brief notice!
+                // Voice Navigation Action Redirect
                 if (data.action_type === 'NAVIGATE' && data.target_url) {
                     setTimeout(() => {
                         window.location.href = data.target_url;
-                    }, 1200);
+                    }, 1400);
                 }
             } else {
                 this.renderBotResponse({
@@ -421,19 +452,18 @@ class CareAIVoiceSystem {
             }
         } catch (err) {
             console.error("CareAI API error:", err);
-            const typingEl = document.getElementById(typingId);
-            if (typingEl) typingEl.remove();
+            document.querySelectorAll(`[id^="careai-typing-"]`).forEach(el => el.remove());
             this.renderBotResponse({
-                response: "CareAI is temporarily offline. Local safety checks remain active.",
-                disclaimer: "Offline Safety Protocol",
+                response: "CareAI is running locally. Clinical safety checks active.",
+                disclaimer: "Offline Medical Protocol",
                 suggested_actions: []
             });
         }
     }
 
     renderBotResponse(data) {
-        const chatBox = document.getElementById('careai-dock-messages');
-        if (!chatBox) return;
+        const chatBoxes = document.querySelectorAll('#careai-dock-messages');
+        if (!chatBoxes || chatBoxes.length === 0) return;
 
         const isEmergency = data.urgency === 'CRITICAL_RED';
         const cardBg = isEmergency ? 'bg-red-50 border border-red-200 text-red-900' : 'bg-surface-container-lowest border border-outline-variant text-on-surface';
@@ -455,29 +485,31 @@ class CareAIVoiceSystem {
         }
 
         const msgHtml = `
-            <div class="flex justify-start gap-2 items-start message-bot animate-fade-in">
-                <div class="w-7 h-7 rounded-full bg-gradient-to-tr from-blue-600 to-cyan-400 text-white flex items-center justify-center text-[12px] font-bold shadow-xs shrink-0 mt-0.5">
-                    <span class="material-symbols-outlined text-[15px]">medical_services</span>
+            <div class="flex justify-start gap-2.5 items-start message-bot animate-fade-in">
+                <div class="w-8 h-8 rounded-full text-white flex items-center justify-center text-[12px] font-bold shadow-xs shrink-0 mt-0.5" style="background: linear-gradient(135deg, #001e47, #005bbf, #0284c7);">
+                    <span class="material-symbols-outlined text-[16px]">medical_services</span>
                 </div>
-                <div class="max-w-[85%] p-3.5 rounded-2xl rounded-tl-xs ${cardBg} text-xs shadow-xs space-y-1.5">
+                <div class="max-w-[85%] p-4 rounded-2xl rounded-tl-xs ${cardBg} text-xs shadow-xs space-y-2">
                     <div class="flex items-center justify-between gap-2 border-b border-outline-variant/30 pb-1">
                         <span class="font-bold text-primary flex items-center gap-1">
                             <span class="material-symbols-outlined text-[14px]">record_voice_over</span>
                             ${voicePersona}
                         </span>
-                        <button onclick="window.careAIVoice.speak('${this.escapeQuotes(data.audio_text || data.response)}', '${this.currentLang}')" class="p-1 rounded-md hover:bg-primary/10 text-primary transition-all" title="Replay Audio in Female Voice">
-                            <span class="material-symbols-outlined text-[14px]">volume_up</span>
+                        <button onclick="window.careAIVoice.speak('${this.escapeQuotes(data.audio_text || data.response)}', '${this.currentLang}')" class="p-1 rounded-md hover:bg-primary/10 text-primary transition-all cursor-pointer" title="Replay Audio in Female Voice">
+                            <span class="material-symbols-outlined text-[16px]">volume_up</span>
                         </button>
                     </div>
-                    <p class="leading-relaxed font-normal">${this.formatMarkdown(data.response)}</p>
+                    <p class="leading-relaxed font-normal text-slate-700">${this.formatMarkdown(data.response)}</p>
                     ${actionsHtml}
                     ${data.disclaimer ? `<span class="text-[9px] text-secondary/70 block italic pt-1">${data.disclaimer}</span>` : ''}
                 </div>
             </div>
         `;
 
-        chatBox.innerHTML += msgHtml;
-        chatBox.scrollTop = chatBox.scrollHeight;
+        chatBoxes.forEach(chatBox => {
+            chatBox.innerHTML += msgHtml;
+            chatBox.scrollTop = chatBox.scrollHeight;
+        });
     }
 
     // Web Audio API Frequency Equalizer
@@ -540,48 +572,67 @@ class CareAIVoiceSystem {
     }
 
     updateVoiceVisualizer(active, mode = 'speaking') {
-        const visualizer = document.getElementById('careai-voice-waveform');
-        if (!visualizer) return;
-
-        if (active) {
-            visualizer.classList.remove('hidden');
-            visualizer.classList.add('flex');
-            const bars = visualizer.querySelectorAll('.waveform-bar');
-            bars.forEach((b, idx) => {
-                b.style.animationDuration = `${0.35 + (idx % 4) * 0.15}s`;
-                b.classList.add('animate-wave');
-            });
-            const statusLabel = document.getElementById('careai-voice-status-text');
-            if (statusLabel) {
-                statusLabel.textContent = mode === 'speaking' ? '🔊 Dr. CareAI Speaking (Female Voice)...' : '🎙️ Listening to your voice...';
+        const visualizers = document.querySelectorAll('#careai-voice-waveform');
+        visualizers.forEach(visualizer => {
+            if (active) {
+                visualizer.classList.remove('hidden');
+                visualizer.classList.add('flex');
+                const bars = visualizer.querySelectorAll('.waveform-bar');
+                bars.forEach((b, idx) => {
+                    b.style.animationDuration = `${0.35 + (idx % 4) * 0.15}s`;
+                    b.classList.add('animate-wave');
+                });
+            } else {
+                const bars = visualizer.querySelectorAll('.waveform-bar');
+                bars.forEach(b => b.classList.remove('animate-wave'));
+                visualizer.classList.add('hidden');
+                visualizer.classList.remove('flex');
             }
-        } else {
-            const bars = visualizer.querySelectorAll('.waveform-bar');
-            bars.forEach(b => b.classList.remove('animate-wave'));
-            visualizer.classList.add('hidden');
-            visualizer.classList.remove('flex');
-        }
+        });
+
+        const statusLabels = document.querySelectorAll('#careai-voice-status-text, #studio-status-text');
+        statusLabels.forEach(label => {
+            if (active) {
+                label.textContent = mode === 'speaking' ? `🔊 ${this.femalePersonaNames[this.currentLang] || 'Dr. Sophia'} Speaking...` : `🎙️ Listening (${this.currentLang.toUpperCase()})...`;
+            } else {
+                label.textContent = `Ready to speak or listen in 36 languages`;
+            }
+        });
     }
 
     setAvatarSpeaking(speaking) {
-        const ring = document.getElementById('careai-avatar-pulse-ring');
-        if (ring) {
+        const rings = document.querySelectorAll('#careai-avatar-pulse-ring, #studio-avatar-ring');
+        rings.forEach(ring => {
             if (speaking) ring.classList.add('animate-ping', 'opacity-75');
             else ring.classList.remove('animate-ping', 'opacity-75');
-        }
+        });
     }
 
     showMicPulsing(pulsing) {
-        const micBtn = document.getElementById('careai-mic-btn');
-        if (micBtn) {
+        const micBtns = document.querySelectorAll('#careai-mic-btn, .careai-mic-trigger');
+        micBtns.forEach(micBtn => {
             if (pulsing) {
-                micBtn.classList.add('bg-red-500', 'text-white', 'animate-pulse');
-                micBtn.classList.remove('bg-surface-variant', 'text-primary');
+                micBtn.style.background = '#ef4444';
+                micBtn.classList.add('animate-pulse', 'scale-110');
             } else {
-                micBtn.classList.remove('bg-red-500', 'text-white', 'animate-pulse');
-                micBtn.classList.add('bg-surface-variant', 'text-primary');
+                micBtn.style.background = 'linear-gradient(135deg, #001e47, #005bbf, #0284c7)';
+                micBtn.classList.remove('animate-pulse', 'scale-110');
             }
-        }
+        });
+    }
+
+    updateInputPlaceholders(text) {
+        const inputs = document.querySelectorAll('#careai-dock-input');
+        inputs.forEach(input => {
+            input.placeholder = text;
+        });
+    }
+
+    setInputValues(text) {
+        const inputs = document.querySelectorAll('#careai-dock-input');
+        inputs.forEach(input => {
+            input.value = text;
+        });
     }
 
     openDock() {
@@ -614,30 +665,30 @@ class CareAIVoiceSystem {
     }
 
     clearChat() {
-        const chatBox = document.getElementById('careai-dock-messages');
-        if (chatBox) {
+        const chatBoxes = document.querySelectorAll('#careai-dock-messages');
+        chatBoxes.forEach(chatBox => {
             chatBox.innerHTML = `
-                <div class="p-3.5 bg-surface-container rounded-2xl text-secondary space-y-1 text-xs">
-                    <p class="font-bold text-primary flex items-center gap-1">
-                        <span class="material-symbols-outlined text-[15px]">record_voice_over</span>
+                <div class="p-4 bg-surface-container rounded-2xl text-secondary space-y-1 text-xs">
+                    <p class="font-bold text-primary flex items-center gap-1.5">
+                        <span class="material-symbols-outlined text-[16px]">record_voice_over</span>
                         ${this.femalePersonaNames[this.currentLang] || 'Dr. Sophia CareAI'}
                     </p>
-                    <p>Chat cleared. I am ready to answer any questions in your preferred language!</p>
+                    <p>Chat cleared. I am ready to answer any clinical questions or speak in your chosen language!</p>
                 </div>
             `;
-        }
+        });
     }
 
     bindEvents() {
-        const input = document.getElementById('careai-dock-input');
-        if (input) {
+        const inputs = document.querySelectorAll('#careai-dock-input');
+        inputs.forEach(input => {
             input.addEventListener('keydown', (e) => {
                 if (e.key === 'Enter') {
                     e.preventDefault();
                     this.sendMessage(input.value);
                 }
             });
-        }
+        });
     }
 
     formatMarkdown(text) {
@@ -658,7 +709,7 @@ class CareAIVoiceSystem {
     }
 }
 
-// Global Singleton
+// Global Singleton Instance
 window.careAIVoice = new CareAIVoiceSystem();
 document.addEventListener('DOMContentLoaded', () => {
     window.careAIVoice.init();

@@ -278,15 +278,20 @@ class CareAIVoiceBrain:
         responses = {
             "en": "Our certified Clustered XGBoost model (0.9794 ROC-AUC, 0.9412 PR-AUC) evaluates 47 clinical parameters to predict 30-day readmission risk. For high-risk profiles (>45%), the highest impact factors are prior emergency visits, insulin titration adjustments, and elevated serum creatinine. We advise scheduling a 72-hour telehealth follow-up to stabilize outpatient transition.",
             "hi": "हमारा प्रमाणित XGBoost मॉडल (0.9794 ROC-AUC) 47 क्लिनिकल मापदंडों के आधार पर 30-दिवसीय पुनःप्रवेश जोखिम की गणना करता है। उच्च जोखिम (>45%) के मुख्य कारण पूर्व अस्पताल में भर्ती, इंसुलिन की खुराक में परिवर्तन और क्रिएटिनिन स्तर हैं। हम 72 घंटे में टेली-परामर्श की सिफारिश करते हैं।",
-            "es": "Nuestro modelo certificado XGBoost (0.9794 ROC-AUC) evalúa 47 parámetros clínicos para calcular el riesgo de reingreso a 30 días. Para perfiles de alto riesgo, los factores principales son ingresos previos y creatinina elevada. Recomendamos teleconsulta dentro de las 72 horas.",
+            "te": "మా ధృవీకరించబడిన XGBoost AI మోడల్ 47 క్లినికల్ అంశాలను విశ్లేషించి 30 రోజుల ఆసుపత్రి రీఅడ్మిషన్ ప్రమాదాన్ని లెక్కిస్తుంది. అత్యధిక ప్రమాదం (>45%) ఉన్నవారికి గతంలో అత్యవసర సందర్శనలు, ఇన్సులిన్ మార్పులు ప్రధాన కారణాలు. 72 గంటల్లో వీడియో ఫాలో-అప్ సిఫార్సు చేయబడింది.",
+            "ta": "எங்கள் சான்றளிக்கப்பட்ட XGBoost AI மாதிரி 47 மருத்துவ காரணிகளின் அடிப்படையில் 30 நாள் மறுஅனுமதி அபாயத்தைக் கணக்கிடுகிறது. அதிக ஆபத்துள்ள நோயாளிகளுக்கு 72 மணி நேரத்திற்குள் மருத்துவ ஆலோசனையைப் பெறவும்.",
+            "kn": "ನಮ್ಮ ಪ್ರಮಾಣೀಕೃತ AI ಮಾದರಿಯು 47 ಕ್ಲಿನಿಕಲ್ ನಿಯತಾಂಕಗಳನ್ನು ಆಧರಿಸಿ 30 ದಿನಗಳ ಮರುದಾಖಲಾತಿ ಅಪಾಯವನ್ನು ಲೆಕ್ಕಾಚಾರ ಮಾಡುತ್ತದೆ. 72 ಗಂಟೆಗಳಲ್ಲಿ ಟೆಲಿ-ಕನ್ಸಲ್ಟೇಶನ್ ಶಿಫಾರಸು ಮಾಡುತ್ತೇವೆ.",
+            "ml": "ഞങ്ങളുടെ സാക്ഷ്യപ്പെടുത്തിയ AI മോഡൽ 47 ക്ലിനിക്കൽ ഘടകങ്ങൾ വിശകലനം ചെയ്ത് 30 ദിവസത്തെ പുനഃപ്രവേശന സാധ്യത കണക്കാക്കുന്നു. 72 മണിക്കൂറിനുള്ളിൽ ടെലി-കൺസൾട്ടേഷൻ നടത്താൻ ശുപാർശ ചെയ്യുന്നു.",
+            "mr": "आमचे प्रमाणित XGBoost मॉडेल 47 क्लिनिकल घटकांच्या आधारे 30 दिवसांच्या पुनर्प्रवेश धोक्याचे मूल्यांकन करते. 72 तासांच्या आत टेलिमेडिसिन सल्ला घेण्याची शिफारस केली जाते.",
+            "gu": "અમારું પ્રમાણિત XGBoost મોડેલ 47 ક્લિનિકલ પરિમાણોના આધારે 30-દિવસના પુનઃપ્રવેશ જોખમનું મૂલ્યાંકન કરે છે. 72 કલાકમાં ટેલિ-કન્સલ્ટેશન કરવાની સલાહ આપવામાં આવે છે.",
+            "pa": "ਸਾਡਾ ਪ੍ਰਮਾਣਿਤ XGBoost ਮਾਡਲ 47 ਕਲੀਨਿਕਲ ਮਾਪਦੰਡਾਂ ਦੇ ਆਧਾਰ 'ਤੇ 30-ਦਿਨਾਂ ਦੇ ਮੁੜ-ਦਾਖਲੇ ਦੇ ਜੋਖਮ ਦਾ ਮੁਲਾਂਕਣ ਕਰਦਾ ਹੈ। 72 ਘੰਟਿਆਂ ਵਿੱਚ ਟੈਲੀ-ਸਲਾਹ ਦੀ ਸਿਫਾਰਸ਼ ਕੀਤੀ ਜਾਂਦੀ ਹੈ।",
+            "ur": "ہمارا تصدیق شدہ ماڈل 47 کلینیکل پیرامیٹرز کی بنیاد پر 30 دن کے دوبارہ داخلے کے خطرے کا اندازہ لگاتا ہے۔ 72 گھنٹوں میں ٹیلی ہیلتھ فالو اپ تجویز کیا جاتا ہے۔",
+            "es": "Nuestro modelo certificado XGBoost (0.9794 ROC-AUC) evalúa 47 parámetros clínicos para calcular el riesgo de reingreso a 30 días. Recomendamos teleconsulta dentro de las 72 horas.",
             "fr": "Notre modèle certifié XGBoost (ROC-AUC 0,9794) évalue 47 paramètres cliniques pour prédire le risque de réadmission à 30 jours. Nous préconisons un suivi en télémédecine sous 72 heures.",
             "de": "Unser zertifiziertes XGBoost-Modell (ROC-AUC 0,9794) berechnet das 30-Tage-Wiederaufnahmerisiko anhand von 47 Parametern. Wir empfehlen eine Videosprechstunde innerhalb von 72 Stunden.",
-            "bn": "আমাদের এআই মডেল ৪৭টি ক্লিনিক্যাল উপাদানের ভিত্তিতে ৩০-দিনের রিঅ্যাডমিশন ঝুঁকি বিশ্লেষণ করে। উচ্চ ঝুঁকি থাকলে ৭২ ঘণ্টার মধ্যে ভিডিও ফলো-আপ সম্পন্ন করার পরামর্শ দেওয়া হচ্ছে।",
-            "ta": "எங்கள் XGBoost AI மாதிரி 47 மருத்துவ காரணிகளின் அடிப்படையில் 30 நாள் மறுஅனுமதி அபாயத்தைக் கணக்கிடுகிறது. அதிக ஆபத்து இருந்தால், 72 மணி நேரத்திற்குள் மருத்துவ ஆலோசனையைப் பெறவும்.",
-            "te": "మా సర్టిఫైడ్ AI మోడల్ 47 క్లినికల్ అంశాలను విశ్లేషించి 30 రోజుల రీఅడ్మిషన్ ప్రమాదాన్ని లెక్కిస్తుంది. 72 గంటల్లో వీడియో ఫాలో-అప్ సిఫార్సు చేయబడింది.",
-            "kn": "ನಮ್ಮ AI ಮಾದರಿಯು 47 ಕ್ಲಿನಿಕಲ್ ಅಂಶಗಳನ್ನು ಆಧರಿಸಿ 30 ದಿನಗಳ ಮರುದಾಖಲಾತಿ ಅಪಾಯವನ್ನು ಲೆಕ್ಕಾಚಾರ ಮಾಡುತ್ತದೆ. 72 ಗಂಟೆಗಳಲ್ಲಿ ಟೆಲಿ-ಕನ್ಸಲ್ಟೇಶನ್ ಪಡೆಯಲು ಶಿಫಾರಸು ಮಾಡುತ್ತೇವೆ.",
-            "ml": "ഞങ്ങളുടെ AI മോഡൽ 47 ക്ലിനിക്കൽ ഘടകങ്ങൾ വിലയിരുത്തി 30 ദിവസത്തെ പുനഃപ്രവേശന സാധ്യത കണക്കാക്കുന്നു. 72 മണിക്കൂറിനുള്ളിൽ ടെലി-കൺസൾട്ടേഷൻ നടത്താൻ ശുപാർശ ചെയ്യുന്നു.",
-            "mr": "आमचे XGBoost मॉडेल 47 क्लिनिकल घटकांच्या आधारे 30 दिवसांच्या पुनर्प्रवेश धोक्याचे अचूक मूल्यांकन करते. 72 तासांच्या आत टेलिमेडिसिन सल्ला घेण्याची शिफारस केली जाते."
+            "ar": "يقوم نموذجنا الطبي المعتمد بتقييم 47 معياراً سريرياً للتنبؤ بخطر إعادة الدخول إلى المستشفى. نوصي بمتابعة التطبيب عن بعد خلال 72 ساعة.",
+            "zh": "我们的经过认证的XGBoost模型通过47项临床参数评估30天再入院风险。建议在出院72小时内安排远程医疗随访。",
+            "ja": "認定されたXGBoostモデルは47の臨床パラメータから30日以内の再入院リスクを予測します。退院後72時間以内のオンライン診療を推奨します。"
         }
         resp_text = responses.get(lang, responses["en"])
         return {
@@ -307,10 +312,14 @@ class CareAIVoiceBrain:
         responses = {
             "en": "Laboratory biomarkers provide vital guidance during outpatient recovery. Serum Creatinine above 1.40 mg/dL indicates potential renal strain, while HbA1c > 8.0% reflects prolonged glycemic volatility. Ensure proper hydration, stick to your prescribed dosing, and repeat blood tests in 7 to 10 days.",
             "hi": "लैब परीक्षण आपके स्वास्थ्य की स्पष्ट तस्वीर प्रस्तुत करते हैं। सीरम क्रिएटिनिन 1.40 mg/dL से अधिक होना गुर्दे के तनाव का संकेत है, और HbA1c 8% से अधिक होना अनियंत्रित शुगर दर्शाता है। भरपूर पानी पिएं और 7-10 दिनों में पुनः जांच कराएं।",
+            "te": "ల్యాబ్ నివేదికలు మీ రికవరీ పురోగతిని తెలియజేస్తాయి. సీరం క్రియాటినిన్ 1.40 mg/dL కంటే ఎక్కువ ఉండటం మూత్రపిండాల ఒత్తిడిని సూచిస్తుంది. మందులను సమయానికి తీసుకోండి మరియు 7-10 రోజుల్లో పునః పరీక్ష చేయించుకోండి.",
+            "ta": "ஆய்வக சோதனைகள் உங்கள் உடல்நிலை முன்னேற்றத்தை காட்டுகின்றன. கிரியேட்டினின் 1.40 mg/dL ஐ விட அதிகமாக இருப்பது சிறுநீரக சுமையை குறிக்கிறது. 7-10 நாட்களில் மீண்டும் பரிசோதனை செய்யுங்கள்.",
             "es": "Los biomarcadores indican el estado de su recuperación. La creatinina sérica > 1.40 mg/dL refleja sobrecarga renal y la HbA1c > 8% descontrol glucémico. Mantenga buena hidratación y repita exámenes en 7 a 10 días.",
             "fr": "Les biomarqueurs sanguins indiquent l'état de votre rétablissement. Une créatinine > 1,40 mg/dL signale une fatigue rénale et une HbA1c > 8% une glycémie instable. Hydratez-vous bien et effectuez un contrôle sous 7 à 10 jours.",
             "de": "Laborwerte geben Aufschluss über Ihre Genesung. Ein Serumkreatinin > 1,40 mg/dL weist auf eine Nierenbelastung hin. Bitte trinken Sie ausreichend und wiederholen Sie die Werte in 7–10 Tagen.",
-            "bn": "ল্যাব রিপোর্ট অনুযায়ী, সিরাম ক্রিয়েটিনিন ১.৪০ mg/dL এর বেশি থাকা কিডনির চাপ নির্দেশ করে এবং HbA1c ৮% এর বেশি থাকা রক্তে শর্করার অনিয়ন্ত্রণ প্রকাশ করে। চিকিৎসকের নির্দেশ মেনে চলুন।"
+            "ar": "توفر المؤشرات الحيوية المخبرية دليلاً أساسياً أثناء فترة الشفاء. يشير ارتفاع الكرياتينين إلى إجهاد كلوي محتمل. احرص على شرب السوائل بانتظام.",
+            "zh": "实验室生物标志物为出院康复提供重要指导。肌酐>1.40 mg/dL表明存在肾功能负担，请遵医嘱按时复查。",
+            "ja": "検査値は回復状況を把握する重要な指標です。血清クレアチニン値が1.40 mg/dLを超えている場合は腎臓への負担が考えられます。7〜10日後に再検査を受けてください。"
         }
         resp_text = responses.get(lang, responses["en"])
         return {
