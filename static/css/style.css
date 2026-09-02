@@ -411,4 +411,50 @@
     transform: translateY(-2px) scale(1.04) !important;
 }
 
+/* ============================================================
+   Custom Sleek Scrollbar (Sidebar & Containers)
+   ============================================================ */
+nav::-webkit-scrollbar,
+.custom-scrollbar::-webkit-scrollbar,
+#mobile-drawer::-webkit-scrollbar,
+#desktop-sidebar::-webkit-scrollbar {
+    width: 5px;
+    height: 5px;
+}
+nav::-webkit-scrollbar-track,
+.custom-scrollbar::-webkit-scrollbar-track,
+#mobile-drawer::-webkit-scrollbar-track,
+#desktop-sidebar::-webkit-scrollbar-track {
+    background: transparent;
+}
+nav::-webkit-scrollbar-thumb,
+.custom-scrollbar::-webkit-scrollbar-thumb,
+#mobile-drawer::-webkit-scrollbar-thumb,
+#desktop-sidebar::-webkit-scrollbar-thumb {
+    background: rgba(0, 91, 191, 0.22);
+    border-radius: 9999px;
+}
+nav::-webkit-scrollbar-thumb:hover,
+.custom-scrollbar::-webkit-scrollbar-thumb:hover,
+#mobile-drawer::-webkit-scrollbar-thumb:hover,
+#desktop-sidebar::-webkit-scrollbar-thumb:hover {
+    background: rgba(0, 91, 191, 0.5);
+}
+
+nav, .custom-scrollbar, #mobile-drawer, #desktop-sidebar {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(0, 91, 191, 0.22) transparent;
+}
+
+/* Sidebar Smooth Transitions */
+#desktop-sidebar {
+    transition: width 0.3s cubic-bezier(0.16, 1, 0.3, 1), margin-left 0.3s cubic-bezier(0.16, 1, 0.3, 1), transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+#desktop-sidebar.is-collapsed {
+    margin-left: -16rem;
+    pointer-events: none;
+    opacity: 0;
+}
+
+
 

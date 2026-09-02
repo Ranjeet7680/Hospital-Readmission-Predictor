@@ -119,17 +119,23 @@
     {% if not hide_nav %}
     <div class="flex min-h-screen">
         <!-- Desktop Side Navigation -->
-        <nav class="hidden md:flex flex-col h-screen p-3 space-y-1 nav-glass w-64 flex-shrink-0 sticky top-0 z-40 overflow-y-auto">
-            <!-- Brand Header -->
-            <a href="/dashboard" class="flex items-center gap-2.5 mb-4 px-2 pt-2 group">
-                <div class="w-10 h-10 rounded-xl flex items-center justify-center text-white shadow-md group-hover:scale-105 transition-transform" style="background: linear-gradient(135deg,#005bbf,#002f6c);">
-                    <span class="material-symbols-outlined fill-icon text-2xl">local_hospital</span>
-                </div>
-                <div>
-                    <h1 class="text-sm font-extrabold gradient-text" data-i18n="brand_name">HRP Clinical</h1>
-                    <p class="text-[11px] text-secondary font-semibold tracking-wide" data-i18n="brand_subtitle">Precision Care &amp; AI</p>
-                </div>
-            </a>
+        <nav id="desktop-sidebar" class="hidden md:flex flex-col h-screen p-3 space-y-1 nav-glass w-64 flex-shrink-0 sticky top-0 z-40 overflow-y-auto">
+            <!-- Brand Header with Collapse Button -->
+            <div class="flex items-center justify-between mb-4 px-2 pt-2">
+                <a href="/dashboard" class="flex items-center gap-2.5 group">
+                    <div class="w-10 h-10 rounded-xl flex items-center justify-center text-white shadow-md group-hover:scale-105 transition-transform" style="background: linear-gradient(135deg,#005bbf,#002f6c);">
+                        <span class="material-symbols-outlined fill-icon text-2xl">local_hospital</span>
+                    </div>
+                    <div>
+                        <h1 class="text-sm font-extrabold gradient-text" data-i18n="brand_name">HRP Clinical</h1>
+                        <p class="text-[11px] text-secondary font-semibold tracking-wide" data-i18n="brand_subtitle">Precision Care &amp; AI</p>
+                    </div>
+                </a>
+                <button type="button" onclick="toggleDesktopSidebar()" id="desktop-sidebar-close-btn" class="p-1.5 rounded-xl text-secondary hover:text-primary hover:bg-primary/10 transition-all cursor-pointer" title="Collapse Sidebar (Ctrl+B)">
+                    <span class="material-symbols-outlined text-[20px]" id="desktop-sidebar-icon">dock_to_left</span>
+                </button>
+            </div>
+
 
             <!-- Scrollable Nav Groups -->
             <div class="flex-1 space-y-4 pr-1 text-xs">
@@ -432,10 +438,15 @@
 
             <!-- Top App Bar (Responsive for Desktop, Tablet, and Mobile) -->
             <header class="header-glass flex justify-between items-center w-full px-3 sm:px-6 py-2.5 sticky top-0 z-30">
-                <!-- Left: Hamburger (Mobile/Tablet) + Title/Brand -->
+                <!-- Left: Hamburger (Mobile/Tablet) + Desktop Toggle + Title/Brand -->
                 <div class="flex items-center gap-2 sm:gap-3">
+                    <!-- Desktop Sidebar Toggle Button -->
+                    <button type="button" onclick="toggleDesktopSidebar()" id="topbar-sidebar-toggle-btn" class="hidden md:flex p-2 text-secondary hover:text-primary hover:bg-primary/10 rounded-xl transition-all cursor-pointer items-center justify-center active:scale-95" title="Toggle Navigation Sidebar (Ctrl+B)" aria-label="Toggle Sidebar">
+                        <span class="material-symbols-outlined text-[22px]" id="topbar-sidebar-icon">menu_open</span>
+                    </button>
+
                     <!-- Mobile / Tablet Hamburger Toggle Button -->
-                    <button onclick="openMobileDrawer()" class="md:hidden p-2.5 text-secondary hover:text-primary hover:bg-primary/10 rounded-xl transition-all active:scale-95" aria-label="Open Navigation Menu" style="min-height:44px;min-width:44px;">
+                    <button type="button" onclick="openMobileDrawer()" class="md:hidden p-2.5 text-secondary hover:text-primary hover:bg-primary/10 rounded-xl transition-all active:scale-95" aria-label="Open Navigation Menu" style="min-height:44px;min-width:44px;">
                         <span class="material-symbols-outlined text-2xl">menu</span>
                     </button>
 
@@ -452,6 +463,7 @@
                         <span class="text-sm sm:text-base font-bold text-on-surface">{% block header_title %}Hospital Readmission Predictor{% endblock %}</span>
                     </div>
                 </div>
+
 
                 <!-- Right Controls: Audio, Language, Search, Notifications & Profile -->
                 <div class="flex items-center gap-1 sm:gap-2">
@@ -948,6 +960,44 @@
     </div>
 
     <script>
+        // Desktop Sidebar Collapse & Expand Toggle API
+        function toggleDesktopSidebar(forceState) {
+            const sidebar = document.getElementById('desktop-sidebar');
+            const topbarIcon = document.getElementById('topbar-sidebar-icon');
+            const sidebarIcon = document.getElementById('desktop-sidebar-icon');
+            if (!sidebar) return;
+
+            const shouldCollapse = forceState !== undefined ? forceState : !sidebar.classList.contains('is-collapsed');
+            
+            if (shouldCollapse) {
+                sidebar.classList.add('is-collapsed');
+                if (topbarIcon) topbarIcon.textContent = 'menu';
+                if (sidebarIcon) sidebarIcon.textContent = 'dock_to_right';
+                localStorage.setItem('hrp_sidebar_collapsed', 'true');
+            } else {
+                sidebar.classList.remove('is-collapsed');
+                if (topbarIcon) topbarIcon.textContent = 'menu_open';
+                if (sidebarIcon) sidebarIcon.textContent = 'dock_to_left';
+                localStorage.setItem('hrp_sidebar_collapsed', 'false');
+            }
+            window.soundEngine?.click();
+        }
+
+        // Restore saved desktop sidebar preference and bind Ctrl+B shortcut
+        document.addEventListener('DOMContentLoaded', () => {
+            const savedState = localStorage.getItem('hrp_sidebar_collapsed');
+            if (savedState === 'true') {
+                toggleDesktopSidebar(true);
+            }
+        });
+
+        document.addEventListener('keydown', (e) => {
+            if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'b') {
+                e.preventDefault();
+                toggleDesktopSidebar();
+            }
+        });
+
         // Sound Engine Mute Toggle
         function toggleAudioMute() {
             const isMuted = !window.soundEngine.muted;
@@ -956,6 +1006,7 @@
             if (icon) icon.textContent = isMuted ? 'volume_off' : 'volume_up';
             if (!isMuted) window.soundEngine.success();
         }
+
 
         // Mobile Navigation Drawer — Enhanced with spring animation
         function openMobileDrawer() {
