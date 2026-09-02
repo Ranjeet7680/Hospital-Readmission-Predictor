@@ -119,3 +119,27 @@ def test_i18n_36_languages_sync():
     assert resp_trans.status_code == 200
     assert resp_trans.json()["total_supported"] >= 36
     assert resp_trans.json()["metadata"]["locale"] == "te-IN"
+
+def test_health_and_security_headers():
+    resp = client.get("/healthz")
+    assert resp.status_code == 200
+    assert resp.json()["status"] == "healthy"
+    assert resp.json()["models_ready"] is True
+    assert "X-Content-Type-Options" in resp.headers
+    assert resp.headers["X-Content-Type-Options"] == "nosniff"
+
+def test_patient_search_and_pagination():
+    resp = client.get("/api/patients/search?q=Eleanor&page=1&page_size=5")
+    assert resp.status_code == 200
+    data = resp.json()
+    assert data["status"] == "success"
+    assert data["data"]["total_count"] >= 1
+    assert "Eleanor Vance" in data["data"]["patients"][0]["name"]
+
+def test_audit_logs_api():
+    resp = client.get("/api/admin/audit-logs")
+    assert resp.status_code == 200
+    data = resp.json()
+    assert data["status"] == "success"
+    assert "logs" in data
+

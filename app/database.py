@@ -327,8 +327,64 @@ class Database:
             lines.append(f"{p.get('id','')},{p.get('patient_id','')},{p.get('patient_name','')},{p.get('timestamp','')},{p.get('risk_score','')},{p.get('risk_level','')},{p.get('clinician','')},{p.get('department','')},{p.get('status','')}")
         return "\n".join(lines)
 
+    def search_patients(self, query=None, department=None, page=1, page_size=10):
+        """Search and paginate patient cohort records with multi-attribute filtering."""
+        results = list(self.patients.values())
+        if department and department.lower() not in ["all", "all departments"]:
+            results = [p for p in results if p.get("department", "").lower() == department.lower()]
+        if query and query.strip():
+            q = query.strip().lower()
+            results = [
+                p for p in results if
+                q in p.get("id", "").lower() or
+                q in p.get("name", "").lower() or
+                q in p.get("primary_diagnosis", "").lower() or
+                q in p.get("attending_physician", "").lower()
+            ]
+        
+        total_count = len(results)
+        start_idx = (page - 1) * page_size
+        paginated = results[start_idx:start_idx + page_size]
+        
+        return {
+            "total_count": total_count,
+            "page": page,
+            "page_size": page_size,
+            "total_pages": max(1, (total_count + page_size - 1) // page_size),
+            "patients": paginated
+        }
+
+    def update_patient_vitals(self, patient_id, new_vitals: dict):
+        """Update live physiological vitals telemetry for an enrolled patient."""
+        p = self.patients.get(patient_id)
+        if not p:
+            return None
+        if "vitals" not in p:
+            p["vitals"] = {}
+        p["vitals"].update(new_vitals)
+        return p
+
+    def get_patient_analytics(self, patient_id):
+        """Derive longitudinal biomarker and readmission trajectory analytics."""
+        p = self.patients.get(patient_id)
+        if not p:
+            return None
+        return {
+            "patient_id": patient_id,
+            "patient_name": p.get("name"),
+            "current_risk": p.get("risk_score", 50),
+            "trajectory": self.get_patient_trajectory(patient_id),
+            "vitals_snapshot": p.get("vitals", {}),
+            "comorbidity_count": len(p.get("history", {}).get("comorbidities", [])),
+            "active_medications": len(p.get("history", {}).get("medication_list", []))
+        }
+
     def add_prediction(self, pred_dict):
+        """Record and store a new clinical prediction assessment."""
         self.predictions.insert(0, pred_dict)
         return pred_dict
 
 db = Database()
+
+
+

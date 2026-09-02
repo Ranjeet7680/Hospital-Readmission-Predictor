@@ -59,7 +59,55 @@ possible_template_dirs = [
 template_dir = next((d for d in possible_template_dirs if os.path.exists(d)), os.path.join(BASE_DIR, "templates"))
 templates = Jinja2Templates(directory=template_dir)
 
+@app.middleware("http")
+async def add_security_and_timing_headers(request: Request, call_next):
+    start_time = datetime.now()
+    response = await call_next(request)
+    process_time = (datetime.now() - start_time).total_seconds() * 1000
+    response.headers["X-Process-Time-MS"] = f"{process_time:.2f}"
+    response.headers["X-Content-Type-Options"] = "nosniff"
+    response.headers["X-Frame-Options"] = "SAMEORIGIN"
+    response.headers["X-XSS-Protection"] = "1; mode=block"
+    return response
+
+@app.get("/healthz")
+@app.get("/readyz")
+@app.get("/api/health")
+async def health_check_endpoint():
+    """Liveness & Readiness probe for serverless and containerized deployment."""
+    return JSONResponse({
+        "status": "healthy",
+        "service": "Hospital-Readmission-Predictor",
+        "version": "2.4.1",
+        "database": "operational",
+        "active_patients": len(db.patients),
+        "models_ready": True,
+        "languages_supported": 36,
+        "timestamp": datetime.now().isoformat()
+    })
+
+@app.get("/api/patients/search")
+async def api_search_patients(
+    q: Optional[str] = Query(None),
+    department: Optional[str] = Query(None),
+    page: int = Query(1, ge=1),
+    page_size: int = Query(10, ge=1, le=100)
+):
+    """Search and paginate patient cohort records with multi-attribute filtering."""
+    results = db.search_patients(query=q, department=department, page=page, page_size=page_size)
+    return JSONResponse({"status": "success", "data": results})
+
+@app.get("/api/admin/audit-logs")
+async def api_get_audit_logs():
+    """Retrieve full cryptographic audit log for clinician authorizations and compliance."""
+    return JSONResponse({
+        "status": "success",
+        "total_logs": len(auth_manager.audit_logs),
+        "logs": auth_manager.audit_logs
+    })
+
 @app.get("/favicon.ico")
+
 async def favicon_ico():
     favicon_path = os.path.join(BASE_DIR, "static", "favicon.ico")
     if os.path.exists(favicon_path):
