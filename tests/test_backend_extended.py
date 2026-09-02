@@ -143,3 +143,47 @@ def test_audit_logs_api():
     assert data["status"] == "success"
     assert "logs" in data
 
+def test_cds_hooks_discovery_and_patient_view():
+    # Discovery
+    resp_disc = client.get("/api/cds-services")
+    assert resp_disc.status_code == 200
+    assert len(resp_disc.json()["services"]) >= 1
+    assert resp_disc.json()["services"][0]["hook"] == "patient-view"
+
+    # Patient-View Hook Handler
+    resp_hook = client.post("/api/cds-services/patient-view", json={
+        "hook": "patient-view",
+        "context": {"patientId": "PT-84729"}
+    })
+    assert resp_hook.status_code == 200
+    assert len(resp_hook.json()["cards"]) >= 1
+    assert "warning" in resp_hook.json()["cards"][0]["indicator"]
+
+def test_database_backup_and_restore():
+    # Export Snapshot
+    resp_exp = client.get("/api/admin/backup/export")
+    assert resp_exp.status_code == 200
+    assert "patients" in resp_exp.json()
+    assert "signature" in resp_exp.json()
+
+    # Restore Snapshot
+    resp_res = client.post("/api/admin/backup/restore", json={
+        "patients": {"PT-BACKUP-01": {"id": "PT-BACKUP-01", "name": "Backup Patient"}}
+    })
+    assert resp_res.status_code == 200
+    assert resp_res.json()["status"] == "success"
+
+def test_patient_clinical_summary_and_system_diagnostics():
+    # Clinical Summary
+    resp_sum = client.get("/api/patient/PT-84729/summary")
+    assert resp_sum.status_code == 200
+    assert resp_sum.json()["status"] == "success"
+    assert "clinical_summary" in resp_sum.json()
+
+    # System Diagnostics
+    resp_diag = client.get("/api/system/diagnostics")
+    assert resp_diag.status_code == 200
+    assert resp_diag.json()["status"] == "operational"
+    assert resp_diag.json()["serverless_ready"] is True
+
+
