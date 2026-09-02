@@ -560,3 +560,34 @@ document.addEventListener('pointerdown', (e) => {
     btn.appendChild(wave);
     wave.addEventListener('animationend', () => wave.remove());
 });
+
+// Interactive Confetti & Celebration Particle Burst
+window.triggerCelebration = function() {
+    if (window.animationEngine && window.animationEngine.reduceMotion) return;
+    const colors = ['#005bbf', '#0284c7', '#10b981', '#f59e0b', '#8b5cf6', '#ec4899'];
+    for (let i = 0; i < 40; i++) {
+        const p = document.createElement('div');
+        p.style.position = 'fixed';
+        p.style.top = '20%';
+        p.style.left = `${Math.random() * 80 + 10}%`;
+        p.style.width = `${Math.random() * 8 + 4}px`;
+        p.style.height = `${Math.random() * 8 + 4}px`;
+        p.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+        p.style.borderRadius = Math.random() > 0.5 ? '50%' : '2px';
+        p.style.zIndex = '99999';
+        p.style.pointerEvents = 'none';
+        p.style.transform = 'translateY(0) rotate(0deg)';
+        p.style.transition = `transform ${Math.random() * 1.5 + 1}s cubic-bezier(0.25, 1, 0.5, 1), opacity 1s ease`;
+        document.body.appendChild(p);
+
+        requestAnimationFrame(() => {
+            const xDelta = (Math.random() - 0.5) * 300;
+            const yDelta = Math.random() * 500 + 150;
+            p.style.transform = `translate(${xDelta}px, ${yDelta}px) rotate(${Math.random() * 720}deg)`;
+            p.style.opacity = '0';
+        });
+
+        setTimeout(() => p.remove(), 2500);
+    }
+};
+
