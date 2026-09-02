@@ -355,16 +355,30 @@
         const testPhrases = {
             en: "Hello, I am Dr. Sophia CareAI. Universal clinical voice assistant is active across 36 languages.",
             hi: "नमस्ते, मैं डॉ. अनन्या केयर-एआई हूँ। आपकी स्वास्थ्य वॉयस सहायिका 36 भाषाओं में तैयार है।",
+            te: "నమస్కారం! నేను డాక్టర్ కావ్య CareAI. మీ ఆరోగ్య సహాయకురాలు సిద్ధంగా ఉంది.",
+            ta: "வணக்கம்! நான் டாக்டர் பிரியா CareAI. உங்கள் மருத்துவ குரல் உதவியாளர் தயார்.",
+            bn: "নমস্কার, আমি ডক্টর তনুশ্রী কেয়ার-এआई। আপনার ভয়েস সহকারী সক্রিয় রয়েছে।",
+            kn: "ನಮಸ್ಕಾರ! ನಾನು ಡಾ. ಸಹನಾ CareAI. ನಿಮ್ಮ ವೈದ್ಯಕೀಯ ಧ್ವನಿ ಸಹಾಯಕ ಸಿದ್ಧವಾಗಿದೆ.",
+            ml: "നമസ്കാരം! ഞാൻ ഡോ. അനുപമ CareAI. നിങ്ങളുടെ ക്ലിനിക്കൽ വോയ്‌സ് അസിസ്റ്റന്റ് സജ്ജമാണ്.",
+            mr: "नमस्कार! मी डॉ. गौरी CareAI. आपली वैद्यकीय व्हॉईस सहाय्यक तयार आहे.",
+            gu: "નમસ્તે! હું ડૉ. ધારા CareAI. આપની ક્લિનિકલ વૉઇસ સહાયક તૈયાર છે.",
+            pa: "ਸਤਿ ਸ੍ਰੀ ਅਕਾਲ! ਮੈਂ ਡਾ. ਸਿਮਰਨ CareAI ਹਾਂ। ਤੁਹਾਡੀ ਵੌਇਸ ਸਹਾਇਕ ਤਿਆਰ ਹੈ।",
+            ur: "السلام علیکم! میں ڈاکٹر زویا CareAI ہوں۔ آپ کی طبی وائس اسسٹنٹ تیار ہے۔",
             es: "Hola, soy la Dra. Valentina CareAI. Su asistente de voz clínica está lista.",
             fr: "Bonjour, je suis le Dr. Amélie CareAI. Votre assistante vocale médicale est prête.",
             de: "Hallo, ich bin Dr. Marlene CareAI. Ihre universelle Sprachassistentin ist bereit.",
-            bn: "নমস্কার, আমি ডক্টর তনুশ্রী কেয়ার-এआई। আপনার ভয়েস সহকারী সক্রিয় রয়েছে।",
-            ta: "வணக்கம்! நான் டாக்டர் பிரியா CareAI.",
-            te: "నమస్కారం! నేను డాక్టర్ కావ్య CareAI."
+            it: "Ciao! Sono la Dott.ssa Chiara CareAI. La tua assistente vocale clinica è pronta.",
+            pt: "Olá! Sou a Dra. Camila CareAI. Sua assistente de voz clínica está pronta.",
+            ru: "Здравствуйте! Я доктор Елена CareAI. Ваш медицинский голосовой помощник готов.",
+            ar: "مرحبًا، أنا الدكتورة ليلى CareAI. مساعدتك الصوتية الطبية جاهزة عبر 36 لغة.",
+            zh: "您好！我是美玲医生 CareAI。您的全能临床语音助手已就绪。",
+            ja: "こんにちは！ドクター陽子 CareAI です。36言語対応の音声アシスタントが準備完了です。",
+            ko: "안녕하세요! 닥터 민지 CareAI 입니다. 임상 보이스 어시스턴트가 준비되었습니다."
         };
         const text = testPhrases[lang] || testPhrases["en"];
         window.careAIVoice.speak(text, lang);
     }
+
 
     function sendQuickPrompt(promptText, lang = 'en') {
         const select = document.getElementById('studio-lang-select');
