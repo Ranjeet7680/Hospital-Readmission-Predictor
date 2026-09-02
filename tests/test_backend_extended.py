@@ -186,4 +186,29 @@ def test_patient_clinical_summary_and_system_diagnostics():
     assert resp_diag.json()["status"] == "operational"
     assert resp_diag.json()["serverless_ready"] is True
 
+def test_clinical_rules_guidelines_and_pdf_export():
+    # Clinical Rules Evaluation
+    resp_rules = client.post("/api/clinical-rules/evaluate", json={
+        "patient_id": "PT-84729",
+        "age": 71,
+        "gender": "Female",
+        "creatinine": 1.60,
+        "systolic_bp": 135,
+        "diastolic_bp": 85,
+        "hba1c": 7.4,
+        "chf_history": 1
+    })
+    assert resp_rules.status_code == 200
+    eval_data = resp_rules.json()["evaluation"]
+    assert eval_data["egfr_ckd_epi"] < 60.0
+    assert len(eval_data["guideline_flags"]) >= 1
+    assert "KDIGO" in eval_data["guideline_flags"][0]["guideline"]
+
+    # PDF / HTML Report Export
+    resp_pdf = client.get("/api/reports/clinical-summary-pdf/PT-84729")
+    assert resp_pdf.status_code == 200
+    assert "HRP Clinical AI" in resp_pdf.text
+    assert "Eleanor Vance" in resp_pdf.text
+
+
 
