@@ -238,7 +238,7 @@
 
         <!-- RIGHT COLUMN: Conversational Stream Console (7 Cols) -->
         <div class="lg:col-span-7 space-y-6">
-            <div class="rounded-3xl bg-surface-container-lowest border border-outline-variant shadow-sm flex flex-col h-[750px] overflow-hidden">
+            <div class="rounded-3xl bg-surface-container-lowest border border-outline-variant shadow-sm flex flex-col min-h-[550px] max-h-[800px] h-[78vh] overflow-hidden">
                 
                 <!-- Chat Console Header -->
                 <div class="p-4 sm:p-5 border-b border-outline-variant bg-surface-container-low flex items-center justify-between gap-4 shrink-0">
@@ -262,32 +262,64 @@
 
                 <!-- Chat Stream Messages Scroll Box -->
                 <div id="careai-dock-messages" class="flex-1 p-4 sm:p-6 overflow-y-auto space-y-4 text-xs">
-                    <!-- Default Bot Greeting -->
+                    <!-- Default Bot Greeting Card -->
                     <div class="flex justify-start gap-2.5 items-start message-bot animate-fade-in">
                         <div class="w-8 h-8 rounded-full text-white flex items-center justify-center text-[12px] font-bold shadow-xs shrink-0 mt-0.5" 
                              style="background: linear-gradient(135deg, #001e47, #005bbf, #0284c7);">
                             <span class="material-symbols-outlined text-[16px]">medical_services</span>
                         </div>
-                        <div class="max-w-[85%] p-4 rounded-2xl rounded-tl-xs bg-surface-container-lowest border border-outline-variant text-on-surface text-xs shadow-xs space-y-2.5">
-                            <div class="flex items-center justify-between gap-2 border-b border-outline-variant/30 pb-1.5">
+                        <div class="w-full max-w-[95%] sm:max-w-[90%] p-4 rounded-2xl rounded-tl-xs bg-surface-container-lowest border border-outline-variant text-on-surface text-xs shadow-xs space-y-3">
+                            <div class="flex items-center justify-between gap-2 border-b border-outline-variant/30 pb-2">
                                 <span class="font-bold text-primary flex items-center gap-1.5">
                                     <span class="material-symbols-outlined text-[15px]">record_voice_over</span>
                                     Dr. Sophia CareAI (Universal Voice)
                                 </span>
+                                <span class="px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 text-[10px] font-bold">Online · 36 Lang</span>
                             </div>
                             <p class="leading-relaxed text-slate-700 font-normal">
-                                Hello! I am Dr. Sophia CareAI, your universal clinical voice assistant. You can speak to me in English, हिन्दी, Español, Français, বাংলা, தமிழ், or 36 worldwide languages. Ask me any clinical question or speak navigation commands like "Go to Dashboard".
+                                Hello! I am <b>Dr. Sophia CareAI</b>, your universal clinical voice assistant. You can speak to me naturally in <b>English, हिन्दी, తెలుగు, தமிழ், Español, Français</b>, or 36 worldwide languages. Ask me any clinical question or speak navigation commands.
                             </p>
-                            <div class="flex flex-wrap gap-1.5 pt-2 border-t border-outline-variant/40 mt-2">
-                                <button onclick="sendQuickPrompt('What is my 30-day hospital readmission risk?')" class="px-2.5 py-1 rounded-lg bg-surface-variant text-primary text-[11px] font-semibold hover:bg-primary-fixed transition-all cursor-pointer">
-                                    📊 Readmission Risk?
-                                </button>
-                                <button onclick="sendQuickPrompt('Go to New Prediction')" class="px-2.5 py-1 rounded-lg bg-surface-variant text-primary text-[11px] font-semibold hover:bg-primary-fixed transition-all cursor-pointer">
-                                    🧭 "Go to New Prediction"
-                                </button>
-                                <button onclick="sendQuickPrompt('मेरी दवाओं के समय और सावधानियां बताएं', 'hi')" class="px-2.5 py-1 rounded-lg bg-surface-variant text-primary text-[11px] font-semibold hover:bg-primary-fixed transition-all cursor-pointer">
-                                    💊 दवाओं का समय? (हिन्दी)
-                                </button>
+                            
+                            <!-- 4-Card Quick Prompt Categories -->
+                            <div class="pt-2 border-t border-outline-variant/40 space-y-2">
+                                <p class="text-[11px] font-bold text-secondary uppercase tracking-wider">Suggested Clinical Prompts &amp; Actions:</p>
+                                <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                                    <button onclick="sendQuickPrompt('What is Eleanor Vance\'s 30-day hospital readmission risk?')" 
+                                            class="p-2.5 rounded-xl bg-surface-container-low hover:bg-primary/10 border border-outline-variant/40 text-left transition-all cursor-pointer group">
+                                        <div class="font-bold text-primary text-[11px] flex items-center gap-1">
+                                            <span class="material-symbols-outlined text-[14px]">analytics</span>
+                                            Readmission Risk Triage
+                                        </div>
+                                        <p class="text-[10px] text-secondary mt-0.5">"What is Eleanor Vance's risk?"</p>
+                                    </button>
+
+                                    <button onclick="sendQuickPrompt('What precautions should I follow for Furosemide and potassium?')" 
+                                            class="p-2.5 rounded-xl bg-surface-container-low hover:bg-primary/10 border border-outline-variant/40 text-left transition-all cursor-pointer group">
+                                        <div class="font-bold text-primary text-[11px] flex items-center gap-1">
+                                            <span class="material-symbols-outlined text-[14px]">medication</span>
+                                            Medication Guidance
+                                        </div>
+                                        <p class="text-[10px] text-secondary mt-0.5">"Furosemide precautions &amp; diet"</p>
+                                    </button>
+
+                                    <button onclick="sendQuickPrompt('मेरी दवाओं के समय और सावधानियां बताएं', 'hi')" 
+                                            class="p-2.5 rounded-xl bg-surface-container-low hover:bg-primary/10 border border-outline-variant/40 text-left transition-all cursor-pointer group">
+                                        <div class="font-bold text-primary text-[11px] flex items-center gap-1">
+                                            <span class="material-symbols-outlined text-[14px]">translate</span>
+                                            हिन्दी वॉयस परामर्श
+                                        </div>
+                                        <p class="text-[10px] text-secondary mt-0.5">"दवाओं का समय और सावधानियां"</p>
+                                    </button>
+
+                                    <button onclick="sendQuickPrompt('Go to New Prediction')" 
+                                            class="p-2.5 rounded-xl bg-surface-container-low hover:bg-primary/10 border border-outline-variant/40 text-left transition-all cursor-pointer group">
+                                        <div class="font-bold text-primary text-[11px] flex items-center gap-1">
+                                            <span class="material-symbols-outlined text-[14px]">navigation</span>
+                                            Voice Navigation
+                                        </div>
+                                        <p class="text-[10px] text-secondary mt-0.5">"Go to New Prediction"</p>
+                                    </button>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -302,6 +334,7 @@
                                 style="background: linear-gradient(135deg, #001e47, #005bbf, #0284c7);" title="Tap to Speak (Voice STT)">
                             <span class="material-symbols-outlined text-[20px]">mic</span>
                         </button>
+
 
                         <!-- Input Field -->
                         <input id="careai-dock-input" type="text" placeholder="Ask Dr. Sophia CareAI or speak in 36 languages..." 
