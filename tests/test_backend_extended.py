@@ -1,0 +1,121 @@
+"""
+Extended Backend & API Verification Test Suite for HRP Clinical Platform
+Tests Digital Twin Sandbox, PPO RL Pathways, FHIR R4 Interoperability,
+Batch Ingestion, MLOps Telemetry, Drift Detection, and 36-Language APIs.
+"""
+
+import pytest
+from fastapi.testclient import TestClient
+from app.main import app
+
+client = TestClient(app)
+
+def test_rl_simulate_digital_twin():
+    resp = client.post("/api/rl/simulate", json={
+        "initial_risk": 72.5,
+        "patient_id": "PT-84729",
+        "interventions": ["pharmacist_review", "pcp_followup_72h"]
+    })
+    assert resp.status_code == 200
+    data = resp.json()
+    assert data["status"] == "success"
+    assert data["patient_id"] == "PT-84729"
+    assert "scenario_a" in data["simulation"]
+    assert "scenario_c" in data["simulation"]
+    assert data["recommended_pathway"]["policy_id"] == "POL-PPO-v2.4"
+
+def test_rl_policy_catalog_and_action_approval():
+    # Policies Catalog
+    resp_pol = client.get("/api/rl/policies")
+    assert resp_pol.status_code == 200
+    data_pol = resp_pol.json()
+    assert len(data_pol["policies"]) >= 3
+    assert len(data_pol["action_library"]) == 8
+
+    # Clinician Approval Gate
+    resp_app = client.post("/api/rl/approve-action", json={
+        "action_id": 3,
+        "patient_id": "PT-84729",
+        "clinician": "Dr. J. Aris, MD"
+    })
+    assert resp_app.status_code == 200
+    assert resp_app.json()["status"] == "success"
+    assert "approved" in resp_app.json()["message"]
+
+def test_batch_prediction_cohort():
+    cohort = [
+        {"id": "PT-001", "name": "Patient 1", "age": 70, "creatinine": 1.8, "p30": 1, "meds": 9},
+        {"id": "PT-002", "name": "Patient 2", "age": 52, "creatinine": 0.8, "p30": 0, "meds": 3}
+    ]
+    resp = client.post("/api/predict/batch", json={"patients": cohort})
+    assert resp.status_code == 200
+    data = resp.json()
+    assert data["status"] == "success"
+    assert data["total_patients"] == 2
+    assert len(data["predictions"]) == 2
+    assert data["predictions"][0]["risk_tier"] == "High"
+    assert data["predictions"][1]["risk_tier"] in ["Low", "Moderate"]
+
+def test_fhir_r4_interoperability():
+    # Patient Resource
+    resp_pt = client.get("/api/fhir/Patient/PT-84729")
+    assert resp_pt.status_code == 200
+    pt_data = resp_pt.json()
+    assert pt_data["resourceType"] == "Patient"
+    assert pt_data["id"] == "PT-84729"
+    assert pt_data["gender"] == "female"
+
+    # Observation Bundle
+    resp_obs = client.get("/api/fhir/Observation/PT-84729")
+    assert resp_obs.status_code == 200
+    obs_data = resp_obs.json()
+    assert obs_data["resourceType"] == "Bundle"
+    assert len(obs_data["entry"]) >= 2
+
+    # Encounter Resource
+    resp_enc = client.get("/api/fhir/Encounter/PT-84729")
+    assert resp_enc.status_code == 200
+    assert resp_enc.json()["resourceType"] == "Encounter"
+
+def test_mlops_drift_and_telemetry():
+    # Drift Check
+    resp_drift = client.post("/api/mlops/drift-check", json={})
+    assert resp_drift.status_code == 200
+    drift_data = resp_drift.json()
+    assert drift_data["status"] == "success"
+    assert "population_stability_index" in drift_data
+    assert drift_data["evaluated_features"] == 24
+
+    # Production Telemetry
+    resp_telem = client.get("/api/mlops/telemetry")
+    assert resp_telem.status_code == 200
+    assert resp_telem.json()["roc_auc"] >= 0.97
+    assert resp_telem.json()["avg_inference_latency_ms"] < 25.0
+
+    # Model Promotion
+    resp_promo = client.post("/api/mlops/promote-model", json={"model_id": "xgboost"})
+    assert resp_promo.status_code == 200
+    assert resp_promo.json()["status"] == "success"
+
+def test_notifications_dispatch():
+    resp = client.post("/api/notifications/dispatch", json={
+        "patient_id": "PT-84729",
+        "type": "CLINICAL_RISK_ALERT",
+        "message": "High readmission risk detected (68.4%). 72h PCP scheduled."
+    })
+    assert resp.status_code == 200
+    assert resp.json()["status"] == "success"
+    assert "notification_id" in resp.json()
+
+def test_i18n_36_languages_sync():
+    # Set Language to Telugu
+    resp_set = client.post("/api/i18n/set-language", json={"lang": "te"})
+    assert resp_set.status_code == 200
+    assert resp_set.json()["lang"] == "te"
+    assert "Dr. Kavya" in resp_set.json()["voice_persona"]
+
+    # Get Translations Metadata
+    resp_trans = client.get("/api/i18n/translations?lang=te")
+    assert resp_trans.status_code == 200
+    assert resp_trans.json()["total_supported"] >= 36
+    assert resp_trans.json()["metadata"]["locale"] == "te-IN"
