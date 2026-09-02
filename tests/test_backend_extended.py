@@ -210,5 +210,14 @@ def test_clinical_rules_guidelines_and_pdf_export():
     assert "HRP Clinical AI" in resp_pdf.text
     assert "Eleanor Vance" in resp_pdf.text
 
+def test_backend_hub_pages():
+    resp_hub1 = client.get("/admin/backend-hub")
+    assert resp_hub1.status_code == 200
+    assert "Backend Architecture &amp; API Control Hub" in resp_hub1.text or "Backend Architecture & API Control Hub" in resp_hub1.text
+
+    resp_hub2 = client.get("/portal/backend-hub")
+    assert resp_hub2.status_code == 200
+
+
 
 

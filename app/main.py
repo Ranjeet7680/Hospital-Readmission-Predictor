@@ -141,8 +141,21 @@ async def favicon_png():
 async def favicon_svg():
     return FileResponse(os.path.join(BASE_DIR, "static", "favicon.svg"), media_type="image/svg+xml")
 
+@app.get("/admin/backend-hub", response_class=HTMLResponse)
+@app.get("/portal/backend-hub", response_class=HTMLResponse)
+async def backend_hub_page(request: Request):
+    """Interactive visual portal for exploring and testing all backend APIs and microservices."""
+    return templates.TemplateResponse(request=request, name="admin/backend_hub.html", context={
+        "active_page": "backend_hub",
+        "total_patients": len(db.patients),
+        "total_predictions": len(db.predictions),
+        "active_models": len(model_hub.benchmark_models),
+        "total_languages": 36
+    })
+
 @app.get("/ebook", response_class=HTMLResponse)
 async def read_ebook(request: Request):
+
     return templates.TemplateResponse(request=request, name="ebook.html", context={})
 
 @app.get("/ebook/download")
