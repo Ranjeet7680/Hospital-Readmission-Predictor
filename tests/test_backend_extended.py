@@ -259,7 +259,9 @@ def test_get_started_signup_otp_dashboard_flow():
     assert resp_dash.status_code == 200
     assert "Dashboard" in resp_dash.text
 
-
-
-
-
+def test_ebook_pdf_download():
+    resp = client.get("/ebook/download-pdf")
+    assert resp.status_code == 200
+    assert resp.headers["content-type"] == "application/pdf"
+    assert "HRP_Clinical_Master_eBook_88_Chapters_v2.0.pdf" in resp.headers["content-disposition"]
+    assert len(resp.content) > 100000

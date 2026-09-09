@@ -165,6 +165,28 @@ async def download_ebook_markdown():
         return FileResponse(ebook_md_path, filename="Hospital_Readmission_Predictor_Complete_eBook.md", media_type="text/markdown")
     return HTMLResponse("<h1>eBook file not found.</h1>", status_code=404)
 
+@app.get("/ebook/download-pdf")
+@app.get("/api/ebook/download-pdf")
+async def download_ebook_pdf():
+    """Serves the complete 120-page 88-chapter Master eBook PDF directly with vector fidelity."""
+    possible_paths = [
+        os.path.join(BASE_DIR, "static", "docs", "Hospital_Readmission_Predictor_Complete_eBook.pdf"),
+        os.path.join(BASE_DIR, "Hospital_Readmission_Predictor_Complete_eBook.pdf"),
+        os.path.join(os.getcwd(), "Hospital_Readmission_Predictor_Complete_eBook.pdf"),
+        os.path.join(os.getcwd(), "static", "docs", "Hospital_Readmission_Predictor_Complete_eBook.pdf"),
+        "/var/task/Hospital_Readmission_Predictor_Complete_eBook.pdf",
+        "/var/task/static/docs/Hospital_Readmission_Predictor_Complete_eBook.pdf"
+    ]
+    pdf_path = next((p for p in possible_paths if os.path.exists(p)), None)
+    if pdf_path:
+        return FileResponse(
+            pdf_path,
+            filename="HRP_Clinical_Master_eBook_88_Chapters_v2.0.pdf",
+            media_type="application/pdf",
+            headers={"Content-Disposition": 'attachment; filename="HRP_Clinical_Master_eBook_88_Chapters_v2.0.pdf"'}
+        )
+    return HTMLResponse("<h1>eBook PDF not found.</h1>", status_code=404)
+
 # ==========================================
 # 1. AUTHENTICATION & SECURITY ROUTES
 # ==========================================

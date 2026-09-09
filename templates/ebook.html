@@ -3395,37 +3395,28 @@ CREATE TABLE medical_certificates (
     <script>
     function downloadEBookPDF() {
         const btn = document.getElementById('download-pdf-btn');
-        const origText = btn.innerHTML;
-        btn.innerHTML = '⏳ Generating PDF...';
-        btn.disabled = true;
+        const origText = btn ? btn.innerHTML : '';
+        if (btn) {
+            btn.innerHTML = '📥 Downloading eBook PDF...';
+            btn.disabled = true;
+        }
 
-        const element = document.querySelector('.book-container');
-        const opt = {
-            margin: [10, 10, 10, 10],
-            filename: 'HRP_Clinical_Master_eBook_88_Chapters.pdf',
-            image: { type: 'jpeg', quality: 0.98 },
-            html2canvas: { scale: 2, useCORS: true, logging: false },
-            jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
-        };
+        const a = document.createElement('a');
+        a.href = '/api/ebook/download-pdf';
+        a.download = 'HRP_Clinical_Master_eBook_88_Chapters_v2.0.pdf';
+        document.body.appendChild(a);
+        a.click();
 
-        if (window.html2pdf) {
-            window.html2pdf().set(opt).from(element).save().then(() => {
+        setTimeout(() => {
+            a.remove();
+            if (btn) {
                 btn.innerHTML = '✅ PDF Downloaded';
                 setTimeout(() => {
                     btn.innerHTML = origText;
                     btn.disabled = false;
-                }, 3000);
-            }).catch(err => {
-                console.error(err);
-                btn.innerHTML = origText;
-                btn.disabled = false;
-                window.print();
-            });
-        } else {
-            window.print();
-            btn.innerHTML = origText;
-            btn.disabled = false;
-        }
+                }, 2500);
+            }
+        }, 600);
     }
     </script>
 </body>

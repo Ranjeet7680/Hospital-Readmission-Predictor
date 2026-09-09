@@ -163,10 +163,10 @@ function downloadCertificatePDF() {
 
     const certElement = document.getElementById('medical-certificate-card');
     const opt = {
-        margin: [6, 6, 6, 6],
+        margin: [5, 5, 5, 5],
         filename: 'Medical_Certificate_{{ cert.id }}_Ranjeet_Kumar.pdf',
         image: { type: 'jpeg', quality: 0.98 },
-        html2canvas: { scale: 2, useCORS: true, logging: false },
+        html2canvas: { scale: 2, useCORS: true, logging: false, scrollY: 0, scrollX: 0 },
         jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
     };
 

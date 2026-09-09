@@ -11,7 +11,8 @@
           "ml/**",
           "app/**",
           "docs/**",
-          "Dataset/**"
+          "Dataset/**",
+          "Hospital_Readmission_Predictor_Complete_eBook.pdf"
         ]
       }
     }
