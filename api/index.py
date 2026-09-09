@@ -6,7 +6,7 @@ api_dir = os.path.dirname(os.path.abspath(__file__))
 root_dir = os.path.dirname(api_dir)
 cwd = os.getcwd()
 
-for p in [root_dir, api_dir, cwd]:
+for p in [root_dir, api_dir, cwd, "/var/task"]:
     if p and p not in sys.path:
         sys.path.insert(0, p)
 
