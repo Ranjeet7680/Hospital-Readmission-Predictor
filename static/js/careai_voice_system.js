@@ -547,28 +547,74 @@ class CareAIVoiceSystem {
 
     drawWaveformCanvas() {
         const canvas = document.getElementById('careai-canvas-waveform');
-        if (!canvas || !this.analyser) return;
+        if (!canvas) return;
 
         const ctx = canvas.getContext('2d');
-        const bufferLength = this.analyser.frequencyBinCount;
-        const dataArray = new Uint8Array(bufferLength);
+        if (this.analyser) {
+            const bufferLength = this.analyser.frequencyBinCount;
+            const dataArray = new Uint8Array(bufferLength);
 
-        const draw = () => {
-            this.animFrameId = requestAnimationFrame(draw);
-            this.analyser.getByteFrequencyData(dataArray);
+            const draw = () => {
+                this.animFrameId = requestAnimationFrame(draw);
+                this.analyser.getByteFrequencyData(dataArray);
+
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                const barWidth = (canvas.width / bufferLength) * 1.5;
+                let x = 0;
+
+                for (let i = 0; i < bufferLength; i++) {
+                    const barHeight = (dataArray[i] / 255) * canvas.height;
+                    ctx.fillStyle = `rgba(0, 91, 191, ${0.4 + (dataArray[i] / 255) * 0.6})`;
+                    ctx.fillRect(x, canvas.height - barHeight, barWidth, barHeight);
+                    x += barWidth + 2;
+                }
+            };
+            draw();
+        } else {
+            this.drawSpeakingWaveform();
+        }
+    }
+
+    drawSpeakingWaveform() {
+        const canvas = document.getElementById('careai-canvas-waveform');
+        if (!canvas) return;
+        const ctx = canvas.getContext('2d');
+        let step = 0;
+
+        const renderWave = () => {
+            if (!this.isSpeaking && !this.isListening) {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                return;
+            }
+            this.animFrameId = requestAnimationFrame(renderWave);
+            step += 0.09;
 
             ctx.clearRect(0, 0, canvas.width, canvas.height);
-            const barWidth = (canvas.width / bufferLength) * 1.5;
-            let x = 0;
+            
+            // Primary Harmonic Sine
+            ctx.beginPath();
+            ctx.lineWidth = 2.5;
+            ctx.strokeStyle = this.isListening ? '#10b981' : '#005bbf';
 
-            for (let i = 0; i < bufferLength; i++) {
-                const barHeight = (dataArray[i] / 255) * canvas.height;
-                ctx.fillStyle = `rgba(0, 91, 191, ${0.4 + (dataArray[i] / 255) * 0.6})`;
-                ctx.fillRect(x, canvas.height - barHeight, barWidth, barHeight);
-                x += barWidth + 2;
+            for (let x = 0; x < canvas.width; x++) {
+                const y = canvas.height / 2 + Math.sin(x * 0.05 + step) * Math.sin(step * 0.5) * (canvas.height * 0.35);
+                if (x === 0) ctx.moveTo(x, y);
+                else ctx.lineTo(x, y);
             }
+            ctx.stroke();
+
+            // Secondary Harmonic Glow Wave
+            ctx.beginPath();
+            ctx.lineWidth = 1.5;
+            ctx.strokeStyle = this.isListening ? 'rgba(16, 185, 129, 0.4)' : 'rgba(2, 132, 199, 0.45)';
+            for (let x = 0; x < canvas.width; x++) {
+                const y = canvas.height / 2 + Math.cos(x * 0.08 - step) * Math.sin(step * 0.7) * (canvas.height * 0.25);
+                if (x === 0) ctx.moveTo(x, y);
+                else ctx.lineTo(x, y);
+            }
+            ctx.stroke();
         };
-        draw();
+        renderWave();
     }
 
     updateVoiceVisualizer(active, mode = 'speaking') {
@@ -590,6 +636,22 @@ class CareAIVoiceSystem {
             }
         });
 
+        // Trigger dynamic canvas waveform
+        if (active) {
+            if (this.animFrameId) cancelAnimationFrame(this.animFrameId);
+            this.drawSpeakingWaveform();
+        } else {
+            if (this.animFrameId) {
+                cancelAnimationFrame(this.animFrameId);
+                this.animFrameId = null;
+            }
+            const canvas = document.getElementById('careai-canvas-waveform');
+            if (canvas) {
+                const ctx = canvas.getContext('2d');
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+            }
+        }
+
         const statusLabels = document.querySelectorAll('#careai-voice-status-text, #studio-status-text');
         statusLabels.forEach(label => {
             if (active) {
@@ -599,6 +661,7 @@ class CareAIVoiceSystem {
             }
         });
     }
+
 
     setAvatarSpeaking(speaking) {
         const rings = document.querySelectorAll('#careai-avatar-pulse-ring, #studio-avatar-ring');
