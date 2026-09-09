@@ -248,79 +248,169 @@
     </div>
 
     <!-- ========================================================================= -->
-    <!-- 4. LANDING PAGE NAVIGATION BAR (Ultra-Crisp Glassmorphic Header)           -->
+    <!-- 4. LANDING PAGE NAVIGATION BAR (Ultra-Modern Glassmorphic Header)          -->
     <!-- ========================================================================= -->
-    <header class="bg-white/95 backdrop-blur-xl border-b border-slate-200/80 sticky top-0 z-40 px-4 sm:px-8 py-3 shadow-xs transition-all">
-        <div class="max-w-7xl mx-auto flex justify-between items-center">
-            <!-- Brand Logo -->
-            <a href="/" class="flex items-center gap-2.5 group">
-                <div class="w-10 h-10 rounded-2xl bg-gradient-to-br from-primary via-[#005bbf] to-[#002f6c] text-white flex items-center justify-center shadow-md group-hover:scale-105 transition-transform">
-                    <span class="material-symbols-outlined text-2xl fill-icon">local_hospital</span>
+    <header class="bg-white/90 backdrop-blur-2xl border-b border-slate-200/70 sticky top-0 z-40 px-3 sm:px-6 lg:px-8 py-2.5 sm:py-3 shadow-xs transition-all duration-300">
+        <div class="max-w-7xl mx-auto flex justify-between items-center gap-4">
+            
+            <!-- Brand Logo with 3D Emblem & Pulse -->
+            <a href="/" class="flex items-center gap-3 group shrink-0">
+                <div class="relative w-10 h-10 rounded-2xl bg-gradient-to-br from-primary via-[#005bbf] to-[#002f6c] text-white flex items-center justify-center shadow-md group-hover:scale-105 group-hover:shadow-primary/30 transition-all duration-200 border border-white/40">
+                    <span class="material-symbols-outlined text-[22px] fill-icon">local_hospital</span>
+                    <span class="absolute -top-1 -right-1 flex h-2.5 w-2.5">
+                        <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-cyan-400 opacity-75"></span>
+                        <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500 border border-white"></span>
+                    </span>
                 </div>
-                <div>
-                    <h2 class="text-base font-extrabold text-[#002f6c] tracking-tight">HRP Clinical</h2>
-                    <p class="text-[10px] text-secondary font-semibold">Healthcare Intelligence</p>
+                <div class="flex flex-col">
+                    <div class="flex items-center gap-1.5">
+                        <h2 class="text-sm sm:text-base font-black text-[#002f6c] tracking-tight group-hover:text-primary transition-colors">HRP Clinical</h2>
+                        <span class="px-1.5 py-0.2 rounded-md bg-primary/10 text-[9px] font-extrabold text-primary uppercase font-mono tracking-wider hidden sm:inline">AI v2.4</span>
+                    </div>
+                    <p class="text-[10px] text-slate-500 font-semibold tracking-tight">Healthcare Intelligence</p>
                 </div>
             </a>
 
-            <!-- Desktop Nav Links -->
-            <nav class="hidden xl:flex items-center gap-5 text-xs font-bold text-slate-600">
-                <a href="#platform" class="hover:text-primary transition-colors py-1">Platform</a>
-                <a href="#ai-tech" class="hover:text-primary transition-colors py-1">AI &amp; ML Layers</a>
-                <a href="#how-it-works" class="hover:text-primary transition-colors py-1">How It Works</a>
-                <a href="#telemedicine" class="hover:text-primary transition-colors py-1">Doctor Video Call</a>
-                <a href="#reports" class="hover:text-primary transition-colors py-1">Lab OCR Analysis</a>
-                <a href="#health-id-section" class="hover:text-primary transition-colors py-1">Digital Health ID</a>
-                <a href="#dataset" class="hover:text-primary transition-colors py-1">Dataset (101k)</a>
-                <a href="#responsible-ai" class="hover:text-primary transition-colors py-1">Responsible AI</a>
+            <!-- Desktop Nav Links (Spaced, Clean, & Pill-Hovered) -->
+            <nav class="hidden lg:flex items-center gap-1 xl:gap-1.5 text-xs font-bold text-slate-600 bg-slate-100/70 p-1 rounded-full border border-slate-200/60 shadow-inner">
+                <a href="#platform" class="px-3 py-1.5 rounded-full hover:bg-white hover:text-primary hover:shadow-xs transition-all duration-150 flex items-center gap-1">
+                    <span>Platform</span>
+                </a>
+                <a href="#ai-tech" class="px-3 py-1.5 rounded-full hover:bg-white hover:text-primary hover:shadow-xs transition-all duration-150 flex items-center gap-1">
+                    <span>AI Layers</span>
+                </a>
+                <a href="#how-it-works" class="px-3 py-1.5 rounded-full hover:bg-white hover:text-primary hover:shadow-xs transition-all duration-150 flex items-center gap-1">
+                    <span>How It Works</span>
+                </a>
+                <a href="#telemedicine" class="px-3 py-1.5 rounded-full hover:bg-white hover:text-primary hover:shadow-xs transition-all duration-150 flex items-center gap-1">
+                    <span>Telehealth</span>
+                </a>
+                <a href="#reports" class="px-3 py-1.5 rounded-full hover:bg-white hover:text-primary hover:shadow-xs transition-all duration-150 flex items-center gap-1">
+                    <span>Lab OCR</span>
+                </a>
+                <a href="#health-id-section" class="px-3 py-1.5 rounded-full hover:bg-white hover:text-primary hover:shadow-xs transition-all duration-150 flex items-center gap-1">
+                    <span>Health ID</span>
+                </a>
+                <a href="#dataset" class="px-3 py-1.5 rounded-full hover:bg-white hover:text-primary hover:shadow-xs transition-all duration-150 flex items-center gap-1">
+                    <span>Dataset</span>
+                    <span class="text-[9px] bg-primary/10 text-primary px-1 rounded-full font-mono font-black">101k</span>
+                </a>
+                <a href="/ebook" class="px-3 py-1.5 rounded-full hover:bg-white hover:text-primary hover:shadow-xs transition-all duration-150 flex items-center gap-1">
+                    <span class="material-symbols-outlined text-[14px] text-amber-500">menu_book</span>
+                    <span>eBook</span>
+                </a>
             </nav>
 
-            <!-- Right Controls: Audio, Language & CTAs -->
-            <div class="flex items-center gap-2 sm:gap-3">
-                <!-- Sound Toggle -->
-                <button onclick="toggleAudioMute()" class="p-2 text-secondary hover:bg-slate-100 hover:text-primary rounded-full transition-colors hidden sm:flex items-center justify-center cursor-pointer" title="Toggle Sound Feedback">
-                    <span class="material-symbols-outlined text-[20px]" id="sound-icon">volume_up</span>
+            <!-- Right Controls: Sound, Language Dropdown & CTAs -->
+            <div class="flex items-center gap-1.5 sm:gap-2.5 shrink-0">
+                
+                <!-- Audio Feedback Toggle Button -->
+                <button onclick="toggleAudioMute()" class="p-2 text-slate-500 hover:text-primary hover:bg-slate-100 rounded-full transition-all hidden sm:flex items-center justify-center cursor-pointer active:scale-95" title="Toggle Sound Feedback">
+                    <span class="material-symbols-outlined text-[19px]" id="sound-icon">volume_up</span>
                 </button>
 
-                <!-- Language Switcher -->
-                <button onclick="window.i18n.toggle()" class="flex items-center gap-1.5 px-3 py-1.5 bg-slate-100 hover:bg-slate-200 rounded-full border border-slate-200 text-xs font-bold text-primary transition-all cursor-pointer">
-                    <span class="material-symbols-outlined text-[16px]">translate</span>
-                    <span class="lang-indicator-text">EN | हिन्दी</span>
-                </button>
+                <!-- Language Switcher Dropdown (7 Languages) -->
+                <div class="relative">
+                    <button onclick="toggleWelcomeLangMenu()" id="welcome-lang-btn" class="flex items-center gap-1.5 px-3 py-1.5 bg-slate-100/90 hover:bg-white rounded-full border border-slate-200/80 text-xs font-bold text-slate-800 hover:text-primary transition-all active:scale-95 shadow-2xs cursor-pointer">
+                        <span class="material-symbols-outlined text-[15px] text-primary">translate</span>
+                        <span class="lang-indicator-text">EN</span>
+                        <span class="material-symbols-outlined text-[13px] text-slate-400">expand_more</span>
+                    </button>
 
-                <!-- Sign In -->
-                <a href="/login" class="px-4 py-2 rounded-full text-xs font-bold text-slate-700 hover:text-primary hover:bg-slate-100 transition-colors hidden md:block">
-                    Sign In
+                    <!-- Language Menu Popover -->
+                    <div id="welcome-lang-menu" class="hidden absolute right-0 mt-2 w-56 rounded-2xl p-2 z-50 animate-scale-up space-y-1 bg-white border border-slate-200 shadow-2xl">
+                        <div class="px-2.5 py-1.5 border-b border-slate-100 mb-1 flex items-center justify-between">
+                            <span class="text-[10px] font-extrabold uppercase tracking-wider text-slate-500">Choose Language</span>
+                            <span class="text-[9px] text-primary font-mono font-extrabold bg-primary/10 px-1.5 py-0.5 rounded-full">7 Languages</span>
+                        </div>
+                        <button type="button" onclick="window.i18n.setLanguage('en'); closeWelcomeLangMenu();" data-lang-select="en" class="w-full flex items-center justify-between px-3 py-1.5 rounded-xl text-xs font-bold hover:bg-primary/10 transition-all text-left text-slate-800">
+                            <div class="flex items-center gap-2"><span>🇬🇧</span><span>English</span></div>
+                            <span class="material-symbols-outlined text-[15px] text-primary" data-lang-check="en">check</span>
+                        </button>
+                        <button type="button" onclick="window.i18n.setLanguage('hi'); closeWelcomeLangMenu();" data-lang-select="hi" class="w-full flex items-center justify-between px-3 py-1.5 rounded-xl text-xs font-bold hover:bg-primary/10 transition-all text-left text-slate-800">
+                            <div class="flex items-center gap-2"><span>🇮🇳</span><span>हिन्दी (Hindi)</span></div>
+                            <span class="material-symbols-outlined text-[15px] text-primary hidden" data-lang-check="hi">check</span>
+                        </button>
+                        <button type="button" onclick="window.i18n.setLanguage('ta'); closeWelcomeLangMenu();" data-lang-select="ta" class="w-full flex items-center justify-between px-3 py-1.5 rounded-xl text-xs font-bold hover:bg-primary/10 transition-all text-left text-slate-800">
+                            <div class="flex items-center gap-2"><span>🇮🇳</span><span>தமிழ் (Tamil)</span></div>
+                            <span class="material-symbols-outlined text-[15px] text-primary hidden" data-lang-check="ta">check</span>
+                        </button>
+                        <button type="button" onclick="window.i18n.setLanguage('kn'); closeWelcomeLangMenu();" data-lang-select="kn" class="w-full flex items-center justify-between px-3 py-1.5 rounded-xl text-xs font-bold hover:bg-primary/10 transition-all text-left text-slate-800">
+                            <div class="flex items-center gap-2"><span>🇮🇳</span><span>ಕನ್ನಡ (Kannada)</span></div>
+                            <span class="material-symbols-outlined text-[15px] text-primary hidden" data-lang-check="kn">check</span>
+                        </button>
+                        <button type="button" onclick="window.i18n.setLanguage('ml'); closeWelcomeLangMenu();" data-lang-select="ml" class="w-full flex items-center justify-between px-3 py-1.5 rounded-xl text-xs font-bold hover:bg-primary/10 transition-all text-left text-slate-800">
+                            <div class="flex items-center gap-2"><span>🇮🇳</span><span>മലയാളം (Malayalam)</span></div>
+                            <span class="material-symbols-outlined text-[15px] text-primary hidden" data-lang-check="ml">check</span>
+                        </button>
+                        <button type="button" onclick="window.i18n.setLanguage('te'); closeWelcomeLangMenu();" data-lang-select="te" class="w-full flex items-center justify-between px-3 py-1.5 rounded-xl text-xs font-bold hover:bg-primary/10 transition-all text-left text-slate-800">
+                            <div class="flex items-center gap-2"><span>🇮🇳</span><span>తెలుగు (Telugu)</span></div>
+                            <span class="material-symbols-outlined text-[15px] text-primary hidden" data-lang-check="te">check</span>
+                        </button>
+                        <button type="button" onclick="window.i18n.setLanguage('bn'); closeWelcomeLangMenu();" data-lang-select="bn" class="w-full flex items-center justify-between px-3 py-1.5 rounded-xl text-xs font-bold hover:bg-primary/10 transition-all text-left text-slate-800">
+                            <div class="flex items-center gap-2"><span>🇮🇳</span><span>বাংলা (Bengali)</span></div>
+                            <span class="material-symbols-outlined text-[15px] text-primary hidden" data-lang-check="bn">check</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Sign In (Ghost Pill) -->
+                <a href="/login" class="px-3.5 py-1.5 rounded-full text-xs font-bold text-slate-700 hover:text-primary hover:bg-slate-100 transition-all hidden md:flex items-center gap-1 active:scale-95">
+                    <span>Sign In</span>
                 </a>
 
-                <!-- Get Started Button -> Routes directly to /signup -->
-                <a href="/signup" class="px-5 py-2.5 rounded-full bg-gradient-to-r from-primary via-[#005bbf] to-[#002f6c] hover:opacity-95 text-white font-extrabold text-xs shadow-md hover:shadow-lg flex items-center gap-1.5 transition-all hover:scale-[1.02] active:scale-[0.98]">
+                <!-- Get Started CTA (3D Gradient Button with Glowing Ring) -->
+                <a href="/signup" class="px-4 sm:px-5 py-2 sm:py-2.5 rounded-full bg-gradient-to-r from-primary via-[#005bbf] to-[#002f6c] hover:opacity-95 text-white font-black text-xs shadow-md hover:shadow-lg shadow-primary/25 flex items-center gap-1.5 transition-all hover:scale-[1.03] active:scale-[0.97] border border-white/20 group">
                     <span>Get Started</span>
-                    <span class="material-symbols-outlined text-[16px]">arrow_forward</span>
+                    <span class="material-symbols-outlined text-[15px] group-hover:translate-x-0.5 transition-transform">arrow_forward</span>
                 </a>
 
                 <!-- Mobile Hamburger Toggle -->
-                <button type="button" onclick="toggleWelcomeMobileMenu()" class="xl:hidden p-2 text-slate-600 hover:text-primary hover:bg-slate-100 rounded-xl transition-all cursor-pointer">
+                <button type="button" onclick="toggleWelcomeMobileMenu()" class="lg:hidden p-2 text-slate-700 hover:text-primary hover:bg-slate-100 rounded-xl transition-all cursor-pointer" aria-label="Toggle Navigation">
                     <span class="material-symbols-outlined text-2xl">menu</span>
                 </button>
             </div>
         </div>
 
-        <!-- Mobile Drawer / Dropdown for Landing Header -->
-        <div id="welcome-mobile-menu" class="hidden xl:hidden border-t border-slate-200 mt-3 pt-3 space-y-2 text-xs font-bold text-slate-700 max-w-7xl mx-auto animate-slide-down">
+        <!-- Mobile Drawer Menu (Structured 2-Column Bento Panel) -->
+        <div id="welcome-mobile-menu" class="hidden lg:hidden border-t border-slate-200 mt-2.5 pt-3 space-y-2 text-xs font-bold text-slate-700 max-w-7xl mx-auto animate-slide-down">
             <div class="grid grid-cols-2 gap-2">
-                <a href="#platform" onclick="toggleWelcomeMobileMenu()" class="p-2.5 rounded-xl bg-slate-50 hover:bg-primary/10 hover:text-primary transition-colors">🏥 Platform</a>
-                <a href="#ai-tech" onclick="toggleWelcomeMobileMenu()" class="p-2.5 rounded-xl bg-slate-50 hover:bg-primary/10 hover:text-primary transition-colors">🧠 AI &amp; ML Layers</a>
-                <a href="#how-it-works" onclick="toggleWelcomeMobileMenu()" class="p-2.5 rounded-xl bg-slate-50 hover:bg-primary/10 hover:text-primary transition-colors">⚙️ How It Works</a>
-                <a href="#telemedicine" onclick="toggleWelcomeMobileMenu()" class="p-2.5 rounded-xl bg-slate-50 hover:bg-primary/10 hover:text-primary transition-colors">📹 Doctor Video Call</a>
-                <a href="#reports" onclick="toggleWelcomeMobileMenu()" class="p-2.5 rounded-xl bg-slate-50 hover:bg-primary/10 hover:text-primary transition-colors">📑 Lab OCR Analysis</a>
-                <a href="#health-id-section" onclick="toggleWelcomeMobileMenu()" class="p-2.5 rounded-xl bg-slate-50 hover:bg-primary/10 hover:text-primary transition-colors">🪪 Digital Health ID</a>
-                <a href="#dataset" onclick="toggleWelcomeMobileMenu()" class="p-2.5 rounded-xl bg-slate-50 hover:bg-primary/10 hover:text-primary transition-colors">📊 Dataset (101k)</a>
-                <a href="#responsible-ai" onclick="toggleWelcomeMobileMenu()" class="p-2.5 rounded-xl bg-slate-50 hover:bg-primary/10 hover:text-primary transition-colors">⚖️ Responsible AI</a>
+                <a href="#platform" onclick="toggleWelcomeMobileMenu()" class="p-2.5 rounded-xl bg-slate-50 hover:bg-primary/10 hover:text-primary transition-colors flex items-center gap-2">
+                    <span class="material-symbols-outlined text-[18px] text-primary">local_hospital</span>
+                    <span>Platform</span>
+                </a>
+                <a href="#ai-tech" onclick="toggleWelcomeMobileMenu()" class="p-2.5 rounded-xl bg-slate-50 hover:bg-primary/10 hover:text-primary transition-colors flex items-center gap-2">
+                    <span class="material-symbols-outlined text-[18px] text-cyan-600">psychology</span>
+                    <span>AI Layers</span>
+                </a>
+                <a href="#how-it-works" onclick="toggleWelcomeMobileMenu()" class="p-2.5 rounded-xl bg-slate-50 hover:bg-primary/10 hover:text-primary transition-colors flex items-center gap-2">
+                    <span class="material-symbols-outlined text-[18px] text-indigo-600">tune</span>
+                    <span>How It Works</span>
+                </a>
+                <a href="#telemedicine" onclick="toggleWelcomeMobileMenu()" class="p-2.5 rounded-xl bg-slate-50 hover:bg-primary/10 hover:text-primary transition-colors flex items-center gap-2">
+                    <span class="material-symbols-outlined text-[18px] text-teal-600">videocam</span>
+                    <span>Telehealth</span>
+                </a>
+                <a href="#reports" onclick="toggleWelcomeMobileMenu()" class="p-2.5 rounded-xl bg-slate-50 hover:bg-primary/10 hover:text-primary transition-colors flex items-center gap-2">
+                    <span class="material-symbols-outlined text-[18px] text-amber-600">description</span>
+                    <span>Lab OCR</span>
+                </a>
+                <a href="#health-id-section" onclick="toggleWelcomeMobileMenu()" class="p-2.5 rounded-xl bg-slate-50 hover:bg-primary/10 hover:text-primary transition-colors flex items-center gap-2">
+                    <span class="material-symbols-outlined text-[18px] text-purple-600">badge</span>
+                    <span>Digital Health ID</span>
+                </a>
+                <a href="#dataset" onclick="toggleWelcomeMobileMenu()" class="p-2.5 rounded-xl bg-slate-50 hover:bg-primary/10 hover:text-primary transition-colors flex items-center gap-2">
+                    <span class="material-symbols-outlined text-[18px] text-blue-600">dataset</span>
+                    <span>Dataset (101k)</span>
+                </a>
+                <a href="/ebook" onclick="toggleWelcomeMobileMenu()" class="p-2.5 rounded-xl bg-amber-50 text-amber-900 hover:bg-amber-100 transition-colors flex items-center gap-2">
+                    <span class="material-symbols-outlined text-[18px] text-amber-600">menu_book</span>
+                    <span>Master eBook</span>
+                </a>
             </div>
             <div class="pt-2 border-t border-slate-100 flex justify-between items-center gap-2">
-                <a href="/login" class="flex-1 py-2 text-center rounded-xl bg-slate-100 font-bold text-slate-700">Sign In</a>
-                <a href="/signup" class="flex-1 py-2 text-center rounded-xl bg-primary text-white font-bold">Get Started</a>
+                <a href="/login" class="flex-1 py-2 text-center rounded-xl bg-slate-100 font-bold text-slate-700 hover:bg-slate-200 transition-colors">Sign In</a>
+                <a href="/signup" class="flex-1 py-2 text-center rounded-xl bg-primary text-white font-bold hover:bg-primary/90 transition-colors shadow-sm">Get Started</a>
             </div>
         </div>
     </header>
@@ -1318,6 +1408,30 @@ function toggleWelcomeMobileMenu() {
         if (window.soundEngine) window.soundEngine.click();
     }
 }
+
+function toggleWelcomeLangMenu() {
+    const menu = document.getElementById('welcome-lang-menu');
+    if (menu) {
+        menu.classList.toggle('hidden');
+        if (window.soundEngine) window.soundEngine.click();
+    }
+}
+
+function closeWelcomeLangMenu() {
+    const menu = document.getElementById('welcome-lang-menu');
+    if (menu) {
+        menu.classList.add('hidden');
+    }
+}
+
+document.addEventListener('click', (e) => {
+    const langMenu = document.getElementById('welcome-lang-menu');
+    if (langMenu && !langMenu.classList.contains('hidden')) {
+        if (!e.target.closest('#welcome-lang-menu') && !e.target.closest('#welcome-lang-btn')) {
+            langMenu.classList.add('hidden');
+        }
+    }
+});
 
 function handle3DTilt(e, el) {
     const rect = el.getBoundingClientRect();
