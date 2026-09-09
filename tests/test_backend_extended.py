@@ -218,6 +218,48 @@ def test_backend_hub_pages():
     resp_hub2 = client.get("/portal/backend-hub")
     assert resp_hub2.status_code == 200
 
+def test_get_started_signup_otp_dashboard_flow():
+    # 1. Welcome default page check
+    resp_welcome = client.get("/")
+    assert resp_welcome.status_code == 200
+    assert "Predict Hospital Readmission Risk" in resp_welcome.text
+    assert "/signup" in resp_welcome.text
+
+    resp_welcome2 = client.get("/welcome")
+    assert resp_welcome2.status_code == 200
+    assert "/signup" in resp_welcome2.text
+
+    # 2. Open Signup page
+    resp_signup = client.get("/signup")
+    assert resp_signup.status_code == 200
+    assert "Create Clinical AI Account" in resp_signup.text
+
+    # 3. Submit Signup form
+    resp_post_signup = client.post("/signup", data={
+        "name": "Dr. Test User",
+        "email": "dr.testuser@hospital.org",
+        "password": "Password@2026!",
+        "role": "Doctor",
+        "department": "Cardiology",
+        "phone": "+91 99999 88888"
+    }, follow_redirects=False)
+    assert resp_post_signup.status_code == 303
+    assert "/auth/mfa" in resp_post_signup.headers["location"]
+
+    # 4. MFA OTP Verification page
+    resp_mfa = client.get(resp_post_signup.headers["location"])
+    assert resp_mfa.status_code == 200
+    assert "742891" in resp_mfa.text
+
+    # 5. Loading Dashboard & Main Dashboard
+    resp_loading = client.get("/loading/dashboard")
+    assert resp_loading.status_code == 200
+
+    resp_dash = client.get("/dashboard")
+    assert resp_dash.status_code == 200
+    assert "Dashboard" in resp_dash.text
+
+
 
 
 

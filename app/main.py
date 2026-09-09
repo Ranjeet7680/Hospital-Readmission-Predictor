@@ -212,8 +212,39 @@ async def register_patient_page(request: Request):
 async def register_doctor_page(request: Request):
     return templates.TemplateResponse(request=request, name="auth/register_doctor.html", context={"hide_nav": True})
 
+@app.get("/signup", response_class=HTMLResponse)
+@app.get("/auth/signup", response_class=HTMLResponse)
+async def signup_page(request: Request):
+    return templates.TemplateResponse(request=request, name="auth/signup.html", context={"hide_nav": True})
+
+@app.post("/signup")
+@app.post("/auth/signup")
+async def handle_signup(
+    request: Request,
+    name: str = Form(...),
+    email: str = Form(...),
+    password: str = Form(...),
+    role: str = Form("Doctor"),
+    department: str = Form("Cardiology"),
+    phone: str = Form("+91 98765 43210")
+):
+    user, err = auth_manager.register_user(
+        name=name,
+        email=email,
+        password=password,
+        role=role,
+        department=department,
+        phone=phone
+    )
+    if err and "already exists" not in err.lower():
+        return templates.TemplateResponse(request=request, name="auth/signup.html", context={"hide_nav": True, "error_message": err})
+    
+    # Redirect to MFA verification
+    return RedirectResponse(url=f"/auth/mfa?email={email}", status_code=303)
+
 @app.get("/auth/sessions", response_class=HTMLResponse)
 async def sessions_page(request: Request):
+
     return templates.TemplateResponse(request=request, name="auth/sessions.html", context={"active_page": "sessions"})
 
 # ==========================================

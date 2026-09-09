@@ -1,0 +1,202 @@
+{% extends "base.html" %}
+
+{% block title %}Get Started - Sign Up &amp; Clinical Registration | Hospital Readmission Predictor{% endblock %}
+
+{% block extra_head %}
+<style>
+.auth-glow-card {
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(193, 198, 214, 0.6);
+    box-shadow: 0 20px 40px -15px rgba(0, 91, 191, 0.15), 0 0 0 1px rgba(255, 255, 255, 0.8) inset;
+}
+.role-pill-btn.active {
+    background: linear-gradient(135deg, #005bbf 0%, #002f6c 100%);
+    color: #ffffff;
+    box-shadow: 0 4px 12px rgba(0, 91, 191, 0.3);
+}
+</style>
+{% endblock %}
+
+{% block full_content %}
+<div class="min-h-screen bg-gradient-to-br from-[#f0f4f9] via-[#e8eff8] to-[#d8e4f5] flex flex-col justify-between items-center p-4 sm:p-6 font-sans antialiased relative overflow-x-hidden">
+
+    <!-- Ambient Background Lighting -->
+    <div class="absolute -top-32 -left-32 w-96 h-96 rounded-full bg-cyan-400/20 blur-3xl pointer-events-none"></div>
+    <div class="absolute -bottom-32 -right-32 w-96 h-96 rounded-full bg-primary/20 blur-3xl pointer-events-none"></div>
+
+    <!-- Top Navigation Strip -->
+    <div class="w-full max-w-xl flex justify-between items-center py-2 z-10">
+        <a href="/welcome" class="text-xs font-bold text-slate-600 hover:text-primary flex items-center gap-1.5 transition-colors">
+            <span class="material-symbols-outlined text-base">arrow_back</span>
+            <span>Back to Home</span>
+        </a>
+        <div class="flex items-center gap-2">
+            <span class="text-[11px] font-mono font-bold text-primary px-2.5 py-1 rounded-full bg-primary/10 border border-primary/20">
+                Step 1 of 2: Create Account
+            </span>
+        </div>
+    </div>
+
+    <!-- Center Card -->
+    <div class="w-full max-w-xl auth-glow-card p-6 sm:p-8 rounded-3xl space-y-6 my-auto z-10 animate-scale-in">
+        
+        <!-- Header -->
+        <div class="text-center space-y-2">
+            <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-primary to-[#002f6c] text-white flex items-center justify-center mx-auto shadow-lg">
+                <span class="material-symbols-outlined text-2xl fill-icon">local_hospital</span>
+            </div>
+            <h1 class="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight">
+                Create Clinical AI Account
+            </h1>
+            <p class="text-xs text-secondary max-w-md mx-auto">
+                Join St. Jude Medical Center's precision readmission prevention &amp; connected telemedicine cockpit.
+            </p>
+
+            <!-- 1-Click Fill Demo Data Pill -->
+            <div class="pt-1">
+                <button type="button" onclick="fillDoctorDemo()" class="inline-flex items-center gap-1.5 px-3 py-1 bg-primary/10 hover:bg-primary/20 border border-primary/25 text-primary text-[11px] rounded-full font-bold transition-all cursor-pointer">
+                    <span class="material-symbols-outlined text-[14px]">bolt</span>
+                    <span>1-Click Fill Demo Credentials</span>
+                </button>
+            </div>
+        </div>
+
+        {% if error_message %}
+        <div class="p-3 bg-red-50 border border-red-200 rounded-2xl text-xs text-red-700 font-bold flex items-center gap-2">
+            <span class="material-symbols-outlined text-base text-red-600">error</span>
+            <span>{{ error_message }}</span>
+        </div>
+        {% endif %}
+
+        <!-- Role Selection Tabs -->
+        <div class="space-y-1.5">
+            <label class="block text-xs font-extrabold uppercase tracking-wider text-slate-600">Select Your Professional Role</label>
+            <div class="grid grid-cols-3 gap-2 bg-slate-100 p-1.5 rounded-2xl border border-slate-200">
+                <button type="button" onclick="selectRole('Doctor')" id="role-btn-Doctor" class="role-pill-btn active py-2 px-3 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1 cursor-pointer">
+                    <span class="material-symbols-outlined text-base">medical_services</span>
+                    <span>Doctor</span>
+                </button>
+                <button type="button" onclick="selectRole('Patient')" id="role-btn-Patient" class="role-pill-btn py-2 px-3 rounded-xl text-xs font-bold text-slate-600 hover:text-slate-900 transition-all flex items-center justify-center gap-1 cursor-pointer">
+                    <span class="material-symbols-outlined text-base">person</span>
+                    <span>Patient</span>
+                </button>
+                <button type="button" onclick="selectRole('CareCoordinator')" id="role-btn-CareCoordinator" class="role-pill-btn py-2 px-3 rounded-xl text-xs font-bold text-slate-600 hover:text-slate-900 transition-all flex items-center justify-center gap-1 cursor-pointer">
+                    <span class="material-symbols-outlined text-base">checklist</span>
+                    <span>Coordinator</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Registration Form -->
+        <form action="/signup" method="post" class="space-y-4">
+            <input type="hidden" name="role" id="selected-role" value="Doctor"/>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div class="space-y-1">
+                    <label class="text-xs font-bold text-slate-700 flex items-center gap-1">
+                        <span class="material-symbols-outlined text-[14px] text-primary">badge</span>
+                        Full Name
+                    </label>
+                    <input type="text" name="name" id="reg-name" required value="Dr. Ranjeet Kumar" placeholder="Dr. Full Name" class="w-full rounded-xl border border-slate-300 bg-slate-50 px-3.5 py-2.5 text-xs font-semibold focus:border-primary focus:bg-white outline-none transition-all shadow-inner"/>
+                </div>
+
+                <div class="space-y-1">
+                    <label class="text-xs font-bold text-slate-700 flex items-center gap-1">
+                        <span class="material-symbols-outlined text-[14px] text-primary">mail</span>
+                        Work Email
+                    </label>
+                    <input type="email" name="email" id="reg-email" required value="dr.ranjeet@hospital.org" placeholder="email@hospital.org" class="w-full rounded-xl border border-slate-300 bg-slate-50 px-3.5 py-2.5 text-xs font-semibold focus:border-primary focus:bg-white outline-none transition-all shadow-inner"/>
+                </div>
+
+                <div class="space-y-1">
+                    <label class="text-xs font-bold text-slate-700 flex items-center gap-1">
+                        <span class="material-symbols-outlined text-[14px] text-primary">call</span>
+                        Phone / Contact
+                    </label>
+                    <input type="tel" name="phone" id="reg-phone" value="+91 98765 43210" placeholder="+91 98765 43210" class="w-full rounded-xl border border-slate-300 bg-slate-50 px-3.5 py-2.5 text-xs font-semibold focus:border-primary focus:bg-white outline-none transition-all shadow-inner"/>
+                </div>
+
+                <div class="space-y-1">
+                    <label class="text-xs font-bold text-slate-700 flex items-center gap-1">
+                        <span class="material-symbols-outlined text-[14px] text-primary">domain</span>
+                        Department / Clinic
+                    </label>
+                    <input type="text" name="department" id="reg-dept" value="Cardiology &amp; Clinical AI" placeholder="Department" class="w-full rounded-xl border border-slate-300 bg-slate-50 px-3.5 py-2.5 text-xs font-semibold focus:border-primary focus:bg-white outline-none transition-all shadow-inner"/>
+                </div>
+            </div>
+
+            <div class="space-y-1">
+                <label class="text-xs font-bold text-slate-700 flex items-center gap-1">
+                    <span class="material-symbols-outlined text-[14px] text-primary">lock</span>
+                    Password
+                </label>
+                <input type="password" name="password" id="reg-pwd" required value="Doctor@2026!" placeholder="••••••••••••" class="w-full rounded-xl border border-slate-300 bg-slate-50 px-3.5 py-2.5 text-xs font-semibold focus:border-primary focus:bg-white outline-none transition-all shadow-inner font-mono"/>
+            </div>
+
+            <div class="p-3 bg-blue-50/70 border border-blue-200/80 rounded-2xl text-[11px] text-blue-900 flex items-center gap-2">
+                <span class="material-symbols-outlined text-base text-primary">security</span>
+                <span>Account is protected with <strong>2-Factor OTP Authentication</strong> (Next step).</span>
+            </div>
+
+            <!-- Submit CTA -->
+            <button type="submit" class="w-full py-3.5 bg-gradient-to-r from-primary via-[#005bbf] to-[#002f6c] hover:opacity-95 text-white font-extrabold rounded-2xl shadow-lg transition-all text-sm flex items-center justify-center gap-2 hover:scale-[1.01] active:scale-[0.99] cursor-pointer">
+                <span>Continue to OTP Verification</span>
+                <span class="material-symbols-outlined text-base">arrow_forward</span>
+            </button>
+        </form>
+
+        <!-- Footer Links -->
+        <div class="pt-4 border-t border-slate-100 flex justify-between items-center text-xs">
+            <span class="text-slate-500">Already have an account?</span>
+            <a href="/login" class="text-primary font-extrabold hover:underline flex items-center gap-1">
+                <span>Sign In</span>
+                <span class="material-symbols-outlined text-sm">login</span>
+            </a>
+        </div>
+    </div>
+
+    <!-- Sacred Motto Footer -->
+    <div class="text-center text-[10px] text-slate-400 py-3 z-10">
+        <p class="font-serif italic text-slate-600 font-bold">"स्वास्थ्यं परमं धनम्, विज्ञानस्य साहाय्येन सर्वेषां जीवनं निरामयं भवतु।"</p>
+        <p class="text-[9px]">Hospital Readmission Predictor &bull; Team Nexora &bull; LUMINIX'26</p>
+    </div>
+</div>
+
+<script>
+function selectRole(role) {
+    document.getElementById('selected-role').value = role;
+    ['Doctor', 'Patient', 'CareCoordinator'].forEach(r => {
+        const btn = document.getElementById(`role-btn-${r}`);
+        if (r === role) {
+            btn.className = 'role-pill-btn active py-2 px-3 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1 cursor-pointer';
+        } else {
+            btn.className = 'role-pill-btn py-2 px-3 rounded-xl text-xs font-bold text-slate-600 hover:text-slate-900 transition-all flex items-center justify-center gap-1 cursor-pointer';
+        }
+    });
+
+    if (role === 'Patient') {
+        document.getElementById('reg-name').value = 'Eleanor Vance';
+        document.getElementById('reg-email').value = 'eleanor.vance@patient.org';
+        document.getElementById('reg-dept').value = 'Cardiology (Inpatient)';
+    } else if (role === 'CareCoordinator') {
+        document.getElementById('reg-name').value = 'Sarah Jenkins, RN';
+        document.getElementById('reg-email').value = 'sarah.coordinator@hospital.org';
+        document.getElementById('reg-dept').value = 'Care Transitions Unit';
+    } else {
+        document.getElementById('reg-name').value = 'Dr. Ranjeet Kumar';
+        document.getElementById('reg-email').value = 'dr.ranjeet@hospital.org';
+        document.getElementById('reg-dept').value = 'Cardiology & Clinical AI';
+    }
+    if (window.soundEngine) window.soundEngine.click();
+}
+
+function fillDoctorDemo() {
+    selectRole('Doctor');
+    if (window.soundEngine) window.soundEngine.success();
+    if (typeof showToast === 'function') {
+        showToast('Demo doctor credentials filled!', 'success');
+    }
+}
+</script>
+{% endblock %}
