@@ -1366,24 +1366,26 @@ const SHORT_CODES = {
     bn: 'বাংলা'
 };
 
-function escapeRegExp(string) {
-    return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-}
-
 class I18nEngine {
     constructor() {
         this.currentLang = this.getSavedLanguage();
         this.observer = null;
         this.phraseMap = null;
+        this.isTranslating = false;
+        this.mutationTimer = null;
     }
 
     getSavedLanguage() {
-        const match = document.cookie.match(/(?:^|;\s*)hrp_lang=([^;]*)/);
-        if (match && SUPPORTED_LANGS.includes(match[1])) {
-            return match[1];
+        try {
+            const match = document.cookie.match(/(?:^|;\s*)hrp_lang=([^;]*)/);
+            if (match && SUPPORTED_LANGS.includes(match[1])) {
+                return match[1];
+            }
+            const stored = localStorage.getItem('hrp_lang');
+            return SUPPORTED_LANGS.includes(stored) ? stored : 'en';
+        } catch (e) {
+            return 'en';
         }
-        const stored = localStorage.getItem('hrp_lang');
-        return SUPPORTED_LANGS.includes(stored) ? stored : 'en';
     }
 
     getLanguageName(lang) {
@@ -1397,9 +1399,11 @@ class I18nEngine {
         // 1. Index CLINICAL_AUTO_MAP
         if (typeof CLINICAL_AUTO_MAP !== 'undefined') {
             for (const [key, langMap] of Object.entries(CLINICAL_AUTO_MAP)) {
-                map.set(key.toLowerCase().trim(), langMap);
-                for (const [, val] of Object.entries(langMap)) {
-                    if (val) map.set(val.toLowerCase().trim(), langMap);
+                if (key && typeof key === 'string') {
+                    map.set(key.toLowerCase().trim(), langMap);
+                    for (const [, val] of Object.entries(langMap)) {
+                        if (val && typeof val === 'string') map.set(val.toLowerCase().trim(), langMap);
+                    }
                 }
             }
         }
@@ -1425,27 +1429,37 @@ class I18nEngine {
     }
 
     init() {
-        this.getPhraseMap();
-        this.applyLanguage(this.currentLang, false);
-        this.initMutationObserver();
+        try {
+            this.getPhraseMap();
+            this.applyLanguage(this.currentLang, false);
+            this.initMutationObserver();
+        } catch (err) {
+            console.warn('[i18n] Init warning:', err);
+        }
     }
 
     setLanguage(lang, showNotification = true) {
         if (!SUPPORTED_LANGS.includes(lang)) lang = 'en';
         this.currentLang = lang;
 
-        localStorage.setItem('hrp_lang', lang);
-        document.cookie = `hrp_lang=${lang};path=/;max-age=31536000;SameSite=Lax`;
+        try {
+            localStorage.setItem('hrp_lang', lang);
+            document.cookie = `hrp_lang=${lang};path=/;max-age=31536000;SameSite=Lax`;
+        } catch (e) {}
 
         this.applyLanguage(lang, showNotification);
         
-        fetch('/api/i18n/set-language', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ lang })
-        }).catch(() => {});
+        try {
+            fetch('/api/i18n/set-language', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ lang })
+            }).catch(() => {});
+        } catch (e) {}
 
-        window.dispatchEvent(new CustomEvent('languageChanged', { detail: { lang } }));
+        try {
+            window.dispatchEvent(new CustomEvent('languageChanged', { detail: { lang } }));
+        } catch (e) {}
     }
 
     toggle() {
@@ -1460,147 +1474,190 @@ class I18nEngine {
     }
 
     applyLanguage(lang, notify = false) {
-        document.documentElement.lang = lang;
-        const dict = (typeof translations !== 'undefined' && translations[lang]) ? translations[lang] : (typeof translations !== 'undefined' ? translations['en'] : {});
-        const phraseMap = this.getPhraseMap();
+        if (this.isTranslating) return;
+        this.isTranslating = true;
 
-        // 1. Direct [data-i18n] Tags
-        document.querySelectorAll('[data-i18n]').forEach(el => {
-            const key = el.getAttribute('data-i18n');
-            if (dict[key]) {
-                if (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA') {
-                    if (el.placeholder) el.placeholder = dict[key];
+        try {
+            document.documentElement.lang = lang;
+            const dict = (typeof translations !== 'undefined' && translations[lang]) ? translations[lang] : (typeof translations !== 'undefined' ? translations['en'] : {});
+            const enDict = (typeof translations !== 'undefined' && translations['en']) ? translations['en'] : {};
+            const phraseMap = this.getPhraseMap();
+
+            // 1. Direct [data-i18n] Tags
+            document.querySelectorAll('[data-i18n]').forEach(el => {
+                const key = el.getAttribute('data-i18n');
+                const trans = dict[key] || (lang === 'en' ? enDict[key] : null);
+                if (trans) {
+                    if (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA') {
+                        if (el.placeholder) el.placeholder = trans;
+                    } else {
+                        el.textContent = trans;
+                    }
+                }
+            });
+
+            // 2. Direct [data-i18n-placeholder]
+            document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
+                const key = el.getAttribute('data-i18n-placeholder');
+                const trans = dict[key] || (lang === 'en' ? enDict[key] : null);
+                if (trans) el.placeholder = trans;
+            });
+
+            // 3. Direct [data-i18n-title]
+            document.querySelectorAll('[data-i18n-title]').forEach(el => {
+                const key = el.getAttribute('data-i18n-title');
+                const trans = dict[key] || (lang === 'en' ? enDict[key] : null);
+                if (trans) el.title = trans;
+            });
+
+            // 4. Topbar indicator text
+            document.querySelectorAll('.lang-indicator-text').forEach(el => {
+                el.textContent = SHORT_CODES[lang] || 'EN';
+            });
+
+            // 5. Dropdown checkmarks & active states
+            document.querySelectorAll('[data-lang-check]').forEach(el => {
+                const target = el.getAttribute('data-lang-check');
+                el.classList.toggle('hidden', target !== lang);
+            });
+            document.querySelectorAll('[data-lang-select]').forEach(btn => {
+                const target = btn.getAttribute('data-lang-select');
+                if (target === lang) {
+                    btn.classList.add('bg-primary/10', 'text-primary', 'font-bold');
+                    btn.classList.remove('text-secondary', 'text-slate-800');
                 } else {
-                    el.textContent = dict[key];
+                    btn.classList.remove('bg-primary/10', 'text-primary', 'font-bold');
+                    btn.classList.add('text-slate-800');
+                }
+            });
+
+            // 6. Fast O(1) Universal TreeWalker DOM Translation
+            this.universalTranslateDOM(lang, phraseMap);
+
+            if (notify) {
+                try {
+                    window.soundEngine?.click();
+                } catch (e) {}
+                const msg = `🌐 Language Switched: ${LANG_LABELS[lang] || lang}`;
+                if (typeof window.showToast === 'function') {
+                    window.showToast(msg, 'info');
                 }
             }
-        });
-
-        // 2. Direct [data-i18n-placeholder]
-        document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
-            const key = el.getAttribute('data-i18n-placeholder');
-            if (dict[key]) el.placeholder = dict[key];
-        });
-
-        // 3. Topbar indicator text
-        document.querySelectorAll('.lang-indicator-text').forEach(el => {
-            el.textContent = SHORT_CODES[lang] || 'English';
-        });
-
-        // 4. Dropdown checkmarks & active states
-        document.querySelectorAll('[data-lang-check]').forEach(el => {
-            const target = el.getAttribute('data-lang-check');
-            el.classList.toggle('hidden', target !== lang);
-        });
-        document.querySelectorAll('[data-lang-select]').forEach(btn => {
-            const target = btn.getAttribute('data-lang-select');
-            if (target === lang) {
-                btn.classList.add('bg-primary/10', 'text-primary', 'font-bold');
-                btn.classList.remove('text-secondary', 'text-slate-800');
-            } else {
-                btn.classList.remove('bg-primary/10', 'text-primary', 'font-bold');
-                btn.classList.add('text-slate-800');
-            }
-        });
-
-        // 5. Universal End-to-End DOM Text-Node Walker Translation
-        this.universalTranslateDOM(lang, phraseMap);
-
-        if (notify) {
-            window.soundEngine?.click();
-            const msg = `🌐 Language Switched: ${LANG_LABELS[lang] || lang}`;
-            if (typeof window.showToast === 'function') {
-                window.showToast(msg, 'info');
-            }
+        } catch (err) {
+            console.error('[i18n] Error applying language:', err);
+        } finally {
+            // Release lock on next frame
+            requestAnimationFrame(() => {
+                this.isTranslating = false;
+            });
         }
     }
 
     universalTranslateDOM(lang, phraseMap) {
         if (!document.body) return;
+        const isEn = (lang === 'en');
 
-        const elements = document.body.querySelectorAll('*');
-        for (let i = 0; i < elements.length; i++) {
-            const el = elements[i];
-            const tag = el.tagName;
-            if (tag === 'SCRIPT' || tag === 'STYLE' || tag === 'SVG' || tag === 'CANVAS' || tag === 'CODE' || tag === 'NOSCRIPT') continue;
-            if (el.classList && el.classList.contains('material-symbols-outlined')) continue;
-            if (el.closest && el.closest('#lang-dropdown-menu')) continue;
-            if (el.classList && el.classList.contains('lang-indicator-text')) continue;
-
-            // Translate all direct text child nodes
-            const childNodes = el.childNodes;
-            for (let j = 0; j < childNodes.length; j++) {
-                const node = childNodes[j];
-                if (node.nodeType === 3) { // Node.TEXT_NODE
-                    if (node._origText === undefined) {
-                        node._origText = node.nodeValue;
+        try {
+            const walker = document.createTreeWalker(
+                document.body,
+                NodeFilter.SHOW_TEXT,
+                {
+                    acceptNode: function(node) {
+                        const parent = node.parentElement;
+                        if (!parent) return NodeFilter.FILTER_REJECT;
+                        const tag = parent.tagName;
+                        if (tag === 'SCRIPT' || tag === 'STYLE' || tag === 'SVG' || tag === 'CANVAS' || tag === 'CODE' || tag === 'PRE' || tag === 'NOSCRIPT') {
+                            return NodeFilter.FILTER_REJECT;
+                        }
+                        if (parent.closest && (parent.closest('#lang-dropdown-menu') || parent.closest('#careai-floating-badge'))) {
+                            return NodeFilter.FILTER_REJECT;
+                        }
+                        if (parent.classList && (parent.classList.contains('material-symbols-outlined') || parent.classList.contains('lang-indicator-text'))) {
+                            return NodeFilter.FILTER_REJECT;
+                        }
+                        if (parent.hasAttribute && (parent.hasAttribute('data-i18n') || parent.hasAttribute('data-no-translate'))) {
+                            return NodeFilter.FILTER_REJECT;
+                        }
+                        const val = node.nodeValue;
+                        if (!val || !val.trim() || /^[0-9\s.,%:+/()\-–—#•@]+$/.test(val.trim())) {
+                            return NodeFilter.FILTER_REJECT;
+                        }
+                        return NodeFilter.FILTER_ACCEPT;
                     }
-                    const originalText = node._origText;
-                    const trimmedOrig = originalText.trim();
-                    if (!trimmedOrig || trimmedOrig.length === 0 || /^[0-9\s.,%:+/()\-–—#•]+$/.test(trimmedOrig)) continue;
+                }
+            );
 
-                    if (lang === 'en') {
+            const nodes = [];
+            let curr;
+            while ((curr = walker.nextNode())) {
+                nodes.push(curr);
+            }
+
+            for (let i = 0; i < nodes.length; i++) {
+                const node = nodes[i];
+                if (node._origText === undefined) {
+                    node._origText = node.nodeValue;
+                }
+                const originalText = node._origText;
+                if (isEn) {
+                    if (node.nodeValue !== originalText) {
                         node.nodeValue = originalText;
-                        continue;
                     }
+                    continue;
+                }
 
-                    const normOrig = trimmedOrig.toLowerCase();
-                    const entry = phraseMap.get(normOrig);
-                    if (entry && (entry[lang] || entry['en'])) {
-                        const translation = entry[lang] || entry['en'];
+                const trimmedOrig = originalText.trim();
+                const normOrig = trimmedOrig.toLowerCase();
+                const entry = phraseMap.get(normOrig);
+                if (entry && (entry[lang] || entry['en'])) {
+                    const translation = entry[lang] || entry['en'];
+                    if (translation && translation !== trimmedOrig) {
                         node.nodeValue = originalText.replace(trimmedOrig, translation);
-                    } else {
-                        let text = originalText;
-                        let replaced = false;
-                        for (const [key, langMap] of phraseMap.entries()) {
-                            if (key.length > 3 && normOrig.includes(key)) {
-                                const trans = langMap[lang];
-                                if (trans && trans !== key) {
-                                    const regex = new RegExp(escapeRegExp(key), 'gi');
-                                    text = text.replace(regex, trans);
-                                    replaced = true;
-                                }
-                            }
-                        }
-                        if (replaced) {
-                            node.nodeValue = text;
-                        }
                     }
                 }
             }
-        }
 
-        // Input & Textarea Placeholders
-        document.querySelectorAll('input, textarea').forEach(el => {
-            if (el.placeholder) {
-                if (el._origPlaceholder === undefined) {
-                    el._origPlaceholder = el.placeholder;
-                }
-                const origPh = el._origPlaceholder.trim();
-                if (lang === 'en') {
-                    el.placeholder = el._origPlaceholder;
-                } else {
-                    const entry = phraseMap.get(origPh.toLowerCase());
-                    if (entry && (entry[lang] || entry['en'])) {
-                        el.placeholder = entry[lang] || entry['en'];
+            // Input & Textarea Placeholders
+            document.querySelectorAll('input, textarea').forEach(el => {
+                if (el.hasAttribute('data-i18n-placeholder')) return;
+                if (el.placeholder) {
+                    if (el._origPlaceholder === undefined) {
+                        el._origPlaceholder = el.placeholder;
+                    }
+                    const origPh = el._origPlaceholder.trim();
+                    if (isEn) {
+                        el.placeholder = el._origPlaceholder;
+                    } else {
+                        const entry = phraseMap.get(origPh.toLowerCase());
+                        if (entry && (entry[lang] || entry['en'])) {
+                            el.placeholder = entry[lang] || entry['en'];
+                        }
                     }
                 }
-            }
-        });
+            });
+        } catch (e) {
+            console.warn('[i18n] TreeWalker error:', e);
+        }
     }
 
     initMutationObserver() {
         if (this.observer || !document.body) return;
         this.observer = new MutationObserver((mutations) => {
-            let hasNewNodes = false;
-            for (const mutation of mutations) {
-                if (mutation.addedNodes.length > 0) {
-                    hasNewNodes = true;
+            if (this.isTranslating) return;
+            let hasAdded = false;
+            for (let i = 0; i < mutations.length; i++) {
+                if (mutations[i].addedNodes && mutations[i].addedNodes.length > 0) {
+                    hasAdded = true;
                     break;
                 }
             }
-            if (hasNewNodes && this.currentLang !== 'en') {
-                this.applyLanguage(this.currentLang, false);
+            if (hasAdded && this.currentLang !== 'en') {
+                if (this.mutationTimer) clearTimeout(this.mutationTimer);
+                this.mutationTimer = setTimeout(() => {
+                    if (!this.isTranslating) {
+                        this.applyLanguage(this.currentLang, false);
+                    }
+                }, 200);
             }
         });
         this.observer.observe(document.body, { childList: true, subtree: true });
