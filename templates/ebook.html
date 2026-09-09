@@ -355,25 +355,30 @@
             margin: 40px 0;
         }
 
-        /* 📖 Realistic 3D Book Page Flip & Paper Curl Simulation Animations */
+        /* 📖 Ultra-Realistic 3D Book Page Flip & Paper Curl Simulation Animations */
         @keyframes pageFlipNext3D {
             0% {
-                transform: rotateY(0deg) scale(1);
+                transform: perspective(2000px) rotateY(0deg) translateZ(0);
                 box-shadow: -12px 0 24px -6px rgba(0, 0, 0, 0.25), 0 20px 40px -10px rgba(0, 0, 0, 0.18);
                 filter: brightness(1);
             }
-            35% {
-                transform: rotateY(-32deg) skewY(-2deg) scale(0.97) translateX(-14px);
-                box-shadow: -36px 16px 50px -10px rgba(0, 0, 0, 0.45), 0 28px 60px rgba(0, 47, 108, 0.25);
-                filter: brightness(0.86);
+            25% {
+                transform: perspective(2000px) rotateY(-36deg) skewY(-2.8deg) translateZ(30px) translateX(-18px);
+                box-shadow: -48px 20px 65px -12px rgba(0, 0, 0, 0.52), 0 35px 70px rgba(0, 47, 108, 0.28);
+                filter: brightness(0.82);
             }
-            70% {
-                transform: rotateY(-8deg) skewY(-0.6deg) scale(0.99) translateX(-4px);
-                box-shadow: -18px 8px 30px -8px rgba(0, 0, 0, 0.3);
-                filter: brightness(0.96);
+            55% {
+                transform: perspective(2000px) rotateY(-16deg) skewY(-1.2deg) translateZ(14px) translateX(-8px);
+                box-shadow: -26px 12px 38px -8px rgba(0, 0, 0, 0.36);
+                filter: brightness(0.92);
+            }
+            80% {
+                transform: perspective(2000px) rotateY(-4deg) skewY(-0.3deg) translateZ(4px) translateX(-2px);
+                box-shadow: -16px 6px 28px -6px rgba(0, 0, 0, 0.28);
+                filter: brightness(0.98);
             }
             100% {
-                transform: rotateY(0deg) skewY(0deg) scale(1) translateX(0);
+                transform: perspective(2000px) rotateY(0deg) skewY(0deg) translateZ(0) translateX(0);
                 box-shadow: -12px 0 24px -6px rgba(0, 0, 0, 0.25), 0 20px 40px -10px rgba(0, 0, 0, 0.18);
                 filter: brightness(1);
             }
@@ -381,35 +386,81 @@
 
         @keyframes pageFlipPrev3D {
             0% {
-                transform: rotateY(0deg) scale(1);
+                transform: perspective(2000px) rotateY(0deg) translateZ(0);
                 box-shadow: -12px 0 24px -6px rgba(0, 0, 0, 0.25), 0 20px 40px -10px rgba(0, 0, 0, 0.18);
                 filter: brightness(1);
             }
-            35% {
-                transform: rotateY(32deg) skewY(2deg) scale(0.97) translateX(14px);
-                box-shadow: 36px 16px 50px -10px rgba(0, 0, 0, 0.45), 0 28px 60px rgba(0, 47, 108, 0.25);
-                filter: brightness(0.86);
+            25% {
+                transform: perspective(2000px) rotateY(36deg) skewY(2.8deg) translateZ(30px) translateX(18px);
+                box-shadow: 48px 20px 65px -12px rgba(0, 0, 0, 0.52), 0 35px 70px rgba(0, 47, 108, 0.28);
+                filter: brightness(0.82);
             }
-            70% {
-                transform: rotateY(8deg) skewY(0.6deg) scale(0.99) translateX(4px);
-                box-shadow: 18px 8px 30px -8px rgba(0, 0, 0, 0.3);
-                filter: brightness(0.96);
+            55% {
+                transform: perspective(2000px) rotateY(16deg) skewY(1.2deg) translateZ(14px) translateX(8px);
+                box-shadow: 26px 12px 38px -8px rgba(0, 0, 0, 0.36);
+                filter: brightness(0.92);
+            }
+            80% {
+                transform: perspective(2000px) rotateY(4deg) skewY(0.3deg) translateZ(4px) translateX(2px);
+                box-shadow: 16px 6px 28px -6px rgba(0, 0, 0, 0.28);
+                filter: brightness(0.98);
             }
             100% {
-                transform: rotateY(0deg) skewY(0deg) scale(1) translateX(0);
+                transform: perspective(2000px) rotateY(0deg) skewY(0deg) translateZ(0) translateX(0);
                 box-shadow: -12px 0 24px -6px rgba(0, 0, 0, 0.25), 0 20px 40px -10px rgba(0, 0, 0, 0.18);
                 filter: brightness(1);
             }
         }
 
+        /* Paper Light Sheen Sweep Overlay */
+        @keyframes paperSheenSweepNext {
+            0% { opacity: 0; transform: translateX(100%); }
+            20% { opacity: 0.6; }
+            60% { opacity: 0.35; }
+            100% { opacity: 0; transform: translateX(-100%); }
+        }
+        @keyframes paperSheenSweepPrev {
+            0% { opacity: 0; transform: translateX(-100%); }
+            20% { opacity: 0.6; }
+            60% { opacity: 0.35; }
+            100% { opacity: 0; transform: translateX(100%); }
+        }
+
         .animate-flip-next {
-            animation: pageFlipNext3D 0.55s cubic-bezier(0.2, 0.85, 0.32, 1.2) forwards;
+            animation: pageFlipNext3D 0.62s cubic-bezier(0.2, 0.9, 0.32, 1.15) forwards;
             transform-origin: 0% 50%;
         }
 
         .animate-flip-prev {
-            animation: pageFlipPrev3D 0.55s cubic-bezier(0.2, 0.85, 0.32, 1.2) forwards;
+            animation: pageFlipPrev3D 0.62s cubic-bezier(0.2, 0.9, 0.32, 1.15) forwards;
             transform-origin: 100% 50%;
+        }
+
+        /* Tactile Hover Peek Tilt on Book */
+        .book-container.peek-next {
+            transform: perspective(2000px) rotateY(-3.5deg) translateX(-4px) !important;
+            box-shadow: -24px 0 36px -8px rgba(0, 0, 0, 0.32), 0 24px 48px -10px rgba(0, 47, 108, 0.22) !important;
+        }
+        .book-container.peek-prev {
+            transform: perspective(2000px) rotateY(3.5deg) translateX(4px) !important;
+            box-shadow: 24px 0 36px -8px rgba(0, 0, 0, 0.32), 0 24px 48px -10px rgba(0, 47, 108, 0.22) !important;
+        }
+
+        /* Dynamic Paper Sheen Overlay */
+        .page-turn-sheen {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(90deg, transparent 0%, rgba(255, 255, 255, 0.45) 45%, rgba(255, 255, 255, 0.7) 50%, rgba(0, 47, 108, 0.15) 70%, transparent 100%);
+            pointer-events: none;
+            opacity: 0;
+            z-index: 50;
+            border-radius: inherit;
+        }
+        .animate-flip-next .page-turn-sheen {
+            animation: paperSheenSweepNext 0.62s cubic-bezier(0.2, 0.9, 0.32, 1.15) forwards;
+        }
+        .animate-flip-prev .page-turn-sheen {
+            animation: paperSheenSweepPrev 0.62s cubic-bezier(0.2, 0.9, 0.32, 1.15) forwards;
         }
 
         /* Paper Stack Page-Edge Simulation (Visual Depth on Right & Bottom) */
@@ -427,15 +478,15 @@
             pointer-events: none;
         }
 
-        /* 📑 Realistic Dog-Ear Page Turn Corners */
+        /* 📑 Realistic Dog-Ear Page Turn Corners with Fold Shadow */
         .dog-ear-corner {
             position: absolute;
             bottom: 0;
-            width: 52px;
-            height: 52px;
+            width: 56px;
+            height: 56px;
             cursor: pointer;
             z-index: 30;
-            transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+            transition: all 0.28s cubic-bezier(0.16, 1, 0.3, 1);
             overflow: hidden;
         }
         .dog-ear-corner.dog-ear-right {
@@ -451,29 +502,29 @@
             position: absolute;
             width: 100%;
             height: 100%;
-            background: linear-gradient(135deg, transparent 50%, rgba(0, 91, 191, 0.25) 50%, rgba(0, 47, 108, 0.5) 100%);
-            transition: transform 0.25s ease, background 0.25s ease;
+            transition: all 0.28s cubic-bezier(0.16, 1, 0.3, 1);
         }
         .dog-ear-corner.dog-ear-right::before {
             bottom: 0;
             right: 0;
             clip-path: polygon(100% 0, 0 100%, 100% 100%);
-            background: linear-gradient(135deg, #f8fafc 45%, #cbd5e1 50%, #94a3b8 100%);
-            box-shadow: -3px -3px 8px rgba(0,0,0,0.25);
+            background: linear-gradient(135deg, #f8fafc 40%, #cbd5e1 52%, #64748b 100%);
+            box-shadow: -4px -4px 12px rgba(0,0,0,0.3);
         }
         .dog-ear-corner.dog-ear-left::before {
             bottom: 0;
             left: 0;
             clip-path: polygon(0 0, 0 100%, 100% 100%);
-            background: linear-gradient(-135deg, #f8fafc 45%, #cbd5e1 50%, #94a3b8 100%);
-            box-shadow: 3px -3px 8px rgba(0,0,0,0.25);
+            background: linear-gradient(-135deg, #f8fafc 40%, #cbd5e1 52%, #64748b 100%);
+            box-shadow: 4px -4px 12px rgba(0,0,0,0.3);
         }
         .dog-ear-corner:hover {
-            width: 68px;
-            height: 68px;
+            width: 76px;
+            height: 76px;
         }
         .dog-ear-corner:hover::before {
-            background: linear-gradient(135deg, #ffffff 40%, #005bbf 50%, #002F6C 100%);
+            background: linear-gradient(135deg, #ffffff 35%, #22D3EE 50%, #002F6C 100%);
+            filter: drop-shadow(-2px -2px 6px rgba(0, 91, 191, 0.4));
         }
 
         /* Slide-out Table of Contents Drawer */
@@ -707,23 +758,23 @@
     <div id="reading-progress-track"></div>
 
     <!-- Floating Page Turn Controls (Left & Right Edge) -->
-    <button class="floating-turn-btn floating-turn-left no-print" onclick="flipToPrevChapter()" title="Previous Chapter / Page (← Key)">
+    <button class="floating-turn-btn floating-turn-left no-print" onclick="flipToPrevChapter()" onmouseenter="peekBook('prev')" onmouseleave="unpeekBook()" title="Previous Chapter / Page (← Key)">
         <span class="material-symbols-outlined">chevron_left</span>
     </button>
-    <button class="floating-turn-btn floating-turn-right no-print" onclick="flipToNextChapter()" title="Next Chapter / Page (→ Key)">
+    <button class="floating-turn-btn floating-turn-right no-print" onclick="flipToNextChapter()" onmouseenter="peekBook('next')" onmouseleave="unpeekBook()" title="Next Chapter / Page (→ Key)">
         <span class="material-symbols-outlined">chevron_right</span>
     </button>
 
     <!-- Bottom Sticky Book Chapter Pagination HUD -->
     <div class="book-pagination-hud no-print" id="book-pagination-bar">
-        <button class="page-hud-btn" onclick="flipToPrevChapter()" title="Turn to Previous Chapter (←)">
+        <button class="page-hud-btn" onclick="flipToPrevChapter()" onmouseenter="peekBook('prev')" onmouseleave="unpeekBook()" title="Turn to Previous Chapter (←)">
             <span class="material-symbols-outlined text-[16px]">arrow_back</span>
             <span class="sm-show">Prev</span>
         </button>
         <div class="page-hud-indicator" id="current-chapter-indicator">
             Chapter 1 of 88
         </div>
-        <button class="page-hud-btn" onclick="flipToNextChapter()" title="Turn to Next Chapter (→)">
+        <button class="page-hud-btn" onclick="flipToNextChapter()" onmouseenter="peekBook('next')" onmouseleave="unpeekBook()" title="Turn to Next Chapter (→)">
             <span class="sm-show">Next</span>
             <span class="material-symbols-outlined text-[16px]">arrow_forward</span>
         </button>
@@ -802,9 +853,12 @@
             <!-- Bookmark Ribbon -->
             <div class="bookmark-ribbon" title="Hospital Readmission Predictor Master Guide"></div>
 
+            <!-- Dynamic 3D Paper Light Sheen Overlay -->
+            <div class="page-turn-sheen"></div>
+
             <!-- Interactive Dog-Ear Corners for realistic corner page turning -->
-            <div class="dog-ear-corner dog-ear-left no-print" onclick="flipToPrevChapter()" title="Peel to Turn Previous Page (←)"></div>
-            <div class="dog-ear-corner dog-ear-right no-print" onclick="flipToNextChapter()" title="Peel to Turn Next Page (→)"></div>
+            <div class="dog-ear-corner dog-ear-left no-print" onclick="flipToPrevChapter()" onmouseenter="peekBook('prev')" onmouseleave="unpeekBook()" title="Peel to Turn Previous Page (←)"></div>
+            <div class="dog-ear-corner dog-ear-right no-print" onclick="flipToNextChapter()" onmouseenter="peekBook('next')" onmouseleave="unpeekBook()" title="Peel to Turn Next Page (→)"></div>
 
             <div class="book-cover">
                 <h1>HOSPITAL READMISSION PREDICTOR</h1>
@@ -4025,7 +4079,7 @@ CREATE TABLE medical_certificates (
         });
     }
 
-    /* 4. Realistic Web Audio API Paper Turn Sound Synthesis */
+    /* 4. Realistic Web Audio API Dual-Frequency Paper Turn Synthesizer */
     let audioCtx = null;
     function playPaperTurnSound() {
         try {
@@ -4036,45 +4090,78 @@ CREATE TABLE medical_certificates (
                 audioCtx.resume();
             }
 
-            const bufferSize = audioCtx.sampleRate * 0.12; // 120ms paper swoosh
-            const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
+            const now = audioCtx.currentTime;
+            const duration = 0.18; // 180ms dual-flutter
+            const sampleRate = audioCtx.sampleRate;
+            const bufferSize = sampleRate * duration;
+            const buffer = audioCtx.createBuffer(1, bufferSize, sampleRate);
             const data = buffer.getChannelData(0);
+
+            // Generate authentic paper fiber friction with decaying amplitude
             for (let i = 0; i < bufferSize; i++) {
-                // Pink/Brownian smoothed noise for authentic paper friction
-                data[i] = (Math.random() * 2 - 1) * Math.exp(-i / (bufferSize * 0.45));
+                const t = i / bufferSize;
+                const envelope = Math.sin(t * Math.PI) * Math.exp(-t * 2.5);
+                data[i] = (Math.random() * 2 - 1) * envelope;
             }
 
             const noise = audioCtx.createBufferSource();
             noise.buffer = buffer;
 
-            // Bandpass filter to match realistic paper page rustle frequency (600Hz - 2400Hz)
-            const filter = audioCtx.createBiquadFilter();
-            filter.type = 'bandpass';
-            filter.frequency.setValueAtTime(1200, audioCtx.currentTime);
-            filter.Q.setValueAtTime(1.8, audioCtx.currentTime);
+            // Dual bandpass filters: High paper crispness (2200Hz) + low page bend body (480Hz)
+            const filterHigh = audioCtx.createBiquadFilter();
+            filterHigh.type = 'bandpass';
+            filterHigh.frequency.setValueAtTime(2200, now);
+            filterHigh.Q.setValueAtTime(2.2, now);
+
+            const filterLow = audioCtx.createBiquadFilter();
+            filterLow.type = 'bandpass';
+            filterLow.frequency.setValueAtTime(480, now);
+            filterLow.Q.setValueAtTime(1.5, now);
 
             const gain = audioCtx.createGain();
-            gain.gain.setValueAtTime(0.01, audioCtx.currentTime);
-            gain.gain.exponentialRampToValueAtTime(0.18, audioCtx.currentTime + 0.03);
-            gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.12);
+            gain.gain.setValueAtTime(0.01, now);
+            gain.gain.exponentialRampToValueAtTime(0.24, now + 0.04);
+            gain.gain.exponentialRampToValueAtTime(0.001, now + duration);
 
-            noise.connect(filter);
-            filter.connect(gain);
+            noise.connect(filterHigh);
+            noise.connect(filterLow);
+            filterHigh.connect(gain);
+            filterLow.connect(gain);
             gain.connect(audioCtx.destination);
 
-            noise.start();
+            noise.start(now);
         } catch (err) {
             console.debug('[WebAudio] Paper sound feedback disabled:', err);
         }
     }
 
-    /* 5. Directional 3D Page Flip Animation Engine */
+    /* 5. Tactile 3D Peek Tilt Hover Physics */
+    function peekBook(dir) {
+        const card = document.getElementById('book-content-card');
+        if (!card) return;
+        if (card.classList.contains('animate-flip-next') || card.classList.contains('animate-flip-prev')) return;
+        card.classList.remove('peek-next', 'peek-prev');
+        if (dir === 'next') {
+            card.classList.add('peek-next');
+        } else {
+            card.classList.add('peek-prev');
+        }
+    }
+
+    function unpeekBook() {
+        const card = document.getElementById('book-content-card');
+        if (!card) return;
+        card.classList.remove('peek-next', 'peek-prev');
+    }
+
+    /* 6. Directional 3D Page Flip Animation Engine */
     function triggerDirectionalFlip(direction = 'next') {
+        unpeekBook();
         playPaperTurnSound();
         const card = document.getElementById('book-content-card');
         if (!card) return;
         card.classList.remove('animate-flip-next', 'animate-flip-prev');
-        void card.offsetWidth; // Force CSS reflow
+        void card.offsetWidth; // Force reflow
         if (direction === 'next') {
             card.classList.add('animate-flip-next');
         } else {
@@ -4082,7 +4169,7 @@ CREATE TABLE medical_certificates (
         }
     }
 
-    /* 6. Chapter Page Turning (Next / Prev) */
+    /* 7. Staged Chapter Page Turning with Synchronized Scroll */
     function getChapterHeadings() {
         return Array.from(document.querySelectorAll('.book-chapter-title, .book-part-title'));
     }
@@ -4091,7 +4178,7 @@ CREATE TABLE medical_certificates (
         const chapters = getChapterHeadings();
         if (chapters.length === 0) return;
 
-        const scrollY = window.scrollY + 100;
+        const scrollY = window.scrollY + 120;
         let target = null;
         for (let i = 0; i < chapters.length; i++) {
             if (chapters[i].offsetTop > scrollY) {
@@ -4099,21 +4186,22 @@ CREATE TABLE medical_certificates (
                 break;
             }
         }
-        if (target) {
-            triggerDirectionalFlip('next');
-            target.scrollIntoView({ behavior: 'smooth', block: 'start' });
-        } else {
-            // Reached end, scroll to bottom
-            window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
-            triggerDirectionalFlip('next');
-        }
+
+        triggerDirectionalFlip('next');
+        setTimeout(() => {
+            if (target) {
+                target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            } else {
+                window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+            }
+        }, 160);
     }
 
     function flipToPrevChapter() {
         const chapters = getChapterHeadings();
         if (chapters.length === 0) return;
 
-        const scrollY = window.scrollY - 100;
+        const scrollY = window.scrollY - 120;
         let target = null;
         for (let i = chapters.length - 1; i >= 0; i--) {
             if (chapters[i].offsetTop < scrollY) {
@@ -4121,14 +4209,15 @@ CREATE TABLE medical_certificates (
                 break;
             }
         }
-        if (target) {
-            triggerDirectionalFlip('prev');
-            target.scrollIntoView({ behavior: 'smooth', block: 'start' });
-        } else {
-            // At top, scroll to cover
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-            triggerDirectionalFlip('prev');
-        }
+
+        triggerDirectionalFlip('prev');
+        setTimeout(() => {
+            if (target) {
+                target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            } else {
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            }
+        }, 160);
     }
 
     /* 7. Scroll Spy for Bottom Chapter Pagination Indicator */
