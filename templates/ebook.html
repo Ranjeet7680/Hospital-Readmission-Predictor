@@ -527,21 +527,23 @@
             filter: drop-shadow(-2px -2px 6px rgba(0, 91, 191, 0.4));
         }
 
-        /* Slide-out Table of Contents Drawer */
+        /* 📖 Master Slide-out Table of Contents Drawer */
         #toc-drawer {
             position: fixed;
             top: 0;
             left: 0;
             bottom: 0;
-            width: min(380px, 88vw);
+            width: min(440px, 92vw);
             background: var(--bg-card);
             border-right: 1px solid var(--border);
-            box-shadow: 20px 0 50px rgba(0, 0, 0, 0.35);
-            z-index: 10000;
+            border-radius: 0 24px 24px 0;
+            box-shadow: 24px 0 60px rgba(0, 0, 0, 0.45);
+            z-index: 100000;
             transform: translateX(-100%);
-            transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+            transition: transform 0.38s cubic-bezier(0.16, 1, 0.3, 1);
             display: flex;
             flex-direction: column;
+            overflow: hidden;
         }
         #toc-drawer.is-open {
             transform: translateX(0);
@@ -549,16 +551,169 @@
         #toc-backdrop {
             position: fixed;
             inset: 0;
-            background: rgba(0, 0, 0, 0.5);
-            backdrop-filter: blur(6px);
-            z-index: 9999;
+            background: rgba(10, 25, 47, 0.65);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            z-index: 99999;
             opacity: 0;
             pointer-events: none;
-            transition: opacity 0.3s ease;
+            transition: opacity 0.35s ease;
         }
         #toc-backdrop.is-open {
             opacity: 1;
             pointer-events: auto;
+        }
+
+        /* TOC Drawer Header & Search */
+        .toc-header-box {
+            padding: 18px 20px 14px;
+            background: linear-gradient(135deg, rgba(0, 91, 191, 0.06) 0%, rgba(34, 211, 238, 0.04) 100%);
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        body.theme-night .toc-header-box {
+            background: linear-gradient(135deg, rgba(0, 91, 191, 0.15) 0%, rgba(34, 211, 238, 0.08) 100%);
+        }
+        .toc-close-btn {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            border: 1px solid var(--border);
+            background: var(--bg-card);
+            color: var(--text-muted);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .toc-close-btn:hover {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+            transform: rotate(90deg);
+        }
+
+        .toc-search-wrap {
+            padding: 12px 18px;
+            border-bottom: 1px solid var(--border);
+            background: var(--bg-card);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .toc-search-input {
+            flex: 1;
+            padding: 9px 14px;
+            border-radius: 12px;
+            border: 1.5px solid var(--border);
+            background: var(--bg-page);
+            color: var(--text-main);
+            font-size: 13px;
+            font-family: inherit;
+            outline: none;
+            transition: all 0.2s ease;
+        }
+        .toc-search-input:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(0, 91, 191, 0.15);
+            background: var(--bg-card);
+        }
+
+        /* TOC Content Items & Part Badges */
+        #toc-list {
+            flex: 1;
+            overflow-y: auto;
+            padding: 14px 16px 40px;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+        #toc-list::-webkit-scrollbar {
+            width: 5px;
+        }
+        #toc-list::-webkit-scrollbar-thumb {
+            background: rgba(0, 91, 191, 0.2);
+            border-radius: 10px;
+        }
+
+        .toc-part-card {
+            margin-top: 14px;
+            margin-bottom: 4px;
+            padding: 8px 12px;
+            background: linear-gradient(135deg, rgba(0, 91, 191, 0.08) 0%, rgba(34, 211, 238, 0.04) 100%);
+            border-left: 4px solid var(--primary);
+            border-radius: 8px;
+            font-family: 'Cinzel', serif;
+            font-size: 11.5px;
+            font-weight: 800;
+            color: var(--primary);
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+        }
+        body.theme-night .toc-part-card {
+            background: rgba(56, 189, 248, 0.1);
+            color: #38bdf8;
+            border-left-color: #38bdf8;
+        }
+
+        .toc-chapter-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 9px 12px;
+            border-radius: 10px;
+            text-decoration: none;
+            color: var(--text-main);
+            font-size: 12.5px;
+            font-weight: 500;
+            transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+            border: 1px solid transparent;
+        }
+        .toc-chapter-row:hover {
+            background: rgba(0, 91, 191, 0.06);
+            border-color: rgba(0, 91, 191, 0.15);
+            transform: translateX(4px);
+            color: var(--primary);
+        }
+        body.theme-night .toc-chapter-row:hover {
+            background: rgba(56, 189, 248, 0.08);
+            border-color: rgba(56, 189, 248, 0.2);
+            color: #38bdf8;
+        }
+
+        .toc-num-badge {
+            font-size: 11px;
+            font-weight: 800;
+            font-family: 'JetBrains Mono', monospace;
+            padding: 2px 7px;
+            border-radius: 6px;
+            background: rgba(0, 91, 191, 0.1);
+            color: var(--primary);
+            flex-shrink: 0;
+        }
+        body.theme-night .toc-num-badge {
+            background: rgba(56, 189, 248, 0.15);
+            color: #38bdf8;
+        }
+        .toc-row-title {
+            flex: 1;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        .toc-arrow-icon {
+            font-size: 16px;
+            color: var(--text-muted);
+            opacity: 0;
+            transition: all 0.2s ease;
+        }
+        .toc-chapter-row:hover .toc-arrow-icon {
+            opacity: 1;
+            transform: translateX(2px);
+            color: var(--primary);
         }
 
         /* Reading Progress Tracker Topbar */
@@ -780,23 +935,31 @@
         </button>
     </div>
 
-    <!-- Table of Contents Slide-Out Drawer -->
+    <!-- Master Table of Contents Slide-Out Drawer -->
     <div id="toc-backdrop" onclick="toggleTOC()"></div>
     <div id="toc-drawer">
-        <div style="padding: 16px 20px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center;">
-            <div style="display: flex; align-items: center; gap: 8px;">
-                <span class="material-symbols-outlined text-primary">menu_book</span>
-                <strong style="font-family: 'Cinzel', serif; font-size: 16px;">Table of Contents</strong>
+        <div class="toc-header-box">
+            <div style="display: flex; align-items: center; gap: 10px;">
+                <div style="width: 36px; height: 36px; border-radius: 10px; background: linear-gradient(135deg, #005bbf, #002F6C); color: white; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 12px rgba(0, 91, 191, 0.3);">
+                    <span class="material-symbols-outlined text-[20px]">menu_book</span>
+                </div>
+                <div>
+                    <strong style="font-family: 'Cinzel', serif; font-size: 15px; color: var(--primary); display: block; line-height: 1.2;">Table of Contents</strong>
+                    <span style="font-size: 11px; color: var(--text-muted); font-weight: 600;">88 Chapters • 20 Parts • 120 Pages</span>
+                </div>
             </div>
-            <button onclick="toggleTOC()" class="hud-btn" style="padding: 4px 8px;">
+            <button onclick="toggleTOC()" class="toc-close-btn" title="Close Contents (Esc)">
                 <span class="material-symbols-outlined text-[18px]">close</span>
             </button>
         </div>
-        <div style="padding: 12px 16px; border-bottom: 1px solid var(--border);">
-            <input type="text" id="toc-search" placeholder="Search 88 Chapters..." onkeyup="filterTOC(this.value)" style="width: 100%; padding: 8px 12px; border-radius: 10px; border: 1px solid var(--border); background: var(--bg-page); color: var(--text-main); font-size: 12px; outline: none;">
+        
+        <div class="toc-search-wrap">
+            <span class="material-symbols-outlined text-[18px] text-muted">search</span>
+            <input type="text" id="toc-search" class="toc-search-input" placeholder="Search 88 Chapters, Equations, Appendices..." onkeyup="filterTOC(this.value)">
         </div>
-        <div id="toc-list" style="flex: 1; overflow-y: auto; padding: 12px 16px; font-size: 13px;">
-            <!-- Generated dynamically by JS -->
+
+        <div id="toc-list">
+            <!-- Dynamically rendered with rich badges by JS -->
         </div>
     </div>
 
@@ -4043,39 +4206,70 @@ CREATE TABLE medical_certificates (
         tocList.innerHTML = '';
 
         const headings = document.querySelectorAll('.book-part-title, .book-chapter-title');
+        let chapterCounter = 0;
+
         headings.forEach((h, idx) => {
             if (!h.id) {
                 h.id = 'chapter-anchor-' + idx;
             }
             const isPart = h.classList.contains('book-part-title');
-            const item = document.createElement('a');
-            item.href = '#' + h.id;
-            item.style.display = 'block';
-            item.style.padding = isPart ? '10px 8px 4px' : '5px 8px 5px 16px';
-            item.style.textDecoration = 'none';
-            item.style.color = isPart ? 'var(--primary)' : 'var(--text-main)';
-            item.style.fontWeight = isPart ? '800' : '500';
-            item.style.fontSize = isPart ? '13px' : '12px';
-            item.style.borderRadius = '6px';
-            item.style.transition = 'background 0.15s ease';
-            item.className = 'toc-item';
-            item.textContent = h.textContent.trim();
-            item.onclick = (e) => {
-                e.preventDefault();
-                toggleTOC();
-                h.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                triggerDirectionalFlip('next');
-            };
-            item.onmouseenter = () => item.style.background = 'rgba(0,91,191,0.08)';
-            item.onmouseleave = () => item.style.background = 'transparent';
-            tocList.appendChild(item);
+            const rawText = h.textContent.trim();
+
+            if (isPart) {
+                const partCard = document.createElement('div');
+                partCard.className = 'toc-part-card';
+                partCard.innerHTML = `<span style="margin-right: 6px;">📑</span> ${rawText}`;
+                tocList.appendChild(partCard);
+            } else {
+                chapterCounter++;
+                const item = document.createElement('a');
+                item.href = '#' + h.id;
+                item.className = 'toc-chapter-row';
+                
+                // Extract chapter label or number if available
+                let badgeText = chapterCounter < 10 ? '0' + chapterCounter : '' + chapterCounter;
+                if (rawText.toLowerCase().includes('appendix')) {
+                    const m = rawText.match(/appendix\s+([a-h])/i);
+                    badgeText = m ? 'APP ' + m[1].toUpperCase() : 'APP';
+                }
+
+                item.innerHTML = `
+                    <span class="toc-num-badge">${badgeText}</span>
+                    <span class="toc-row-title">${rawText}</span>
+                    <span class="material-symbols-outlined toc-arrow-icon">arrow_forward</span>
+                `;
+
+                item.onclick = (e) => {
+                    e.preventDefault();
+                    toggleTOC();
+                    triggerDirectionalFlip('next');
+                    setTimeout(() => {
+                        h.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    }, 160);
+                };
+                tocList.appendChild(item);
+            }
         });
     }
 
     function filterTOC(query) {
         const q = query.toLowerCase().trim();
-        document.querySelectorAll('#toc-list a').forEach(el => {
-            el.style.display = el.textContent.toLowerCase().includes(q) ? 'block' : 'none';
+        const items = document.querySelectorAll('#toc-list .toc-chapter-row');
+        const partCards = document.querySelectorAll('#toc-list .toc-part-card');
+
+        if (!q) {
+            items.forEach(el => el.style.display = 'flex');
+            partCards.forEach(el => el.style.display = 'block');
+            return;
+        }
+
+        items.forEach(el => {
+            const matches = el.textContent.toLowerCase().includes(q);
+            el.style.display = matches ? 'flex' : 'none';
+        });
+
+        partCards.forEach(pc => {
+            pc.style.display = pc.textContent.toLowerCase().includes(q) ? 'block' : 'none';
         });
     }
 
@@ -4240,7 +4434,7 @@ CREATE TABLE medical_certificates (
         }
 
         if (window.scrollY < 240) {
-            indicator.textContent = `Cover • 88 Chapters`;
+            indicator.textContent = `88 Chapters • 20 Parts`;
         } else if (activeChapter) {
             const rawText = activeChapter.textContent.trim();
             const match = rawText.match(/(Chapter\s+\d+|Appendix\s+[A-H]|Part\s+[IVXLCDM]+)/i);
@@ -4254,8 +4448,13 @@ CREATE TABLE medical_certificates (
         }
     }
 
-    /* 8. Keyboard Arrow Navigation (← / →) */
+    /* 8. Keyboard Arrow Navigation (← / →) & Escape */
     window.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') {
+            const drawer = document.getElementById('toc-drawer');
+            if (drawer && drawer.classList.contains('is-open')) toggleTOC();
+            return;
+        }
         // Only trigger when user is not typing in inputs or search bars
         if (['INPUT', 'TEXTAREA', 'SELECT'].includes(document.activeElement.tagName)) return;
         if (e.key === 'ArrowRight' || e.key === 'PageDown') {
