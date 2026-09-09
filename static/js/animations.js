@@ -104,107 +104,73 @@ class AnimationEngine {
        MATERIAL DESIGN 3 RIPPLE
     ────────────────────────────────────────────── */
     initRipple() {
-        const targets = document.querySelectorAll(
-            'button, a.btn, [role="button"], .ripple-container, nav a, .mobile-nav-item'
-        );
-        targets.forEach(el => this._attachRipple(el));
+        // Handled efficiently via global delegated handler
     }
 
     _attachRipple(el) {
-        // Avoid duplicate listeners
-        if (el.dataset.rippleInit) return;
+        if (!el || el.dataset.rippleInit) return;
         el.dataset.rippleInit = 'true';
-
         if (!el.style.position || el.style.position === 'static') {
             el.style.position = 'relative';
         }
         el.style.overflow = 'hidden';
-
-        el.addEventListener('pointerdown', (e) => {
-            if (this.reduceMotion) return;
-            const rect = el.getBoundingClientRect();
-            const size = Math.max(rect.width, rect.height) * 2;
-            const x = e.clientX - rect.left - size / 2;
-            const y = e.clientY - rect.top  - size / 2;
-
-            const wave = document.createElement('span');
-            wave.className = 'ripple-wave';
-            wave.style.cssText = `
-                width:${size}px; height:${size}px;
-                left:${x}px; top:${y}px;
-            `;
-            el.appendChild(wave);
-            wave.addEventListener('animationend', () => wave.remove());
-        });
     }
 
     /* ──────────────────────────────────────────────
-       3D PERSPECTIVE CARD TILT
+       3D PERSPECTIVE CARD TILT (60FPS Throttled)
     ────────────────────────────────────────────── */
     initCardHoverPhysics() {
         if (this.reduceMotion) return;
 
-        // Standard lift cards
-        document.querySelectorAll('.hover-lift, .patient-card, .bento-card').forEach(card => {
-            card.addEventListener('mouseenter', () => {
-                card.style.transition = 'transform 250ms cubic-bezier(0.16,1,0.3,1), box-shadow 250ms ease';
-                card.style.transform = 'translateY(-4px)';
-                card.style.boxShadow = '0 8px 30px rgba(0,91,191,0.12), 0 2px 8px rgba(0,0,0,0.06)';
-            });
-            card.addEventListener('mouseleave', () => {
-                card.style.transform = 'translateY(0)';
-                card.style.boxShadow = '';
-            });
-        });
-
-        // 3D tilt cards
+        // 3D tilt cards with rAF throttling for buttery 60fps performance
         document.querySelectorAll('.tilt-card, .kpi-card, .metric-card').forEach(card => {
-            const MAX_TILT = 6; // degrees
+            const MAX_TILT = 5; // degrees
+            let rafId = null;
+            let targetTransform = '';
+            let targetShadow = '';
 
             card.addEventListener('mousemove', (e) => {
-                const rect = card.getBoundingClientRect();
-                const cx = rect.left + rect.width  / 2;
-                const cy = rect.top  + rect.height / 2;
-                const dx = (e.clientX - cx) / (rect.width  / 2);
-                const dy = (e.clientY - cy) / (rect.height / 2);
-                const rx = -dy * MAX_TILT;
-                const ry =  dx * MAX_TILT;
+                if (rafId) return;
+                rafId = requestAnimationFrame(() => {
+                    const rect = card.getBoundingClientRect();
+                    const cx = rect.left + rect.width / 2;
+                    const cy = rect.top + rect.height / 2;
+                    const dx = (e.clientX - cx) / (rect.width / 2);
+                    const dy = (e.clientY - cy) / (rect.height / 2);
+                    const rx = -dy * MAX_TILT;
+                    const ry = dx * MAX_TILT;
 
-                card.style.transition = 'transform 80ms linear, box-shadow 80ms linear';
-                card.style.transform = `perspective(800px) rotateX(${rx}deg) rotateY(${ry}deg) translateY(-3px)`;
-                card.style.boxShadow = `
-                    ${-ry * 1.5}px ${rx * 1.5}px 32px rgba(0,91,191,0.13),
-                    0 2px 8px rgba(0,0,0,0.07)`;
-            });
+                    card.style.transform = `perspective(800px) rotateX(${rx.toFixed(1)}deg) rotateY(${ry.toFixed(1)}deg) translateY(-2px)`;
+                    card.style.boxShadow = `${(-ry * 1.2).toFixed(1)}px ${(rx * 1.2).toFixed(1)}px 24px rgba(0,91,191,0.10), 0 2px 8px rgba(0,0,0,0.06)`;
+                    rafId = null;
+                });
+            }, { passive: true });
 
             card.addEventListener('mouseleave', () => {
-                card.style.transition = 'transform 400ms cubic-bezier(0.16,1,0.3,1), box-shadow 400ms ease';
-                card.style.transform = 'perspective(800px) rotateX(0) rotateY(0) translateY(0)';
+                if (rafId) {
+                    cancelAnimationFrame(rafId);
+                    rafId = null;
+                }
+                card.style.transform = '';
                 card.style.boxShadow = '';
             });
-
-            // Attach ripple too
-            this._attachRipple(card);
         });
     }
 
     /* ──────────────────────────────────────────────
-       STAGGERED SPRING SCROLL REVEAL
+       STAGGERED SPRING SCROLL REVEAL (IntersectionObserver)
     ────────────────────────────────────────────── */
     initScrollReveal() {
         if (this.reduceMotion) return;
 
         const observer = new IntersectionObserver((entries) => {
-            // Group all intersecting entries for stagger
-            const visible = entries.filter(e => e.isIntersecting);
-            visible.forEach((entry, idx) => {
-                const delay = idx * 55; // 55ms stagger
-                setTimeout(() => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
                     entry.target.classList.add('is-revealed');
-                }, delay);
-                observer.unobserve(entry.target);
+                    observer.unobserve(entry.target);
+                }
             });
-        }, { threshold: 0.08, rootMargin: '0px 0px -24px 0px' });
+        }, { threshold: 0.05, rootMargin: '0px 0px -20px 0px' });
 
         document.querySelectorAll(
             '.animate-on-scroll, .patient-card, .kpi-card, .metric-card, .bento-card'
@@ -218,16 +184,7 @@ class AnimationEngine {
        BUTTON MICRO-INTERACTIONS
     ────────────────────────────────────────────── */
     initButtonMicroInteractions() {
-        document.querySelectorAll('button, a.btn, [role="button"]').forEach(btn => {
-            btn.addEventListener('mousedown', () => {
-                if (!this.reduceMotion) btn.style.transform = 'scale(0.96)';
-            });
-            ['mouseup', 'mouseleave'].forEach(evt => {
-                btn.addEventListener(evt, () => {
-                    if (!this.reduceMotion) btn.style.transform = '';
-                });
-            });
-        });
+        // Consolidated in global pointerdown delegate
     }
 
     /* ──────────────────────────────────────────────
