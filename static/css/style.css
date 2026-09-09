@@ -448,13 +448,36 @@ nav, .custom-scrollbar, #mobile-drawer, #desktop-sidebar {
 
 /* Sidebar Smooth Transitions */
 #desktop-sidebar {
-    transition: width 0.3s cubic-bezier(0.16, 1, 0.3, 1), margin-left 0.3s cubic-bezier(0.16, 1, 0.3, 1), transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    transition: width 0.32s cubic-bezier(0.16, 1, 0.3, 1), margin-left 0.32s cubic-bezier(0.16, 1, 0.3, 1), transform 0.32s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.25s ease;
+    will-change: margin-left, opacity;
 }
 #desktop-sidebar.is-collapsed {
     margin-left: -16rem;
     pointer-events: none;
     opacity: 0;
 }
+
+/* Nav Group Accordion Transitions */
+.nav-group-wrapper button {
+    transition: background-color 0.2s cubic-bezier(0.16, 1, 0.3, 1), color 0.2s ease, transform 0.15s ease;
+}
+.nav-group-wrapper button:active {
+    transform: scale(0.98);
+}
+.nav-item-hover {
+    transition: all 0.18s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.nav-item-hover:hover {
+    transform: translateX(3px);
+    background-color: rgba(0, 91, 191, 0.08);
+}
+.nav-active-pill {
+    background: linear-gradient(135deg, rgba(0, 91, 191, 0.12) 0%, rgba(2, 132, 199, 0.08) 100%) !important;
+    border-left: 3px solid #005bbf;
+    color: #005bbf !important;
+    font-weight: 800 !important;
+}
+
 
 /* ============================================================
    Comprehensive Clinical Animation Suite

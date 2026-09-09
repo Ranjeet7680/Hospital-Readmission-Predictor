@@ -1041,7 +1041,8 @@
             const sidebarIcon = document.getElementById('desktop-sidebar-icon');
             if (!sidebar) return;
 
-            const shouldCollapse = forceState !== undefined ? forceState : !sidebar.classList.contains('is-collapsed');
+            const isCurrentlyCollapsed = sidebar.classList.contains('is-collapsed');
+            const shouldCollapse = forceState !== undefined ? forceState : !isCurrentlyCollapsed;
             
             if (shouldCollapse) {
                 sidebar.classList.add('is-collapsed');
@@ -1117,10 +1118,77 @@
 
         // Restore saved desktop sidebar preference and bind Ctrl+B shortcut
         document.addEventListener('DOMContentLoaded', () => {
-            const savedState = localStorage.getItem('hrp_sidebar_collapsed');
-            if (savedState === 'true') {
+            const savedSidebarState = localStorage.getItem('hrp_sidebar_collapsed');
+            if (savedSidebarState === 'true') {
                 toggleDesktopSidebar(true);
             }
+
+            // Group auto-expansion based on active page
+            const PAGE_TO_GROUP = {
+                'dashboard': 'clinical',
+                'notifications': 'clinical',
+                'new_prediction': 'clinical',
+                'patients': 'clinical',
+                'history': 'clinical',
+                'analytics': 'clinical',
+                'documents': 'docs',
+                'analyze_report': 'docs',
+                'certificates': 'docs',
+                'ml_dashboard': 'ml',
+                'dataset': 'ml',
+                'preprocessing': 'ml',
+                'training_studio': 'ml',
+                'dl_lab': 'ml',
+                'comparison': 'ml',
+                'xai': 'ml',
+                'embeddings': 'ml',
+                'ensemble': 'ml',
+                'monitoring': 'ml',
+                'registry': 'ml',
+                'model_chat': 'ml',
+                'rl_dashboard': 'rl',
+                'rl_env': 'rl',
+                'care_pathway': 'rl',
+                'simulation_twin': 'rl',
+                'safety_constraints': 'rl',
+                'human_review': 'rl',
+                'rl_arch': 'rl',
+                'careai_studio': 'portals',
+                'video_consult': 'portals',
+                'patient_portal': 'portals',
+                'care_coordinator': 'portals',
+                'admin_users': 'portals',
+                'dr_verification': 'portals',
+                'audit_logs': 'portals',
+                'backend_hub': 'portals',
+                'health_id': 'healthid',
+                'doctor_id': 'healthid',
+                'wallet': 'healthid',
+                'qr_scanner': 'healthid',
+                'temporary_share': 'healthid',
+                'settings': 'system',
+                'sessions': 'system',
+                'help': 'system'
+            };
+
+            const activePage = '{{ active_page|default("dashboard") }}';
+            const activeGroup = PAGE_TO_GROUP[activePage] || 'clinical';
+
+            // Ensure active group is open, other groups start folded
+            const allGroups = ['clinical', 'docs', 'ml', 'rl', 'portals', 'healthid', 'system'];
+            allGroups.forEach(g => {
+                const c = document.getElementById(`nav-content-${g}`);
+                const a = document.getElementById(`nav-arrow-${g}`);
+                if (c) {
+                    if (g === activeGroup) {
+                        c.classList.remove('hidden');
+                        if (a) a.textContent = 'expand_less';
+                    } else {
+                        c.classList.add('hidden');
+                        if (a) a.textContent = 'expand_more';
+                    }
+                }
+            });
         });
 
         document.addEventListener('keydown', (e) => {
@@ -1129,6 +1197,7 @@
                 toggleDesktopSidebar();
             }
         });
+
 
         // Sound Engine Mute Toggle
         function toggleAudioMute() {
