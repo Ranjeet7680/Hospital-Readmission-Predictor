@@ -4,76 +4,99 @@
 {% block header_title %}Patient Electronic Record{% endblock %}
 
 {% block content %}
-<div class="max-w-7xl mx-auto space-y-lg pb-32">
+<div class="max-w-7xl mx-auto space-y-lg pb-52">
     <!-- Breadcrumbs & Header Actions -->
     <div class="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-4">
         <div>
-            <div class="flex items-center gap-2 text-sm text-secondary mb-1">
-                <a href="/patients" class="hover:text-primary transition-colors flex items-center">
-                    <span class="material-symbols-outlined text-[16px] mr-1">arrow_back</span> Patients
+            <div class="flex items-center gap-2 text-xs font-semibold text-secondary mb-1">
+                <a href="/patients" class="hover:text-primary transition-colors flex items-center gap-1">
+                    <span class="material-symbols-outlined text-[15px]">arrow_back</span>
+                    <span>Patients</span>
                 </a>
                 <span>/</span>
-                <span class="text-on-surface font-semibold">Patient #{{ patient.id }}</span>
+                <span class="text-on-surface font-bold">Patient #{{ patient.id }}</span>
             </div>
-            <h1 class="text-headline-lg font-headline-lg font-bold text-on-surface">{{ patient.name }}</h1>
+            <div class="flex items-center gap-3">
+                <h1 class="text-2xl sm:text-3xl font-black text-on-surface tracking-tight">{{ patient.name }}</h1>
+                {% if patient.acuity_level == 'High' %}
+                    <span class="px-2.5 py-0.5 rounded-full bg-error/15 text-error text-xs font-black flex items-center gap-1 border border-error/25">
+                        <span class="w-1.5 h-1.5 rounded-full bg-error animate-ping"></span>
+                        High Risk (68%)
+                    </span>
+                {% elif patient.acuity_level == 'Moderate' %}
+                    <span class="px-2.5 py-0.5 rounded-full bg-amber-100 text-amber-800 text-xs font-black flex items-center gap-1 border border-amber-200">
+                        Moderate Risk
+                    </span>
+                {% else %}
+                    <span class="px-2.5 py-0.5 rounded-full bg-emerald-100 text-emerald-800 text-xs font-black flex items-center gap-1 border border-emerald-200">
+                        Low Risk
+                    </span>
+                {% endif %}
+            </div>
         </div>
 
-        <div class="flex items-center gap-3">
-            <button onclick="alert('Profile editor opened for patient record {{ patient.id }}');" class="flex items-center px-4 py-2.5 border border-outline-variant text-secondary hover:text-on-surface rounded-xl text-title-md font-title-md hover:bg-surface-container-low transition-colors shadow-sm">
-                <span class="material-symbols-outlined mr-1.5 text-[20px]">edit</span> Edit Profile
+        <div class="flex items-center gap-2.5">
+            <button type="button" onclick="alert('Profile editor opened for patient record {{ patient.id }}');" class="flex items-center px-4 py-2 border border-slate-200 text-secondary hover:text-on-surface rounded-xl text-xs font-bold hover:bg-slate-50 transition-colors shadow-2xs">
+                <span class="material-symbols-outlined mr-1 text-[18px]">edit</span>
+                <span>Edit Profile</span>
             </button>
-            <a href="/prediction/new" class="flex items-center px-5 py-2.5 bg-primary text-on-primary rounded-xl text-title-md font-title-md hover:bg-on-primary-fixed-variant transition-all shadow-md font-bold">
-                <span class="material-symbols-outlined mr-1.5 text-[20px]">add_circle</span> New Prediction
+            <a href="/prediction/new" class="flex items-center px-4 py-2 bg-primary hover:bg-primary/90 text-white rounded-xl text-xs font-bold shadow-sm transition-all">
+                <span class="material-symbols-outlined mr-1 text-[18px]">add_circle</span>
+                <span>New Prediction</span>
             </a>
         </div>
     </div>
 
-    <!-- Patient Summary Card -->
-    <div class="bg-surface-container-lowest border border-outline-variant rounded-2xl p-lg flex flex-col md:flex-row gap-lg items-start relative overflow-hidden shadow-sm">
-        <div class="absolute top-0 right-0 w-64 h-64 bg-primary-fixed-dim opacity-20 rounded-full blur-3xl -translate-y-1/2 translate-x-1/3 pointer-events-none"></div>
+    <!-- Patient Summary Card (Clean Spacing • No Slicing Border) -->
+    <div class="bg-surface-container-lowest border border-outline-variant rounded-3xl p-5 sm:p-6 flex flex-col lg:flex-row gap-6 items-start relative overflow-hidden shadow-sm">
+        <div class="absolute top-0 right-0 w-64 h-64 bg-primary/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/3 pointer-events-none"></div>
         
-        <div class="flex items-center gap-md md:border-r border-surface-variant md:pr-lg shrink-0">
-            <div class="w-20 h-20 rounded-full bg-secondary-container flex items-center justify-center text-on-secondary-container font-headline-md font-bold">
+        <!-- Patient Identity Left Block -->
+        <div class="flex items-center gap-4 lg:pr-6 lg:border-r border-slate-200 shrink-0">
+            <div class="w-16 h-16 sm:w-18 sm:h-18 rounded-2xl bg-gradient-to-tr from-primary to-[#003c7e] text-white flex items-center justify-center font-black text-2xl shadow-md border-2 border-white ring-4 ring-primary/10 shrink-0">
                 {{ patient.initials }}
             </div>
-            <div>
-                <div class="flex items-center gap-sm mb-1">
-                    <span class="text-title-lg font-title-lg font-bold text-on-surface">#{{ patient.id }}</span>
-                    {% if patient.acuity_level == 'High' %}
-                        <span class="px-2.5 py-0.5 bg-error/15 text-error rounded-full text-xs font-bold flex items-center gap-1">
-                            <span class="material-symbols-outlined text-[14px]">warning</span> High Risk
-                        </span>
-                    {% elif patient.acuity_level == 'Moderate' %}
-                        <span class="px-2.5 py-0.5 bg-amber-100 text-amber-800 rounded-full text-xs font-bold flex items-center gap-1">
-                            <span class="material-symbols-outlined text-[14px]">info</span> Moderate Risk
-                        </span>
-                    {% else %}
-                        <span class="px-2.5 py-0.5 bg-green-100 text-green-800 rounded-full text-xs font-bold flex items-center gap-1">
-                            <span class="material-symbols-outlined text-[14px]">check_circle</span> Low Risk
-                        </span>
-                    {% endif %}
+            <div class="space-y-1">
+                <div class="flex items-center gap-2">
+                    <span class="font-mono text-sm font-black text-on-surface">#{{ patient.id }}</span>
+                    <span class="text-[11px] px-2 py-0.5 rounded-md bg-slate-100 text-slate-700 font-bold">Room 4B-12</span>
                 </div>
-                <p class="text-body-md text-secondary">Admitted: {{ patient.admission_date }}</p>
-                <p class="text-xs text-secondary font-medium mt-0.5">{{ patient.primary_diagnosis }}</p>
+                <p class="text-xs text-secondary font-semibold flex items-center gap-1">
+                    <span class="material-symbols-outlined text-[15px] text-primary">login</span>
+                    <span>Admitted: {{ patient.admission_date }}</span>
+                </p>
+                <div class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-red-50 text-red-700 text-[11px] font-bold border border-red-100">
+                    <span class="material-symbols-outlined text-[13px]">cardiology</span>
+                    <span>{{ patient.primary_diagnosis }}</span>
+                </div>
             </div>
         </div>
 
-        <div class="flex-1 grid grid-cols-2 md:grid-cols-4 gap-md w-full z-10">
-            <div>
-                <p class="text-label-lg font-label-lg text-secondary mb-1 uppercase tracking-wider">Age / Gender</p>
-                <p class="text-title-md font-title-md font-bold text-on-surface">{{ patient.age }} / {{ patient.gender }}</p>
+        <!-- Metric Details Right Block (Spaced 4 Columns with Clean Margins) -->
+        <div class="flex-1 grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4 w-full z-10">
+            <div class="p-3 rounded-2xl bg-surface/80 border border-outline-variant/40">
+                <p class="text-[10px] font-extrabold text-secondary uppercase tracking-wider flex items-center gap-1">
+                    <span class="material-symbols-outlined text-[14px]">person</span> Age / Gender
+                </p>
+                <p class="text-sm font-black text-on-surface mt-1">{{ patient.age }} / {{ patient.gender }}</p>
             </div>
-            <div>
-                <p class="text-label-lg font-label-lg text-secondary mb-1 uppercase tracking-wider">Department</p>
-                <p class="text-title-md font-title-md font-bold text-on-surface">{{ patient.department }}</p>
+            <div class="p-3 rounded-2xl bg-surface/80 border border-outline-variant/40">
+                <p class="text-[10px] font-extrabold text-secondary uppercase tracking-wider flex items-center gap-1">
+                    <span class="material-symbols-outlined text-[14px]">local_hospital</span> Department
+                </p>
+                <p class="text-sm font-black text-on-surface mt-1">{{ patient.department }}</p>
             </div>
-            <div>
-                <p class="text-label-lg font-label-lg text-secondary mb-1 uppercase tracking-wider">Attending</p>
-                <p class="text-title-md font-title-md font-bold text-on-surface">{{ patient.attending_physician }}</p>
+            <div class="p-3 rounded-2xl bg-surface/80 border border-outline-variant/40">
+                <p class="text-[10px] font-extrabold text-secondary uppercase tracking-wider flex items-center gap-1">
+                    <span class="material-symbols-outlined text-[14px]">stethoscope</span> Attending
+                </p>
+                <p class="text-sm font-black text-on-surface mt-1">{{ patient.attending_physician }}</p>
             </div>
-            <div>
-                <p class="text-label-lg font-label-lg text-secondary mb-1 uppercase tracking-wider">Prior Discharge</p>
-                <p class="text-title-md font-title-md font-bold text-on-surface">{{ patient.last_discharge }}</p>
+            <div class="p-3 rounded-2xl bg-surface/80 border border-outline-variant/40">
+                <p class="text-[10px] font-extrabold text-secondary uppercase tracking-wider flex items-center gap-1">
+                    <span class="material-symbols-outlined text-[14px]">history</span> Prior Discharge
+                </p>
+                <p class="text-sm font-black text-on-surface mt-1">{{ patient.last_discharge }}</p>
             </div>
         </div>
     </div>
@@ -92,12 +115,12 @@
     <div id="tab-content-overview" class="space-y-gutter">
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-gutter">
             <!-- 30-Day Readmission Risk History Chart (Span 2) -->
-            <div class="lg:col-span-2 bg-surface-container-lowest border border-outline-variant rounded-2xl p-lg flex flex-col shadow-sm">
-                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 mb-md">
+            <div class="lg:col-span-2 bg-surface-container-lowest border border-outline-variant rounded-3xl p-5 sm:p-6 flex flex-col shadow-sm">
+                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 mb-3">
                     <div>
-                        <h3 class="text-title-lg font-title-lg font-bold text-on-surface flex items-center gap-2">
+                        <h3 class="text-base sm:text-lg font-black text-on-surface flex items-center gap-2">
                             <span class="material-symbols-outlined text-primary">show_chart</span>
-                            30-Day Readmission Risk Trajectory
+                            <span>30-Day Readmission Risk Trajectory</span>
                         </h3>
                         <p class="text-xs text-secondary mt-0.5">Six-month historical acuity trend leading to current post-discharge evaluation</p>
                     </div>
@@ -107,164 +130,205 @@
                     </div>
                 </div>
 
-                <!-- Chart Simulation Canvas -->
-                <div class="flex-1 min-h-[280px] relative mt-2 bg-gradient-to-b from-surface/40 to-surface-container-lowest rounded-xl border border-surface-variant p-4 pt-6 overflow-hidden">
-                    <!-- Y-Axis Labels -->
-                    <div class="absolute left-3 top-5 bottom-10 flex flex-col justify-between text-xs text-secondary font-mono pointer-events-none select-none">
-                        <span>100%</span>
-                        <span>75%</span>
-                        <span>50%</span>
-                        <span>25%</span>
-                        <span>0%</span>
+                <!-- Chart Simulation Canvas with Fully Aligned Mathematical Coordinates -->
+                <div class="flex-1 min-h-[290px] relative mt-2 bg-gradient-to-b from-slate-50/50 to-surface-container-lowest rounded-2xl border border-surface-variant p-3 sm:p-4 pt-6 pb-9 overflow-hidden">
+                    
+                    <!-- Y-Axis Labels Placed with Exact Vertical Heights Matching SVG Grid Lines -->
+                    <div class="absolute left-2.5 sm:left-3 top-6 bottom-9 w-8 flex flex-col justify-between text-[11px] font-mono text-secondary font-semibold pointer-events-none select-none">
+                        <span class="leading-none">100%</span>
+                        <span class="leading-none">75%</span>
+                        <span class="leading-none text-error font-black">60%</span>
+                        <span class="leading-none">50%</span>
+                        <span class="leading-none">25%</span>
+                        <span class="leading-none">0%</span>
                     </div>
 
-                    <!-- Horizontal Grid Lines -->
-                    <div class="absolute left-14 right-4 top-6 bottom-11 flex flex-col justify-between pointer-events-none">
-                        <div class="w-full h-px bg-surface-variant border-dashed"></div>
-                        <div class="w-full h-px bg-surface-variant border-dashed"></div>
-                        <div class="w-full h-px bg-surface-variant border-dashed"></div>
-                        <div class="w-full h-px bg-surface-variant border-dashed"></div>
-                        <div class="w-full h-px bg-surface-variant"></div>
-                    </div>
-
-                    <!-- Risk Threshold Zone (>60%) -->
-                    <div class="absolute left-14 right-4 top-6 h-[40%] bg-error/5 border-b-2 border-dashed border-error/30 pointer-events-none flex items-start justify-end pr-3 pt-1">
-                        <span class="text-[10px] font-bold text-error uppercase tracking-wider bg-surface-container-lowest/90 px-2 py-0.5 rounded border border-error/20">
-                            High Risk Threshold (&gt;60%)
-                        </span>
-                    </div>
-
-                    <!-- SVG Smooth Spline Chart -->
-                    <svg class="absolute left-14 right-4 top-6 bottom-11 w-[calc(100%-4.5rem)] h-[calc(100%-4.25rem)] overflow-visible" viewBox="0 0 500 180" preserveAspectRatio="none">
+                    <!-- SVG Smooth Spline Chart (520 x 180 ViewBox) -->
+                    <svg class="w-full h-full overflow-visible" viewBox="0 0 520 180" preserveAspectRatio="none">
                         <defs>
+                            <!-- Shaded Area Gradient -->
                             <linearGradient id="profileAreaGrad" x1="0%" y1="0%" x2="0%" y2="100%">
-                                <stop offset="0%" stop-color="#ba1a1a" stop-opacity="0.25"></stop>
-                                <stop offset="50%" stop-color="#1a73e8" stop-opacity="0.12"></stop>
+                                <stop offset="0%" stop-color="#ba1a1a" stop-opacity="0.22"></stop>
+                                <stop offset="50%" stop-color="#1a73e8" stop-opacity="0.10"></stop>
                                 <stop offset="100%" stop-color="#1a73e8" stop-opacity="0.0"></stop>
                             </linearGradient>
+                            <!-- Stroke Gradient -->
                             <linearGradient id="profileLineGrad" x1="0%" y1="0%" x2="100%" y2="0%">
                                 <stop offset="0%" stop-color="#1a73e8"></stop>
-                                <stop offset="50%" stop-color="#1a73e8"></stop>
-                                <stop offset="75%" stop-color="#ba1a1a"></stop>
+                                <stop offset="48%" stop-color="#1a73e8"></stop>
+                                <stop offset="70%" stop-color="#ba1a1a"></stop>
                                 <stop offset="100%" stop-color="#ba1a1a"></stop>
                             </linearGradient>
                         </defs>
 
+                        <!-- High Risk Threshold Zone (Above 60% = y: 0 to 72) -->
+                        <rect x="0" y="0" width="520" height="72" fill="#ba1a1a" fill-opacity="0.04"></rect>
+
+                        <!-- Horizontal Grid Lines (100%, 75%, 60% Threshold, 50%, 25%, 0%) -->
+                        <line x1="0" y1="0" x2="520" y2="0" stroke="#e2e8f0" stroke-width="1" stroke-dasharray="4 4"></line>
+                        <line x1="0" y1="45" x2="520" y2="45" stroke="#e2e8f0" stroke-width="1" stroke-dasharray="4 4"></line>
+                        
+                        <!-- High Risk Threshold Line (60% = Exactly y: 72) -->
+                        <line x1="0" y1="72" x2="520" y2="72" stroke="#ba1a1a" stroke-width="1.5" stroke-dasharray="5 4" stroke-opacity="0.75"></line>
+                        
+                        <line x1="0" y1="90" x2="520" y2="90" stroke="#e2e8f0" stroke-width="1" stroke-dasharray="4 4"></line>
+                        <line x1="0" y1="135" x2="520" y2="135" stroke="#e2e8f0" stroke-width="1" stroke-dasharray="4 4"></line>
+                        <line x1="0" y1="180" x2="520" y2="180" stroke="#cbd5e1" stroke-width="1.5"></line>
+
+                        <!-- High Risk Threshold Tag -->
+                        <g transform="translate(365, 8)">
+                            <rect x="0" y="0" width="150" height="19" rx="5" fill="#ffffff" stroke="#fca5a5" stroke-width="1" opacity="0.95"></rect>
+                            <circle cx="10" cy="9.5" r="3.5" fill="#ba1a1a"></circle>
+                            <text x="18" y="13.5" font-size="9" font-weight="800" fill="#ba1a1a" font-family="system-ui, sans-serif" letter-spacing="0.3">HIGH RISK THRESHOLD (&gt;60%)</text>
+                        </g>
+
                         <!-- Shaded Area Under Spline Curve -->
-                        <path d="M 40 126 C 80 123, 85 119, 120 117 C 155 115, 165 74, 200 72 C 235 70, 245 92, 280 90 C 315 88, 325 38, 360 36 C 400 34, 420 56, 460 57.6 L 460 180 L 40 180 Z"
+                        <path d="M 35 180 L 35 126 C 65 125, 95 120, 125 117 C 155 114, 185 75, 215 72 C 245 69, 275 88, 305 90 C 335 92, 365 38, 395 36 C 425 34, 455 55, 485 57.6 L 485 180 Z"
                               fill="url(#profileAreaGrad)" stroke="none"></path>
 
-                        <!-- Smooth Cubic Spline Line Stroke -->
-                        <path d="M 40 126 C 80 123, 85 119, 120 117 C 155 115, 165 74, 200 72 C 235 70, 245 92, 280 90 C 315 88, 325 38, 360 36 C 400 34, 420 56, 460 57.6"
+                        <!-- Vertical Evaluation Guideline at Oct (485, 57.6) -->
+                        <line x1="485" y1="57.6" x2="485" y2="180" stroke="#ba1a1a" stroke-width="1.5" stroke-dasharray="3 3" opacity="0.55"></line>
+
+                        <!-- Vertical Baseline Guideline at May (35, 126) -->
+                        <line x1="35" y1="126" x2="35" y2="180" stroke="#94a3b8" stroke-width="1" stroke-dasharray="2 2" opacity="0.45"></line>
+
+                        <!-- Continuous Cubic Spline Line Stroke -->
+                        <path d="M 35 126 C 65 125, 95 120, 125 117 C 155 114, 185 75, 215 72 C 245 69, 275 88, 305 90 C 335 92, 365 38, 395 36 C 425 34, 455 55, 485 57.6"
                               fill="none" stroke="url(#profileLineGrad)" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"
                               filter="drop-shadow(0 3px 6px rgba(26, 115, 232, 0.2))"></path>
 
-                        <!-- Data Nodes with Value Labels & Tooltips -->
-                        <!-- Node 1: May (30%) -->
+                        <!-- Data Nodes with Direct Values -->
+                        <!-- Node 1: May (30%) at (35, 126) -->
                         <g class="cursor-pointer group">
-                            <circle cx="40" cy="126" r="6" fill="#ffffff" stroke="#1a73e8" stroke-width="3"></circle>
+                            <circle cx="35" cy="126" r="5.5" fill="#ffffff" stroke="#1a73e8" stroke-width="3"></circle>
                             <title>May: 30% Readmission Risk</title>
                         </g>
 
-                        <!-- Node 2: Jun (35%) -->
+                        <!-- Node 2: Jun (35%) at (125, 117) -->
                         <g class="cursor-pointer group">
-                            <circle cx="120" cy="117" r="6" fill="#ffffff" stroke="#1a73e8" stroke-width="3"></circle>
+                            <circle cx="125" cy="117" r="5.5" fill="#ffffff" stroke="#1a73e8" stroke-width="3"></circle>
                             <title>Jun: 35% Readmission Risk</title>
                         </g>
 
-                        <!-- Node 3: Jul (60%) -->
+                        <!-- Node 3: Jul (60%) at (215, 72) - Passes EXACTLY on Threshold Line -->
                         <g class="cursor-pointer group">
-                            <circle cx="200" cy="72" r="6" fill="#ffffff" stroke="#1a73e8" stroke-width="3"></circle>
+                            <circle cx="215" cy="72" r="6" fill="#ffffff" stroke="#1a73e8" stroke-width="3"></circle>
                             <title>Jul: 60% Readmission Risk</title>
                         </g>
 
-                        <!-- Node 4: Aug (50%) -->
+                        <!-- Node 4: Aug (50%) at (305, 90) - Sits on 50% Grid Line -->
                         <g class="cursor-pointer group">
-                            <circle cx="280" cy="90" r="6" fill="#ffffff" stroke="#1a73e8" stroke-width="3"></circle>
+                            <circle cx="305" cy="90" r="5.5" fill="#ffffff" stroke="#1a73e8" stroke-width="3"></circle>
                             <title>Aug: 50% Readmission Risk</title>
                         </g>
 
-                        <!-- Node 5: Sep (80%) -->
+                        <!-- Node 5: Sep (80%) at (395, 36) - In High Risk Zone -->
                         <g class="cursor-pointer group">
-                            <circle cx="360" cy="36" r="7" fill="#ffffff" stroke="#ba1a1a" stroke-width="3.5"></circle>
+                            <circle cx="395" cy="36" r="7" fill="#ffffff" stroke="#ba1a1a" stroke-width="3.5"></circle>
                             <title>Sep: 80% Readmission Risk (Prior Admission)</title>
                         </g>
 
-                        <!-- Node 6: Oct (68% - Current Assessment) -->
+                        <!-- Node 6: Oct (68% - Current Assessment) at (485, 57.6) -->
                         <g class="cursor-pointer group">
-                            <circle cx="460" cy="57.6" r="12" fill="#ba1a1a" opacity="0.25" class="animate-ping"></circle>
-                            <circle cx="460" cy="57.6" r="7.5" fill="#ba1a1a" stroke="#ffffff" stroke-width="3"></circle>
+                            <circle cx="485" cy="57.6" r="13" fill="#ba1a1a" opacity="0.25" class="animate-ping"></circle>
+                            <circle cx="485" cy="57.6" r="7.5" fill="#ba1a1a" stroke="#ffffff" stroke-width="3"></circle>
                             <title>Oct: 68% Readmission Risk (Current Assessment)</title>
                         </g>
                     </svg>
 
-                    <!-- X-Axis Labels (Precisely Aligned With SVG Nodes) -->
-                    <div class="absolute left-14 right-4 bottom-2 flex justify-between text-xs font-semibold text-secondary px-1">
-                        <span class="hover:text-primary transition-colors">May (30%)</span>
-                        <span class="hover:text-primary transition-colors">Jun (35%)</span>
-                        <span class="hover:text-primary transition-colors">Jul (60%)</span>
-                        <span class="hover:text-primary transition-colors">Aug (50%)</span>
-                        <span class="text-error font-bold">Sep (80%)</span>
-                        <span class="text-error font-bold px-2 py-0.5 rounded bg-error/10 border border-error/20">Oct (68%)</span>
+                    <!-- X-Axis Labels (Mathematically Centered Directly Below Circles via % offsets) -->
+                    <div class="absolute left-10 sm:left-12 right-2 sm:right-4 bottom-1 h-6 pointer-events-none text-xs font-semibold text-secondary">
+                        <span class="absolute -translate-x-1/2 hover:text-primary transition-colors cursor-pointer pointer-events-auto" style="left: 6.73%;">May (30%)</span>
+                        <span class="absolute -translate-x-1/2 hover:text-primary transition-colors cursor-pointer pointer-events-auto" style="left: 24.04%;">Jun (35%)</span>
+                        <span class="absolute -translate-x-1/2 hover:text-primary transition-colors cursor-pointer pointer-events-auto" style="left: 41.35%;">Jul (60%)</span>
+                        <span class="absolute -translate-x-1/2 hover:text-primary transition-colors cursor-pointer pointer-events-auto" style="left: 58.65%;">Aug (50%)</span>
+                        <span class="absolute -translate-x-1/2 text-error font-extrabold cursor-pointer pointer-events-auto" style="left: 75.96%;">Sep (80%)</span>
+                        <span class="absolute -translate-x-1/2 text-error font-black px-2 py-0.5 rounded-md bg-error/10 border border-error/20 cursor-pointer pointer-events-auto whitespace-nowrap" style="left: 93.27%;">Oct (68%)</span>
                     </div>
                 </div>
             </div>
 
-            <!-- Patient Timeline (Span 1) -->
-            <div class="bg-surface-container-lowest border border-outline-variant rounded-2xl p-lg flex flex-col shadow-sm">
-                <div class="flex justify-between items-center mb-md border-b border-surface-variant pb-2">
-                    <h3 class="text-title-lg font-title-lg font-bold text-on-surface flex items-center">
-                        <span class="material-symbols-outlined text-primary mr-2">schedule</span>
-                        Timeline
+            <!-- Patient Timeline (Span 1 • Complete Visibility Without Clipping) -->
+            <div class="bg-surface-container-lowest border border-outline-variant rounded-3xl p-5 sm:p-6 flex flex-col shadow-sm">
+                <div class="flex justify-between items-center mb-3 border-b border-surface-variant pb-2.5">
+                    <h3 class="text-base sm:text-lg font-black text-on-surface flex items-center">
+                        <span class="material-symbols-outlined text-primary mr-2 text-[20px]">schedule</span>
+                        <span>Clinical Timeline</span>
                     </h3>
+                    <span class="text-[10px] font-bold text-slate-500 uppercase tracking-wider">4 Events</span>
                 </div>
 
-                <div class="relative flex-1 overflow-y-auto max-h-[320px]">
+                <div class="relative flex-1 overflow-y-auto max-h-[340px] pr-1.5 space-y-4">
                     <div class="absolute left-[15px] top-4 bottom-4 w-px bg-surface-variant"></div>
-                    <div class="space-y-5 relative z-10">
+                    <div class="space-y-4 relative z-10">
                         {% for event in patient.timeline %}
-                        <div class="flex gap-4">
+                        <div class="flex gap-3.5 items-start">
                             <div class="w-8 h-8 rounded-full {{ event.bg_class }} border-2 border-surface-container-lowest flex items-center justify-center shrink-0 z-10 shadow-sm">
-                                <span class="material-symbols-outlined {{ event.color }} text-[16px]">{{ event.icon }}</span>
+                                <span class="material-symbols-outlined {{ event.color }} text-[15px]">{{ event.icon }}</span>
                             </div>
-                            <div class="pt-0.5">
-                                <p class="text-xs font-bold {{ event.color }} mb-0.5">{{ event.time }}</p>
-                                <p class="text-sm font-bold text-on-surface">{{ event.title }}</p>
-                                <p class="text-xs text-secondary mt-1 leading-relaxed">{{ event.description }}</p>
+                            <div class="pt-0.5 min-w-0">
+                                <p class="text-[11px] font-extrabold {{ event.color }} mb-0.5">{{ event.time }}</p>
+                                <p class="text-xs font-black text-on-surface truncate">{{ event.title }}</p>
+                                <p class="text-xs text-secondary mt-0.5 leading-relaxed">{{ event.description }}</p>
                             </div>
                         </div>
                         {% endfor %}
                     </div>
                 </div>
 
-                <a href="/prediction/{{ patient.id }}" class="mt-4 w-full py-2 text-center text-primary font-bold text-xs hover:bg-surface-container-low rounded-lg transition-colors border border-outline-variant/50">
-                    View Latest Prediction
+                <a href="/prediction/{{ patient.id }}" class="mt-4 w-full py-2.5 px-4 text-center rounded-xl bg-primary hover:bg-primary/90 text-white font-bold text-xs shadow-sm hover:shadow transition-all flex items-center justify-center gap-1.5">
+                    <span class="material-symbols-outlined text-[17px]">visibility</span>
+                    <span>View Latest Assessment</span>
                 </a>
             </div>
 
-            <!-- Current Top Risk Factors (Span 3) -->
-            <div class="lg:col-span-3 bg-surface-container-lowest border border-outline-variant rounded-2xl p-lg shadow-sm">
-                <h3 class="text-title-lg font-title-lg font-bold text-on-surface mb-md">Current Top Risk Factors</h3>
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-md">
-                    <div class="p-md rounded-xl bg-surface border border-outline-variant flex items-start gap-3">
-                        <span class="material-symbols-outlined text-error mt-0.5">warning</span>
+            <!-- Current Top Risk Factors (Span 3 • Safe Padding Clear of Floating FAB) -->
+            <div class="lg:col-span-3 bg-surface-container-lowest border border-outline-variant rounded-3xl p-5 sm:p-6 shadow-sm mb-6">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="text-base sm:text-lg font-black text-on-surface flex items-center gap-2">
+                        <span class="material-symbols-outlined text-error">analytics</span>
+                        <span>Current Top Risk Factors</span>
+                    </h3>
+                    <span class="text-xs font-bold text-secondary">TreeSHAP Attributed Drivers</span>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div class="p-4 rounded-2xl bg-surface border border-outline-variant/60 flex items-start gap-3.5 hover:shadow-xs transition-shadow">
+                        <div class="w-9 h-9 rounded-xl bg-red-100 text-error flex items-center justify-center shrink-0">
+                            <span class="material-symbols-outlined text-[20px]">warning</span>
+                        </div>
                         <div>
-                            <p class="text-title-md font-bold text-on-surface">Multiple Prior Admissions</p>
-                            <p class="text-body-md text-secondary mt-1">2 admissions in the past 6 months significantly increases baseline probability.</p>
+                            <div class="flex items-center justify-between gap-2">
+                                <p class="text-xs font-black text-on-surface">Prior Admissions</p>
+                                <span class="text-[9px] px-1.5 py-0.5 rounded bg-red-100 text-red-800 font-extrabold">Acuity +32%</span>
+                            </div>
+                            <p class="text-xs text-secondary mt-1 leading-relaxed">2 admissions in the past 6 months significantly increases baseline probability.</p>
                         </div>
                     </div>
-                    <div class="p-md rounded-xl bg-surface border border-outline-variant flex items-start gap-3">
-                        <span class="material-symbols-outlined text-[#b36b00] mt-0.5">medication</span>
+
+                    <div class="p-4 rounded-2xl bg-surface border border-outline-variant/60 flex items-start gap-3.5 hover:shadow-xs transition-shadow">
+                        <div class="w-9 h-9 rounded-xl bg-amber-100 text-[#b36b00] flex items-center justify-center shrink-0">
+                            <span class="material-symbols-outlined text-[20px]">medication</span>
+                        </div>
                         <div>
-                            <p class="text-title-md font-bold text-on-surface">Polypharmacy Burden</p>
-                            <p class="text-body-md text-secondary mt-1">Currently on 8 active prescription medications requiring adherence monitoring.</p>
+                            <div class="flex items-center justify-between gap-2">
+                                <p class="text-xs font-black text-on-surface">Polypharmacy Burden</p>
+                                <span class="text-[9px] px-1.5 py-0.5 rounded bg-amber-100 text-amber-900 font-extrabold">8 Rx Meds</span>
+                            </div>
+                            <p class="text-xs text-secondary mt-1 leading-relaxed">Currently on 8 active prescription medications requiring adherence monitoring.</p>
                         </div>
                     </div>
-                    <div class="p-md rounded-xl bg-surface border border-outline-variant flex items-start gap-3">
-                        <span class="material-symbols-outlined text-error mt-0.5">favorite</span>
+
+                    <div class="p-4 rounded-2xl bg-surface border border-outline-variant/60 flex items-start gap-3.5 hover:shadow-xs transition-shadow pr-10 sm:pr-4">
+                        <div class="w-9 h-9 rounded-xl bg-red-100 text-error flex items-center justify-center shrink-0">
+                            <span class="material-symbols-outlined text-[20px]">favorite</span>
+                        </div>
                         <div>
-                            <p class="text-title-md font-bold text-on-surface">Chronic Heart Failure</p>
-                            <p class="text-body-md text-secondary mt-1">Primary diagnosis highly correlated with fluid overload and readmission events.</p>
+                            <div class="flex items-center justify-between gap-2">
+                                <p class="text-xs font-black text-on-surface">Heart Failure</p>
+                                <span class="text-[9px] px-1.5 py-0.5 rounded bg-red-100 text-red-800 font-extrabold">Primary DX</span>
+                            </div>
+                            <p class="text-xs text-secondary mt-1 leading-relaxed">Primary diagnosis highly correlated with fluid overload and readmission events.</p>
                         </div>
                     </div>
                 </div>
