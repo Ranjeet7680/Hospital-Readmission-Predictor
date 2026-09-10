@@ -6,57 +6,95 @@
 <style>
 @keyframes float3D {
     0%, 100% { transform: translateY(0px) rotate(0deg) translateZ(20px); }
-    50% { transform: translateY(-10px) rotate(1.5deg) translateZ(35px); }
+    50% { transform: translateY(-8px) rotate(1.2deg) translateZ(35px); }
 }
 @keyframes pulseGlow {
-    0%, 100% { filter: drop-shadow(0 0 15px rgba(34,211,238,0.35)) drop-shadow(0 15px 30px rgba(0,47,108,0.2)); }
-    50% { filter: drop-shadow(0 0 25px rgba(0,91,191,0.6)) drop-shadow(0 20px 40px rgba(0,47,108,0.3)); }
+    0%, 100% { filter: drop-shadow(0 0 16px rgba(34,211,238,0.3)) drop-shadow(0 15px 35px rgba(0,47,108,0.18)); }
+    50% { filter: drop-shadow(0 0 28px rgba(0,91,191,0.5)) drop-shadow(0 20px 45px rgba(0,47,108,0.28)); }
 }
 @keyframes ecgPulse {
     0% { stroke-dashoffset: 200; }
     100% { stroke-dashoffset: 0; }
 }
+@keyframes conicRotate {
+    100% { transform: rotate(360deg); }
+}
+
 .card-3d-wrap {
     perspective: 1200px;
     transform-style: preserve-3d;
 }
 .card-3d-inner {
-    transition: transform 0.25s cubic-bezier(0.2, 0, 0, 1), box-shadow 0.25s ease;
+    transition: transform 0.28s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.28s ease;
     transform-style: preserve-3d;
+    will-change: transform;
 }
 .floating-3d-badge {
     animation: float3D 5s ease-in-out infinite;
     transform-style: preserve-3d;
+    box-shadow: 0 12px 30px -4px rgba(0, 47, 108, 0.15), 0 4px 10px -2px rgba(0, 91, 191, 0.1);
 }
 .glow-3d {
     animation: pulseGlow 4s ease-in-out infinite;
 }
+
+/* Tactile 3D Buttons */
 .btn-3d-primary {
-    background: linear-gradient(135deg, #0066cc 0%, #004085 100%);
-    box-shadow: 0 8px 20px -4px rgba(0, 102, 204, 0.45), 0 3px 6px -2px rgba(0, 0, 0, 0.12), inset 0 1px 1px rgba(255, 255, 255, 0.35);
-    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    background: linear-gradient(135deg, #005bbf 0%, #003a8c 100%);
+    box-shadow: 0 8px 24px -4px rgba(0, 91, 191, 0.45), 0 3px 6px -2px rgba(0, 0, 0, 0.12), inset 0 1px 1px rgba(255, 255, 255, 0.35);
+    transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+    position: relative;
+    overflow: hidden;
+}
+.btn-3d-primary::after {
+    content: '';
+    position: absolute;
+    top: -50%; left: -60%;
+    width: 40%; height: 200%;
+    background: linear-gradient(60deg, transparent 0%, rgba(255,255,255,0.3) 50%, transparent 100%);
+    transform: rotate(25deg);
+    transition: all 0.6s ease;
+}
+.btn-3d-primary:hover::after {
+    left: 140%;
 }
 .btn-3d-primary:hover {
     transform: translateY(-3px) scale(1.02);
-    box-shadow: 0 14px 28px -6px rgba(0, 102, 204, 0.55), 0 6px 10px -3px rgba(0, 0, 0, 0.15), inset 0 1px 1px rgba(255, 255, 255, 0.45);
+    box-shadow: 0 14px 32px -6px rgba(0, 91, 191, 0.55), 0 6px 12px -3px rgba(0, 0, 0, 0.15), inset 0 1px 1px rgba(255, 255, 255, 0.45);
 }
 .btn-3d-primary:active {
     transform: translateY(1px) scale(0.98);
-    box-shadow: 0 3px 8px -2px rgba(0, 102, 204, 0.35);
+    box-shadow: 0 3px 8px -2px rgba(0, 91, 191, 0.35);
 }
+
 .btn-3d-secondary {
     background: #ffffff;
-    box-shadow: 0 6px 16px -3px rgba(0, 0, 0, 0.08), 0 2px 4px -1px rgba(0, 0, 0, 0.04), inset 0 1px 0 rgba(255, 255, 255, 0.9);
-    border: 1px solid rgba(203, 213, 225, 0.8);
-    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    box-shadow: 0 6px 18px -3px rgba(0, 0, 0, 0.07), 0 2px 4px -1px rgba(0, 0, 0, 0.03), inset 0 1px 0 rgba(255, 255, 255, 0.95);
+    border: 1px solid rgba(203, 213, 225, 0.85);
+    transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1);
 }
 .btn-3d-secondary:hover {
-    transform: translateY(-2px) scale(1.01);
-    box-shadow: 0 10px 22px -4px rgba(0, 0, 0, 0.12), 0 4px 6px -2px rgba(0, 0, 0, 0.06);
-    border-color: #94a3b8;
+    transform: translateY(-2px) scale(1.015);
+    box-shadow: 0 12px 24px -4px rgba(0, 0, 0, 0.1), 0 4px 8px -2px rgba(0, 0, 0, 0.05);
+    border-color: #005bbf;
 }
 .btn-3d-secondary:active {
     transform: translateY(1px) scale(0.98);
+}
+
+/* Modern Doctor Showcase Glow & Transition */
+#hero-doctor-container {
+    backdrop-filter: blur(12px);
+    transition: border-color 0.25s ease, box-shadow 0.25s ease;
+}
+#hero-doctor-container:hover {
+    box-shadow: 0 8px 24px -4px rgba(0, 91, 191, 0.15);
+}
+#hero-doc-img {
+    transition: opacity 0.22s ease, transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+#hero-doc-img:hover {
+    transform: scale(1.06);
 }
 </style>
 {% endblock %}
@@ -512,10 +550,19 @@
                     <span>TreeSHAP Attribution 100%</span>
                 </div>
 
+                <!-- Floating 3D Micro-Badge 3 (Top Right - Active Doctor Live Sync) -->
+                <div class="floating-3d-badge absolute -top-3 -right-2 sm:-right-4 z-30 px-3 py-1.5 rounded-2xl bg-white/95 border border-primary/40 shadow-xl text-[11px] font-black text-slate-800 flex items-center gap-2 backdrop-blur-md" style="animation-delay: -1.2s;">
+                    <div class="relative w-5 h-5 rounded-full overflow-hidden border border-primary/60 flex-shrink-0">
+                        <img id="badge-doc-img" src="/static/img/doctors/doctor_1.jpg" alt="Doctor" class="w-full h-full object-cover">
+                    </div>
+                    <span id="badge-doc-name" class="text-primary font-extrabold truncate max-w-[110px]">Dr. Sarah Mitchell</span>
+                    <span class="px-1.5 py-0.5 rounded-full bg-emerald-100 text-emerald-800 text-[9px] font-black">On Duty</span>
+                </div>
+
                 <!-- Main 3D Card with Tilt Effect -->
-                <div id="hero-3d-card" onmousemove="handle3DTilt(event, this)" onmouseleave="reset3DTilt(this)" class="card-3d-inner glow-3d relative bg-white border-2 border-primary/30 rounded-3xl p-6 sm:p-7 shadow-2xl space-y-5 backdrop-blur-md transform transition-all duration-200 ease-out">
+                <div id="hero-3d-card" onmousemove="handle3DTilt(event, this)" onmouseleave="reset3DTilt(this)" class="card-3d-inner glow-3d relative bg-white border-2 border-primary/30 rounded-3xl p-6 sm:p-7 shadow-2xl space-y-4 backdrop-blur-md transform transition-all duration-200 ease-out">
                     
-                    <!-- Top Card Header -->
+                    <!-- Top Card Header: Patient Encounter -->
                     <div class="flex justify-between items-center border-b border-slate-100 pb-3">
                         <div class="flex items-center gap-3">
                             <div class="w-10 h-10 rounded-2xl bg-red-100 text-red-700 flex items-center justify-center font-bold shadow-inner">
@@ -529,6 +576,66 @@
                         <span class="px-3 py-1 rounded-full bg-red-600 text-white text-[10px] font-black uppercase tracking-wider shadow-sm animate-pulse">
                             68.4% High Risk
                         </span>
+                    </div>
+
+                    <!-- ================================================================= -->
+                    <!-- LIVE ON-DUTY CLINICAL CARE TEAM (10 AI DOCTORS • 3S AUTO ROTATION) -->
+                    <!-- ================================================================= -->
+                    <div id="hero-doctor-container" class="p-3.5 rounded-2xl bg-gradient-to-r from-blue-50/90 via-indigo-50/70 to-emerald-50/80 border border-primary/25 shadow-xs relative overflow-hidden group hover:border-primary/50 transition-all">
+                        <!-- 3-Second Linear Progress Indicator Bar -->
+                        <div class="absolute top-0 left-0 right-0 h-1 bg-slate-200/80 overflow-hidden">
+                            <div id="hero-doc-progress" class="h-full bg-gradient-to-r from-primary via-cyan-500 to-emerald-500 w-0"></div>
+                        </div>
+
+                        <div class="flex items-center justify-between gap-3 pt-1">
+                            <!-- Left: Active Doctor Photo Avatar & Credentials -->
+                            <div class="flex items-center gap-3 min-w-0">
+                                <div class="relative w-14 h-14 rounded-2xl overflow-hidden border-2 border-primary/40 shadow-md flex-shrink-0 bg-white ring-2 ring-primary/20 cursor-pointer" onclick="nextDoctor()" title="Click to view next doctor">
+                                    <img id="hero-doc-img" src="/static/img/doctors/doctor_1.jpg" alt="Active Attending Physician" class="w-full h-full object-cover transition-opacity duration-300">
+                                    <!-- Pulsing Active Status Ring -->
+                                    <span class="absolute bottom-0.5 right-0.5 w-3 h-3 rounded-full bg-emerald-500 border-2 border-white shadow-xs flex items-center justify-center">
+                                        <span class="w-1.5 h-1.5 rounded-full bg-white animate-ping"></span>
+                                    </span>
+                                </div>
+
+                                <div class="min-w-0 space-y-0.5">
+                                    <div class="flex items-center gap-1.5">
+                                        <span class="px-2 py-0.5 rounded-md bg-primary/15 text-primary text-[10px] font-black uppercase tracking-wider flex items-center gap-1">
+                                            <span class="material-symbols-outlined text-[12px] text-emerald-600">stethoscope</span>
+                                            <span>Attending Physician</span>
+                                        </span>
+                                        <span id="hero-doc-counter" class="text-[10px] font-mono font-bold text-slate-500 bg-white/90 px-1.5 py-0.5 rounded border border-slate-200">Doc 1/10</span>
+                                        <span class="text-[9px] font-bold text-emerald-700 bg-emerald-50 border border-emerald-200 px-1.5 py-0.5 rounded flex items-center gap-0.5">
+                                            <span class="w-1 h-1 rounded-full bg-emerald-600 animate-ping"></span> 3s Auto
+                                        </span>
+                                    </div>
+                                    <h5 id="hero-doc-name" class="text-xs sm:text-sm font-black text-slate-900 truncate">Dr. Sarah Mitchell, MD, FACC</h5>
+                                    <p id="hero-doc-role" class="text-[10px] sm:text-[11px] text-slate-600 font-semibold truncate">Chief of Cardiology &bull; St. Jude Heart Institute</p>
+                                </div>
+                            </div>
+
+                            <!-- Right: Live Review Badge & Specialty -->
+                            <div class="flex flex-col items-end gap-1 flex-shrink-0">
+                                <span class="px-2.5 py-1 rounded-xl bg-emerald-600 text-white text-[10px] font-extrabold flex items-center gap-1 shadow-xs">
+                                    <span class="w-1.5 h-1.5 rounded-full bg-white animate-pulse"></span>
+                                    <span>Reviewing PT-84729</span>
+                                </span>
+                                <span id="hero-doc-specialty" class="text-[9px] font-bold text-slate-500 hidden sm:block">Heart Failure Specialist</span>
+                            </div>
+                        </div>
+
+                        <!-- 10 Doctor Thumbnails Strip (Interactive & Visualizes 3s Rotation) -->
+                        <div class="mt-2.5 pt-2 border-t border-slate-200/70 flex items-center justify-between gap-1">
+                            <span class="text-[9px] font-extrabold text-slate-500 uppercase tracking-wider flex items-center gap-1">
+                                <span class="material-symbols-outlined text-[13px] text-primary">groups</span>
+                                <span>10 Clinicians On-Duty:</span>
+                            </span>
+
+                            <!-- 10 Micro Thumbnails -->
+                            <div class="flex items-center gap-1 overflow-x-auto py-0.5" id="hero-doc-thumbnails">
+                                <!-- Populated dynamically by JS -->
+                            </div>
+                        </div>
                     </div>
 
                     <!-- Middle: 3D Gauge & XAI Highlights -->
@@ -598,6 +705,197 @@
     }
     function reset3DTilt(card) {
         card.style.transform = 'perspective(1000px) rotateX(0deg) rotateY(0deg) translateZ(0px)';
+    }
+
+    // =========================================================================
+    // 10 DOCTOR AI-GENERATED PHOTO SHOWCASE — 3-SECOND AUTO-ROTATION
+    // =========================================================================
+    const HERO_DOCTORS = [
+        {
+            name: "Dr. Sarah Mitchell, MD, FACC",
+            role: "Chief of Cardiology &bull; St. Jude Heart Institute",
+            specialty: "Heart Failure Specialist",
+            photo: "/static/img/doctors/doctor_1.jpg",
+            shortName: "Dr. Sarah Mitchell"
+        },
+        {
+            name: "Dr. James Anderson, MD, FACP",
+            role: "Interventional Cardiology &bull; Metro Health System",
+            specialty: "Coronary Care &amp; Risk Attribution",
+            photo: "/static/img/doctors/doctor_2.jpg",
+            shortName: "Dr. James Anderson"
+        },
+        {
+            name: "Dr. Rajesh Sharma, MD, DM",
+            role: "Internal Medicine &bull; Apex Medical Research",
+            specialty: "Diabetic Cardiomyopathy",
+            photo: "/static/img/doctors/doctor_3.jpg",
+            shortName: "Dr. Rajesh Sharma"
+        },
+        {
+            name: "Dr. Li Wei, MD, PhD",
+            role: "Clinical Pharmacology &bull; St. Michael's Academic",
+            specialty: "Polypharmacy Safety Expert",
+            photo: "/static/img/doctors/doctor_4.jpg",
+            shortName: "Dr. Li Wei"
+        },
+        {
+            name: "Dr. Marcus Adebayo, MD, FCCP",
+            role: "Intensive Care &amp; Cardiology &bull; Hillsdale Health",
+            specialty: "Cardiology Ward 4B Lead",
+            photo: "/static/img/doctors/doctor_5.jpg",
+            shortName: "Dr. Marcus Adebayo"
+        },
+        {
+            name: "Dr. Elena Rodriguez, MD",
+            role: "Preventative Cardiology &bull; University Heart Center",
+            specialty: "30-Day Readmission Protocol",
+            photo: "/static/img/doctors/doctor_6.jpg",
+            shortName: "Dr. Elena Rodriguez"
+        },
+        {
+            name: "Dr. Arthur Reynolds, MD, MACP",
+            role: "Senior Clinical Advisor &bull; Mayo Care Network",
+            specialty: "Cardiorenal Syndrome Lead",
+            photo: "/static/img/doctors/doctor_7.jpg",
+            shortName: "Dr. Arthur Reynolds"
+        },
+        {
+            name: "Dr. Priya Sharma, MD",
+            role: "Emergency Medicine &bull; St. Mary's Hospital",
+            specialty: "ECG Telemetry &amp; Acute Triage",
+            photo: "/static/img/doctors/doctor_8.jpg",
+            shortName: "Dr. Priya Sharma"
+        },
+        {
+            name: "Dr. Ahmad Al-Masri, MD, FACS",
+            role: "Cardiovascular Surgery &bull; Cornea Heart Institute",
+            specialty: "Hemodynamic Monitoring",
+            photo: "/static/img/doctors/doctor_9.jpg",
+            shortName: "Dr. Ahmad Al-Masri"
+        },
+        {
+            name: "Dr. Astrid Nilsson, MD",
+            role: "Clinical Decision Support &bull; Karolinska Health",
+            specialty: "AI-Assisted Precision Medicine",
+            photo: "/static/img/doctors/doctor_10.jpg",
+            shortName: "Dr. Astrid Nilsson"
+        }
+    ];
+
+    let currentDocIdx = 0;
+    let docInterval = null;
+
+    function renderDocThumbnails() {
+        const container = document.getElementById('hero-doc-thumbnails');
+        if (!container) return;
+        container.innerHTML = '';
+        HERO_DOCTORS.forEach((doc, idx) => {
+            const btn = document.createElement('button');
+            btn.type = 'button';
+            btn.onclick = () => selectDoctor(idx);
+            btn.title = `${doc.name} (${doc.specialty})`;
+            btn.id = `hero-thumb-${idx}`;
+            btn.className = `w-5 h-5 rounded-full overflow-hidden border transition-all duration-200 cursor-pointer flex-shrink-0 ${idx === currentDocIdx ? 'border-primary ring-2 ring-primary/40 scale-125' : 'border-slate-300 opacity-60 hover:opacity-100 hover:scale-110'}`;
+            btn.innerHTML = `<img src="${doc.photo}" alt="${doc.name}" class="w-full h-full object-cover">`;
+            container.appendChild(btn);
+        });
+    }
+
+    function selectDoctor(idx) {
+        currentDocIdx = idx;
+        updateDoctorUI();
+        restartRotation();
+    }
+
+    function updateDoctorUI() {
+        const doc = HERO_DOCTORS[currentDocIdx];
+        const img = document.getElementById('hero-doc-img');
+        const name = document.getElementById('hero-doc-name');
+        const role = document.getElementById('hero-doc-role');
+        const specialty = document.getElementById('hero-doc-specialty');
+        const counter = document.getElementById('hero-doc-counter');
+        const badgeImg = document.getElementById('badge-doc-img');
+        const badgeName = document.getElementById('badge-doc-name');
+
+        if (img) {
+            img.style.opacity = '0.3';
+            setTimeout(() => {
+                img.src = doc.photo;
+                img.style.opacity = '1';
+            }, 150);
+        }
+        if (badgeImg) badgeImg.src = doc.photo;
+        if (badgeName) badgeName.textContent = doc.shortName;
+        if (name) name.textContent = doc.name;
+        if (role) role.innerHTML = doc.role;
+        if (specialty) specialty.textContent = doc.specialty;
+        if (counter) counter.textContent = `Doc ${currentDocIdx + 1}/10`;
+
+        // Update active thumbnail border styling
+        HERO_DOCTORS.forEach((_, i) => {
+            const thumb = document.getElementById(`hero-thumb-${i}`);
+            if (thumb) {
+                if (i === currentDocIdx) {
+                    thumb.className = 'w-5 h-5 rounded-full overflow-hidden border-2 border-primary ring-2 ring-primary/40 scale-125 transition-all duration-200 flex-shrink-0';
+                } else {
+                    thumb.className = 'w-5 h-5 rounded-full overflow-hidden border border-slate-300 opacity-60 hover:opacity-100 hover:scale-110 transition-all duration-200 flex-shrink-0';
+                }
+            }
+        });
+
+        // Trigger 3s progress bar animation
+        resetProgress();
+    }
+
+    function resetProgress() {
+        const bar = document.getElementById('hero-doc-progress');
+        if (!bar) return;
+        bar.style.transition = 'none';
+        bar.style.width = '0%';
+        void bar.offsetWidth; // Force CSS reflow
+        bar.style.transition = 'width 3000ms linear';
+        bar.style.width = '100%';
+    }
+
+    function nextDoctor() {
+        currentDocIdx = (currentDocIdx + 1) % HERO_DOCTORS.length;
+        updateDoctorUI();
+    }
+
+    function startRotation() {
+        if (docInterval) clearInterval(docInterval);
+        resetProgress();
+        docInterval = setInterval(nextDoctor, 3000);
+    }
+
+    function restartRotation() {
+        startRotation();
+    }
+
+    // Auto-initialize when document loads
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initHeroDoctorShowcase);
+    } else {
+        initHeroDoctorShowcase();
+    }
+
+    function initHeroDoctorShowcase() {
+        renderDocThumbnails();
+        updateDoctorUI();
+        startRotation();
+
+        const docBox = document.getElementById('hero-doctor-container');
+        if (docBox) {
+            docBox.addEventListener('mouseenter', () => {
+                if (docInterval) clearInterval(docInterval);
+                const bar = document.getElementById('hero-doc-progress');
+                if (bar) bar.style.transition = 'none';
+            });
+            docBox.addEventListener('mouseleave', () => {
+                startRotation();
+            });
+        }
     }
     </script>
 

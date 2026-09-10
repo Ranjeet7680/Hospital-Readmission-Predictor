@@ -355,178 +355,344 @@
             margin: 40px 0;
         }
 
-        /* 📖 Master 3D Turning Page Leaf & Realistic Paper Physics */
-        .turning-leaf-layer {
+        /* 📖 =========================================================================
+           HYPER-REALISTIC 3D FLIP PAGE ANIMATION ENGINE (Double-Sided Paper Physics)
+           ========================================================================= */
+
+        /* Viewport-Anchored 3D Stage Overlay */
+        .flip-stage-overlay {
+            position: fixed;
+            pointer-events: none;
+            z-index: 9999;
+            perspective: 2800px;
+            perspective-origin: 50% 50%;
+            transform-style: preserve-3d;
+            overflow: visible;
+            display: none;
+            will-change: transform, opacity;
+        }
+        .flip-stage-overlay.is-active {
+            display: block;
+        }
+
+        /* Ambient Dynamic Cast Shadow onto stationary underlying pages */
+        .flip-under-shadow {
+            position: absolute;
+            inset: 0;
+            pointer-events: none;
+            border-radius: inherit;
+            opacity: 0;
+            z-index: 10;
+            transition: opacity 0.1s linear;
+        }
+
+        .flip-stage-overlay.turning-next .flip-under-shadow {
+            animation: underShadowSweepNext 0.72s cubic-bezier(0.25, 0.9, 0.35, 1) forwards;
+        }
+        .flip-stage-overlay.turning-prev .flip-under-shadow {
+            animation: underShadowSweepPrev 0.72s cubic-bezier(0.25, 0.9, 0.35, 1) forwards;
+        }
+
+        @keyframes underShadowSweepNext {
+            0% {
+                opacity: 0;
+                background: radial-gradient(ellipse at 85% 50%, rgba(0, 20, 50, 0.35) 0%, transparent 65%);
+            }
+            35% {
+                opacity: 0.55;
+                background: radial-gradient(ellipse at 60% 50%, rgba(0, 20, 50, 0.45) 0%, rgba(0, 30, 70, 0.15) 50%, transparent 75%);
+            }
+            70% {
+                opacity: 0.35;
+                background: radial-gradient(ellipse at 25% 50%, rgba(0, 20, 50, 0.35) 0%, transparent 65%);
+            }
+            100% {
+                opacity: 0;
+                background: radial-gradient(ellipse at 10% 50%, rgba(0, 20, 50, 0) 0%, transparent 50%);
+            }
+        }
+
+        @keyframes underShadowSweepPrev {
+            0% {
+                opacity: 0;
+                background: radial-gradient(ellipse at 15% 50%, rgba(0, 20, 50, 0.35) 0%, transparent 65%);
+            }
+            35% {
+                opacity: 0.55;
+                background: radial-gradient(ellipse at 40% 50%, rgba(0, 20, 50, 0.45) 0%, rgba(0, 30, 70, 0.15) 50%, transparent 75%);
+            }
+            70% {
+                opacity: 0.35;
+                background: radial-gradient(ellipse at 75% 50%, rgba(0, 20, 50, 0.35) 0%, transparent 65%);
+            }
+            100% {
+                opacity: 0;
+                background: radial-gradient(ellipse at 90% 50%, rgba(0, 20, 50, 0) 0%, transparent 50%);
+            }
+        }
+
+        /* The 3D Turning Sheet Leaf */
+        .flip-sheet {
             position: absolute;
             top: 0;
-            right: 0;
+            bottom: 0;
             width: 50%;
             height: 100%;
-            transform-origin: 0% 50%;
-            pointer-events: none;
-            z-index: 60;
-            opacity: 0;
-            border-radius: 0 18px 18px 0;
             transform-style: preserve-3d;
-            backface-visibility: visible;
+            backface-visibility: hidden;
+            will-change: transform;
+            z-index: 30;
         }
 
-        @keyframes leafTurnNext3D {
+        /* Next Flip: Right Leaf turns over to the Left around spine */
+        .flip-stage-overlay.turning-next .flip-sheet {
+            right: 0;
+            transform-origin: 0% 50%; /* Center spine hinge */
+            animation: realisticPageTurnNext 0.72s cubic-bezier(0.24, 0.88, 0.34, 1.04) forwards;
+        }
+
+        /* Prev Flip: Left Leaf turns over to the Right around spine */
+        .flip-stage-overlay.turning-prev .flip-sheet {
+            left: 0;
+            transform-origin: 100% 50%; /* Center spine hinge */
+            animation: realisticPageTurnPrev 0.72s cubic-bezier(0.24, 0.88, 0.34, 1.04) forwards;
+        }
+
+        /* Double-Sided Leaf Faces */
+        .flip-page-face {
+            position: absolute;
+            inset: 0;
+            border-radius: inherit;
+            overflow: hidden;
+            backface-visibility: hidden;
+            -webkit-backface-visibility: hidden;
+            box-sizing: border-box;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            padding: 36px 32px;
+            font-family: inherit;
+        }
+
+        /* Face Front (Initial readable side before passing 90°) */
+        .flip-page-face.flip-face-front {
+            background: var(--bg-card);
+            border-left: 1px solid rgba(0, 0, 0, 0.08);
+            border-right: 1px solid var(--border);
+            border-radius: 0 18px 18px 0;
+            transform: rotateY(0deg);
+        }
+
+        /* Face Back (Reverse readable side revealed as page crosses spine) */
+        .flip-page-face.flip-face-back {
+            background: var(--bg-card);
+            border-right: 1px solid rgba(0, 0, 0, 0.08);
+            border-left: 1px solid var(--border);
+            border-radius: 18px 0 0 18px;
+            transform: rotateY(180deg);
+        }
+
+        /* Theme-specific paper textures & tones */
+        body.theme-sepia .flip-page-face {
+            background: #f5ede0;
+            color: #4e342e;
+            border-color: rgba(141, 110, 99, 0.3);
+        }
+        body.theme-night .flip-page-face {
+            background: #0f172a;
+            color: #e2e8f0;
+            border-color: rgba(56, 189, 248, 0.2);
+            box-shadow: 0 12px 36px rgba(0, 0, 0, 0.65);
+        }
+
+        /* Leaf Face Inner Decoration: Treatise Headers & Simulated Typography */
+        .flip-face-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-bottom: 12px;
+            border-bottom: 1.5px solid var(--border);
+            font-size: 11px;
+            font-family: 'Cinzel', serif;
+            color: var(--primary);
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            font-weight: 700;
+        }
+        .flip-face-body {
+            flex: 1;
+            padding: 24px 0;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            opacity: 0.55;
+        }
+        .flip-text-line {
+            height: 9px;
+            background: currentColor;
+            border-radius: 4px;
+            opacity: 0.22;
+        }
+        .flip-text-line.short { width: 65%; }
+        .flip-text-line.med { width: 85%; }
+        .flip-watermark {
+            margin: auto;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            font-family: 'Cinzel', serif;
+            font-size: 13px;
+            color: var(--primary);
+            opacity: 0.35;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+        .flip-face-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-top: 12px;
+            border-top: 1px solid var(--border);
+            font-size: 11px;
+            color: var(--text-muted);
+            font-weight: 600;
+        }
+
+        /* Dynamic Specular Highlights across the paper curvature */
+        .flip-sheen {
+            position: absolute;
+            inset: 0;
+            pointer-events: none;
+            border-radius: inherit;
+            z-index: 10;
+        }
+        .flip-face-front .flip-sheen {
+            background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.0) 25%, rgba(255,255,255,0.65) 50%, rgba(0,47,108,0.18) 75%, rgba(0,0,0,0.12) 100%);
+        }
+        .flip-face-back .flip-sheen {
+            background: linear-gradient(-90deg, transparent 0%, rgba(255,255,255,0.0) 25%, rgba(255,255,255,0.65) 50%, rgba(0,47,108,0.18) 75%, rgba(0,0,0,0.12) 100%);
+        }
+        body.theme-night .flip-face-front .flip-sheen,
+        body.theme-night .flip-face-back .flip-sheen {
+            background: linear-gradient(90deg, transparent 0%, rgba(56, 189, 248, 0.15) 50%, rgba(0,0,0,0.4) 100%);
+        }
+
+        /* 3D Realistic Cylindrical Curl Keyframes: Next Page (Right to Left) */
+        @keyframes realisticPageTurnNext {
             0% {
-                transform: perspective(2200px) rotateY(0deg) translateZ(0);
-                opacity: 0.95;
-                background: linear-gradient(90deg, rgba(0,0,0,0.12) 0%, rgba(255,255,255,0.9) 25%, rgba(240,244,248,0.95) 100%);
-                box-shadow: -8px 0 16px rgba(0, 0, 0, 0.2);
+                transform: perspective(2800px) rotateY(0deg) translateZ(0) rotateZ(0deg) skewY(0deg);
+                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
             }
-            30% {
-                transform: perspective(2200px) rotateY(-55deg) skewY(-3deg) translateZ(36px);
-                opacity: 0.98;
-                background: linear-gradient(90deg, rgba(0,0,0,0.2) 0%, rgba(255,255,255,0.85) 40%, rgba(200,215,235,0.7) 100%);
-                box-shadow: -35px 20px 50px rgba(0, 0, 0, 0.45);
+            16% {
+                /* Corner peel initiation */
+                transform: perspective(2800px) rotateY(-32deg) translateZ(36px) rotateZ(-1.8deg) skewY(-2.8deg);
+                box-shadow: -18px 12px 30px rgba(0, 0, 0, 0.32);
             }
-            60% {
-                transform: perspective(2200px) rotateY(-115deg) skewY(-2deg) translateZ(40px);
-                opacity: 0.92;
-                background: linear-gradient(90deg, rgba(200,215,235,0.7) 0%, rgba(255,255,255,0.85) 60%, rgba(0,0,0,0.18) 100%);
-                box-shadow: -45px 22px 60px rgba(0, 0, 0, 0.4);
+            48% {
+                /* Apex upright curvature across the spine */
+                transform: perspective(2800px) rotateY(-92deg) translateZ(64px) rotateZ(-0.4deg) skewY(-1.2deg);
+                box-shadow: -38px 24px 55px rgba(0, 0, 0, 0.45);
             }
-            90% {
-                transform: perspective(2200px) rotateY(-165deg) skewY(-0.5deg) translateZ(12px);
-                opacity: 0.7;
-                box-shadow: -15px 8px 25px rgba(0, 0, 0, 0.2);
+            80% {
+                /* Landing descent onto left page */
+                transform: perspective(2800px) rotateY(-156deg) translateZ(28px) rotateZ(1.2deg) skewY(1.4deg);
+                box-shadow: -18px 10px 28px rgba(0, 0, 0, 0.3);
+            }
+            94% {
+                /* Soft tactile paper bounce */
+                transform: perspective(2800px) rotateY(-181.8deg) translateZ(4px) rotateZ(0.2deg) skewY(0.2deg);
+                box-shadow: -6px 4px 14px rgba(0, 0, 0, 0.18);
             }
             100% {
-                transform: perspective(2200px) rotateY(-180deg) translateZ(0);
-                opacity: 0;
+                /* Fully flush resting state */
+                transform: perspective(2800px) rotateY(-180deg) translateZ(0) rotateZ(0deg) skewY(0deg);
+                box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
             }
         }
 
-        @keyframes leafTurnPrev3D {
+        /* 3D Realistic Cylindrical Curl Keyframes: Previous Page (Left to Right) */
+        @keyframes realisticPageTurnPrev {
             0% {
-                transform: perspective(2200px) rotateY(-180deg) translateZ(0);
-                opacity: 0.95;
-                background: linear-gradient(-90deg, rgba(0,0,0,0.12) 0%, rgba(255,255,255,0.9) 25%, rgba(240,244,248,0.95) 100%);
-                box-shadow: 8px 0 16px rgba(0, 0, 0, 0.2);
+                transform: perspective(2800px) rotateY(0deg) translateZ(0) rotateZ(0deg) skewY(0deg);
+                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
             }
-            30% {
-                transform: perspective(2200px) rotateY(-125deg) skewY(3deg) translateZ(36px);
-                opacity: 0.98;
-                background: linear-gradient(-90deg, rgba(0,0,0,0.2) 0%, rgba(255,255,255,0.85) 40%, rgba(200,215,235,0.7) 100%);
-                box-shadow: 35px 20px 50px rgba(0, 0, 0, 0.45);
+            16% {
+                /* Corner peel initiation */
+                transform: perspective(2800px) rotateY(32deg) translateZ(36px) rotateZ(1.8deg) skewY(2.8deg);
+                box-shadow: 18px 12px 30px rgba(0, 0, 0, 0.32);
             }
-            60% {
-                transform: perspective(2200px) rotateY(-65deg) skewY(2deg) translateZ(40px);
-                opacity: 0.92;
-                background: linear-gradient(-90deg, rgba(200,215,235,0.7) 0%, rgba(255,255,255,0.85) 60%, rgba(0,0,0,0.18) 100%);
-                box-shadow: 45px 22px 60px rgba(0, 0, 0, 0.4);
+            48% {
+                /* Apex upright curvature across the spine */
+                transform: perspective(2800px) rotateY(92deg) translateZ(64px) rotateZ(0.4deg) skewY(1.2deg);
+                box-shadow: 38px 24px 55px rgba(0, 0, 0, 0.45);
             }
-            90% {
-                transform: perspective(2200px) rotateY(-15deg) skewY(0.5deg) translateZ(12px);
-                opacity: 0.7;
-                box-shadow: 15px 8px 25px rgba(0, 0, 0, 0.2);
+            80% {
+                /* Landing descent onto right page */
+                transform: perspective(2800px) rotateY(156deg) translateZ(28px) rotateZ(-1.2deg) skewY(-1.4deg);
+                box-shadow: 18px 10px 28px rgba(0, 0, 0, 0.3);
+            }
+            94% {
+                /* Soft tactile paper bounce */
+                transform: perspective(2800px) rotateY(181.8deg) translateZ(4px) rotateZ(-0.2deg) skewY(-0.2deg);
+                box-shadow: 6px 4px 14px rgba(0, 0, 0, 0.18);
             }
             100% {
-                transform: perspective(2200px) rotateY(0deg) translateZ(0);
-                opacity: 0;
+                /* Fully flush resting state */
+                transform: perspective(2800px) rotateY(180deg) translateZ(0) rotateZ(0deg) skewY(0deg);
+                box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
             }
         }
 
-        .animate-leaf-flip-next {
-            animation: leafTurnNext3D 0.65s cubic-bezier(0.22, 0.9, 0.32, 1.1) forwards;
+        /* Hardcover Spine Reactive Flex Physics */
+        .book-container.spine-flex-next {
+            animation: spineFlexNext 0.72s cubic-bezier(0.24, 0.88, 0.34, 1.04) forwards;
+        }
+        .book-container.spine-flex-prev {
+            animation: spineFlexPrev 0.72s cubic-bezier(0.24, 0.88, 0.34, 1.04) forwards;
         }
 
-        .animate-leaf-flip-prev {
-            animation: leafTurnPrev3D 0.65s cubic-bezier(0.22, 0.9, 0.32, 1.1) forwards;
-        }
-
-        /* Container Perspective Breath */
-        @keyframes pageFlipNext3D {
+        @keyframes spineFlexNext {
             0% {
-                transform: perspective(2000px) rotateY(0deg) scale(1);
-                box-shadow: -12px 0 24px -6px rgba(0, 0, 0, 0.25), 0 20px 40px -10px rgba(0, 0, 0, 0.18);
+                transform: perspective(2000px) rotateY(0deg) translateZ(0);
             }
-            30% {
-                transform: perspective(2000px) rotateY(-14deg) skewY(-1.2deg) scale(0.982) translateX(-8px);
-                box-shadow: -32px 14px 45px -8px rgba(0, 0, 0, 0.4), 0 28px 55px rgba(0, 47, 108, 0.22);
+            35% {
+                transform: perspective(2000px) rotateY(-2.6deg) translateZ(8px) translateX(-3px);
+                box-shadow: -18px 0 32px -6px rgba(0, 0, 0, 0.3), 0 24px 48px -10px rgba(0, 47, 108, 0.2);
             }
-            65% {
-                transform: perspective(2000px) rotateY(-4deg) skewY(-0.4deg) scale(0.994) translateX(-3px);
-                box-shadow: -18px 8px 30px -6px rgba(0, 0, 0, 0.3);
+            75% {
+                transform: perspective(2000px) rotateY(-0.6deg) translateZ(2px);
             }
             100% {
-                transform: perspective(2000px) rotateY(0deg) skewY(0deg) scale(1) translateX(0);
-                box-shadow: -12px 0 24px -6px rgba(0, 0, 0, 0.25), 0 20px 40px -10px rgba(0, 0, 0, 0.18);
+                transform: perspective(2000px) rotateY(0deg) translateZ(0) translateX(0);
             }
         }
 
-        @keyframes pageFlipPrev3D {
+        @keyframes spineFlexPrev {
             0% {
-                transform: perspective(2000px) rotateY(0deg) scale(1);
-                box-shadow: -12px 0 24px -6px rgba(0, 0, 0, 0.25), 0 20px 40px -10px rgba(0, 0, 0, 0.18);
+                transform: perspective(2000px) rotateY(0deg) translateZ(0);
             }
-            30% {
-                transform: perspective(2000px) rotateY(14deg) skewY(1.2deg) scale(0.982) translateX(8px);
-                box-shadow: 32px 14px 45px -8px rgba(0, 0, 0, 0.4), 0 28px 55px rgba(0, 47, 108, 0.22);
+            35% {
+                transform: perspective(2000px) rotateY(2.6deg) translateZ(8px) translateX(3px);
+                box-shadow: 18px 0 32px -6px rgba(0, 0, 0, 0.3), 0 24px 48px -10px rgba(0, 47, 108, 0.2);
             }
-            65% {
-                transform: perspective(2000px) rotateY(4deg) skewY(0.4deg) scale(0.994) translateX(3px);
-                box-shadow: 18px 8px 30px -6px rgba(0, 0, 0, 0.3);
+            75% {
+                transform: perspective(2000px) rotateY(0.6deg) translateZ(2px);
             }
             100% {
-                transform: perspective(2000px) rotateY(0deg) skewY(0deg) scale(1) translateX(0);
-                box-shadow: -12px 0 24px -6px rgba(0, 0, 0, 0.25), 0 20px 40px -10px rgba(0, 0, 0, 0.18);
+                transform: perspective(2000px) rotateY(0deg) translateZ(0) translateX(0);
             }
-        }
-
-        /* Paper Light Sheen Sweep Overlay */
-        @keyframes paperSheenSweepNext {
-            0% { opacity: 0; transform: translateX(100%); }
-            25% { opacity: 0.7; }
-            65% { opacity: 0.35; }
-            100% { opacity: 0; transform: translateX(-100%); }
-        }
-        @keyframes paperSheenSweepPrev {
-            0% { opacity: 0; transform: translateX(-100%); }
-            25% { opacity: 0.7; }
-            65% { opacity: 0.35; }
-            100% { opacity: 0; transform: translateX(100%); }
-        }
-
-        .animate-flip-next {
-            animation: pageFlipNext3D 0.65s cubic-bezier(0.2, 0.9, 0.32, 1.1) forwards;
-            transform-origin: 0% 50%;
-        }
-
-        .animate-flip-prev {
-            animation: pageFlipPrev3D 0.65s cubic-bezier(0.2, 0.9, 0.32, 1.1) forwards;
-            transform-origin: 100% 50%;
         }
 
         /* Tactile Hover Peek Tilt on Book */
         .book-container.peek-next {
-            transform: perspective(2000px) rotateY(-4deg) translateX(-5px) !important;
-            box-shadow: -26px 0 40px -8px rgba(0, 0, 0, 0.35), 0 24px 48px -10px rgba(0, 47, 108, 0.22) !important;
+            transform: perspective(2000px) rotateY(-3deg) translateX(-4px) !important;
+            box-shadow: -22px 0 36px -8px rgba(0, 0, 0, 0.32), 0 22px 45px -10px rgba(0, 47, 108, 0.2) !important;
         }
         .book-container.peek-prev {
-            transform: perspective(2000px) rotateY(4deg) translateX(5px) !important;
-            box-shadow: 26px 0 40px -8px rgba(0, 0, 0, 0.35), 0 24px 48px -10px rgba(0, 47, 108, 0.22) !important;
-        }
-
-        /* Dynamic Paper Sheen Overlay */
-        .page-turn-sheen {
-            position: absolute;
-            inset: 0;
-            background: linear-gradient(90deg, transparent 0%, rgba(255, 255, 255, 0.45) 45%, rgba(255, 255, 255, 0.75) 50%, rgba(0, 47, 108, 0.15) 70%, transparent 100%);
-            pointer-events: none;
-            opacity: 0;
-            z-index: 50;
-            border-radius: inherit;
-        }
-        .animate-flip-next .page-turn-sheen {
-            animation: paperSheenSweepNext 0.65s cubic-bezier(0.2, 0.9, 0.32, 1.1) forwards;
-        }
-        .animate-flip-prev .page-turn-sheen {
-            animation: paperSheenSweepPrev 0.65s cubic-bezier(0.2, 0.9, 0.32, 1.1) forwards;
+            transform: perspective(2000px) rotateY(3deg) translateX(4px) !important;
+            box-shadow: 22px 0 36px -8px rgba(0, 0, 0, 0.32), 0 22px 45px -10px rgba(0, 47, 108, 0.2) !important;
         }
 
         /* Paper Stack Page-Edge Simulation (Visual Depth on Right & Bottom) */
@@ -543,16 +709,20 @@
             z-index: -1;
             pointer-events: none;
         }
+        body.theme-night .book-container::after {
+            background: linear-gradient(135deg, rgba(30, 41, 59, 0.7) 0%, rgba(15, 23, 42, 0.9) 100%);
+            box-shadow: 4px 4px 12px rgba(0,0,0,0.4);
+        }
 
-        /* 📑 Realistic Dog-Ear Page Turn Corners with Fold Shadow */
+        /* 📑 Realistic 3D Dog-Ear Page Turn Corners with Interactive Hover Peel */
         .dog-ear-corner {
             position: absolute;
             bottom: 0;
-            width: 56px;
-            height: 56px;
+            width: 58px;
+            height: 58px;
             cursor: pointer;
-            z-index: 30;
-            transition: all 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+            z-index: 35;
+            transition: width 0.32s cubic-bezier(0.16, 1, 0.3, 1), height 0.32s cubic-bezier(0.16, 1, 0.3, 1);
             overflow: hidden;
         }
         .dog-ear-corner.dog-ear-right {
@@ -568,29 +738,33 @@
             position: absolute;
             width: 100%;
             height: 100%;
-            transition: all 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+            transition: all 0.32s cubic-bezier(0.16, 1, 0.3, 1);
         }
         .dog-ear-corner.dog-ear-right::before {
             bottom: 0;
             right: 0;
             clip-path: polygon(100% 0, 0 100%, 100% 100%);
-            background: linear-gradient(135deg, #f8fafc 40%, #cbd5e1 52%, #64748b 100%);
-            box-shadow: -4px -4px 12px rgba(0,0,0,0.3);
+            background: linear-gradient(135deg, #ffffff 30%, #e2e8f0 55%, #94a3b8 100%);
+            box-shadow: -5px -5px 14px rgba(0, 0, 0, 0.28);
         }
         .dog-ear-corner.dog-ear-left::before {
             bottom: 0;
             left: 0;
             clip-path: polygon(0 0, 0 100%, 100% 100%);
-            background: linear-gradient(-135deg, #f8fafc 40%, #cbd5e1 52%, #64748b 100%);
-            box-shadow: 4px -4px 12px rgba(0,0,0,0.3);
+            background: linear-gradient(-135deg, #ffffff 30%, #e2e8f0 55%, #94a3b8 100%);
+            box-shadow: 5px -5px 14px rgba(0, 0, 0, 0.28);
         }
         .dog-ear-corner:hover {
-            width: 76px;
-            height: 76px;
+            width: 82px;
+            height: 82px;
         }
-        .dog-ear-corner:hover::before {
-            background: linear-gradient(135deg, #ffffff 35%, #22D3EE 50%, #002F6C 100%);
-            filter: drop-shadow(-2px -2px 6px rgba(0, 91, 191, 0.4));
+        .dog-ear-corner.dog-ear-right:hover::before {
+            background: linear-gradient(135deg, #ffffff 25%, #22D3EE 50%, #005bbf 100%);
+            filter: drop-shadow(-4px -4px 8px rgba(0, 91, 191, 0.45));
+        }
+        .dog-ear-corner.dog-ear-left:hover::before {
+            background: linear-gradient(-135deg, #ffffff 25%, #22D3EE 50%, #005bbf 100%);
+            filter: drop-shadow(4px -4px 8px rgba(0, 91, 191, 0.45));
         }
 
         /* 📖 Master Slide-out Table of Contents Drawer */
@@ -961,15 +1135,757 @@
             color: #fbbf24;
         }
 
-        /* Responsive Breakpoints */
+        /* 📱 =========================================================================
+           MOBILE-FIRST RESPONSIVE ARCHITECTURE & READER SETTINGS SHEET
+           ========================================================================= */
+
+        /* Settings Bottom Sheet Backdrop */
+        .settings-backdrop {
+            position: fixed;
+            inset: 0;
+            background: rgba(10, 25, 47, 0.6);
+            backdrop-filter: blur(6px);
+            -webkit-backdrop-filter: blur(6px);
+            z-index: 100001;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .settings-backdrop.is-open {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        /* Settings Bottom Sheet Drawer */
+        .settings-bottom-sheet {
+            position: fixed;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            max-width: 500px;
+            margin: 0 auto;
+            background: var(--bg-card);
+            border-top: 1px solid var(--border);
+            border-radius: 24px 24px 0 0;
+            box-shadow: 0 -12px 40px rgba(0, 0, 0, 0.35);
+            z-index: 100002;
+            transform: translateY(100%);
+            transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+            padding: 16px 20px calc(24px + env(safe-area-inset-bottom, 0px));
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+        .settings-bottom-sheet.is-open {
+            transform: translateY(0);
+        }
+        body.theme-night .settings-bottom-sheet {
+            background: #111827;
+            border-color: rgba(56, 189, 248, 0.2);
+        }
+        body.theme-sepia .settings-bottom-sheet {
+            background: #fbf7ee;
+            border-color: rgba(141, 110, 99, 0.3);
+        }
+
+        .sheet-pull-handle {
+            width: 44px;
+            height: 4px;
+            background: var(--border);
+            border-radius: 9999px;
+            margin: 0 auto 4px;
+            opacity: 0.8;
+        }
+        .sheet-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding-bottom: 8px;
+            border-bottom: 1px solid var(--border);
+        }
+        .sheet-close-btn {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            border: 1px solid var(--border);
+            background: var(--bg-card);
+            color: var(--text-main);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .sheet-close-btn:hover {
+            background: rgba(0, 91, 191, 0.1);
+            color: var(--primary);
+        }
+
+        .sheet-section {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        .sheet-label {
+            font-size: 11.5px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            color: var(--text-muted);
+        }
+
+        /* Font scaling bar */
+        .sheet-font-control {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: rgba(0, 91, 191, 0.05);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 4px 6px;
+        }
+        body.theme-night .sheet-font-control {
+            background: rgba(56, 189, 248, 0.06);
+        }
+        .sheet-font-btn {
+            padding: 8px 18px;
+            border-radius: 10px;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            color: var(--text-main);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 50px;
+        }
+        .sheet-font-btn:active {
+            transform: scale(0.95);
+            background: var(--primary);
+            color: white;
+        }
+        .sheet-font-val {
+            font-size: 14px;
+            font-weight: 800;
+            color: var(--primary);
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        /* Font style pill group */
+        .sheet-pill-group {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+        }
+        .sheet-pill-btn {
+            padding: 10px 12px;
+            border-radius: 12px;
+            border: 1.5px solid var(--border);
+            background: var(--bg-card);
+            color: var(--text-main);
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-align: center;
+        }
+        .sheet-pill-btn.active {
+            border-color: var(--primary);
+            background: rgba(0, 91, 191, 0.1);
+            color: var(--primary);
+            font-weight: 800;
+        }
+        body.theme-night .sheet-pill-btn.active {
+            border-color: #38bdf8;
+            background: rgba(56, 189, 248, 0.15);
+            color: #38bdf8;
+        }
+
+        /* Theme selection grid */
+        .sheet-theme-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 8px;
+        }
+        .sheet-theme-card {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            padding: 12px 8px;
+            border-radius: 14px;
+            border: 1.5px solid var(--border);
+            background: var(--bg-card);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-size: 12px;
+            font-weight: 700;
+        }
+        .sheet-theme-card.active {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 2px rgba(0, 91, 191, 0.25);
+        }
+        .theme-day-card { background: #ffffff; color: #1e293b; }
+        .theme-sepia-card { background: #fbf7ee; color: #5d4037; }
+        .theme-night-card { background: #0b1120; color: #e2e8f0; }
+
+        .sheet-action-btn-primary {
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 12px 18px;
+            border-radius: 14px;
+            background: linear-gradient(135deg, #005bbf, #002F6C);
+            color: white;
+            font-weight: 700;
+            font-size: 13px;
+            border: none;
+            cursor: pointer;
+            box-shadow: 0 4px 14px rgba(0, 91, 191, 0.3);
+            transition: all 0.2s ease;
+        }
+        .sheet-action-btn-primary:active {
+            transform: scale(0.98);
+        }
+
+        /* Responsive Breakpoints Overhaul */
         @media (max-width: 768px) {
             .desktop-only { display: none !important; }
+            .desktop-controls { display: none !important; }
+            .mobile-controls { display: flex !important; }
             .floating-turn-btn { display: none !important; }
-            .reader-hud-bar { padding: 8px 10px; }
-            .book-viewport { margin-top: 16px; padding: 0 10px; }
+
+            /* Top Reader HUD */
+            .reader-hud-bar {
+                height: 52px;
+                padding: 6px 10px;
+                gap: 6px;
+            }
+            .hud-btn {
+                padding: 6px 9px;
+                font-size: 11px;
+                border-radius: 8px;
+                gap: 4px;
+            }
+            .hud-btn .material-symbols-outlined {
+                font-size: 18px !important;
+            }
+
+            /* Viewport & Container spacing */
+            .book-viewport {
+                margin: 8px auto 80px;
+                padding: 0 8px;
+                perspective: 1200px;
+            }
+            .book-container {
+                padding: 24px 14px;
+                border-radius: 12px;
+                box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+            }
+            .book-container::before {
+                width: 6px;
+                border-radius: 6px 0 0 6px;
+            }
+            .bookmark-ribbon {
+                width: 18px;
+                height: 48px;
+                right: 18px;
+                top: -4px;
+            }
+
+            /* Book Cover */
+            .book-cover {
+                padding: 28px 14px 22px;
+                border-radius: 14px;
+                margin-bottom: 28px;
+            }
+            .book-cover::after {
+                inset: 8px;
+                border-radius: 8px;
+            }
+            .book-cover h1 {
+                font-size: clamp(1.35rem, 5.5vw, 1.85rem);
+                margin-bottom: 8px;
+            }
+            .book-cover .tagline {
+                font-size: clamp(0.72rem, 3vw, 0.88rem);
+                margin-bottom: 16px;
+            }
+            .book-cover .meta {
+                font-size: clamp(0.74rem, 2.8vw, 0.84rem);
+                line-height: 1.6;
+            }
+
+            /* Headers */
+            .book-part-title {
+                font-size: clamp(1.2rem, 4.8vw, 1.65rem);
+                margin-top: 36px;
+                margin-bottom: 16px;
+                padding-bottom: 10px;
+            }
+            .book-chapter-title {
+                font-size: clamp(1.05rem, 4vw, 1.35rem);
+                margin-top: 26px;
+                margin-bottom: 14px;
+                padding-left: 10px;
+                border-left-width: 4px;
+            }
+            .book-section-title {
+                font-size: clamp(0.95rem, 3.4vw, 1.15rem);
+                margin-top: 20px;
+                margin-bottom: 10px;
+            }
+
+            /* Code, Equations & Tables */
+            .code-block {
+                padding: 12px 14px;
+                font-size: 11.5px;
+                border-radius: 10px;
+                margin: 14px 0;
+            }
+            .inline-code {
+                font-size: 0.85em;
+                padding: 1px 5px;
+            }
+            .callout {
+                padding: 12px 14px;
+                margin: 16px 0;
+                font-size: 0.88rem;
+                border-radius: 10px;
+            }
+            .table-wrapper {
+                margin: 14px 0;
+                border-radius: 10px;
+                position: relative;
+            }
+            table {
+                font-size: 12px;
+            }
+            th, td {
+                padding: 8px 10px;
+            }
+            .katex-display {
+                overflow-x: auto !important;
+                overflow-y: hidden !important;
+                max-width: 100% !important;
+                padding: 6px 0 !important;
+                margin: 10px 0 !important;
+                -webkit-overflow-scrolling: touch;
+            }
+
+            /* 3D Flip Sheet Mobile Scaling */
+            .flip-page-face {
+                padding: 16px 12px;
+            }
+            .flip-face-header {
+                font-size: 9px;
+                padding-bottom: 6px;
+            }
+            .flip-face-footer {
+                font-size: 9px;
+                padding-top: 6px;
+            }
+            .flip-face-body {
+                padding: 12px 0;
+                gap: 8px;
+            }
+            .flip-watermark {
+                font-size: 11px;
+                gap: 4px;
+            }
+            .flip-watermark .material-symbols-outlined {
+                font-size: 16px !important;
+            }
+            .flip-text-line {
+                height: 6px;
+            }
+
+            /* Bottom Pagination HUD Mobile Ergonomics */
+            .book-pagination-hud {
+                bottom: calc(12px + env(safe-area-inset-bottom, 0px));
+                padding: 4px 10px;
+                gap: 6px;
+                max-width: calc(100vw - 20px);
+                box-shadow: 0 10px 30px rgba(0, 0, 0, 0.45);
+            }
+            .page-hud-btn {
+                padding: 6px 10px;
+                font-size: 11px;
+                gap: 2px;
+            }
+            .page-hud-indicator {
+                font-size: 11px;
+                padding: 0 4px;
+                letter-spacing: 0;
+                cursor: pointer;
+            }
+
+            /* Dog-Ear Corners */
+            .dog-ear-corner {
+                width: 44px;
+                height: 44px;
+            }
+            .dog-ear-corner:hover {
+                width: 58px;
+                height: 58px;
+            }
+
+            /* TOC Drawer */
+            #toc-drawer {
+                width: min(380px, 90vw);
+            }
+            .toc-header-box {
+                padding: 14px 16px 12px;
+            }
+            .toc-chapter-row {
+                min-height: 44px;
+                padding: 10px 12px;
+            }
         }
+
         @media (min-width: 769px) {
+            .mobile-controls { display: none !important; }
+            .desktop-controls { display: flex !important; }
             .sm-show { display: inline !important; }
+        }
+
+        /* 🎙️ TTS Audio Read-Aloud Narration Player */
+        #mobile-tts-player {
+            position: fixed;
+            bottom: calc(72px + env(safe-area-inset-bottom, 0px));
+            left: 12px;
+            right: 12px;
+            max-width: 480px;
+            margin: 0 auto;
+            background: rgba(15, 23, 42, 0.94);
+            color: white;
+            backdrop-filter: blur(18px);
+            -webkit-backdrop-filter: blur(18px);
+            border: 1.5px solid rgba(56, 189, 248, 0.35);
+            border-radius: 20px;
+            padding: 10px 14px;
+            display: none;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+            box-shadow: 0 16px 45px rgba(0, 0, 0, 0.55), 0 0 20px rgba(56, 189, 248, 0.2);
+            z-index: 100005;
+            animation: ttsSlideUp 0.32s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        #mobile-tts-player.is-active {
+            display: flex;
+        }
+        @keyframes ttsSlideUp {
+            from { transform: translateY(20px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+        .tts-equalizer {
+            display: flex;
+            align-items: flex-end;
+            gap: 2.5px;
+            height: 16px;
+        }
+        .tts-equalizer-bar {
+            width: 3px;
+            background: #38bdf8;
+            border-radius: 2px;
+            height: 4px;
+            transition: height 0.15s ease;
+        }
+        .is-speaking .tts-equalizer-bar:nth-child(1) { animation: eqBounce 0.6s infinite ease-in-out alternate; }
+        .is-speaking .tts-equalizer-bar:nth-child(2) { animation: eqBounce 0.8s infinite 0.15s ease-in-out alternate; }
+        .is-speaking .tts-equalizer-bar:nth-child(3) { animation: eqBounce 0.5s infinite 0.3s ease-in-out alternate; }
+        .is-speaking .tts-equalizer-bar:nth-child(4) { animation: eqBounce 0.7s infinite 0.1s ease-in-out alternate; }
+        @keyframes eqBounce {
+            0% { height: 3px; }
+            100% { height: 16px; }
+        }
+        .tts-control-btn {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: white;
+            border-radius: 50%;
+            width: 34px;
+            height: 34px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .tts-control-btn:hover {
+            background: var(--primary);
+            border-color: var(--primary);
+            transform: scale(1.05);
+        }
+        .tts-speed-pill {
+            background: rgba(56, 189, 248, 0.18);
+            color: #38bdf8;
+            border: 1px solid rgba(56, 189, 248, 0.3);
+            border-radius: 8px;
+            padding: 3px 7px;
+            font-size: 11px;
+            font-weight: 800;
+            font-family: 'JetBrains Mono', monospace;
+            cursor: pointer;
+        }
+
+        /* 🔍 In-eBook Keyword Search Bar Overlay */
+        #search-overlay-bar {
+            position: fixed;
+            top: 60px;
+            left: 12px;
+            right: 12px;
+            max-width: 520px;
+            margin: 0 auto;
+            background: var(--bg-card);
+            border: 1.5px solid var(--primary);
+            border-radius: 16px;
+            box-shadow: 0 14px 40px rgba(0, 0, 0, 0.3);
+            padding: 8px 12px;
+            display: none;
+            align-items: center;
+            gap: 8px;
+            z-index: 100008;
+            animation: searchDrop 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        #search-overlay-bar.is-active {
+            display: flex;
+        }
+        @keyframes searchDrop {
+            from { transform: translateY(-12px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+        mark.search-match-highlight {
+            background: rgba(253, 224, 71, 0.45);
+            color: inherit;
+            padding: 1px 3px;
+            border-radius: 4px;
+            transition: all 0.2s ease;
+        }
+        mark.search-match-current {
+            background: #f59e0b !important;
+            color: black !important;
+            box-shadow: 0 0 10px rgba(245, 158, 11, 0.8);
+            font-weight: 800;
+        }
+
+        /* 🧘 Zen Full-Screen Immersion Mode */
+        body.zen-mode .reader-hud-bar,
+        body.zen-mode .book-pagination-hud,
+        body.zen-mode .floating-turn-btn,
+        body.zen-mode #reading-progress-track {
+            opacity: 0 !important;
+            pointer-events: none !important;
+            transform: translateY(-20px) !important;
+        }
+        body.zen-mode .book-pagination-hud {
+            transform: translateX(-50%) translateY(30px) !important;
+        }
+        #exit-zen-btn {
+            position: fixed;
+            top: calc(14px + env(safe-area-inset-top, 0px));
+            right: 16px;
+            background: rgba(15, 23, 42, 0.85);
+            color: white;
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 9999px;
+            padding: 7px 16px;
+            font-size: 12px;
+            font-weight: 700;
+            display: none;
+            align-items: center;
+            gap: 6px;
+            z-index: 100020;
+            cursor: pointer;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.35);
+            transition: all 0.2s ease;
+        }
+        #exit-zen-btn:hover {
+            transform: scale(1.05);
+            background: var(--primary);
+        }
+        body.zen-mode #exit-zen-btn {
+            display: flex;
+        }
+
+        /* 🌙 Night Light Amber Eye-Care Overlay */
+        #night-light-overlay {
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            z-index: 99990;
+            background: rgba(245, 158, 11, var(--night-light-opacity, 0));
+            transition: background 0.25s ease;
+        }
+
+        /* 📢 Toast Notification */
+        #reader-toast {
+            position: fixed;
+            bottom: calc(76px + env(safe-area-inset-bottom, 0px));
+            left: 50%;
+            transform: translateX(-50%) translateY(20px);
+            background: rgba(15, 23, 42, 0.95);
+            color: white;
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(56, 189, 248, 0.3);
+            border-radius: 9999px;
+            padding: 8px 18px;
+            font-size: 12.5px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 12px 36px rgba(0, 0, 0, 0.45);
+            z-index: 100010;
+            opacity: 0;
+            pointer-events: none;
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        #reader-toast.is-active {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+            pointer-events: auto;
+        }
+
+        /* 🎚️ Chapter Scrubber Controls */
+        .scrubber-wrap {
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+        .scrubber-range-input {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 100%;
+            height: 8px;
+            background: rgba(0, 91, 191, 0.12);
+            border-radius: 9999px;
+            outline: none;
+        }
+        .scrubber-range-input::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #005bbf, #22D3EE);
+            border: 2px solid white;
+            box-shadow: 0 2px 8px rgba(0, 91, 191, 0.4);
+            cursor: pointer;
+        }
+        .scrubber-floating-tip {
+            position: absolute;
+            top: -34px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #0f172a;
+            color: #38bdf8;
+            padding: 4px 10px;
+            border-radius: 8px;
+            font-size: 11px;
+            font-weight: 700;
+            white-space: nowrap;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.15s ease;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        }
+        .scrubber-floating-tip.is-visible {
+            opacity: 1;
+        }
+
+        /* 🔖 TOC Drawer Tabs (Chapters vs Bookmarks) */
+        .toc-nav-tabs {
+            display: flex;
+            border-bottom: 1px solid var(--border);
+            background: rgba(0, 91, 191, 0.03);
+        }
+        .toc-tab-btn {
+            flex: 1;
+            padding: 10px 0;
+            text-align: center;
+            font-size: 12px;
+            font-weight: 700;
+            color: var(--text-muted);
+            border: none;
+            background: none;
+            cursor: pointer;
+            border-bottom: 2.5px solid transparent;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+        }
+        .toc-tab-btn.active {
+            color: var(--primary);
+            border-bottom-color: var(--primary);
+        }
+        .bookmark-item-card {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px 14px;
+            margin: 6px 12px;
+            border-radius: 12px;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            transition: all 0.2s ease;
+            cursor: pointer;
+        }
+        .bookmark-item-card:hover {
+            border-color: var(--primary);
+            transform: translateX(3px);
+            box-shadow: 0 4px 12px rgba(0, 91, 191, 0.1);
+        }
+        .bookmark-del-btn {
+            color: var(--text-muted);
+            cursor: pointer;
+            padding: 4px;
+            border-radius: 6px;
+            transition: all 0.2s ease;
+        }
+        .bookmark-del-btn:hover {
+            color: #ef4444;
+            background: rgba(239, 68, 68, 0.1);
+        }
+
+        /* ⏱️ Chapter Reading Time Meta Badge */
+        .chapter-meta-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: rgba(0, 91, 191, 0.06);
+            color: var(--primary);
+            border: 1px solid rgba(0, 91, 191, 0.15);
+            border-radius: 9999px;
+            padding: 3px 10px;
+            font-size: 11px;
+            font-weight: 700;
+            margin-bottom: 16px;
+        }
+        body.theme-night .chapter-meta-pill {
+            background: rgba(56, 189, 248, 0.08);
+            color: #38bdf8;
+            border-color: rgba(56, 189, 248, 0.2);
+        }
+        body.theme-sepia .chapter-meta-pill {
+            background: rgba(141, 110, 99, 0.1);
+            color: #6d4c41;
+            border-color: rgba(141, 110, 99, 0.25);
+        }
+
+        /* Glowing Interactive Bookmark Ribbon */
+        .bookmark-ribbon.is-bookmarked {
+            background: linear-gradient(135deg, #10b981, #047857) !important;
+            box-shadow: 0 4px 16px rgba(16, 185, 129, 0.5) !important;
         }
     </style>
 </head>
@@ -977,6 +1893,58 @@
     
     <!-- Top Reading Progress Bar -->
     <div id="reading-progress-track"></div>
+
+    <!-- 🌙 Night Light Amber Eye-Care Tint Filter -->
+    <div id="night-light-overlay"></div>
+
+    <!-- 🧘 Distraction-Free Zen Fullscreen Exit Button -->
+    <button id="exit-zen-btn" onclick="toggleZenMode()" class="no-print" title="Exit Fullscreen Immersion (Esc)">
+        <span class="material-symbols-outlined text-[16px]">fullscreen_exit</span>
+        <span>Exit Zen</span>
+    </button>
+
+    <!-- 🔍 Floating In-eBook Search Overlay Bar -->
+    <div id="search-overlay-bar" class="no-print">
+        <span class="material-symbols-outlined text-[20px]" style="color: var(--primary);">search</span>
+        <input type="text" id="inpage-search-input" placeholder="Search treatise text across 88 chapters..." style="flex: 1; border: none; outline: none; background: transparent; font-size: 13px; color: var(--text-main); font-family: inherit;" onkeyup="performInPageSearch(event)">
+        <span id="search-results-counter" style="font-size: 11px; font-weight: 700; color: var(--text-muted); font-family: 'JetBrains Mono', monospace;">0/0</span>
+        <button onclick="navigateSearch(-1)" class="hud-btn" style="padding: 4px 8px; font-size: 11px;" title="Previous Match (Shift+Enter)">▲</button>
+        <button onclick="navigateSearch(1)" class="hud-btn" style="padding: 4px 8px; font-size: 11px;" title="Next Match (Enter)">▼</button>
+        <button onclick="closeSearchOverlay()" class="hud-btn" style="padding: 4px 6px;" title="Close Search (Esc)">
+            <span class="material-symbols-outlined text-[16px]">close</span>
+        </button>
+    </div>
+
+    <!-- 🎙️ AI Audio Read-Aloud Narration Player -->
+    <div id="mobile-tts-player" class="no-print">
+        <div style="display: flex; align-items: center; gap: 8px; overflow: hidden;">
+            <div class="tts-equalizer" id="tts-equalizer">
+                <div class="tts-equalizer-bar"></div>
+                <div class="tts-equalizer-bar"></div>
+                <div class="tts-equalizer-bar"></div>
+                <div class="tts-equalizer-bar"></div>
+            </div>
+            <div style="font-size: 12px; font-weight: 700; line-height: 1.2; overflow: hidden;">
+                <span id="tts-status-text" style="color: #38bdf8;">Reading Aloud</span>
+                <div id="tts-chapter-label" style="font-size: 10px; color: #94a3b8; max-width: 140px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">Current Chapter</div>
+            </div>
+        </div>
+        <div style="display: flex; align-items: center; gap: 6px; flex-shrink: 0;">
+            <button onclick="cycleTTSSpeed()" id="tts-speed-btn" class="tts-speed-pill" title="Playback Speed">1.0x</button>
+            <button onclick="toggleTTSPlayback()" id="tts-play-pause-btn" class="tts-control-btn" title="Pause / Play">
+                <span class="material-symbols-outlined text-[18px]" id="tts-play-icon">pause</span>
+            </button>
+            <button onclick="stopTTS()" class="tts-control-btn" title="Stop Reading">
+                <span class="material-symbols-outlined text-[18px]">close</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- 📢 Physical & Action Toast Notification -->
+    <div id="reader-toast" class="no-print">
+        <span class="material-symbols-outlined text-[18px]" id="toast-icon" style="color: #38bdf8;">check_circle</span>
+        <span id="toast-msg">Action confirmed</span>
+    </div>
 
     <!-- Floating Page Turn Controls (Left & Right Edge) -->
     <button class="floating-turn-btn floating-turn-left no-print" onclick="flipToPrevChapter()" onmouseenter="peekBook('prev')" onmouseleave="unpeekBook()" title="Previous Chapter / Page (← Key)">
@@ -992,7 +1960,7 @@
             <span class="material-symbols-outlined text-[16px]">arrow_back</span>
             <span class="sm-show">Prev</span>
         </button>
-        <div class="page-hud-indicator" id="current-chapter-indicator">
+        <div class="page-hud-indicator" id="current-chapter-indicator" onclick="toggleTOC()" title="Click to view Chapter List">
             Chapter 1 of 88
         </div>
         <button class="page-hud-btn" onclick="flipToNextChapter()" onmouseenter="peekBook('next')" onmouseleave="unpeekBook()" title="Turn to Next Chapter (→)">
@@ -1019,6 +1987,18 @@
             </button>
         </div>
         
+        <!-- 📑 Dual Navigation Tabs: Chapters vs Bookmarks -->
+        <div class="toc-nav-tabs">
+            <button class="toc-tab-btn active" id="tab-btn-chapters" onclick="switchTocTab('chapters')">
+                <span class="material-symbols-outlined text-[16px]">menu_book</span>
+                <span>Chapters (88)</span>
+            </button>
+            <button class="toc-tab-btn" id="tab-btn-bookmarks" onclick="switchTocTab('bookmarks')">
+                <span class="material-symbols-outlined text-[16px]">bookmark</span>
+                <span>Bookmarks (<span id="bookmark-count">0</span>)</span>
+            </button>
+        </div>
+        
         <div class="toc-search-wrap">
             <span class="material-symbols-outlined text-[18px] text-muted">search</span>
             <input type="text" id="toc-search" class="toc-search-input" placeholder="Search 88 Chapters, Equations, Appendices..." onkeyup="filterTOC(this.value)">
@@ -1027,32 +2007,167 @@
         <div id="toc-list">
             <!-- Dynamically rendered with rich badges by JS -->
         </div>
+
+        <!-- 🔖 Dedicated Bookmarks Tab Container -->
+        <div id="toc-bookmarks-list" style="display: none; flex: 1; overflow-y: auto; padding: 10px 4px 40px; flex-direction: column; gap: 4px;">
+            <!-- Rendered dynamically by JS -->
+        </div>
+    </div>
+
+    <!-- Mobile Reader Settings Bottom Sheet Drawer -->
+    <div id="reader-settings-backdrop" class="settings-backdrop no-print" onclick="toggleReaderSettings()"></div>
+    <div id="reader-settings-sheet" class="settings-bottom-sheet no-print">
+        <div class="sheet-pull-handle"></div>
+        <div class="sheet-header">
+            <div style="display: flex; align-items: center; gap: 8px;">
+                <span class="material-symbols-outlined text-[20px]" style="color: var(--primary);">tune</span>
+                <strong style="font-family: 'Cinzel', serif; font-size: 15px; color: var(--primary);">Reading Appearance</strong>
+            </div>
+            <button onclick="toggleReaderSettings()" class="sheet-close-btn" title="Close Settings">
+                <span class="material-symbols-outlined text-[18px]">close</span>
+            </button>
+        </div>
+
+        <!-- Font Scaling Section -->
+        <div class="sheet-section">
+            <div class="sheet-label">Text Size</div>
+            <div class="sheet-font-control">
+                <button onclick="changeFontSize(-1)" class="sheet-font-btn" title="Decrease font size">
+                    <span style="font-size: 14px; font-weight: 700;">A-</span>
+                </button>
+                <div id="mobile-font-size-label" class="sheet-font-val">16px</div>
+                <button onclick="changeFontSize(1)" class="sheet-font-btn" title="Increase font size">
+                    <span style="font-size: 16px; font-weight: 700;">A+</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Font Style Toggle -->
+        <div class="sheet-section">
+            <div class="sheet-label">Font Family</div>
+            <div class="sheet-pill-group">
+                <button onclick="setMobileFont('serif')" id="mobile-font-serif" class="sheet-pill-btn active">
+                    <span style="font-family: 'Merriweather', serif;">Serif 📖</span>
+                </button>
+                <button onclick="setMobileFont('sans')" id="mobile-font-sans" class="sheet-pill-btn">
+                    <span style="font-family: 'Inter', sans-serif;">Sans ⚡</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Reading Themes -->
+        <div class="sheet-section">
+            <div class="sheet-label">Page Theme</div>
+            <div class="sheet-theme-grid">
+                <button onclick="setTheme('theme-day'); updateMobileThemeUI('theme-day');" class="sheet-theme-card theme-day-card" id="mobile-theme-day">
+                    <span class="material-symbols-outlined text-[18px]">wb_sunny</span>
+                    <span>Day ☀️</span>
+                </button>
+                <button onclick="setTheme('theme-sepia'); updateMobileThemeUI('theme-sepia');" class="sheet-theme-card theme-sepia-card" id="mobile-theme-sepia">
+                    <span class="material-symbols-outlined text-[18px]">auto_stories</span>
+                    <span>Sepia 📜</span>
+                </button>
+                <button onclick="setTheme('theme-night'); updateMobileThemeUI('theme-night');" class="sheet-theme-card theme-night-card" id="mobile-theme-night">
+                    <span class="material-symbols-outlined text-[18px]">dark_mode</span>
+                    <span>Night 🌙</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- 🎚️ Fast Chapter Scrubber Slider Section -->
+        <div class="sheet-section">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <div class="sheet-label">Fast Chapter Scrubber</div>
+                <span id="scrubber-chapter-val" style="font-size: 11px; font-weight: 800; font-family: 'JetBrains Mono', monospace; color: var(--primary);">Ch. 1 / 88</span>
+            </div>
+            <div class="scrubber-wrap">
+                <div class="scrubber-floating-tip" id="scrubber-tip">Chapter 1</div>
+                <input type="range" id="chapter-scrubber-range" min="1" max="88" value="1" class="scrubber-range-input" oninput="onScrubberInput(this.value)" onchange="onScrubberCommit(this.value)">
+            </div>
+        </div>
+
+        <!-- 🌙 Night-Light Warmth Eye Care Slider -->
+        <div class="sheet-section">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <div class="sheet-label">Night-Light Warmth Filter</div>
+                <span id="night-light-val" style="font-size: 11px; font-weight: 800; font-family: 'JetBrains Mono', monospace; color: #f59e0b;">Off</span>
+            </div>
+            <input type="range" id="night-light-slider" min="0" max="45" value="0" class="scrubber-range-input" oninput="setNightLight(this.value)" style="background: rgba(245, 158, 11, 0.18);">
+        </div>
+
+        <!-- ⚡ Power Reading Tools Grid -->
+        <div class="sheet-section">
+            <div class="sheet-label">Power Reading Tools</div>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+                <button onclick="toggleTTS(); toggleReaderSettings();" class="sheet-pill-btn" style="display: flex; align-items: center; justify-content: center; gap: 6px;">
+                    <span class="material-symbols-outlined text-[18px]" style="color: var(--primary);">volume_up</span>
+                    <span>Audio Read</span>
+                </button>
+                <button onclick="toggleZenMode(); toggleReaderSettings();" class="sheet-pill-btn" style="display: flex; align-items: center; justify-content: center; gap: 6px;">
+                    <span class="material-symbols-outlined text-[18px]" style="color: var(--primary);">fullscreen</span>
+                    <span>Zen Mode</span>
+                </button>
+                <button onclick="openSearchOverlay(); toggleReaderSettings();" class="sheet-pill-btn" style="display: flex; align-items: center; justify-content: center; gap: 6px;">
+                    <span class="material-symbols-outlined text-[18px]" style="color: var(--primary);">search</span>
+                    <span>Find Text</span>
+                </button>
+                <button onclick="shareOrCiteChapter();" class="sheet-pill-btn" style="display: flex; align-items: center; justify-content: center; gap: 6px;">
+                    <span class="material-symbols-outlined text-[18px]" style="color: var(--primary);">share</span>
+                    <span>Share / Cite</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Download PDF Action -->
+        <div class="sheet-section" style="padding-top: 4px;">
+            <button onclick="downloadEBookPDF()" class="sheet-action-btn-primary">
+                <span class="material-symbols-outlined text-[18px]">download</span>
+                <span>Download Full 120-Page Vector PDF</span>
+            </button>
+        </div>
     </div>
 
     <!-- Interactive Reader HUD Bar -->
     <div class="reader-hud-bar no-print">
-        <div style="display: flex; align-items: center; gap: 8px;">
+        <!-- Left Controls -->
+        <div style="display: flex; align-items: center; gap: 6px;">
             <a href="/" class="hud-btn" title="Back to Home">
                 <span class="material-symbols-outlined text-[16px]">arrow_back</span>
-                <span style="display: none;" class="sm-show">Home</span>
+                <span class="desktop-only">Home</span>
             </a>
-            <button onclick="toggleTOC()" class="hud-btn" title="Open Table of Contents">
+            <button onclick="toggleTOC()" class="hud-btn" title="Open Table of Contents & Bookmarks">
                 <span class="material-symbols-outlined text-[16px]">format_list_bulleted</span>
-                <span>Chapters (88)</span>
+                <span class="desktop-only">Chapters (88)</span>
+                <span class="mobile-controls" style="display: none; font-weight: 800; font-size: 11px;">88</span>
             </button>
-            <button onclick="flipToNextChapter()" class="hud-btn" title="Simulate Page Turn">
+            <button onclick="flipToNextChapter()" class="hud-btn" title="Turn Page (→)">
                 <span class="material-symbols-outlined text-[16px]">auto_stories</span>
-                <span class="desktop-only">Flip Page</span>
+                <span>Flip</span>
             </button>
         </div>
 
-        <!-- Middle: Title -->
+        <!-- Middle: Title (Desktop Only) -->
         <div style="text-align: center; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 320px;" class="desktop-only">
             <strong style="font-size: 13px; font-family: 'Cinzel', serif; color: var(--primary);">HRP Clinical Master eBook</strong>
         </div>
 
-        <!-- Right Controls: Font Scale, Themes, PDF Download -->
-        <div style="display: flex; align-items: center; gap: 6px;">
+        <!-- Right Controls: Desktop Strip -->
+        <div class="desktop-controls" style="display: flex; align-items: center; gap: 6px;">
+            <!-- Search Text Overlay -->
+            <button onclick="openSearchOverlay()" class="hud-btn" title="Search Text in eBook (Ctrl+F)">
+                <span class="material-symbols-outlined text-[16px]">search</span>
+            </button>
+
+            <!-- Audio Narrate -->
+            <button onclick="toggleTTS()" class="hud-btn" title="AI Audio Narration (Read Aloud)">
+                <span class="material-symbols-outlined text-[16px]">volume_up</span>
+            </button>
+
+            <!-- Zen Fullscreen -->
+            <button onclick="toggleZenMode()" class="hud-btn" title="Zen Distraction-Free Immersion">
+                <span class="material-symbols-outlined text-[16px]">fullscreen</span>
+            </button>
+
             <!-- Font Scale -->
             <button onclick="changeFontSize(-1)" class="hud-btn" title="Decrease Font Size">A-</button>
             <button onclick="changeFontSize(1)" class="hud-btn" title="Increase Font Size">A+</button>
@@ -1073,20 +2188,95 @@
                 <span>PDF</span>
             </button>
         </div>
+
+        <!-- Right Controls: Mobile Quick Actions -->
+        <div class="mobile-controls" style="display: none; align-items: center; gap: 6px;">
+            <!-- In-Page Search Trigger -->
+            <button onclick="openSearchOverlay()" class="hud-btn" title="Search Text">
+                <span class="material-symbols-outlined text-[16px]">search</span>
+            </button>
+
+            <!-- Interactive Bookmark Toggle -->
+            <button onclick="toggleCurrentBookmark()" class="hud-btn" id="mobile-bookmark-hud-btn" title="Bookmark Active Chapter">
+                <span class="material-symbols-outlined text-[16px]" id="mobile-bookmark-icon">bookmark_border</span>
+            </button>
+
+            <!-- Direct Theme Toggle -->
+            <button onclick="cycleTheme()" id="theme-btn-mobile" class="hud-btn" title="Cycle Theme">
+                <span class="material-symbols-outlined text-[16px]" id="theme-icon-mobile">wb_sunny</span>
+            </button>
+
+            <!-- Mobile Settings Bottom Sheet Trigger (Aa / Appearance) -->
+            <button onclick="toggleReaderSettings()" class="hud-btn" title="Reading Appearance & Settings">
+                <span class="material-symbols-outlined text-[16px]">tune</span>
+                <span style="font-weight: 800; font-size: 11px;">Aa</span>
+            </button>
+
+            <!-- Direct PDF Download -->
+            <button class="hud-btn hud-btn-primary" onclick="downloadEBookPDF()" title="Download PDF">
+                <span class="material-symbols-outlined text-[16px]">download</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- Master 3D Viewport-Anchored Turning Page Stage Overlay -->
+    <div id="flip-stage-overlay" class="flip-stage-overlay no-print" aria-hidden="true">
+        <div class="flip-under-shadow" id="flip-under-shadow"></div>
+        <div class="flip-sheet" id="flip-sheet">
+            <!-- Front Face -->
+            <div class="flip-page-face flip-face-front">
+                <div class="flip-sheen"></div>
+                <div class="flip-face-header">
+                    <span>Hospital Readmission Predictor</span>
+                    <span id="flip-front-badge">Clinical Treatise</span>
+                </div>
+                <div class="flip-face-body">
+                    <div class="flip-text-line"></div>
+                    <div class="flip-text-line med"></div>
+                    <div class="flip-text-line short"></div>
+                    <div class="flip-watermark">
+                        <span class="material-symbols-outlined text-[20px]">auto_stories</span>
+                        <span>Clinical AI Model</span>
+                    </div>
+                    <div class="flip-text-line"></div>
+                    <div class="flip-text-line med"></div>
+                </div>
+                <div class="flip-face-footer">
+                    <span>LUMINIX'26 Innovation Initiative</span>
+                    <span id="flip-front-pg">Page Turning &rarr;</span>
+                </div>
+            </div>
+            <!-- Back Face -->
+            <div class="flip-page-face flip-face-back">
+                <div class="flip-sheen"></div>
+                <div class="flip-face-header">
+                    <span id="flip-back-badge">Predictive Analytics</span>
+                    <span>Team Nexora Architecture</span>
+                </div>
+                <div class="flip-face-body">
+                    <div class="flip-text-line"></div>
+                    <div class="flip-text-line short"></div>
+                    <div class="flip-watermark">
+                        <span class="material-symbols-outlined text-[20px]">health_and_safety</span>
+                        <span>Evidence-Based Care</span>
+                    </div>
+                    <div class="flip-text-line med"></div>
+                    <div class="flip-text-line"></div>
+                </div>
+                <div class="flip-face-footer">
+                    <span id="flip-back-pg">&larr; Readmission Science</span>
+                    <span>101,766 Encounters</span>
+                </div>
+            </div>
+        </div>
     </div>
 
     <!-- Main Book Viewport with 3D Presentation Container -->
     <div class="book-viewport">
-        <div class="book-container animate-flip-next" id="book-content-card">
+        <div class="book-container" id="book-content-card">
             
             <!-- Bookmark Ribbon -->
-            <div class="bookmark-ribbon" title="Hospital Readmission Predictor Master Guide"></div>
-
-            <!-- Dynamic 3D Turning Page Leaf Layer -->
-            <div class="turning-leaf-layer" id="turning-leaf-layer"></div>
-
-            <!-- Dynamic 3D Paper Light Sheen Overlay -->
-            <div class="page-turn-sheen"></div>
+            <div class="bookmark-ribbon" id="master-bookmark-ribbon" onclick="toggleCurrentBookmark()" title="Bookmark Current Chapter (Tap to Save/Remove)"></div>
 
             <!-- Interactive Dog-Ear Corners for realistic corner page turning -->
             <div class="dog-ear-corner dog-ear-left no-print" onclick="flipToPrevChapter()" onmouseenter="peekBook('prev')" onmouseleave="unpeekBook()" title="Peel to Turn Previous Page (←)"></div>
@@ -4250,12 +5440,12 @@ CREATE TABLE medical_certificates (
     }
 
     /* 2. 3D Book Page Flip Animation Engine */
-    function triggerPageFlipEffect() {
-        const card = document.getElementById('book-content-card');
-        if (!card) return;
-        card.classList.remove('animate-page-flip');
-        void card.offsetWidth; // Trigger reflow
-        card.classList.add('animate-page-flip');
+    function triggerPageFlipEffect(direction = 'next') {
+        if (direction === 'prev') {
+            flipToPrevChapter();
+        } else {
+            flipToNextChapter();
+        }
     }
 
     /* 3. Table of Contents Slide-Out Drawer & Builder */
@@ -4311,10 +5501,9 @@ CREATE TABLE medical_certificates (
                 item.onclick = (e) => {
                     e.preventDefault();
                     toggleTOC();
-                    triggerDirectionalFlip('next');
-                    setTimeout(() => {
+                    triggerDirectionalFlip('next', () => {
                         h.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                    }, 160);
+                    });
                 };
                 tocList.appendChild(item);
             }
@@ -4342,7 +5531,7 @@ CREATE TABLE medical_certificates (
         });
     }
 
-    /* 4. Realistic Web Audio API Dual-Frequency Paper Turn Synthesizer */
+    /* 4. Realistic Web Audio API Triple-Stage Paper Turn Synthesizer */
     let audioCtx = null;
     function playPaperTurnSound() {
         try {
@@ -4354,55 +5543,73 @@ CREATE TABLE medical_certificates (
             }
 
             const now = audioCtx.currentTime;
-            const duration = 0.18; // 180ms dual-flutter
+            const duration = 0.48; // 480ms physical turn acoustics
             const sampleRate = audioCtx.sampleRate;
-            const bufferSize = sampleRate * duration;
+            const bufferSize = Math.floor(sampleRate * duration);
             const buffer = audioCtx.createBuffer(1, bufferSize, sampleRate);
             const data = buffer.getChannelData(0);
 
-            // Generate authentic paper fiber friction with decaying amplitude
+            // Phase 1 (0-150ms): Paper lift & friction flutter
+            // Phase 2 (150-360ms): Air displacement glide
+            // Phase 3 (360-480ms): Soft landing settle
             for (let i = 0; i < bufferSize; i++) {
                 const t = i / bufferSize;
-                const envelope = Math.sin(t * Math.PI) * Math.exp(-t * 2.5);
+                let envelope = 0;
+                if (t < 0.25) {
+                    envelope = Math.sin((t / 0.25) * (Math.PI / 2)) * 0.7;
+                } else if (t < 0.75) {
+                    envelope = 0.7 - (t - 0.25) * 0.5;
+                } else {
+                    const settleT = (t - 0.75) / 0.25;
+                    envelope = Math.sin(settleT * Math.PI) * 0.45 * Math.exp(-settleT * 3);
+                }
                 data[i] = (Math.random() * 2 - 1) * envelope;
             }
 
-            const noise = audioCtx.createBufferSource();
-            noise.buffer = buffer;
+            const noiseSource = audioCtx.createBufferSource();
+            noiseSource.buffer = buffer;
 
-            // Dual bandpass filters: High paper crispness (2200Hz) + low page bend body (480Hz)
+            // Bandpass filter 1: Crisp paper fiber rustle
             const filterHigh = audioCtx.createBiquadFilter();
             filterHigh.type = 'bandpass';
-            filterHigh.frequency.setValueAtTime(2200, now);
-            filterHigh.Q.setValueAtTime(2.2, now);
+            filterHigh.frequency.setValueAtTime(2400, now);
+            filterHigh.frequency.exponentialRampToValueAtTime(1400, now + 0.3);
+            filterHigh.Q.setValueAtTime(2.5, now);
 
+            // Bandpass filter 2: Deep paper body whoosh
             const filterLow = audioCtx.createBiquadFilter();
             filterLow.type = 'bandpass';
-            filterLow.frequency.setValueAtTime(480, now);
-            filterLow.Q.setValueAtTime(1.5, now);
+            filterLow.frequency.setValueAtTime(540, now);
+            filterLow.frequency.exponentialRampToValueAtTime(320, now + duration);
+            filterLow.Q.setValueAtTime(1.8, now);
 
-            const gain = audioCtx.createGain();
-            gain.gain.setValueAtTime(0.01, now);
-            gain.gain.exponentialRampToValueAtTime(0.24, now + 0.04);
-            gain.gain.exponentialRampToValueAtTime(0.001, now + duration);
+            // Master Gain Envelope
+            const masterGain = audioCtx.createGain();
+            masterGain.gain.setValueAtTime(0.001, now);
+            masterGain.gain.exponentialRampToValueAtTime(0.28, now + 0.04);
+            masterGain.gain.exponentialRampToValueAtTime(0.18, now + 0.25);
+            masterGain.gain.exponentialRampToValueAtTime(0.24, now + 0.38); // Crisp landing impulse
+            masterGain.gain.exponentialRampToValueAtTime(0.0001, now + duration);
 
-            noise.connect(filterHigh);
-            noise.connect(filterLow);
-            filterHigh.connect(gain);
-            filterLow.connect(gain);
-            gain.connect(audioCtx.destination);
+            noiseSource.connect(filterHigh);
+            noiseSource.connect(filterLow);
+            filterHigh.connect(masterGain);
+            filterLow.connect(masterGain);
+            masterGain.connect(audioCtx.destination);
 
-            noise.start(now);
+            noiseSource.start(now);
         } catch (err) {
-            console.debug('[WebAudio] Paper sound feedback disabled:', err);
+            console.debug('[WebAudio] Paper sound feedback bypassed:', err);
         }
     }
 
-    /* 5. Tactile 3D Peek Tilt Hover Physics */
+    /* 5. State Machine & Tactile 3D Peek Physics */
+    let isFlipping = false;
+
     function peekBook(dir) {
+        if (isFlipping) return;
         const card = document.getElementById('book-content-card');
         if (!card) return;
-        if (card.classList.contains('animate-flip-next') || card.classList.contains('animate-flip-prev')) return;
         card.classList.remove('peek-next', 'peek-prev');
         if (dir === 'next') {
             card.classList.add('peek-next');
@@ -4412,32 +5619,78 @@ CREATE TABLE medical_certificates (
     }
 
     function unpeekBook() {
+        if (isFlipping) return;
         const card = document.getElementById('book-content-card');
         if (!card) return;
         card.classList.remove('peek-next', 'peek-prev');
     }
 
-    /* 6. Directional 3D Page Flip Animation Engine */
-    function triggerDirectionalFlip(direction = 'next') {
-        unpeekBook();
-        playPaperTurnSound();
+    /* 6. Hyper-Realistic Viewport-Anchored 3D Page Flip Engine */
+    function triggerDirectionalFlip(direction = 'next', onHalfway = null, onComplete = null) {
+        if (isFlipping) return;
+        isFlipping = true;
+
         const card = document.getElementById('book-content-card');
-        const leaf = document.getElementById('turning-leaf-layer');
-        if (!card) return;
-
-        card.classList.remove('animate-flip-next', 'animate-flip-prev');
-        if (leaf) leaf.classList.remove('animate-leaf-flip-next', 'animate-leaf-flip-prev');
-        
-        void card.offsetWidth; // Force CSS reflow
-        if (leaf) void leaf.offsetWidth;
-
-        if (direction === 'next') {
-            card.classList.add('animate-flip-next');
-            if (leaf) leaf.classList.add('animate-leaf-flip-next');
-        } else {
-            card.classList.add('animate-flip-prev');
-            if (leaf) leaf.classList.add('animate-leaf-flip-prev');
+        const overlay = document.getElementById('flip-stage-overlay');
+        if (!card || !overlay) {
+            isFlipping = false;
+            if (typeof onHalfway === 'function') onHalfway();
+            if (typeof onComplete === 'function') onComplete();
+            return;
         }
+
+        // Unpeek book container and clean existing state
+        card.classList.remove('peek-next', 'peek-prev');
+        playPaperTurnSound();
+
+        // Calculate visible viewport slice of the book container
+        const rect = card.getBoundingClientRect();
+        const top = Math.max(68, Math.min(window.innerHeight - 160, rect.top));
+        const bottom = Math.min(window.innerHeight - 20, rect.bottom);
+        const visibleHeight = Math.max(320, Math.min(760, bottom - top));
+
+        overlay.style.top = `${top}px`;
+        overlay.style.left = `${Math.max(8, rect.left)}px`;
+        overlay.style.width = `${rect.width}px`;
+        overlay.style.height = `${visibleHeight}px`;
+        overlay.style.borderRadius = window.getComputedStyle(card).borderRadius || '18px';
+
+        // Update badge descriptions dynamically based on active indicator
+        const activeIndicator = document.getElementById('current-chapter-indicator');
+        const badgeFront = document.getElementById('flip-front-badge');
+        const badgeBack = document.getElementById('flip-back-badge');
+        if (badgeFront && activeIndicator) {
+            badgeFront.textContent = direction === 'next' ? activeIndicator.textContent : 'Previous Page';
+        }
+        if (badgeBack) {
+            badgeBack.textContent = direction === 'next' ? 'Advancing Chapter' : 'Previous Section';
+        }
+
+        // Clean & trigger hardware-accelerated 3D turn
+        overlay.className = 'flip-stage-overlay no-print';
+        card.classList.remove('spine-flex-next', 'spine-flex-prev');
+        void overlay.offsetWidth; // Force CSS reflow
+        void card.offsetWidth;
+
+        overlay.classList.add('is-active', `turning-${direction}`);
+        card.classList.add(`spine-flex-${direction}`);
+
+        // Midpoint synchronization (~340ms, when turning leaf is edge-on at 90°)
+        setTimeout(() => {
+            if (typeof onHalfway === 'function') {
+                try { onHalfway(); } catch (err) { console.error('[FlipEngine] Halfway callback error:', err); }
+            }
+        }, 340);
+
+        // Completion & cleanup (~720ms, when leaf lands with soft settle bounce)
+        setTimeout(() => {
+            overlay.className = 'flip-stage-overlay no-print';
+            card.classList.remove('spine-flex-next', 'spine-flex-prev', 'peek-next', 'peek-prev');
+            isFlipping = false;
+            if (typeof onComplete === 'function') {
+                try { onComplete(); } catch (err) { console.error('[FlipEngine] Complete callback error:', err); }
+            }
+        }, 720);
     }
 
     /* 7. Staged Chapter Page Turning with Synchronized Scroll */
@@ -4446,6 +5699,8 @@ CREATE TABLE medical_certificates (
     }
 
     function flipToNextChapter() {
+        if (isFlipping) return;
+        triggerHaptic(15);
         const chapters = getChapterHeadings();
         if (chapters.length === 0) return;
 
@@ -4458,17 +5713,18 @@ CREATE TABLE medical_certificates (
             }
         }
 
-        triggerDirectionalFlip('next');
-        setTimeout(() => {
+        triggerDirectionalFlip('next', () => {
             if (target) {
                 target.scrollIntoView({ behavior: 'smooth', block: 'start' });
             } else {
                 window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
             }
-        }, 160);
+        });
     }
 
     function flipToPrevChapter() {
+        if (isFlipping) return;
+        triggerHaptic(15);
         const chapters = getChapterHeadings();
         if (chapters.length === 0) return;
 
@@ -4481,17 +5737,16 @@ CREATE TABLE medical_certificates (
             }
         }
 
-        triggerDirectionalFlip('prev');
-        setTimeout(() => {
+        triggerDirectionalFlip('prev', () => {
             if (target) {
                 target.scrollIntoView({ behavior: 'smooth', block: 'start' });
             } else {
                 window.scrollTo({ top: 0, behavior: 'smooth' });
             }
-        }, 160);
+        });
     }
 
-    /* 7. Scroll Spy for Bottom Chapter Pagination Indicator */
+    /* 8. Scroll Spy for Bottom Chapter Pagination Indicator & Dynamic Sync */
     function updateChapterIndicator() {
         const indicator = document.getElementById('current-chapter-indicator');
         if (!indicator) return;
@@ -4523,16 +5778,45 @@ CREATE TABLE medical_certificates (
         } else {
             indicator.textContent = `Chapter ${Math.min(88, activeIdx)} of 88`;
         }
+
+        // Synchronize fast scrubber and active bookmark indicator
+        syncScrubberWithScroll(activeIdx);
+        updateBookmarkRibbonState(activeChapter || chapters[0]);
     }
 
-    /* 8. Keyboard Arrow Navigation (← / →) & Escape */
+    /* 9. Keyboard Arrow Navigation (← / →), Search & Escape */
     window.addEventListener('keydown', (e) => {
-        if (e.key === 'Escape') {
-            const drawer = document.getElementById('toc-drawer');
-            if (drawer && drawer.classList.contains('is-open')) toggleTOC();
+        // Ctrl+F / Cmd+F opens in-page treatise search
+        if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'f') {
+            e.preventDefault();
+            openSearchOverlay();
             return;
         }
-        // Only trigger when user is not typing in inputs or search bars
+
+        if (e.key === 'Escape') {
+            const searchBar = document.getElementById('search-overlay-bar');
+            if (searchBar && searchBar.classList.contains('is-active')) {
+                closeSearchOverlay();
+                return;
+            }
+            if (document.body.classList.contains('zen-mode')) {
+                toggleZenMode();
+                return;
+            }
+            const drawer = document.getElementById('toc-drawer');
+            if (drawer && drawer.classList.contains('is-open')) {
+                toggleTOC();
+                return;
+            }
+            const sheet = document.getElementById('reader-settings-sheet');
+            if (sheet && sheet.classList.contains('is-open')) {
+                toggleReaderSettings();
+                return;
+            }
+            return;
+        }
+
+        // Only trigger arrow navigation when user is not typing
         if (['INPUT', 'TEXTAREA', 'SELECT'].includes(document.activeElement.tagName)) return;
         if (e.key === 'ArrowRight' || e.key === 'PageDown') {
             e.preventDefault();
@@ -4543,59 +5827,133 @@ CREATE TABLE medical_certificates (
         }
     });
 
-    /* 9. Theme Switcher (Day ☀️, Sepia 📜, Night 🌙) */
+    /* 10. Touch Swipe Gesture Support (Mobile / Tablet Page Turning) */
+    let touchStartX = 0;
+    let touchStartY = 0;
+    const bookCard = document.getElementById('book-content-card');
+    if (bookCard) {
+        bookCard.addEventListener('touchstart', (e) => {
+            if (e.touches && e.touches.length === 1) {
+                touchStartX = e.touches[0].clientX;
+                touchStartY = e.touches[0].clientY;
+            }
+        }, { passive: true });
+
+        bookCard.addEventListener('touchend', (e) => {
+            if (!touchStartX || !touchStartY || isFlipping) return;
+            if (e.changedTouches && e.changedTouches.length === 1) {
+                const diffX = e.changedTouches[0].clientX - touchStartX;
+                const diffY = e.changedTouches[0].clientY - touchStartY;
+                // Only flip if horizontal swipe is dominant and exceeds 48px
+                if (Math.abs(diffX) > 48 && Math.abs(diffY) < 72) {
+                    if (diffX < 0) {
+                        flipToNextChapter(); // Swipe left -> Next page
+                    } else {
+                        flipToPrevChapter(); // Swipe right -> Prev page
+                    }
+                }
+            }
+            touchStartX = 0;
+            touchStartY = 0;
+        }, { passive: true });
+    }
+
+    /* 11. Mobile Reader Settings Bottom Sheet & Appearance */
+    function toggleReaderSettings() {
+        triggerHaptic(15);
+        const sheet = document.getElementById('reader-settings-sheet');
+        const backdrop = document.getElementById('reader-settings-backdrop');
+        if (sheet && backdrop) {
+            const isOpen = sheet.classList.contains('is-open');
+            sheet.classList.toggle('is-open', !isOpen);
+            backdrop.classList.toggle('is-open', !isOpen);
+        }
+    }
+
+    function setMobileFont(font) {
+        triggerHaptic(10);
+        const serifBtn = document.getElementById('mobile-font-serif');
+        const sansBtn = document.getElementById('mobile-font-sans');
+        const desktopBtn = document.getElementById('font-toggle-btn');
+        const isSerif = font === 'serif';
+        if (isSerif) {
+            document.body.classList.remove('font-sans');
+            document.body.classList.add('font-serif');
+            if (serifBtn) serifBtn.classList.add('active');
+            if (sansBtn) sansBtn.classList.remove('active');
+            if (desktopBtn) desktopBtn.innerHTML = '<span>Serif</span>';
+            localStorage.setItem('hrp_ebook_font', 'serif');
+        } else {
+            document.body.classList.remove('font-serif');
+            document.body.classList.add('font-sans');
+            if (sansBtn) sansBtn.classList.add('active');
+            if (serifBtn) serifBtn.classList.remove('active');
+            if (desktopBtn) desktopBtn.innerHTML = '<span>Sans</span>';
+            localStorage.setItem('hrp_ebook_font', 'sans');
+        }
+    }
+
+    function updateMobileThemeUI(theme) {
+        ['theme-day', 'theme-sepia', 'theme-night'].forEach(t => {
+            const card = document.getElementById(`mobile-${t}`);
+            if (card) {
+                if (t === theme) card.classList.add('active');
+                else card.classList.remove('active');
+            }
+        });
+    }
+
+    /* 12. Theme Switcher (Day ☀️, Sepia 📜, Night 🌙) */
     const themes = ['theme-day', 'theme-sepia', 'theme-night'];
     let currentThemeIdx = 0;
 
     function setTheme(theme) {
         document.body.classList.remove('theme-sepia', 'theme-night');
         const icon = document.getElementById('theme-icon');
+        const mobileIcon = document.getElementById('theme-icon-mobile');
         if (theme === 'theme-sepia') {
             document.body.classList.add('theme-sepia');
             if (icon) icon.textContent = 'auto_stories';
+            if (mobileIcon) mobileIcon.textContent = 'auto_stories';
             currentThemeIdx = 1;
         } else if (theme === 'theme-night') {
             document.body.classList.add('theme-night');
             if (icon) icon.textContent = 'dark_mode';
+            if (mobileIcon) mobileIcon.textContent = 'dark_mode';
             currentThemeIdx = 2;
         } else {
             if (icon) icon.textContent = 'wb_sunny';
+            if (mobileIcon) mobileIcon.textContent = 'wb_sunny';
             currentThemeIdx = 0;
         }
+        updateMobileThemeUI(theme);
         localStorage.setItem('hrp_ebook_theme', theme);
     }
 
     function cycleTheme() {
+        triggerHaptic(12);
         currentThemeIdx = (currentThemeIdx + 1) % themes.length;
         setTheme(themes[currentThemeIdx]);
     }
 
-    /* 10. Font Family Toggle (Serif 📖 / Sans ⚡) */
+    /* 13. Font Family Toggle (Serif 📖 / Sans ⚡) */
     function toggleFontFamily() {
         const isSerif = document.body.classList.contains('font-serif');
-        const btn = document.getElementById('font-toggle-btn');
-        if (isSerif) {
-            document.body.classList.remove('font-serif');
-            document.body.classList.add('font-sans');
-            if (btn) btn.innerHTML = '<span>Sans</span>';
-            localStorage.setItem('hrp_ebook_font', 'sans');
-        } else {
-            document.body.classList.remove('font-sans');
-            document.body.classList.add('font-serif');
-            if (btn) btn.innerHTML = '<span>Serif</span>';
-            localStorage.setItem('hrp_ebook_font', 'serif');
-        }
+        setMobileFont(isSerif ? 'sans' : 'serif');
     }
 
-    /* 11. Font Size Scaling */
+    /* 14. Font Size Scaling */
     let currentFontSize = 16;
     function changeFontSize(delta) {
+        triggerHaptic(8);
         currentFontSize = Math.max(13, Math.min(22, currentFontSize + delta));
         document.documentElement.style.setProperty('--book-font-size', currentFontSize + 'px');
+        const lbl = document.getElementById('mobile-font-size-label');
+        if (lbl) lbl.textContent = currentFontSize + 'px';
         localStorage.setItem('hrp_ebook_size', currentFontSize);
     }
 
-    /* 12. Reading Progress Tracker & Scroll Listener */
+    /* 15. Reading Progress Tracker & Scroll Listener */
     window.addEventListener('scroll', () => {
         const track = document.getElementById('reading-progress-track');
         if (track) {
@@ -4608,10 +5966,587 @@ CREATE TABLE medical_certificates (
         updateChapterIndicator();
     }, { passive: true });
 
-    /* 13. Init on DOM Loaded & KaTeX Auto-Renderer */
+    /* 17. Physical Haptic Feedback Engine */
+    function triggerHaptic(duration = 15) {
+        if ('vibrate' in navigator) {
+            try { navigator.vibrate(duration); } catch (e) { /* silent fallback */ }
+        }
+    }
+
+    /* 18. Physical & Action Toast Notification Manager */
+    let toastTimer = null;
+    function showToast(message, icon = 'check_circle') {
+        const toast = document.getElementById('reader-toast');
+        const toastMsg = document.getElementById('toast-msg');
+        const toastIcon = document.getElementById('toast-icon');
+        if (!toast || !toastMsg) return;
+        toastMsg.textContent = message;
+        if (toastIcon) toastIcon.textContent = icon;
+        toast.classList.add('is-active');
+        clearTimeout(toastTimer);
+        toastTimer = setTimeout(() => {
+            toast.classList.remove('is-active');
+        }, 2600);
+    }
+
+    /* 19. Persistent Bookmark & Highlight System with LocalStorage */
+    function getSavedBookmarks() {
+        try {
+            return JSON.parse(localStorage.getItem('hrp_ebook_bookmarks') || '[]');
+        } catch (e) {
+            return [];
+        }
+    }
+
+    function saveBookmarks(bms) {
+        localStorage.setItem('hrp_ebook_bookmarks', JSON.stringify(bms));
+        updateBookmarkUI();
+    }
+
+    function getCurrentActiveChapterInfo() {
+        const chapters = getChapterHeadings();
+        const scrollY = window.scrollY + 180;
+        let active = null;
+        let activeIdx = 1;
+        for (let i = 0; i < chapters.length; i++) {
+            if (chapters[i].offsetTop <= scrollY) {
+                active = chapters[i];
+                activeIdx = i + 1;
+            } else {
+                break;
+            }
+        }
+        if (!active && chapters.length > 0) active = chapters[0];
+        const id = active ? (active.id || 'chapter-anchor-0') : 'chapter-anchor-0';
+        const title = active ? active.textContent.trim() : 'Hospital Readmission Predictor';
+        return { id, title, index: activeIdx };
+    }
+
+    function toggleCurrentBookmark() {
+        triggerHaptic(20);
+        const curr = getCurrentActiveChapterInfo();
+        let bms = getSavedBookmarks();
+        const existingIdx = bms.findIndex(b => b.id === curr.id);
+        if (existingIdx >= 0) {
+            bms.splice(existingIdx, 1);
+            showToast(`Removed bookmark: ${curr.title.slice(0, 28)}...`, 'bookmark_remove');
+        } else {
+            bms.push({ id: curr.id, title: curr.title, index: curr.index, timestamp: Date.now() });
+            showToast(`Saved bookmark: ${curr.title.slice(0, 28)}...`, 'bookmark_added');
+        }
+        saveBookmarks(bms);
+    }
+
+    function updateBookmarkRibbonState(activeChapter) {
+        if (!activeChapter) return;
+        const bms = getSavedBookmarks();
+        const isBookmarked = bms.some(b => b.id === activeChapter.id);
+        const ribbon = document.getElementById('master-bookmark-ribbon');
+        if (ribbon) ribbon.classList.toggle('is-bookmarked', isBookmarked);
+        const mobileIcon = document.getElementById('mobile-bookmark-icon');
+        if (mobileIcon) mobileIcon.textContent = isBookmarked ? 'bookmark' : 'bookmark_border';
+    }
+
+    function updateBookmarkUI() {
+        const bms = getSavedBookmarks();
+        const countElem = document.getElementById('bookmark-count');
+        if (countElem) countElem.textContent = bms.length;
+
+        const curr = getCurrentActiveChapterInfo();
+        const isBookmarked = bms.some(b => b.id === curr.id);
+        const ribbon = document.getElementById('master-bookmark-ribbon');
+        if (ribbon) ribbon.classList.toggle('is-bookmarked', isBookmarked);
+        const mobileIcon = document.getElementById('mobile-bookmark-icon');
+        if (mobileIcon) mobileIcon.textContent = isBookmarked ? 'bookmark' : 'bookmark_border';
+
+        renderBookmarksList();
+    }
+
+    function renderBookmarksList() {
+        const list = document.getElementById('toc-bookmarks-list');
+        if (!list) return;
+        const bms = getSavedBookmarks();
+        if (bms.length === 0) {
+            list.innerHTML = `
+                <div style="text-align: center; padding: 44px 16px; color: var(--text-muted);">
+                    <span class="material-symbols-outlined text-[40px]" style="opacity: 0.35; margin-bottom: 8px; display: block;">bookmark_border</span>
+                    <p style="font-size: 13.5px; font-weight: 700; color: var(--text-main); margin-bottom: 4px;">No Bookmarks Saved Yet</p>
+                    <p style="font-size: 11.5px; line-height: 1.5; opacity: 0.8;">Tap the green/amber ribbon or the bookmark icon on any chapter to quickly pin it here.</p>
+                </div>
+            `;
+            return;
+        }
+        list.innerHTML = '';
+        bms.forEach(bm => {
+            const card = document.createElement('div');
+            card.className = 'bookmark-item-card';
+            card.innerHTML = `
+                <div style="display: flex; align-items: center; gap: 8px; overflow: hidden; flex: 1;" onclick="jumpToBookmark('${bm.id}')">
+                    <span class="toc-num-badge">Ch. ${bm.index}</span>
+                    <span style="font-size: 12px; font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--text-main);">${bm.title}</span>
+                </div>
+                <span class="material-symbols-outlined bookmark-del-btn text-[18px]" onclick="deleteBookmark('${bm.id}', event)" title="Delete Bookmark">delete</span>
+            `;
+            list.appendChild(card);
+        });
+    }
+
+    function jumpToBookmark(id) {
+        triggerHaptic(15);
+        toggleTOC();
+        const target = document.getElementById(id);
+        if (target) {
+            triggerDirectionalFlip('next', () => {
+                target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            });
+        }
+    }
+
+    function deleteBookmark(id, e) {
+        if (e) e.stopPropagation();
+        triggerHaptic(15);
+        let bms = getSavedBookmarks();
+        bms = bms.filter(b => b.id !== id);
+        saveBookmarks(bms);
+        showToast('Bookmark deleted', 'delete');
+    }
+
+    function switchTocTab(tab) {
+        triggerHaptic(10);
+        const tabChapters = document.getElementById('tab-btn-chapters');
+        const tabBookmarks = document.getElementById('tab-btn-bookmarks');
+        const listChapters = document.getElementById('toc-list');
+        const listBookmarks = document.getElementById('toc-bookmarks-list');
+        const searchWrap = document.querySelector('.toc-search-wrap');
+
+        if (tab === 'chapters') {
+            if (tabChapters) tabChapters.classList.add('active');
+            if (tabBookmarks) tabBookmarks.classList.remove('active');
+            if (listChapters) listChapters.style.display = 'flex';
+            if (listBookmarks) listBookmarks.style.display = 'none';
+            if (searchWrap) searchWrap.style.display = 'flex';
+        } else {
+            if (tabChapters) tabChapters.classList.remove('active');
+            if (tabBookmarks) tabBookmarks.classList.add('active');
+            if (listChapters) listChapters.style.display = 'none';
+            if (listBookmarks) listBookmarks.style.display = 'flex';
+            if (searchWrap) searchWrap.style.display = 'none';
+            renderBookmarksList();
+        }
+    }
+
+    /* 20. Fast Mobile Chapter Scrubber Slider */
+    function onScrubberInput(val) {
+        const num = parseInt(val);
+        const lbl = document.getElementById('scrubber-chapter-val');
+        const tip = document.getElementById('scrubber-tip');
+        const chapters = getChapterHeadings();
+        const targetHeading = chapters[num - 1];
+        const title = targetHeading ? targetHeading.textContent.trim().slice(0, 26) : `Chapter ${num}`;
+
+        if (lbl) lbl.textContent = `Ch. ${num} / 88`;
+        if (tip) {
+            tip.textContent = `Ch. ${num}: ${title}`;
+            tip.classList.add('is-visible');
+        }
+    }
+
+    function onScrubberCommit(val) {
+        triggerHaptic(20);
+        const num = parseInt(val);
+        const tip = document.getElementById('scrubber-tip');
+        if (tip) tip.classList.remove('is-visible');
+
+        const chapters = getChapterHeadings();
+        const target = chapters[num - 1];
+        if (target) {
+            triggerDirectionalFlip('next', () => {
+                target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            });
+        }
+    }
+
+    function syncScrubberWithScroll(chapterIdx) {
+        const slider = document.getElementById('chapter-scrubber-range');
+        const lbl = document.getElementById('scrubber-chapter-val');
+        if (slider && !slider.matches(':active')) {
+            slider.value = chapterIdx;
+            if (lbl) lbl.textContent = `Ch. ${chapterIdx} / 88`;
+        }
+    }
+
+    /* 21. AI Audio Read-Aloud Narration Player */
+    let speechSynth = window.speechSynthesis || null;
+    let currentUtterance = null;
+    let isSpeaking = false;
+    const ttsSpeeds = [1.0, 1.25, 1.5, 2.0];
+    let ttsSpeedIdx = 0;
+
+    function toggleTTS() {
+        triggerHaptic(15);
+        if (!speechSynth) {
+            showToast('Speech synthesis not supported in this browser', 'error');
+            return;
+        }
+        const player = document.getElementById('mobile-tts-player');
+        if (!player) return;
+        if (player.classList.contains('is-active')) {
+            stopTTS();
+        } else {
+            player.classList.add('is-active');
+            startTTSForCurrentChapter();
+        }
+    }
+
+    function startTTSForCurrentChapter() {
+        if (!speechSynth) return;
+        speechSynth.cancel();
+
+        const curr = getCurrentActiveChapterInfo();
+        const targetHeading = document.getElementById(curr.id);
+        let textToRead = '';
+
+        if (targetHeading) {
+            textToRead = targetHeading.textContent + '. ';
+            let sibling = targetHeading.nextElementSibling;
+            let wordLimit = 250;
+            while (sibling && !sibling.classList.contains('book-chapter-title') && !sibling.classList.contains('book-part-title')) {
+                if (['P', 'UL', 'OL', 'BLOCKQUOTE'].includes(sibling.tagName)) {
+                    textToRead += sibling.textContent + ' ';
+                    if (textToRead.split(/\s+/).length > wordLimit) break;
+                }
+                sibling = sibling.nextElementSibling;
+            }
+        }
+
+        if (!textToRead.trim()) {
+            textToRead = "Hospital Readmission Predictor. Comprehensive Healthcare AI and Telemedicine Treatise.";
+        }
+
+        currentUtterance = new SpeechSynthesisUtterance(textToRead);
+        currentUtterance.rate = ttsSpeeds[ttsSpeedIdx];
+        currentUtterance.pitch = 1.0;
+
+        const voices = speechSynth.getVoices();
+        const enVoice = voices.find(v => v.lang.startsWith('en') && (v.name.includes('Natural') || v.name.includes('Google') || v.name.includes('Neural') || v.name.includes('Premium')));
+        if (enVoice) currentUtterance.voice = enVoice;
+
+        const player = document.getElementById('mobile-tts-player');
+        const playIcon = document.getElementById('tts-play-icon');
+        const statusText = document.getElementById('tts-status-text');
+        const chapterLabel = document.getElementById('tts-chapter-label');
+
+        if (chapterLabel) chapterLabel.textContent = curr.title;
+
+        currentUtterance.onstart = () => {
+            isSpeaking = true;
+            if (player) player.classList.add('is-speaking');
+            if (playIcon) playIcon.textContent = 'pause';
+            if (statusText) statusText.textContent = 'Reading Aloud';
+        };
+
+        currentUtterance.onend = () => {
+            isSpeaking = false;
+            if (player) player.classList.remove('is-speaking');
+            if (playIcon) playIcon.textContent = 'play_arrow';
+            if (statusText) statusText.textContent = 'Finished';
+        };
+
+        currentUtterance.onerror = () => {
+            isSpeaking = false;
+            if (player) player.classList.remove('is-speaking');
+            if (playIcon) playIcon.textContent = 'play_arrow';
+        };
+
+        speechSynth.speak(currentUtterance);
+        showToast(`Reading: ${curr.title.slice(0, 24)}...`, 'volume_up');
+    }
+
+    function toggleTTSPlayback() {
+        triggerHaptic(10);
+        if (!speechSynth) return;
+        const playIcon = document.getElementById('tts-play-icon');
+        const player = document.getElementById('mobile-tts-player');
+        const statusText = document.getElementById('tts-status-text');
+
+        if (speechSynth.paused) {
+            speechSynth.resume();
+            isSpeaking = true;
+            if (playIcon) playIcon.textContent = 'pause';
+            if (player) player.classList.add('is-speaking');
+            if (statusText) statusText.textContent = 'Reading Aloud';
+        } else if (speechSynth.speaking) {
+            speechSynth.pause();
+            isSpeaking = false;
+            if (playIcon) playIcon.textContent = 'play_arrow';
+            if (player) player.classList.remove('is-speaking');
+            if (statusText) statusText.textContent = 'Paused';
+        } else {
+            startTTSForCurrentChapter();
+        }
+    }
+
+    function cycleTTSSpeed() {
+        triggerHaptic(10);
+        ttsSpeedIdx = (ttsSpeedIdx + 1) % ttsSpeeds.length;
+        const speed = ttsSpeeds[ttsSpeedIdx];
+        const btn = document.getElementById('tts-speed-btn');
+        if (btn) btn.textContent = speed + 'x';
+        if (speechSynth && speechSynth.speaking) {
+            speechSynth.cancel();
+            startTTSForCurrentChapter();
+        }
+    }
+
+    function stopTTS() {
+        triggerHaptic(10);
+        if (speechSynth) speechSynth.cancel();
+        isSpeaking = false;
+        const player = document.getElementById('mobile-tts-player');
+        if (player) {
+            player.classList.remove('is-active', 'is-speaking');
+        }
+    }
+
+    /* 22. Distraction-Free Full-Screen Zen Immersion Mode */
+    function toggleZenMode() {
+        triggerHaptic(25);
+        const isZen = document.body.classList.toggle('zen-mode');
+        if (isZen) {
+            if (document.documentElement.requestFullscreen && !document.fullscreenElement) {
+                document.documentElement.requestFullscreen().catch(() => {});
+            }
+            showToast('Zen Mode Enabled (Tap Exit Zen at top right)', 'fullscreen');
+        } else {
+            if (document.exitFullscreen && document.fullscreenElement) {
+                document.exitFullscreen().catch(() => {});
+            }
+            showToast('Exited Zen Mode', 'fullscreen_exit');
+        }
+    }
+
+    let lastTapTime = 0;
+    function setupDoubleTapZen() {
+        const bookCard = document.getElementById('book-content-card');
+        if (!bookCard) return;
+        bookCard.addEventListener('touchend', (e) => {
+            if (['BUTTON', 'INPUT', 'A', 'MARK'].includes(e.target.tagName)) return;
+            const currentTime = new Date().getTime();
+            const tapLength = currentTime - lastTapTime;
+            if (tapLength < 320 && tapLength > 40) {
+                toggleZenMode();
+            }
+            lastTapTime = currentTime;
+        }, { passive: true });
+    }
+
+    /* 23. In-eBook Live Search & Jump-to-Match Highlighter */
+    let currentSearchResults = [];
+    let searchCurrentIndex = -1;
+
+    function openSearchOverlay() {
+        triggerHaptic(15);
+        const bar = document.getElementById('search-overlay-bar');
+        const input = document.getElementById('inpage-search-input');
+        if (bar) {
+            bar.classList.add('is-active');
+            if (input) {
+                setTimeout(() => { input.focus(); input.select(); }, 60);
+            }
+        }
+    }
+
+    function closeSearchOverlay() {
+        triggerHaptic(10);
+        const bar = document.getElementById('search-overlay-bar');
+        if (bar) bar.classList.remove('is-active');
+        clearSearchHighlights();
+    }
+
+    function clearSearchHighlights() {
+        const marks = Array.from(document.querySelectorAll('mark.search-match-highlight'));
+        marks.forEach(m => {
+            const parent = m.parentNode;
+            if (parent) {
+                parent.replaceChild(document.createTextNode(m.textContent), m);
+                parent.normalize();
+            }
+        });
+        currentSearchResults = [];
+        searchCurrentIndex = -1;
+        const counter = document.getElementById('search-results-counter');
+        if (counter) counter.textContent = '0/0';
+    }
+
+    function performInPageSearch(e) {
+        if (e.key === 'Enter') {
+            if (e.shiftKey) navigateSearch(-1);
+            else navigateSearch(1);
+            return;
+        }
+        if (e.key === 'Escape') {
+            closeSearchOverlay();
+            return;
+        }
+
+        const input = document.getElementById('inpage-search-input');
+        const q = input ? input.value.trim() : '';
+        clearSearchHighlights();
+
+        if (q.length < 2) return;
+
+        const content = document.getElementById('book-content-card');
+        if (!content) return;
+
+        const walker = document.createTreeWalker(content, NodeFilter.SHOW_TEXT, {
+            acceptNode: (node) => {
+                if (!node.nodeValue.trim()) return NodeFilter.FILTER_REJECT;
+                if (node.parentElement && ['SCRIPT', 'STYLE', 'BUTTON', 'INPUT', 'MARK'].includes(node.parentElement.tagName)) {
+                    return NodeFilter.FILTER_REJECT;
+                }
+                return NodeFilter.FILTER_ACCEPT;
+            }
+        });
+
+        const regex = new RegExp(`(${q.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, '\\$&')})`, 'gi');
+        const nodesToReplace = [];
+
+        while (walker.nextNode()) {
+            if (regex.test(walker.currentNode.nodeValue)) {
+                nodesToReplace.push(walker.currentNode);
+            }
+        }
+
+        nodesToReplace.forEach(node => {
+            const parent = node.parentNode;
+            if (!parent) return;
+            const frag = document.createDocumentFragment();
+            const parts = node.nodeValue.split(regex);
+            parts.forEach(part => {
+                if (part.toLowerCase() === q.toLowerCase()) {
+                    const mark = document.createElement('mark');
+                    mark.className = 'search-match-highlight';
+                    mark.textContent = part;
+                    frag.appendChild(mark);
+                    currentSearchResults.push(mark);
+                } else if (part) {
+                    frag.appendChild(document.createTextNode(part));
+                }
+            });
+            parent.replaceChild(frag, node);
+        });
+
+        const counter = document.getElementById('search-results-counter');
+        if (counter) {
+            counter.textContent = currentSearchResults.length > 0 ? `1/${currentSearchResults.length}` : '0/0';
+        }
+
+        if (currentSearchResults.length > 0) {
+            searchCurrentIndex = 0;
+            highlightCurrentSearchMatch();
+        }
+    }
+
+    function navigateSearch(dir) {
+        if (currentSearchResults.length === 0) return;
+        triggerHaptic(10);
+        searchCurrentIndex = (searchCurrentIndex + dir + currentSearchResults.length) % currentSearchResults.length;
+        highlightCurrentSearchMatch();
+    }
+
+    function highlightCurrentSearchMatch() {
+        currentSearchResults.forEach((m, idx) => {
+            m.classList.toggle('search-match-current', idx === searchCurrentIndex);
+        });
+        const cur = currentSearchResults[searchCurrentIndex];
+        if (cur) {
+            cur.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            const counter = document.getElementById('search-results-counter');
+            if (counter) counter.textContent = `${searchCurrentIndex + 1}/${currentSearchResults.length}`;
+        }
+    }
+
+    /* 24. Night-Light Amber Warmth Eye Care */
+    function setNightLight(val) {
+        const num = parseInt(val);
+        const opacity = (num / 100) * 0.7;
+        document.documentElement.style.setProperty('--night-light-opacity', opacity);
+        const lbl = document.getElementById('night-light-val');
+        if (lbl) lbl.textContent = num === 0 ? 'Off' : `${num}% Warm`;
+        const slider = document.getElementById('night-light-slider');
+        if (slider && slider.value != val) slider.value = val;
+        localStorage.setItem('hrp_ebook_night_light', val);
+    }
+
+    /* 25. Native Mobile Share & APA Citation Generator */
+    function shareOrCiteChapter() {
+        triggerHaptic(20);
+        const curr = getCurrentActiveChapterInfo();
+        const shareUrl = window.location.origin + window.location.pathname + '#' + curr.id;
+        const apaCitation = `Team Nexora. (2026). ${curr.title}. In Hospital Readmission Predictor: Executive Clinical Treatise (pp. 1-120). LUMINIX'26 Innovation Initiative. Retrieved from ${shareUrl}`;
+
+        if (navigator.share) {
+            navigator.share({
+                title: curr.title,
+                text: apaCitation,
+                url: shareUrl
+            }).then(() => {
+                showToast('Shared successfully!', 'share');
+            }).catch(() => {
+                copyCitationToClipboard(apaCitation);
+            });
+        } else {
+            copyCitationToClipboard(apaCitation);
+        }
+    }
+
+    function copyCitationToClipboard(text) {
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+            navigator.clipboard.writeText(text).then(() => {
+                showToast('APA Citation copied to clipboard!', 'content_copy');
+            }).catch(() => {
+                prompt('Copy Citation:', text);
+            });
+        } else {
+            prompt('Copy Citation:', text);
+        }
+    }
+
+    /* 26. Chapter Reading Time & Word Count Estimator */
+    function injectReadingTimeBadges() {
+        const chapters = document.querySelectorAll('.book-chapter-title');
+        chapters.forEach(ch => {
+            if (ch.nextElementSibling && ch.nextElementSibling.classList.contains('chapter-meta-pill')) return;
+
+            let wordCount = 0;
+            let sibling = ch.nextElementSibling;
+            while (sibling && !sibling.classList.contains('book-chapter-title') && !sibling.classList.contains('book-part-title')) {
+                if (sibling.textContent) {
+                    wordCount += sibling.textContent.trim().split(/\s+/).filter(Boolean).length;
+                }
+                sibling = sibling.nextElementSibling;
+            }
+
+            const readMin = Math.max(1, Math.ceil(wordCount / 200));
+            const metaPill = document.createElement('div');
+            metaPill.className = 'chapter-meta-pill';
+            metaPill.innerHTML = `
+                <span class="material-symbols-outlined text-[14px]">schedule</span>
+                <span>${readMin} min read</span>
+                <span style="opacity: 0.4;">•</span>
+                <span>${wordCount} words</span>
+            `;
+            ch.parentNode.insertBefore(metaPill, ch.nextSibling);
+        });
+    }
+
+    /* 27. Init on DOM Loaded & KaTeX Auto-Renderer */
     document.addEventListener('DOMContentLoaded', () => {
         buildTOC();
         updateChapterIndicator();
+        updateBookmarkUI();
+        injectReadingTimeBadges();
+        setupDoubleTapZen();
 
         // Restore user preferences
         const savedTheme = localStorage.getItem('hrp_ebook_theme') || 'theme-day';
@@ -4624,6 +6559,13 @@ CREATE TABLE medical_certificates (
         if (savedSize) {
             currentFontSize = parseInt(savedSize);
             document.documentElement.style.setProperty('--book-font-size', currentFontSize + 'px');
+            const lbl = document.getElementById('mobile-font-size-label');
+            if (lbl) lbl.textContent = currentFontSize + 'px';
+        }
+
+        const savedNightLight = localStorage.getItem('hrp_ebook_night_light');
+        if (savedNightLight) {
+            setNightLight(savedNightLight);
         }
 
         // Render KaTeX Formulas across all 88 Chapters
