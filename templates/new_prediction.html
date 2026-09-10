@@ -16,7 +16,7 @@
 {% endblock %}
 
 {% block content %}
-<div class="max-w-5xl mx-auto space-y-6">
+<div class="max-w-5xl mx-auto space-y-6 pb-52">
     <!-- Header & Progress Stepper -->
     <div>
         <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-6">
@@ -505,125 +505,230 @@
         </div>
 
         <!-- STEP 4: Review Information & Live Predict -->
-        <div id="step-4-content" class="step-container space-y-lg hidden card-enter">
-            <div class="mb-md">
-                <h2 class="text-headline-md font-headline-md font-bold text-on-surface mb-1">Review Information</h2>
-                <p class="text-body-lg text-secondary">Please verify the entered patient information before executing the AI readmission model.</p>
+        <div id="step-4-content" class="step-container space-y-6 hidden card-enter">
+            <!-- Review Header Banner -->
+            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 pb-3 border-b border-slate-200/80">
+                <div>
+                    <div class="flex items-center gap-2 mb-1">
+                        <span class="px-2.5 py-0.5 rounded-full bg-primary/10 text-primary text-[11px] font-black uppercase tracking-wider">Step 4 of 4</span>
+                        <span class="text-xs text-slate-500 font-semibold">Pre-Inference Clinical Verification</span>
+                    </div>
+                    <h2 class="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight">Review Patient Information</h2>
+                    <p class="text-xs sm:text-sm text-slate-600 font-medium mt-0.5">Please verify all demographic, biomarker, and historical utilization parameters before running the AI model.</p>
+                </div>
+                <div class="hidden sm:flex items-center gap-2 px-3.5 py-2 rounded-2xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs font-bold shrink-0 shadow-2xs">
+                    <span class="w-2 h-2 rounded-full bg-emerald-600 animate-pulse"></span>
+                    <span>10 / 10 Features Populated</span>
+                </div>
             </div>
 
-            <!-- Collapsible Card 1: Patient Information -->
-            <div class="bg-surface-container-lowest rounded-2xl border border-outline-variant shadow-sm overflow-hidden">
-                <div class="p-md sm:p-lg border-b border-surface-variant bg-surface flex justify-between items-center cursor-pointer" onclick="toggleReviewSection('review-patient-info', 'patient-rev-icon')">
-                    <div class="flex items-center gap-sm">
-                        <span class="material-symbols-outlined text-primary">person</span>
-                        <h3 class="text-title-lg font-title-lg font-bold text-on-surface">Patient Information</h3>
+            <!-- Card 1: Patient Information -->
+            <div class="bg-surface-container-lowest rounded-3xl border border-slate-200/90 shadow-sm overflow-hidden transition-all">
+                <div class="p-4 sm:p-5 border-b border-slate-100 bg-slate-50/70 flex justify-between items-center cursor-pointer select-none" onclick="toggleReviewSection('review-patient-info', 'patient-rev-icon')">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-2xl bg-primary/10 text-primary flex items-center justify-center font-bold shadow-2xs">
+                            <span class="material-symbols-outlined text-[20px]">badge</span>
+                        </div>
+                        <div>
+                            <h3 class="text-sm sm:text-base font-black text-slate-900">Patient Demographics & Encounter</h3>
+                            <p class="text-[11px] text-slate-500 font-semibold">Encounter ID, admission timeline & attending service</p>
+                        </div>
                     </div>
-                    <div class="flex items-center gap-md">
-                        <button type="button" class="text-primary text-label-lg font-bold flex items-center gap-1 hover:underline" onclick="event.stopPropagation(); goToStep(1)">
-                            <span class="material-symbols-outlined text-[16px]">edit</span> Edit
+                    <div class="flex items-center gap-3">
+                        <button type="button" class="px-3 py-1.5 rounded-xl border border-primary/30 text-primary text-xs font-bold hover:bg-primary/5 transition-all flex items-center gap-1 cursor-pointer" onclick="event.stopPropagation(); goToStep(1)">
+                            <span class="material-symbols-outlined text-[15px]">edit</span>
+                            <span>Edit</span>
                         </button>
-                        <span class="material-symbols-outlined text-secondary transition-transform duration-300 transform rotate-180" id="patient-rev-icon">expand_more</span>
+                        <span class="material-symbols-outlined text-slate-400 text-xl transition-transform duration-300 transform rotate-180" id="patient-rev-icon">expand_more</span>
                     </div>
                 </div>
-                <div id="review-patient-info" class="p-md sm:p-lg grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-y-md gap-x-lg">
-                    <div>
-                        <p class="text-label-lg text-secondary uppercase tracking-wider mb-1">Patient ID</p>
-                        <p id="rev-patient-id" class="text-body-lg font-bold text-on-surface">PT-84729-A</p>
+                <div id="review-patient-info" class="p-4 sm:p-6 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3.5 sm:gap-4">
+                    <div class="p-3.5 rounded-2xl bg-slate-50/80 border border-slate-200/70 flex items-start gap-3">
+                        <div class="w-8 h-8 rounded-xl bg-white text-primary flex items-center justify-center shrink-0 shadow-2xs border border-slate-100">
+                            <span class="material-symbols-outlined text-[17px]">fingerprint</span>
+                        </div>
+                        <div class="min-w-0">
+                            <p class="text-[10px] font-extrabold text-slate-500 uppercase tracking-wider">Patient ID</p>
+                            <p id="rev-patient-id" class="text-xs sm:text-sm font-black text-slate-900 font-mono mt-0.5 truncate">PT-84729-A</p>
+                        </div>
                     </div>
-                    <div>
-                        <p class="text-label-lg text-secondary uppercase tracking-wider mb-1">Full Name</p>
-                        <p id="rev-full-name" class="text-body-lg font-bold text-on-surface">Eleanor Vance</p>
+
+                    <div class="p-3.5 rounded-2xl bg-slate-50/80 border border-slate-200/70 flex items-start gap-3">
+                        <div class="w-8 h-8 rounded-xl bg-white text-primary flex items-center justify-center shrink-0 shadow-2xs border border-slate-100">
+                            <span class="material-symbols-outlined text-[17px]">person</span>
+                        </div>
+                        <div class="min-w-0">
+                            <p class="text-[10px] font-extrabold text-slate-500 uppercase tracking-wider">Full Name</p>
+                            <p id="rev-full-name" class="text-xs sm:text-sm font-black text-slate-900 mt-0.5 truncate">Eleanor Vance</p>
+                        </div>
                     </div>
-                    <div>
-                        <p class="text-label-lg text-secondary uppercase tracking-wider mb-1">Age / Gender</p>
-                        <p id="rev-age-gender" class="text-body-lg font-bold text-on-surface">71 yrs / Female</p>
+
+                    <div class="p-3.5 rounded-2xl bg-slate-50/80 border border-slate-200/70 flex items-start gap-3">
+                        <div class="w-8 h-8 rounded-xl bg-white text-primary flex items-center justify-center shrink-0 shadow-2xs border border-slate-100">
+                            <span class="material-symbols-outlined text-[17px]">wc</span>
+                        </div>
+                        <div class="min-w-0">
+                            <p class="text-[10px] font-extrabold text-slate-500 uppercase tracking-wider">Age / Gender</p>
+                            <p id="rev-age-gender" class="text-xs sm:text-sm font-black text-slate-900 mt-0.5 truncate">71 yrs / Female</p>
+                        </div>
                     </div>
-                    <div>
-                        <p class="text-label-lg text-secondary uppercase tracking-wider mb-1">Primary Diagnosis</p>
-                        <p id="rev-diagnosis" class="text-body-lg font-bold text-on-surface">Congestive Heart Failure</p>
+
+                    <div class="p-3.5 rounded-2xl bg-slate-50/80 border border-slate-200/70 flex items-start gap-3">
+                        <div class="w-8 h-8 rounded-xl bg-white text-red-600 flex items-center justify-center shrink-0 shadow-2xs border border-slate-100">
+                            <span class="material-symbols-outlined text-[17px]">cardiology</span>
+                        </div>
+                        <div class="min-w-0">
+                            <p class="text-[10px] font-extrabold text-slate-500 uppercase tracking-wider">Primary Diagnosis</p>
+                            <p id="rev-diagnosis" class="text-xs sm:text-sm font-black text-red-700 mt-0.5 truncate">Congestive Heart Failure</p>
+                        </div>
                     </div>
-                    <div>
-                        <p class="text-label-lg text-secondary uppercase tracking-wider mb-1">Department</p>
-                        <p id="rev-department" class="text-body-lg font-bold text-on-surface">Cardiology</p>
+
+                    <div class="p-3.5 rounded-2xl bg-slate-50/80 border border-slate-200/70 flex items-start gap-3">
+                        <div class="w-8 h-8 rounded-xl bg-white text-primary flex items-center justify-center shrink-0 shadow-2xs border border-slate-100">
+                            <span class="material-symbols-outlined text-[17px]">local_hospital</span>
+                        </div>
+                        <div class="min-w-0">
+                            <p class="text-[10px] font-extrabold text-slate-500 uppercase tracking-wider">Department</p>
+                            <p id="rev-department" class="text-xs sm:text-sm font-black text-slate-900 mt-0.5 truncate">Cardiology</p>
+                        </div>
                     </div>
-                    <div>
-                        <p class="text-label-lg text-secondary uppercase tracking-wider mb-1">Length of Stay</p>
-                        <p id="rev-los" class="text-body-lg font-bold text-on-surface">9 Days</p>
+
+                    <div class="p-3.5 rounded-2xl bg-slate-50/80 border border-slate-200/70 flex items-start gap-3">
+                        <div class="w-8 h-8 rounded-xl bg-white text-primary flex items-center justify-center shrink-0 shadow-2xs border border-slate-100">
+                            <span class="material-symbols-outlined text-[17px]">hotel</span>
+                        </div>
+                        <div class="min-w-0">
+                            <p class="text-[10px] font-extrabold text-slate-500 uppercase tracking-wider">Length of Stay</p>
+                            <p id="rev-los" class="text-xs sm:text-sm font-black text-slate-900 mt-0.5 truncate">9 Days</p>
+                        </div>
                     </div>
                 </div>
             </div>
 
-            <!-- Collapsible Card 2: Clinical Information -->
-            <div class="bg-surface-container-lowest rounded-2xl border border-outline-variant shadow-sm overflow-hidden">
-                <div class="p-md sm:p-lg border-b border-surface-variant bg-surface flex justify-between items-center cursor-pointer" onclick="toggleReviewSection('review-clinical-info', 'clinical-rev-icon')">
-                    <div class="flex items-center gap-sm">
-                        <span class="material-symbols-outlined text-primary">vital_signs</span>
-                        <h3 class="text-title-lg font-title-lg font-bold text-on-surface">Clinical Vitals & Labs</h3>
+            <!-- Card 2: Clinical Information -->
+            <div class="bg-surface-container-lowest rounded-3xl border border-slate-200/90 shadow-sm overflow-hidden transition-all">
+                <div class="p-4 sm:p-5 border-b border-slate-100 bg-slate-50/70 flex justify-between items-center cursor-pointer select-none" onclick="toggleReviewSection('review-clinical-info', 'clinical-rev-icon')">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-2xl bg-emerald-500/10 text-emerald-700 flex items-center justify-center font-bold shadow-2xs">
+                            <span class="material-symbols-outlined text-[20px]">monitor_heart</span>
+                        </div>
+                        <div>
+                            <h3 class="text-sm sm:text-base font-black text-slate-900">Clinical Vitals & Lab Biomarkers</h3>
+                            <p class="text-[11px] text-slate-500 font-semibold">Recorded physiological vitals & diagnostic biochemistry</p>
+                        </div>
                     </div>
-                    <div class="flex items-center gap-md">
-                        <button type="button" class="text-primary text-label-lg font-bold flex items-center gap-1 hover:underline" onclick="event.stopPropagation(); goToStep(2)">
-                            <span class="material-symbols-outlined text-[16px]">edit</span> Edit
+                    <div class="flex items-center gap-3">
+                        <button type="button" class="px-3 py-1.5 rounded-xl border border-primary/30 text-primary text-xs font-bold hover:bg-primary/5 transition-all flex items-center gap-1 cursor-pointer" onclick="event.stopPropagation(); goToStep(2)">
+                            <span class="material-symbols-outlined text-[15px]">edit</span>
+                            <span>Edit</span>
                         </button>
-                        <span class="material-symbols-outlined text-secondary transition-transform duration-300 transform rotate-180" id="clinical-rev-icon">expand_more</span>
+                        <span class="material-symbols-outlined text-slate-400 text-xl transition-transform duration-300 transform rotate-180" id="clinical-rev-icon">expand_more</span>
                     </div>
                 </div>
-                <div id="review-clinical-info" class="p-md sm:p-lg grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-y-md gap-x-lg">
-                    <div>
-                        <p class="text-label-lg text-secondary uppercase tracking-wider mb-1">Heart Rate</p>
-                        <p id="rev-hr" class="text-body-lg font-bold text-on-surface">88 bpm</p>
+                <div id="review-clinical-info" class="p-4 sm:p-6 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3.5 sm:gap-4">
+                    <div class="p-3.5 rounded-2xl bg-slate-50/80 border border-slate-200/70 flex items-start gap-3">
+                        <div class="w-8 h-8 rounded-xl bg-white text-emerald-600 flex items-center justify-center shrink-0 shadow-2xs border border-slate-100">
+                            <span class="material-symbols-outlined text-[17px]">favorite</span>
+                        </div>
+                        <div class="min-w-0">
+                            <p class="text-[10px] font-extrabold text-slate-500 uppercase tracking-wider">Heart Rate</p>
+                            <p id="rev-hr" class="text-xs sm:text-sm font-black text-slate-900 mt-0.5 truncate">88 bpm</p>
+                        </div>
                     </div>
-                    <div>
-                        <p class="text-label-lg text-secondary uppercase tracking-wider mb-1">Blood Pressure</p>
-                        <p id="rev-bp" class="text-body-lg font-bold text-on-surface">135/85 mmHg</p>
+
+                    <div class="p-3.5 rounded-2xl bg-slate-50/80 border border-slate-200/70 flex items-start gap-3">
+                        <div class="w-8 h-8 rounded-xl bg-white text-amber-600 flex items-center justify-center shrink-0 shadow-2xs border border-slate-100">
+                            <span class="material-symbols-outlined text-[17px]">speed</span>
+                        </div>
+                        <div class="min-w-0">
+                            <p class="text-[10px] font-extrabold text-slate-500 uppercase tracking-wider">Blood Pressure</p>
+                            <p id="rev-bp" class="text-xs sm:text-sm font-black text-slate-900 mt-0.5 truncate">135/85 mmHg</p>
+                        </div>
                     </div>
-                    <div>
-                        <p class="text-label-lg text-secondary uppercase tracking-wider mb-1">SpO2</p>
-                        <p id="rev-spo2" class="text-body-lg font-bold text-on-surface">94%</p>
+
+                    <div class="p-3.5 rounded-2xl bg-slate-50/80 border border-slate-200/70 flex items-start gap-3">
+                        <div class="w-8 h-8 rounded-xl bg-white text-teal-600 flex items-center justify-center shrink-0 shadow-2xs border border-slate-100">
+                            <span class="material-symbols-outlined text-[17px]">air</span>
+                        </div>
+                        <div class="min-w-0">
+                            <p class="text-[10px] font-extrabold text-slate-500 uppercase tracking-wider">SpO2</p>
+                            <p id="rev-spo2" class="text-xs sm:text-sm font-black text-slate-900 mt-0.5 truncate">94%</p>
+                        </div>
                     </div>
-                    <div>
-                        <p class="text-label-lg text-secondary uppercase tracking-wider mb-1">Serum Creatinine</p>
-                        <p id="rev-creat" class="text-body-lg font-bold text-on-surface">1.60 mg/dL</p>
+
+                    <div class="p-3.5 rounded-2xl bg-slate-50/80 border border-slate-200/70 flex items-start gap-3">
+                        <div class="w-8 h-8 rounded-xl bg-white text-red-600 flex items-center justify-center shrink-0 shadow-2xs border border-slate-100">
+                            <span class="material-symbols-outlined text-[17px]">biotechnology</span>
+                        </div>
+                        <div class="min-w-0">
+                            <p class="text-[10px] font-extrabold text-slate-500 uppercase tracking-wider">Serum Creatinine</p>
+                            <p id="rev-creat" class="text-xs sm:text-sm font-black text-red-700 mt-0.5 truncate">1.60 mg/dL</p>
+                        </div>
                     </div>
                 </div>
             </div>
 
-            <!-- Collapsible Card 3: Medical History -->
-            <div class="bg-surface-container-lowest rounded-2xl border border-outline-variant shadow-sm overflow-hidden">
-                <div class="p-md sm:p-lg border-b border-surface-variant bg-surface flex justify-between items-center cursor-pointer" onclick="toggleReviewSection('review-history-info', 'history-rev-icon')">
-                    <div class="flex items-center gap-sm">
-                        <span class="material-symbols-outlined text-primary">clinical_notes</span>
-                        <h3 class="text-title-lg font-title-lg font-bold text-on-surface">Medical History & Utilization</h3>
+            <!-- Card 3: Medical History -->
+            <div class="bg-surface-container-lowest rounded-3xl border border-slate-200/90 shadow-sm overflow-hidden transition-all">
+                <div class="p-4 sm:p-5 border-b border-slate-100 bg-slate-50/70 flex justify-between items-center cursor-pointer select-none" onclick="toggleReviewSection('review-history-info', 'history-rev-icon')">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-2xl bg-indigo-500/10 text-indigo-700 flex items-center justify-center font-bold shadow-2xs">
+                            <span class="material-symbols-outlined text-[20px]">history</span>
+                        </div>
+                        <div>
+                            <h3 class="text-sm sm:text-base font-black text-slate-900">Medical History & Utilization Burden</h3>
+                            <p class="text-[11px] text-slate-500 font-semibold">Prior acute readmissions and active polypharmacy</p>
+                        </div>
                     </div>
-                    <div class="flex items-center gap-md">
-                        <button type="button" class="text-primary text-label-lg font-bold flex items-center gap-1 hover:underline" onclick="event.stopPropagation(); goToStep(3)">
-                            <span class="material-symbols-outlined text-[16px]">edit</span> Edit
+                    <div class="flex items-center gap-3">
+                        <button type="button" class="px-3 py-1.5 rounded-xl border border-primary/30 text-primary text-xs font-bold hover:bg-primary/5 transition-all flex items-center gap-1 cursor-pointer" onclick="event.stopPropagation(); goToStep(3)">
+                            <span class="material-symbols-outlined text-[15px]">edit</span>
+                            <span>Edit</span>
                         </button>
-                        <span class="material-symbols-outlined text-secondary transition-transform duration-300 transform rotate-180" id="history-rev-icon">expand_more</span>
+                        <span class="material-symbols-outlined text-slate-400 text-xl transition-transform duration-300 transform rotate-180" id="history-rev-icon">expand_more</span>
                     </div>
                 </div>
-                <div id="review-history-info" class="p-md sm:p-lg grid grid-cols-1 md:grid-cols-2 gap-y-md gap-x-lg">
-                    <div>
-                        <p class="text-label-lg text-secondary uppercase tracking-wider mb-1">Admissions (12mo / 30d)</p>
-                        <p id="rev-admissions" class="text-body-lg font-bold text-on-surface">2 in last 12mo (1 in 30d)</p>
+                <div id="review-history-info" class="p-4 sm:p-6 grid grid-cols-1 md:grid-cols-2 gap-3.5 sm:gap-4">
+                    <div class="p-3.5 rounded-2xl bg-slate-50/80 border border-slate-200/70 flex items-start gap-3">
+                        <div class="w-8 h-8 rounded-xl bg-white text-red-600 flex items-center justify-center shrink-0 shadow-2xs border border-slate-100">
+                            <span class="material-symbols-outlined text-[17px]">event_repeat</span>
+                        </div>
+                        <div class="min-w-0">
+                            <p class="text-[10px] font-extrabold text-slate-500 uppercase tracking-wider">Admissions (12mo / 30d)</p>
+                            <p id="rev-admissions" class="text-xs sm:text-sm font-black text-slate-900 mt-0.5 truncate">2 in last 12mo (1 in 30d)</p>
+                        </div>
                     </div>
-                    <div>
-                        <p class="text-label-lg text-secondary uppercase tracking-wider mb-1">Active Prescription Count</p>
-                        <p id="rev-med-count" class="text-body-lg font-bold text-on-surface">8 Medications</p>
+
+                    <div class="p-3.5 rounded-2xl bg-slate-50/80 border border-slate-200/70 flex items-start gap-3">
+                        <div class="w-8 h-8 rounded-xl bg-white text-amber-600 flex items-center justify-center shrink-0 shadow-2xs border border-slate-100">
+                            <span class="material-symbols-outlined text-[17px]">medication</span>
+                        </div>
+                        <div class="min-w-0">
+                            <p class="text-[10px] font-extrabold text-slate-500 uppercase tracking-wider">Active Prescription Count</p>
+                            <p id="rev-med-count" class="text-xs sm:text-sm font-black text-slate-900 mt-0.5 truncate">8 Active Medications</p>
+                        </div>
                     </div>
                 </div>
             </div>
 
-            <!-- Action Area -->
-            <div class="mt-xl flex flex-col md:flex-row justify-between items-center bg-surface-container-lowest p-lg rounded-2xl border border-outline-variant shadow-md">
-                <p class="text-body-md text-secondary mb-4 md:mb-0 flex items-center gap-2">
-                    <span class="material-symbols-outlined text-primary">info</span>
-                    Model ready to compute 30-day readmission probability and XAI factor impacts.
-                </p>
-                <div class="flex gap-md w-full md:w-auto">
-                    <button type="button" onclick="goToStep(3)" class="px-6 py-2.5 rounded-full border border-outline-variant text-secondary hover:text-on-surface font-bold transition-colors">
-                        Back
+            <!-- Action Area (High Contrast • Clear of Floating FAB) -->
+            <div class="mt-8 p-5 sm:p-6 bg-gradient-to-r from-blue-50/90 via-indigo-50/80 to-white rounded-3xl border-2 border-primary/20 shadow-md flex flex-col sm:flex-row items-center justify-between gap-4">
+                <div class="flex items-start gap-3.5">
+                    <div class="w-10 h-10 rounded-2xl bg-primary text-white flex items-center justify-center shrink-0 shadow-md">
+                        <span class="material-symbols-outlined text-[22px]">bolt</span>
+                    </div>
+                    <div>
+                        <h4 class="text-sm font-black text-slate-900">Inference Engine Ready</h4>
+                        <p class="text-xs text-slate-600 font-medium mt-0.5 leading-relaxed">Calibrated XGBoost classifier will evaluate 30-day readmission probability and calculate TreeSHAP factor attributions.</p>
+                    </div>
+                </div>
+
+                <div class="flex items-center gap-3 w-full sm:w-auto shrink-0">
+                    <button type="button" onclick="goToStep(3)" class="flex-1 sm:flex-initial px-5 py-3 rounded-2xl border border-slate-300 bg-white hover:bg-slate-50 text-slate-700 font-extrabold text-xs shadow-2xs transition-all flex items-center justify-center gap-1.5 cursor-pointer">
+                        <span class="material-symbols-outlined text-[16px]">arrow_back</span>
+                        <span>Back</span>
                     </button>
-                    <button id="submit-predict-btn" type="submit" class="px-8 py-3 rounded-full bg-primary text-on-primary font-bold hover:bg-on-primary-fixed-variant shadow-lg flex items-center justify-center gap-2 text-base transition-transform active:scale-95">
+                    <button id="submit-predict-btn" type="submit" class="flex-1 sm:flex-initial px-8 py-3.5 rounded-2xl bg-primary hover:bg-primary/90 text-white font-black text-xs sm:text-sm shadow-xl hover:shadow-2xl transition-all flex items-center justify-center gap-2 hover:scale-[1.02] active:scale-[0.98] cursor-pointer" style="background: linear-gradient(135deg, #001f4d 0%, #005bbf 50%, #0284c7 100%) !important;">
                         <span>Generate Prediction</span>
                         <span class="material-symbols-outlined text-[20px]">magic_button</span>
                     </button>
@@ -668,6 +773,7 @@
         if (subEl) subEl.textContent = subtitles[step];
 
         // Update step circles styling
+        const stepIcons = { 1: 'person', 2: 'monitor_heart', 3: 'history', 4: 'analytics' };
         for (let i = 1; i <= 4; i++) {
             const circle = document.getElementById(`step-circle-${i}`);
             const label = document.getElementById(`step-label-${i}`);
@@ -675,19 +781,19 @@
 
             if (i < step) {
                 // Completed
-                circle.className = "w-10 h-10 rounded-full bg-primary text-on-primary flex items-center justify-center font-bold shadow-md";
+                circle.className = "w-10 h-10 rounded-2xl bg-emerald-600 text-white flex items-center justify-center font-bold shadow-sm transition-all";
                 circle.innerHTML = '<span class="material-symbols-outlined text-[18px]">check</span>';
-                if (label) label.className = "text-label-lg font-label-lg text-primary font-bold hidden sm:block";
+                if (label) label.className = "text-[11px] font-bold text-emerald-700";
             } else if (i === step) {
                 // Active
-                circle.className = "w-10 h-10 rounded-full bg-primary-container text-on-primary-container border-2 border-primary flex items-center justify-center font-bold shadow-md ring-4 ring-primary-fixed";
-                circle.innerHTML = `${i}`;
-                if (label) label.className = "text-label-lg font-label-lg text-primary font-bold hidden sm:block";
+                circle.className = "w-10 h-10 rounded-2xl bg-primary text-white border-2 border-white flex items-center justify-center font-bold shadow-md ring-4 ring-primary/20 transition-all";
+                circle.innerHTML = `<span class="material-symbols-outlined text-[18px]">${stepIcons[i]}</span>`;
+                if (label) label.className = "text-[11px] font-black text-primary";
             } else {
                 // Pending
-                circle.className = "w-10 h-10 rounded-full bg-surface text-secondary border-2 border-outline-variant flex items-center justify-center font-bold shadow-sm";
-                circle.innerHTML = `${i}`;
-                if (label) label.className = "text-label-lg font-label-lg text-secondary hidden sm:block";
+                circle.className = "w-10 h-10 rounded-2xl bg-white text-secondary border-2 border-slate-200 flex items-center justify-center font-bold shadow-2xs transition-all";
+                circle.innerHTML = `<span class="material-symbols-outlined text-[18px] text-slate-400">${stepIcons[i]}</span>`;
+                if (label) label.className = "text-[11px] font-semibold text-secondary";
             }
         }
 
