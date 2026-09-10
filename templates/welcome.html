@@ -551,12 +551,15 @@
                 </div>
 
                 <!-- Floating 3D Micro-Badge 3 (Top Right - Active Doctor Live Sync) -->
-                <div class="floating-3d-badge absolute -top-3 -right-2 sm:-right-4 z-30 px-3 py-1.5 rounded-2xl bg-white/95 border border-primary/40 shadow-xl text-[11px] font-black text-slate-800 flex items-center gap-2 backdrop-blur-md" style="animation-delay: -1.2s;">
-                    <div class="relative w-5 h-5 rounded-full overflow-hidden border border-primary/60 flex-shrink-0">
+                <div class="floating-3d-badge absolute -top-3 -right-2 sm:-right-4 z-30 px-3.5 py-1.5 rounded-2xl bg-white/95 border border-primary/40 shadow-xl text-[11px] font-black text-slate-800 flex items-center gap-2.5 backdrop-blur-md" style="animation-delay: -1.2s;">
+                    <div class="relative w-8 h-8 rounded-full overflow-hidden border-2 border-primary/60 flex-shrink-0 shadow-xs">
                         <img id="badge-doc-img" src="/static/img/doctors/doctor_1.jpg" alt="Doctor" class="w-full h-full object-cover">
                     </div>
-                    <span id="badge-doc-name" class="text-primary font-extrabold truncate max-w-[110px]">Dr. Sarah Mitchell</span>
-                    <span class="px-1.5 py-0.5 rounded-full bg-emerald-100 text-emerald-800 text-[9px] font-black">On Duty</span>
+                    <div class="flex flex-col">
+                        <span id="badge-doc-name" class="text-primary font-black truncate max-w-[120px] leading-tight">Dr. Sarah Mitchell</span>
+                        <span class="text-[9px] font-bold text-slate-500">Live Attending</span>
+                    </div>
+                    <span class="px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 text-[9px] font-black border border-emerald-300">On Duty</span>
                 </div>
 
                 <!-- Main 3D Card with Tilt Effect -->
@@ -581,58 +584,69 @@
                     <!-- ================================================================= -->
                     <!-- LIVE ON-DUTY CLINICAL CARE TEAM (10 AI DOCTORS • 3S AUTO ROTATION) -->
                     <!-- ================================================================= -->
-                    <div id="hero-doctor-container" class="p-3.5 rounded-2xl bg-gradient-to-r from-blue-50/90 via-indigo-50/70 to-emerald-50/80 border border-primary/25 shadow-xs relative overflow-hidden group hover:border-primary/50 transition-all">
+                    <div id="hero-doctor-container" class="p-4 sm:p-5 rounded-3xl bg-gradient-to-br from-blue-50/95 via-indigo-50/80 to-emerald-50/90 border-2 border-primary/30 shadow-lg relative overflow-hidden group hover:border-primary/60 transition-all">
                         <!-- 3-Second Linear Progress Indicator Bar -->
-                        <div class="absolute top-0 left-0 right-0 h-1 bg-slate-200/80 overflow-hidden">
+                        <div class="absolute top-0 left-0 right-0 h-1.5 bg-slate-200/90 overflow-hidden">
                             <div id="hero-doc-progress" class="h-full bg-gradient-to-r from-primary via-cyan-500 to-emerald-500 w-0"></div>
                         </div>
 
-                        <div class="flex items-center justify-between gap-3 pt-1">
-                            <!-- Left: Active Doctor Photo Avatar & Credentials -->
-                            <div class="flex items-center gap-3 min-w-0">
-                                <div class="relative w-14 h-14 rounded-2xl overflow-hidden border-2 border-primary/40 shadow-md flex-shrink-0 bg-white ring-2 ring-primary/20 cursor-pointer" onclick="nextDoctor()" title="Click to view next doctor">
-                                    <img id="hero-doc-img" src="/static/img/doctors/doctor_1.jpg" alt="Active Attending Physician" class="w-full h-full object-cover transition-opacity duration-300">
-                                    <!-- Pulsing Active Status Ring -->
-                                    <span class="absolute bottom-0.5 right-0.5 w-3 h-3 rounded-full bg-emerald-500 border-2 border-white shadow-xs flex items-center justify-center">
-                                        <span class="w-1.5 h-1.5 rounded-full bg-white animate-ping"></span>
+                        <!-- Big Profile Layout: Avatar + Details + Status -->
+                        <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 pt-1">
+                            <!-- Left: Big Active Doctor Photo Avatar & Credentials -->
+                            <div class="flex items-center gap-4 min-w-0">
+                                <!-- Big Doctor Profile Avatar -->
+                                <div class="relative w-24 h-24 sm:w-28 sm:h-28 md:w-32 md:h-32 rounded-3xl overflow-hidden border-3 border-primary/50 shadow-xl flex-shrink-0 bg-white ring-4 ring-primary/20 cursor-pointer transition-all duration-300 hover:scale-105 hover:shadow-2xl" onclick="nextDoctor()" title="Click to view next doctor">
+                                    <img id="hero-doc-img" src="/static/img/doctors/doctor_1.jpg" alt="Active Attending Physician" class="w-full h-full object-cover transition-all duration-300">
+                                    <!-- Big Pulsing Active Status Ring -->
+                                    <span class="absolute bottom-1 right-1 sm:bottom-1.5 sm:right-1.5 w-4 h-4 rounded-full bg-emerald-500 border-2 border-white shadow-md flex items-center justify-center">
+                                        <span class="w-2 h-2 rounded-full bg-white animate-ping"></span>
                                     </span>
                                 </div>
 
-                                <div class="min-w-0 space-y-0.5">
-                                    <div class="flex items-center gap-1.5">
-                                        <span class="px-2 py-0.5 rounded-md bg-primary/15 text-primary text-[10px] font-black uppercase tracking-wider flex items-center gap-1">
-                                            <span class="material-symbols-outlined text-[12px] text-emerald-600">stethoscope</span>
+                                <div class="min-w-0 space-y-1 sm:space-y-1.5">
+                                    <div class="flex flex-wrap items-center gap-1.5">
+                                        <span class="px-2.5 py-0.5 rounded-lg bg-primary/15 text-primary text-[10px] sm:text-[11px] font-black uppercase tracking-wider flex items-center gap-1">
+                                            <span class="material-symbols-outlined text-[13px] text-emerald-600">stethoscope</span>
                                             <span>Attending Physician</span>
                                         </span>
-                                        <span id="hero-doc-counter" class="text-[10px] font-mono font-bold text-slate-500 bg-white/90 px-1.5 py-0.5 rounded border border-slate-200">Doc 1/10</span>
-                                        <span class="text-[9px] font-bold text-emerald-700 bg-emerald-50 border border-emerald-200 px-1.5 py-0.5 rounded flex items-center gap-0.5">
-                                            <span class="w-1 h-1 rounded-full bg-emerald-600 animate-ping"></span> 3s Auto
+                                        <span id="hero-doc-counter" class="text-[10px] sm:text-[11px] font-mono font-black text-slate-700 bg-white px-2 py-0.5 rounded-md border border-slate-200 shadow-2xs">Doc 1/10</span>
+                                        <span class="text-[9px] sm:text-[10px] font-bold text-emerald-700 bg-emerald-50 border border-emerald-200 px-1.5 py-0.5 rounded-md flex items-center gap-1">
+                                            <span class="w-1.5 h-1.5 rounded-full bg-emerald-600 animate-ping"></span> 3s Auto
                                         </span>
                                     </div>
-                                    <h5 id="hero-doc-name" class="text-xs sm:text-sm font-black text-slate-900 truncate">Dr. Sarah Mitchell, MD, FACC</h5>
-                                    <p id="hero-doc-role" class="text-[10px] sm:text-[11px] text-slate-600 font-semibold truncate">Chief of Cardiology &bull; St. Jude Heart Institute</p>
+                                    <h5 id="hero-doc-name" class="text-base sm:text-lg md:text-xl font-black text-slate-900 tracking-tight leading-snug">Dr. Sarah Mitchell, MD, FACC</h5>
+                                    <p id="hero-doc-role" class="text-xs sm:text-sm text-slate-600 font-semibold leading-normal">Chief of Cardiology &bull; St. Jude Heart Institute</p>
+                                    <div class="flex flex-wrap items-center gap-2 pt-0.5">
+                                        <span id="hero-doc-specialty" class="text-[11px] font-bold text-primary bg-primary/10 border border-primary/20 px-2.5 py-0.5 rounded-md">Heart Failure Specialist</span>
+                                        <span class="px-2 py-0.5 rounded-md bg-blue-50 text-blue-700 text-[10px] font-extrabold border border-blue-200 flex items-center gap-1">
+                                            <span class="material-symbols-outlined text-[12px]">verified</span> Board Certified
+                                        </span>
+                                    </div>
                                 </div>
                             </div>
 
-                            <!-- Right: Live Review Badge & Specialty -->
-                            <div class="flex flex-col items-end gap-1 flex-shrink-0">
-                                <span class="px-2.5 py-1 rounded-xl bg-emerald-600 text-white text-[10px] font-extrabold flex items-center gap-1 shadow-xs">
-                                    <span class="w-1.5 h-1.5 rounded-full bg-white animate-pulse"></span>
+                            <!-- Right: Live Review Badge & Interactive Next Profile Button -->
+                            <div class="flex sm:flex-col items-center sm:items-end justify-between sm:justify-center gap-2 w-full sm:w-auto flex-shrink-0 pt-2 sm:pt-0 border-t sm:border-t-0 border-slate-200/60">
+                                <span class="px-3 py-1.5 rounded-xl bg-emerald-600 text-white text-[11px] font-black flex items-center gap-1.5 shadow-sm">
+                                    <span class="w-2 h-2 rounded-full bg-white animate-pulse"></span>
                                     <span>Reviewing PT-84729</span>
                                 </span>
-                                <span id="hero-doc-specialty" class="text-[9px] font-bold text-slate-500 hidden sm:block">Heart Failure Specialist</span>
+                                <button type="button" onclick="nextDoctor()" class="px-3 py-1.5 text-[11px] font-extrabold text-primary hover:text-white hover:bg-primary bg-white border border-primary/30 rounded-xl shadow-2xs flex items-center gap-1.5 transition-all cursor-pointer group">
+                                    <span>Next Doctor</span>
+                                    <span class="material-symbols-outlined text-[14px] group-hover:translate-x-0.5 transition-transform">arrow_forward</span>
+                                </button>
                             </div>
                         </div>
 
-                        <!-- 10 Doctor Thumbnails Strip (Interactive & Visualizes 3s Rotation) -->
-                        <div class="mt-2.5 pt-2 border-t border-slate-200/70 flex items-center justify-between gap-1">
-                            <span class="text-[9px] font-extrabold text-slate-500 uppercase tracking-wider flex items-center gap-1">
-                                <span class="material-symbols-outlined text-[13px] text-primary">groups</span>
-                                <span>10 Clinicians On-Duty:</span>
+                        <!-- 10 Doctor Thumbnails Strip (Enlarged & Visualized) -->
+                        <div class="mt-3.5 pt-2.5 border-t border-slate-200/80 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                            <span class="text-[10px] sm:text-[11px] font-black text-slate-600 uppercase tracking-wider flex items-center gap-1 flex-shrink-0">
+                                <span class="material-symbols-outlined text-sm text-primary">groups</span>
+                                <span>10 On-Duty Clinicians:</span>
                             </span>
 
-                            <!-- 10 Micro Thumbnails -->
-                            <div class="flex items-center gap-1 overflow-x-auto py-0.5" id="hero-doc-thumbnails">
+                            <!-- 10 Bigger Micro Thumbnails -->
+                            <div class="flex items-center gap-1.5 overflow-x-auto py-1 scrollbar-none" id="hero-doc-thumbnails">
                                 <!-- Populated dynamically by JS -->
                             </div>
                         </div>
@@ -796,7 +810,7 @@
             btn.onclick = () => selectDoctor(idx);
             btn.title = `${doc.name} (${doc.specialty})`;
             btn.id = `hero-thumb-${idx}`;
-            btn.className = `w-5 h-5 rounded-full overflow-hidden border transition-all duration-200 cursor-pointer flex-shrink-0 ${idx === currentDocIdx ? 'border-primary ring-2 ring-primary/40 scale-125' : 'border-slate-300 opacity-60 hover:opacity-100 hover:scale-110'}`;
+            btn.className = `w-8 h-8 sm:w-9 sm:h-9 rounded-xl overflow-hidden border-2 transition-all duration-200 cursor-pointer flex-shrink-0 ${idx === currentDocIdx ? 'border-primary ring-2 ring-primary/40 scale-110 shadow-md' : 'border-slate-300 opacity-60 hover:opacity-100 hover:scale-105'}`;
             btn.innerHTML = `<img src="${doc.photo}" alt="${doc.name}" class="w-full h-full object-cover">`;
             container.appendChild(btn);
         });
@@ -837,9 +851,9 @@
             const thumb = document.getElementById(`hero-thumb-${i}`);
             if (thumb) {
                 if (i === currentDocIdx) {
-                    thumb.className = 'w-5 h-5 rounded-full overflow-hidden border-2 border-primary ring-2 ring-primary/40 scale-125 transition-all duration-200 flex-shrink-0';
+                    thumb.className = 'w-8 h-8 sm:w-9 sm:h-9 rounded-xl overflow-hidden border-2 border-primary ring-2 ring-primary/40 scale-110 shadow-md transition-all duration-200 flex-shrink-0';
                 } else {
-                    thumb.className = 'w-5 h-5 rounded-full overflow-hidden border border-slate-300 opacity-60 hover:opacity-100 hover:scale-110 transition-all duration-200 flex-shrink-0';
+                    thumb.className = 'w-8 h-8 sm:w-9 sm:h-9 rounded-xl overflow-hidden border border-slate-300 opacity-60 hover:opacity-100 hover:scale-105 transition-all duration-200 flex-shrink-0';
                 }
             }
         });
