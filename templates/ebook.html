@@ -2262,6 +2262,32 @@
             background: rgba(56, 189, 248, 0.28);
             color: #ffffff;
         }
+        .study-3d-clock-chip {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            background: rgba(16, 185, 129, 0.15);
+            border: 1px solid rgba(16, 185, 129, 0.35);
+            color: #34d399;
+            font-family: 'SF Mono', 'Fira Code', monospace;
+            font-size: 11.5px;
+            font-weight: 700;
+            padding: 5px 9px;
+            border-radius: 9px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            user-select: none;
+        }
+        .study-3d-clock-chip:hover {
+            background: rgba(16, 185, 129, 0.28);
+            border-color: #34d399;
+            box-shadow: 0 0 12px rgba(16, 185, 129, 0.35);
+        }
+        .study-3d-clock-chip.is-pomodoro {
+            background: rgba(245, 158, 11, 0.16);
+            border-color: rgba(245, 158, 11, 0.45);
+            color: #fbbf24;
+        }
         .study-3d-select {
             background: rgba(15, 23, 42, 0.9);
             color: #f1f5f9;
@@ -2613,7 +2639,7 @@
                 </button>
             </div>
 
-            <!-- Middle: Camera Presets -->
+            <!-- Middle: Camera Presets & Fullscreen -->
             <div class="study-3d-hud-group">
                 <button id="cam-preset-reading" onclick="StudyRoom3D.setCameraPreset('reading')" class="study-3d-btn active" title="Top-down Ergonomic Reading Slant">
                     <span class="material-symbols-outlined text-[15px]">menu_book</span>
@@ -2631,10 +2657,30 @@
                     <span class="material-symbols-outlined text-[15px]">360</span>
                     <span>Orbit</span>
                 </button>
+                <div style="width: 1px; height: 16px; background: rgba(255,255,255,0.15);"></div>
+                <button id="study-fullscreen-btn" onclick="StudyRoom3D.toggleFullscreen()" class="study-3d-btn" title="Toggle Immersive Fullscreen (F)">
+                    <span class="material-symbols-outlined text-[15px]" id="study-fullscreen-icon">fullscreen</span>
+                    <span class="desktop-only" id="study-fullscreen-label">Fullscreen</span>
+                </button>
             </div>
 
-            <!-- Right: Weather, Ambient Audio & Game Toys -->
+            <!-- Right: Weather, AC, Fan, Live Clock & Toys -->
             <div class="study-3d-hud-group">
+                <!-- 🕒 Live Work Clock Device Chip -->
+                <div id="study-3d-live-clock" onclick="StudyRoom3D.toggleClockMode()" class="study-3d-clock-chip" title="Smart Desk Work Clock • Click to switch Clock / Pomodoro (P)">
+                    <span class="material-symbols-outlined text-[15px]">schedule</span>
+                    <span id="study-live-clock-text">--:--:--</span>
+                </div>
+                <!-- ❄️ Inverter Air Conditioner Button -->
+                <button onclick="StudyRoom3D.cycleAC()" id="study-3d-ac-btn" class="study-3d-btn active" title="Inverter Air Conditioner • Toggle Temp / Power (C)">
+                    <span class="material-symbols-outlined text-[15px]">ac_unit</span>
+                    <span id="study-ac-text">❄️ 21°C</span>
+                </button>
+                <!-- 🌀 Ceiling Fan Button -->
+                <button onclick="StudyRoom3D.cycleFan()" id="study-3d-fan-btn" class="study-3d-btn active" title="Ceiling Fan • Cycle Speed (V)">
+                    <span class="material-symbols-outlined text-[15px]">mode_fan</span>
+                    <span id="study-fan-text">🌀 Fan: Med</span>
+                </button>
                 <select id="study-3d-weather-select" onchange="StudyRoom3D.setWeather(this.value)" class="study-3d-select" title="Change Study Window Weather">
                     <option value="sunrise" selected>🌅 Golden Sunrise</option>
                     <option value="rain">🌧️ Rainy City</option>
@@ -2662,7 +2708,7 @@
                 <button onclick="StudyRoom3D.sipCoffee()" class="study-3d-btn" title="Take a Sip of Warm Coffee">
                     <span class="material-symbols-outlined text-[15px]">coffee</span>
                 </button>
-                <button onclick="StudyRoom3D.togglePomodoro()" class="study-3d-btn study-3d-btn-accent" title="Pomodoro Study Timer (P)">
+                <button onclick="StudyRoom3D.togglePomodoro()" class="study-3d-btn study-3d-btn-accent" title="Pomodoro Focus Countdown (P)">
                     <span class="material-symbols-outlined text-[15px]">timer</span>
                     <span id="study-3d-pomodoro-text">25:00</span>
                 </button>
@@ -8570,7 +8616,28 @@ CREATE TABLE medical_certificates (
         let chandelierLight, chandelierGlow, sconceLightL, sconceLightR, isRoomLightOn = true;
         let sunbeamLight;
         let coffeeMug, steamParticles, steamGeo;
+        // Smart Desk Work Clock State
         let clockCanvas, clockCtx, clockTexture, clockMesh;
+        let clockMode = 'realtime'; // 'realtime' | 'pomodoro'
+        let sessionStartTime = Date.now();
+        let lastClockUpdate = 0;
+
+        // Inverter Air Conditioner (Left Wall) State
+        let acUnitMesh, acLouverMesh, acDisplayCanvas, acDisplayCtx, acDisplayTex;
+        let acParticles, acGeo, acParticleVels = [];
+        let isACOn = true, acTemp = 21, acTempIndex = 1;
+        const AC_TEMPS = [18, 20, 22, 24, 0]; // 0 is Off
+        let acNoiseSource = null, acGain = null;
+
+        // Ceiling Fan State
+        let ceilingFanPivot = null, fanSpeed = 0.075, fanMode = 'med', fanIndex = 2;
+        const FAN_SPEEDS = [
+            { mode: 'off', speed: 0, label: 'Off' },
+            { mode: 'low', speed: 0.035, label: 'Low' },
+            { mode: 'med', speed: 0.075, label: 'Med' },
+            { mode: 'turbo', speed: 0.15, label: 'Turbo' }
+        ];
+
         let rainParticles, rainGeo, currentWeather = 'sunrise';
         let windowGroup, skyCanvas, sctx, skyTex, skyPane;
 
@@ -8841,6 +8908,12 @@ CREATE TABLE medical_certificates (
 
             // --- 3D Smart Wall TV & Video Songs Player ---
             buildSmartWallTV();
+
+            // --- Wall-Mounted Inverter Air Conditioner on Left Wall ---
+            buildAirConditioner();
+
+            // --- Hanging Ceiling Fan Suspended Above Study Area ---
+            buildCeilingFan();
 
             // --- Library Bookshelf with Medical Volumes & Fairy Lights ---
             buildBookshelf();
@@ -9378,28 +9451,48 @@ CREATE TABLE medical_certificates (
             clickableItems.push({ mesh: mugBody, name: 'coffee' });
             scene.add(mugGroup);
 
-            // --- 3. Interactive Pomodoro Desk Clock ---
+            // --- 3. Smart Interactive Digital Desk Work Clock Device ---
             clockCanvas = document.createElement('canvas');
-            clockCanvas.width = 256;
-            clockCanvas.height = 128;
+            clockCanvas.width = 512;
+            clockCanvas.height = 256;
             clockCtx = clockCanvas.getContext('2d');
             clockTexture = new THREE.CanvasTexture(clockCanvas);
-            drawClockFace('25:00', 'POMODORO');
+            drawSmartClockDevice();
 
             const clockGroup = new THREE.Group();
             clockGroup.position.set(2.2, 2.50, 0.85);
+            clockGroup.rotation.y = -0.28; // Angled ergonomically toward reader
 
-            const cWoodMat = new THREE.MeshStandardMaterial({ color: 0x2e150d, roughness: 0.4 });
-            const cBody = new THREE.Mesh(new THREE.BoxGeometry(0.65, 0.45, 0.35), cWoodMat);
-            cBody.position.y = 0.22;
+            // Metallic Desktop Stand Base
+            const cStandMat = new THREE.MeshStandardMaterial({ color: 0x1e293b, roughness: 0.35, metalness: 0.85 });
+            const cStand = new THREE.Mesh(new THREE.BoxGeometry(0.66, 0.035, 0.30), cStandMat);
+            cStand.position.y = 0.018;
+            clockGroup.add(cStand);
+
+            // Chamfered Monitor Enclosure (Tilted backwards 12 degrees)
+            const cBodyMat = new THREE.MeshStandardMaterial({ color: 0x0f172a, roughness: 0.4, metalness: 0.7 });
+            const cBody = new THREE.Mesh(new THREE.BoxGeometry(0.70, 0.44, 0.14), cBodyMat);
+            cBody.position.set(0, 0.25, 0);
+            cBody.rotation.x = -0.16;
+            cBody.castShadow = true;
             clockGroup.add(cBody);
 
-            const cFace = new THREE.Mesh(new THREE.PlaneGeometry(0.58, 0.38), new THREE.MeshBasicMaterial({ map: clockTexture }));
-            cFace.position.set(0, 0.22, 0.18);
+            // Glossy Display Glass Face
+            const cFaceMat = new THREE.MeshBasicMaterial({ map: clockTexture });
+            const cFace = new THREE.Mesh(new THREE.PlaneGeometry(0.65, 0.39), cFaceMat);
+            cFace.position.set(0, 0.25, 0.072);
+            cFace.rotation.x = -0.16;
             clockGroup.add(cFace);
 
+            // LED Underglow Strip
+            const glowStripMat = new THREE.MeshBasicMaterial({ color: 0x10b981 });
+            const glowStrip = new THREE.Mesh(new THREE.BoxGeometry(0.54, 0.015, 0.02), glowStripMat);
+            glowStrip.position.set(0, 0.04, 0.06);
+            clockGroup.add(glowStrip);
+
+            clockMesh = cFace;
             clockGroup.name = 'clock';
-            clickableItems.push({ mesh: cBody, name: 'clock' }, { mesh: cFace, name: 'clock' });
+            clickableItems.push({ mesh: cBody, name: 'clock' }, { mesh: cFace, name: 'clock' }, { mesh: cStand, name: 'clock' });
             scene.add(clockGroup);
 
             // --- 4. Clinical Stethoscope & Patient Chart Clipboard ---
@@ -9429,29 +9522,500 @@ CREATE TABLE medical_certificates (
             scene.add(medGroup);
         }
 
-        function drawClockFace(timeStr, label) {
+        function drawSmartClockDevice() {
             if (!clockCtx) return;
-            clockCtx.fillStyle = '#0f172a';
-            clockCtx.fillRect(0, 0, 256, 128);
+            const w = 512, h = 256;
+            clockCtx.clearRect(0, 0, w, h);
 
-            // Border
-            clockCtx.strokeStyle = '#38bdf8';
+            // High-tech dark titanium background gradient
+            const bgGrad = clockCtx.createLinearGradient(0, 0, 0, h);
+            bgGrad.addColorStop(0, '#090d18');
+            bgGrad.addColorStop(0.5, '#0f172a');
+            bgGrad.addColorStop(1, '#050811');
+            clockCtx.fillStyle = bgGrad;
+            clockCtx.fillRect(0, 0, w, h);
+
+            // Carbon-fiber tech grid lines
+            clockCtx.strokeStyle = 'rgba(56, 189, 248, 0.08)';
+            clockCtx.lineWidth = 1;
+            for (let x = 20; x < w; x += 32) {
+                clockCtx.beginPath();
+                clockCtx.moveTo(x, 0);
+                clockCtx.lineTo(x, h);
+                clockCtx.stroke();
+            }
+
+            // Outer Neon Border
+            const isLive = (clockMode === 'realtime');
+            clockCtx.strokeStyle = isLive ? '#10b981' : (pomodoroRunning ? '#38bdf8' : '#f59e0b');
             clockCtx.lineWidth = 4;
-            clockCtx.strokeRect(6, 6, 244, 116);
+            clockCtx.strokeRect(10, 10, w - 20, h - 20);
 
-            // LED Time
-            clockCtx.fillStyle = pomodoroRunning ? '#22c55e' : '#f59e0b';
-            clockCtx.font = 'bold 54px monospace';
-            clockCtx.textAlign = 'center';
-            clockCtx.textBaseline = 'middle';
-            clockCtx.fillText(timeStr, 128, 54);
+            // Corner decorative brackets
+            clockCtx.fillStyle = isLive ? '#10b981' : (pomodoroRunning ? '#38bdf8' : '#f59e0b');
+            const cLen = 18, cThick = 4;
+            clockCtx.fillRect(10, 10, cLen, cThick); clockCtx.fillRect(10, 10, cThick, cLen);
+            clockCtx.fillRect(w - 10 - cLen, 10, cLen, cThick); clockCtx.fillRect(w - 10 - cThick, 10, cThick, cLen);
+            clockCtx.fillRect(10, h - 10 - cThick, cLen, cThick); clockCtx.fillRect(10, h - 10 - cLen, cThick, cLen);
+            clockCtx.fillRect(w - 10 - cLen, h - 10 - cThick, cLen, cThick); clockCtx.fillRect(w - 10 - cThick, h - 10 - cLen, cThick, cLen);
 
-            // Subtitle
-            clockCtx.fillStyle = '#94a3b8';
-            clockCtx.font = 'bold 16px Inter, sans-serif';
-            clockCtx.fillText(label || 'POMODORO', 128, 100);
+            const now = new Date();
+
+            if (isLive) {
+                // Top header: Live Date & Sync Status
+                const dateStr = now.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' }).toUpperCase();
+                clockCtx.fillStyle = '#94a3b8';
+                clockCtx.font = 'bold 20px "SF Mono", "Fira Code", monospace';
+                clockCtx.textAlign = 'left';
+                clockCtx.textBaseline = 'top';
+                clockCtx.fillText(dateStr, 26, 24);
+
+                clockCtx.textAlign = 'right';
+                clockCtx.fillStyle = '#10b981';
+                clockCtx.fillText('● LIVE WORK CLOCK', w - 26, 24);
+
+                // Main Big Time Display: HH:MM:SS
+                let hours = now.getHours();
+                const ampm = hours >= 12 ? 'PM' : 'AM';
+                hours = hours % 12 || 12;
+                const hh = String(hours).padStart(2, '0');
+                const mm = String(now.getMinutes()).padStart(2, '0');
+                const ss = String(now.getSeconds()).padStart(2, '0');
+                const timeStr = `${hh}:${mm}:${ss}`;
+
+                clockCtx.font = 'bold 74px "SF Mono", "Fira Code", monospace';
+                clockCtx.fillStyle = '#f8fafc';
+                clockCtx.textAlign = 'center';
+                clockCtx.textBaseline = 'middle';
+                clockCtx.fillText(timeStr, w / 2 - 28, 120);
+
+                // AM / PM Pill
+                clockCtx.font = 'bold 24px Inter, sans-serif';
+                clockCtx.fillStyle = '#38bdf8';
+                clockCtx.textAlign = 'left';
+                clockCtx.fillText(ampm, w / 2 + 155, 125);
+
+                // Bottom row: Session duration & ECG Pulse line
+                const elapsedSec = Math.max(0, Math.floor((now.getTime() - sessionStartTime) / 1000));
+                const sH = String(Math.floor(elapsedSec / 3600)).padStart(2, '0');
+                const sM = String(Math.floor((elapsedSec % 3600) / 60)).padStart(2, '0');
+                const sS = String(elapsedSec % 60).padStart(2, '0');
+                const sessionStr = `SESSION ${sH}:${sM}:${sS}`;
+
+                clockCtx.font = 'bold 20px "SF Mono", "Fira Code", monospace';
+                clockCtx.fillStyle = '#38bdf8';
+                clockCtx.textAlign = 'left';
+                clockCtx.textBaseline = 'bottom';
+                clockCtx.fillText(sessionStr, 26, h - 22);
+
+                // Animated ECG wave line
+                clockCtx.strokeStyle = '#10b981';
+                clockCtx.lineWidth = 2.5;
+                clockCtx.beginPath();
+                const startX = w - 180, endX = w - 26, waveY = h - 32;
+                clockCtx.moveTo(startX, waveY);
+                const t = (now.getTime() % 2000) / 2000;
+                for (let x = startX; x <= endX; x += 4) {
+                    const phase = ((x - startX) / (endX - startX) - t + 1) % 1;
+                    let yOffset = 0;
+                    if (phase > 0.45 && phase < 0.49) yOffset = -14;
+                    else if (phase >= 0.49 && phase < 0.53) yOffset = 18;
+                    else if (phase >= 0.53 && phase < 0.57) yOffset = -8;
+                    clockCtx.lineTo(x, waveY + yOffset);
+                }
+                clockCtx.stroke();
+
+                // Update HUD live clock chip
+                const hudClockText = document.getElementById('study-live-clock-text');
+                if (hudClockText) {
+                    hudClockText.textContent = `${hh}:${mm}:${ss} ${ampm}`;
+                }
+                const clockChip = document.getElementById('study-3d-live-clock');
+                if (clockChip) clockChip.classList.remove('is-pomodoro');
+            } else {
+                // POMODORO FOCUS TIMER MODE
+                clockCtx.fillStyle = '#fbbf24';
+                clockCtx.font = 'bold 20px "SF Mono", "Fira Code", monospace';
+                clockCtx.textAlign = 'left';
+                clockCtx.textBaseline = 'top';
+                clockCtx.fillText(`POMODORO ${pomodoroMode.toUpperCase()}`, 26, 24);
+
+                clockCtx.textAlign = 'right';
+                clockCtx.fillStyle = pomodoroRunning ? '#10b981' : '#f59e0b';
+                clockCtx.fillText(pomodoroRunning ? '● RUNNING' : '❚❚ PAUSED', w - 26, 24);
+
+                const m = Math.floor(pomodoroSeconds / 60);
+                const s = pomodoroSeconds % 60;
+                const pTimeStr = `${m < 10 ? '0' + m : m}:${s < 10 ? '0' + s : s}`;
+
+                clockCtx.font = 'bold 84px "SF Mono", "Fira Code", monospace';
+                clockCtx.fillStyle = pomodoroRunning ? '#38bdf8' : '#f59e0b';
+                clockCtx.textAlign = 'center';
+                clockCtx.textBaseline = 'middle';
+                clockCtx.fillText(pTimeStr, w / 2, 122);
+
+                clockCtx.font = 'bold 18px Inter, sans-serif';
+                clockCtx.fillStyle = '#94a3b8';
+                clockCtx.textAlign = 'center';
+                clockCtx.textBaseline = 'bottom';
+                clockCtx.fillText('CLICK DESK CLOCK TO START/PAUSE • CLICK HUD TO RETURN TO CLOCK', w / 2, h - 22);
+
+                const hudClockText = document.getElementById('study-live-clock-text');
+                if (hudClockText) {
+                    hudClockText.textContent = `🍅 ${pTimeStr}`;
+                }
+                const clockChip = document.getElementById('study-3d-live-clock');
+                if (clockChip) clockChip.classList.add('is-pomodoro');
+            }
 
             if (clockTexture) clockTexture.needsUpdate = true;
+        }
+
+        function drawClockFace(timeStr, label) {
+            drawSmartClockDevice();
+        }
+
+        function toggleClockMode() {
+            triggerHaptic(15);
+            if (clockMode === 'realtime') {
+                clockMode = 'pomodoro';
+                showToast('Smart Clock: Switched to Pomodoro Focus Mode (25:00)', 'timer');
+            } else {
+                clockMode = 'realtime';
+                showToast('Smart Clock: Switched to Live Work Clock & Session Stopwatch', 'schedule');
+            }
+            drawSmartClockDevice();
+        }
+
+        function onClockDeviceClick() {
+            triggerHaptic(15);
+            if (clockMode === 'realtime') {
+                toggleClockMode();
+            } else {
+                togglePomodoro();
+            }
+        }
+
+        /* ❄️ 3D Inverter Air Conditioner on Left Wall */
+        function buildAirConditioner() {
+            const acGroup = new THREE.Group();
+            acGroup.position.set(-8.35, 7.6, 0.5); // Elevated on left wall
+
+            // Main indoor split casing (Pearl white with curved modern bevel)
+            const acBodyMat = new THREE.MeshStandardMaterial({
+                color: 0xf8fafc,
+                roughness: 0.35,
+                metalness: 0.08
+            });
+            const acBody = new THREE.Mesh(new THREE.BoxGeometry(0.52, 0.95, 3.2), acBodyMat);
+            acBody.castShadow = true;
+            acGroup.add(acBody);
+
+            // Chrome lower accent trim
+            const chromeMat = new THREE.MeshStandardMaterial({ color: 0xcfd8dc, roughness: 0.2, metalness: 0.85 });
+            const trim = new THREE.Mesh(new THREE.BoxGeometry(0.53, 0.035, 3.22), chromeMat);
+            trim.position.set(0.01, -0.15, 0);
+            acGroup.add(trim);
+
+            // Top air intake grille
+            const intakeMat = new THREE.MeshStandardMaterial({ color: 0x64748b, roughness: 0.7 });
+            const intake = new THREE.Mesh(new THREE.BoxGeometry(0.48, 0.06, 2.9), intakeMat);
+            intake.position.set(0.01, 0.45, 0);
+            acGroup.add(intake);
+
+            // Lower cool air discharge vent & louver flap
+            const ventLouverMat = new THREE.MeshStandardMaterial({ color: 0xe2e8f0, roughness: 0.4 });
+            acLouverMesh = new THREE.Mesh(new THREE.BoxGeometry(0.12, 0.04, 2.85), ventLouverMat);
+            acLouverMesh.position.set(0.18, -0.42, 0);
+            acLouverMesh.rotation.z = -0.45; // Angled directing cool air into room
+            acGroup.add(acLouverMesh);
+
+            // Digital LED Display on front surface
+            acDisplayCanvas = document.createElement('canvas');
+            acDisplayCanvas.width = 256;
+            acDisplayCanvas.height = 128;
+            acDisplayCtx = acDisplayCanvas.getContext('2d');
+            acDisplayTex = new THREE.CanvasTexture(acDisplayCanvas);
+            drawACDisplay();
+
+            const dispPlane = new THREE.Mesh(
+                new THREE.PlaneGeometry(0.45, 0.22),
+                new THREE.MeshBasicMaterial({ map: acDisplayTex, transparent: true })
+            );
+            dispPlane.rotation.y = Math.PI / 2;
+            dispPlane.position.set(0.265, -0.05, 0.65);
+            acGroup.add(dispPlane);
+
+            // Cool Air Breeze Particle Stream
+            acGeo = new THREE.BufferGeometry();
+            const pCount = 90;
+            const pPos = new Float32Array(pCount * 3);
+            acParticleVels = [];
+            for (let i = 0; i < pCount; i++) {
+                pPos[i * 3] = -8.1 + Math.random() * 0.2;     // Emitting from vent
+                pPos[i * 3 + 1] = 7.2 + (Math.random() - 0.5) * 0.3;
+                pPos[i * 3 + 2] = -0.9 + Math.random() * 2.8;
+                acParticleVels.push({
+                    vx: 0.045 + Math.random() * 0.035, // Drifting right into room
+                    vy: -(0.012 + Math.random() * 0.018), // Gently falling cool air
+                    vz: (Math.random() - 0.5) * 0.015
+                });
+            }
+            acGeo.setAttribute('position', new THREE.BufferAttribute(pPos, 3));
+            const pMat = new THREE.PointsMaterial({
+                color: 0x93c5fd,
+                size: 0.08,
+                transparent: true,
+                opacity: 0.45,
+                blending: THREE.AdditiveBlending
+            });
+            acParticles = new THREE.Points(acGeo, pMat);
+            acParticles.visible = isACOn;
+            scene.add(acParticles);
+
+            acUnitMesh = acBody;
+            acGroup.name = 'ac';
+            clickableItems.push({ mesh: acBody, name: 'ac' }, { mesh: dispPlane, name: 'ac' }, { mesh: acLouverMesh, name: 'ac' });
+            scene.add(acGroup);
+        }
+
+        function drawACDisplay() {
+            if (!acDisplayCtx) return;
+            acDisplayCtx.clearRect(0, 0, 256, 128);
+            acDisplayCtx.fillStyle = '#0f172a';
+            acDisplayCtx.fillRect(0, 0, 256, 128);
+
+            if (isACOn) {
+                acDisplayCtx.fillStyle = '#38bdf8';
+                acDisplayCtx.font = 'bold 58px monospace';
+                acDisplayCtx.textAlign = 'center';
+                acDisplayCtx.textBaseline = 'middle';
+                acDisplayCtx.fillText(`${acTemp}°C`, 128, 55);
+
+                acDisplayCtx.fillStyle = '#10b981';
+                acDisplayCtx.font = 'bold 20px Inter, sans-serif';
+                acDisplayCtx.fillText('❄ INVERTER COOL', 128, 102);
+            } else {
+                acDisplayCtx.fillStyle = '#ef4444';
+                acDisplayCtx.font = 'bold 50px monospace';
+                acDisplayCtx.textAlign = 'center';
+                acDisplayCtx.textBaseline = 'middle';
+                acDisplayCtx.fillText('OFF', 128, 55);
+
+                acDisplayCtx.fillStyle = '#64748b';
+                acDisplayCtx.font = 'bold 18px Inter, sans-serif';
+                acDisplayCtx.fillText('STANDBY', 128, 102);
+            }
+            if (acDisplayTex) acDisplayTex.needsUpdate = true;
+        }
+
+        function cycleAC() {
+            triggerHaptic(15);
+            acTempIndex = (acTempIndex + 1) % AC_TEMPS.length;
+            const temp = AC_TEMPS[acTempIndex];
+            const acBtn = document.getElementById('study-3d-ac-btn');
+            const acText = document.getElementById('study-ac-text');
+
+            if (temp === 0) {
+                isACOn = false;
+                if (acParticles) acParticles.visible = false;
+                stopSynthesizedACBreeze();
+                if (acBtn) acBtn.classList.remove('active');
+                if (acText) acText.textContent = '❄️ AC: Off';
+                showToast('Air Conditioner: Powered OFF', 'power_settings_new');
+            } else {
+                isACOn = true;
+                acTemp = temp;
+                if (acParticles) acParticles.visible = true;
+                startSynthesizedACBreeze();
+                if (acBtn) acBtn.classList.add('active');
+                if (acText) acText.textContent = `❄️ ${acTemp}°C`;
+                showToast(`Air Conditioner: Set to ${acTemp}°C • Inverter Cooling`, 'ac_unit');
+            }
+            drawACDisplay();
+        }
+
+        function startSynthesizedACBreeze() {
+            try {
+                const ctx = getAudioContext();
+                if (!ctx) return;
+                stopSynthesizedACBreeze();
+
+                const bufferSize = ctx.sampleRate * 2;
+                const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
+                const data = buffer.getChannelData(0);
+                for (let i = 0; i < bufferSize; i++) {
+                    data[i] = (Math.random() * 2 - 1) * 0.04;
+                }
+
+                acNoiseSource = ctx.createBufferSource();
+                acNoiseSource.buffer = buffer;
+                acNoiseSource.loop = true;
+
+                const lp = ctx.createBiquadFilter();
+                lp.type = 'lowpass';
+                lp.frequency.setValueAtTime(260, ctx.currentTime);
+
+                acGain = ctx.createGain();
+                acGain.gain.setValueAtTime(0.06, ctx.currentTime);
+
+                acNoiseSource.connect(lp);
+                lp.connect(acGain);
+                acGain.connect(ctx.destination);
+                acNoiseSource.start();
+            } catch (e) {}
+        }
+
+        function stopSynthesizedACBreeze() {
+            if (acNoiseSource) {
+                try { acNoiseSource.stop(); } catch (e) {}
+                acNoiseSource = null;
+            }
+        }
+
+        /* 🌀 3D Rotating Ceiling Fan */
+        function buildCeilingFan() {
+            const fanGroup = new THREE.Group();
+            fanGroup.position.set(0, 8.2, 0); // Suspended from ceiling center above desk
+
+            const metalMat = new THREE.MeshStandardMaterial({
+                color: 0x1e293b,
+                metalness: 0.8,
+                roughness: 0.25
+            });
+            const brassTrimMat = new THREE.MeshStandardMaterial({
+                color: 0xd97706,
+                metalness: 0.9,
+                roughness: 0.2
+            });
+            const bladeMat = new THREE.MeshStandardMaterial({
+                color: 0x2b1810, // Rich dark walnut wood blades
+                roughness: 0.5,
+                metalness: 0.1
+            });
+
+            // Ceiling Mount Canopy
+            const canopy = new THREE.Mesh(new THREE.CylinderGeometry(0.38, 0.44, 0.16, 24), metalMat);
+            canopy.position.y = 1.72;
+            fanGroup.add(canopy);
+
+            // Downrod
+            const rod = new THREE.Mesh(new THREE.CylinderGeometry(0.04, 0.04, 1.6, 16), metalMat);
+            rod.position.y = 0.88;
+            fanGroup.add(rod);
+
+            // Stationary motor top casing
+            const topHousing = new THREE.Mesh(new THREE.CylinderGeometry(0.56, 0.52, 0.24, 24), metalMat);
+            topHousing.position.y = 0.12;
+            fanGroup.add(topHousing);
+
+            // Rotating Blade Pivot Assembly
+            ceilingFanPivot = new THREE.Group();
+            ceilingFanPivot.position.set(0, 0, 0);
+
+            // Rotating Motor Core
+            const coreMesh = new THREE.Mesh(new THREE.CylinderGeometry(0.62, 0.60, 0.18, 24), metalMat);
+            ceilingFanPivot.add(coreMesh);
+
+            // Brass accent ring around motor
+            const trimRing = new THREE.Mesh(new THREE.TorusGeometry(0.61, 0.025, 12, 32), brassTrimMat);
+            trimRing.rotation.x = Math.PI / 2;
+            ceilingFanPivot.add(trimRing);
+
+            // 4 Aerodynamic Curved Blades (90 degrees apart)
+            for (let b = 0; b < 4; b++) {
+                const bladeArm = new THREE.Group();
+                bladeArm.rotation.y = (b * Math.PI) / 2;
+
+                // Blade Bracket
+                const bracket = new THREE.Mesh(new THREE.BoxGeometry(0.45, 0.04, 0.12), brassTrimMat);
+                bracket.position.set(0.65, 0, 0);
+                bladeArm.add(bracket);
+
+                // Blade Paddle
+                const blade = new THREE.Mesh(new THREE.BoxGeometry(2.1, 0.025, 0.32), bladeMat);
+                blade.position.set(1.85, 0, 0);
+                blade.rotation.x = 0.16; // 9-degree aerodynamic pitch angle
+                blade.castShadow = true;
+                bladeArm.add(blade);
+
+                ceilingFanPivot.add(bladeArm);
+            }
+
+            fanGroup.add(ceilingFanPivot);
+
+            // Bottom Light Dome Cap
+            const cap = new THREE.Mesh(new THREE.SphereGeometry(0.32, 24, 12, 0, Math.PI * 2, 0, Math.PI / 2), new THREE.MeshStandardMaterial({
+                color: 0xffedd5,
+                roughness: 0.2,
+                emissive: 0xffedd5,
+                emissiveIntensity: 0.3
+            }));
+            cap.rotation.x = Math.PI;
+            cap.position.y = -0.09;
+            fanGroup.add(cap);
+
+            fanGroup.name = 'fan';
+            clickableItems.push({ mesh: topHousing, name: 'fan' }, { mesh: coreMesh, name: 'fan' }, { mesh: cap, name: 'fan' });
+            scene.add(fanGroup);
+        }
+
+        function cycleFan() {
+            triggerHaptic(15);
+            fanIndex = (fanIndex + 1) % FAN_SPEEDS.length;
+            const current = FAN_SPEEDS[fanIndex];
+            fanMode = current.mode;
+            fanSpeed = current.speed;
+
+            const fanBtn = document.getElementById('study-3d-fan-btn');
+            const fanText = document.getElementById('study-fan-text');
+            if (fanMode === 'off') {
+                if (fanBtn) fanBtn.classList.remove('active');
+                if (fanText) fanText.textContent = '🌀 Fan: Off';
+                showToast('Ceiling Fan: Turned OFF', 'mode_fan');
+            } else {
+                if (fanBtn) fanBtn.classList.add('active');
+                if (fanText) fanText.textContent = `🌀 Fan: ${current.label}`;
+                showToast(`Ceiling Fan: ${current.label} Speed Airflow 🌀`, 'mode_fan');
+            }
+        }
+
+        /* ⛶ Fullscreen Display Management */
+        function toggleFullscreen() {
+            triggerHaptic(15);
+            const isFull = !!(document.fullscreenElement || document.webkitFullscreenElement || document.msFullscreenElement);
+            const container = document.documentElement;
+
+            if (!isFull) {
+                if (container.requestFullscreen) {
+                    container.requestFullscreen().catch(() => {});
+                } else if (container.webkitRequestFullscreen) {
+                    container.webkitRequestFullscreen();
+                } else if (container.msRequestFullscreen) {
+                    container.msRequestFullscreen();
+                }
+                showToast('Entered Immersive Fullscreen Mode (Press F or Esc)', 'fullscreen');
+            } else {
+                if (document.exitFullscreen) {
+                    document.exitFullscreen().catch(() => {});
+                } else if (document.webkitExitFullscreen) {
+                    document.webkitExitFullscreen();
+                } else if (document.msExitFullscreen) {
+                    document.msExitFullscreen();
+                }
+                showToast('Exited Fullscreen Mode', 'fullscreen_exit');
+            }
+        }
+
+        function updateFullscreenUI() {
+            const isFull = !!(document.fullscreenElement || document.webkitFullscreenElement || document.msFullscreenElement);
+            const btn = document.getElementById('study-fullscreen-btn');
+            const icon = document.getElementById('study-fullscreen-icon');
+            const label = document.getElementById('study-fullscreen-label');
+            if (btn) btn.classList.toggle('active', isFull);
+            if (icon) icon.textContent = isFull ? 'fullscreen_exit' : 'fullscreen';
+            if (label) label.textContent = isFull ? 'Exit Full' : 'Fullscreen';
+            setTimeout(onWindowResize, 120);
         }
 
         function build3DBook() {
@@ -10292,7 +10856,9 @@ CREATE TABLE medical_certificates (
                     if (item) {
                         if (item.name === 'lamp') toggleLamp();
                         else if (item.name === 'coffee') sipCoffee();
-                        else if (item.name === 'clock') togglePomodoro();
+                        else if (item.name === 'clock') onClockDeviceClick();
+                        else if (item.name === 'ac') cycleAC();
+                        else if (item.name === 'fan') cycleFan();
                         else if (item.name === 'next-page') nextPage();
                         else if (item.name === 'prev-page') prevPage();
                         else if (item.name === 'tv') toggleTV();
@@ -10323,6 +10889,39 @@ CREATE TABLE medical_certificates (
             if (tvScreenCanvas && tvScreenCtx && tvScreenTexture) {
                 drawTVScreen();
                 tvScreenTexture.needsUpdate = true;
+            }
+
+            // Animate Smart Work Clock Device (Real-time live clock & session stopwatch)
+            if (clockCanvas && clockCtx && clockTexture) {
+                const nowMs = Date.now();
+                if (nowMs - lastClockUpdate >= 250) {
+                    drawSmartClockDevice();
+                    lastClockUpdate = nowMs;
+                }
+            }
+
+            // Animate AC Cool Air Breeze particles
+            if (acParticles && acGeo && isACOn) {
+                const pos = acGeo.attributes.position.array;
+                for (let i = 0; i < acParticleVels.length; i++) {
+                    const vel = acParticleVels[i];
+                    pos[i * 3] += vel.vx;     // drift right towards center
+                    pos[i * 3 + 1] += vel.vy; // sink downward
+                    pos[i * 3 + 2] += vel.vz; // wobble
+
+                    // When particle moves past desk or drops too low, respawn at AC vent
+                    if (pos[i * 3] > -1.5 || pos[i * 3 + 1] < 2.5) {
+                        pos[i * 3] = -8.1 + Math.random() * 0.2;
+                        pos[i * 3 + 1] = 7.2 + (Math.random() - 0.5) * 0.3;
+                        pos[i * 3 + 2] = -0.9 + Math.random() * 2.8;
+                    }
+                }
+                acGeo.attributes.position.needsUpdate = true;
+            }
+
+            // Animate Ceiling Fan rotation
+            if (ceilingFanPivot && fanSpeed > 0) {
+                ceilingFanPivot.rotation.y += fanSpeed;
             }
 
             // Animate steam particles above coffee mug
@@ -10365,6 +10964,7 @@ CREATE TABLE medical_certificates (
         function close() {
             isOpen = false;
             stopCurrentAmbient();
+            stopSynthesizedACBreeze();
             toggleTV(false);
             // Synchronize scroll position in treatise
             const chapters = getChapterHeadings();
@@ -10385,6 +10985,11 @@ CREATE TABLE medical_certificates (
             toggleLamp,
             sipCoffee,
             togglePomodoro,
+            toggleClockMode,
+            cycleAC,
+            cycleFan,
+            toggleFullscreen,
+            updateFullscreenUI,
             setWeather,
             setAmbientSound,
             toggleRoomLight,
@@ -10409,7 +11014,13 @@ CREATE TABLE medical_certificates (
         } else if (e.key.toLowerCase() === 'l') {
             StudyRoom3D.toggleLamp();
         } else if (e.key.toLowerCase() === 'p') {
-            StudyRoom3D.togglePomodoro();
+            StudyRoom3D.toggleClockMode();
+        } else if (e.key.toLowerCase() === 'c') {
+            StudyRoom3D.cycleAC();
+        } else if (e.key.toLowerCase() === 'v') {
+            StudyRoom3D.cycleFan();
+        } else if (e.key.toLowerCase() === 'f') {
+            StudyRoom3D.toggleFullscreen();
         } else if (e.key.toLowerCase() === 't') {
             StudyRoom3D.toggleTV();
         } else if (e.key.toLowerCase() === 'o') {
@@ -10417,6 +11028,13 @@ CREATE TABLE medical_certificates (
         } else if (e.key === 'Escape') {
             toggleStudyRoom3D();
         }
+    });
+
+    document.addEventListener('fullscreenchange', () => {
+        if (typeof StudyRoom3D !== 'undefined') StudyRoom3D.updateFullscreenUI && StudyRoom3D.updateFullscreenUI();
+    });
+    document.addEventListener('webkitfullscreenchange', () => {
+        if (typeof StudyRoom3D !== 'undefined') StudyRoom3D.updateFullscreenUI && StudyRoom3D.updateFullscreenUI();
     });
 
     /* 36. Master Init on DOM Loaded & KaTeX Auto-Renderer */
