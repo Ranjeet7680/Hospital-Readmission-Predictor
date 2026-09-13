@@ -144,11 +144,62 @@
             </div>
 
 
-            <!-- Quick Short List & Expand Controller -->
-            <div class="flex items-center justify-between px-2 pb-1.5 border-b border-surface-variant/40 text-[10px] text-secondary font-bold">
-                <span class="flex items-center gap-1">
-                    <span class="w-1.5 h-1.5 rounded-full bg-primary animate-pulse"></span>
-                    <span>Sections</span>
+            <!-- In-Sidebar Fast Search (Ctrl+K) -->
+            <div class="px-1 pb-2">
+                <div class="relative">
+                    <span class="material-symbols-outlined absolute left-2.5 top-2 text-[15px] text-slate-400 pointer-events-none">search</span>
+                    <input type="text" id="sidebar-nav-search" oninput="filterSidebarNav(this.value)" placeholder="Quick search... (Ctrl+K)" class="w-full pl-8 pr-7 py-1.5 text-[11px] bg-slate-100/90 dark:bg-slate-800/90 rounded-xl border border-surface-variant/40 focus:outline-none focus:ring-1 focus:ring-primary text-on-surface placeholder:text-slate-400 font-medium transition-all" />
+                    <button type="button" id="sidebar-search-clear" onclick="clearSidebarSearch()" class="hidden absolute right-2 top-2 text-slate-400 hover:text-primary cursor-pointer">
+                        <span class="material-symbols-outlined text-[14px]">close</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Pinned Core Workflows (Always Visible) -->
+            <div id="sidebar-pinned-workflows" class="px-1 pb-2 border-b border-surface-variant/40 space-y-0.5">
+                <div class="px-2 py-0.5 text-[10px] font-extrabold uppercase tracking-wider text-slate-400 flex items-center justify-between">
+                    <span>Core Workflows</span>
+                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" title="Core Suite Online"></span>
+                </div>
+                <a href="/dashboard" class="sidebar-nav-link flex items-center gap-2.5 px-3 py-1.5 rounded-xl transition-all font-semibold nav-item-hover {% if active_page == 'dashboard' or not active_page %}nav-active-pill text-primary font-bold{% else %}text-on-surface-variant{% endif %}">
+                    <span class="material-symbols-outlined text-[17px] {% if active_page == 'dashboard' or not active_page %}fill-icon{% endif %}">dashboard</span>
+                    <span data-i18n="dashboard">Dashboard</span>
+                </a>
+                <a href="/prediction/new" class="sidebar-nav-link flex items-center justify-between px-3 py-1.5 rounded-xl transition-all font-semibold nav-item-hover {% if active_page == 'new_prediction' %}nav-active-pill text-primary font-bold{% else %}text-on-surface-variant{% endif %}">
+                    <div class="flex items-center gap-2.5">
+                        <span class="material-symbols-outlined text-[17px] {% if active_page == 'new_prediction' %}fill-icon text-primary{% endif %}">add_circle</span>
+                        <span data-i18n="new_prediction">New Prediction</span>
+                    </div>
+                    <span class="px-1.5 py-0.2 rounded-full bg-primary text-white text-[9px] font-extrabold">AI</span>
+                </a>
+                <a href="/patients" class="sidebar-nav-link flex items-center gap-2.5 px-3 py-1.5 rounded-xl transition-all font-semibold nav-item-hover {% if active_page == 'patients' %}nav-active-pill text-primary font-bold{% else %}text-on-surface-variant{% endif %}">
+                    <span class="material-symbols-outlined text-[17px] {% if active_page == 'patients' %}fill-icon{% endif %}">person</span>
+                    <span data-i18n="patients">Patients</span>
+                </a>
+                <a href="/consultation/careai" class="sidebar-nav-link flex items-center justify-between px-3 py-1.5 rounded-xl transition-all font-semibold nav-item-hover {% if active_page == 'careai_studio' %}nav-active-pill text-primary font-bold{% else %}text-on-surface-variant{% endif %}">
+                    <div class="flex items-center gap-2.5">
+                        <span class="material-symbols-outlined text-[17px] text-indigo-500">smart_toy</span>
+                        <span>CareAI Video</span>
+                    </div>
+                    <span class="px-1.5 py-0.2 rounded-full bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 font-extrabold text-[9px]">LIVE</span>
+                </a>
+                <a href="/ebook" target="_blank" class="sidebar-nav-link flex items-center justify-between px-3 py-1.5 rounded-xl transition-colors font-bold text-primary bg-primary/10 hover:bg-primary/20 border border-primary/30">
+                    <div class="flex items-center gap-2.5">
+                        <span class="material-symbols-outlined text-[17px]">menu_book</span>
+                        <span>Master eBook</span>
+                    </div>
+                    <span class="text-[9px] bg-primary text-white px-1.5 py-0.2 rounded-full font-bold">3D</span>
+                </a>
+                <a href="/help" class="sidebar-nav-link flex items-center gap-2.5 px-3 py-1.5 rounded-xl transition-all font-semibold nav-item-hover {% if active_page == 'help' %}nav-active-pill text-primary font-bold{% else %}text-on-surface-variant{% endif %}">
+                    <span class="material-symbols-outlined text-[17px]">help</span>
+                    <span data-i18n="help">Help &amp; Support</span>
+                </a>
+            </div>
+
+            <!-- Specialized Suites Accordion Header -->
+            <div class="flex items-center justify-between px-2 pt-2 pb-1 text-[10px] text-secondary font-bold">
+                <span class="flex items-center gap-1 uppercase tracking-wider text-slate-400">
+                    <span>Specialized Suites</span>
                 </span>
                 <button type="button" onclick="toggleAllNavGroups()" id="nav-toggle-all-btn" class="text-primary hover:underline cursor-pointer flex items-center gap-0.5 text-[10px] font-extrabold">
                     <span class="material-symbols-outlined text-[13px]">unfold_less</span>
@@ -157,50 +208,35 @@
             </div>
 
             <!-- Scrollable Nav Groups (Collapsible Accordion Short List) -->
-            <div class="flex-1 space-y-2 pr-1 text-xs mt-1">
+            <div class="flex-1 space-y-1.5 pr-1 text-xs mt-0.5">
                 
-                <!-- SECTION 1: CLINICAL CORE -->
+                <!-- SECTION 1: CLINICAL RECORDS -->
                 <div class="nav-group-wrapper" data-group="clinical">
-                    <button type="button" onclick="toggleNavGroup('clinical')" class="w-full flex items-center justify-between px-2.5 py-1.5 rounded-xl hover:bg-slate-100 transition-all text-left text-slate-700 font-extrabold text-[11px] group cursor-pointer">
+                    <button type="button" onclick="toggleNavGroup('clinical')" class="w-full flex items-center justify-between px-2.5 py-1.5 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800/60 transition-all text-left text-slate-700 dark:text-slate-200 font-extrabold text-[11px] group cursor-pointer">
                         <span class="flex items-center gap-2">
-                            <span class="material-symbols-outlined text-[16px] text-primary">local_hospital</span>
-                            <span>Clinical Care</span>
+                            <span class="material-symbols-outlined text-[16px] text-primary">clinical_notes</span>
+                            <span>Clinical Records</span>
                         </span>
                         <div class="flex items-center gap-1.5">
-                            <span class="px-1.5 py-0.2 rounded-full bg-slate-200/80 text-slate-600 text-[9px] font-mono font-bold">6</span>
-                            <span class="material-symbols-outlined text-[16px] text-slate-400 group-hover:text-primary transition-transform" id="nav-arrow-clinical">{% if active_page in ['dashboard', 'notifications', 'new_prediction', 'patients', 'history', 'analytics'] or not active_page %}expand_less{% else %}expand_more{% endif %}</span>
+                            <span class="px-1.5 py-0.2 rounded-full bg-slate-200/80 dark:bg-slate-700 text-slate-600 dark:text-slate-300 text-[9px] font-mono font-bold">3</span>
+                            <span class="material-symbols-outlined text-[16px] text-slate-400 group-hover:text-primary transition-transform" id="nav-arrow-clinical">{% if active_page in ['notifications', 'history', 'analytics'] %}expand_less{% else %}expand_more{% endif %}</span>
                         </div>
                     </button>
-                    <div id="nav-content-clinical" class="space-y-0.5 mt-0.5 pl-1.5 {% if active_page in ['dashboard', 'notifications', 'new_prediction', 'patients', 'history', 'analytics'] or not active_page %}{% else %}hidden{% endif %}">
-                        <a href="/dashboard" class="flex items-center gap-2 px-3 py-1.5 rounded-xl transition-all font-semibold nav-item-hover {% if active_page == 'dashboard' %}nav-active-pill text-primary font-bold{% else %}text-on-surface-variant{% endif %}">
-                            <span class="material-symbols-outlined text-[17px] {% if active_page == 'dashboard' %}fill-icon{% endif %}">dashboard</span>
-                            <span data-i18n="dashboard">Dashboard</span>
-                        </a>
-
-                        <a href="/notifications" class="flex items-center justify-between px-3 py-1.5 rounded-xl transition-all font-semibold nav-item-hover {% if active_page == 'notifications' %}nav-active-pill text-primary font-bold{% else %}text-on-surface-variant{% endif %}">
+                    <div id="nav-content-clinical" class="space-y-0.5 mt-0.5 pl-1.5 {% if active_page in ['notifications', 'history', 'analytics'] %}{% else %}hidden{% endif %}">
+                        <a href="/notifications" class="sidebar-nav-link flex items-center justify-between px-3 py-1.5 rounded-xl transition-all font-semibold nav-item-hover {% if active_page == 'notifications' %}nav-active-pill text-primary font-bold{% else %}text-on-surface-variant{% endif %}">
                             <div class="flex items-center gap-2">
                                 <span class="material-symbols-outlined text-[17px] {% if active_page == 'notifications' %}fill-icon{% endif %}">notifications</span>
                                 <span data-i18n="notifications">Notifications</span>
                             </div>
-                            <span class="px-1.5 py-0.2 rounded-full bg-red-100 text-red-700 font-extrabold text-[9px]">3</span>
+                            <span class="px-1.5 py-0.2 rounded-full bg-red-100 dark:bg-red-950/60 text-red-700 dark:text-red-400 font-extrabold text-[9px]">3</span>
                         </a>
 
-                        <a href="/prediction/new" class="flex items-center gap-2 px-3 py-1.5 rounded-xl transition-all font-semibold nav-item-hover {% if active_page == 'new_prediction' %}nav-active-pill text-primary font-bold{% else %}text-on-surface-variant{% endif %}">
-                            <span class="material-symbols-outlined text-[17px] {% if active_page == 'new_prediction' %}fill-icon{% endif %}">add_circle</span>
-                            <span data-i18n="new_prediction">New Prediction</span>
-                        </a>
-
-                        <a href="/patients" class="flex items-center gap-2 px-3 py-1.5 rounded-xl transition-all font-semibold nav-item-hover {% if active_page == 'patients' %}nav-active-pill text-primary font-bold{% else %}text-on-surface-variant{% endif %}">
-                            <span class="material-symbols-outlined text-[17px] {% if active_page == 'patients' %}fill-icon{% endif %}">person</span>
-                            <span data-i18n="patients">Patients</span>
-                        </a>
-
-                        <a href="/history" class="flex items-center gap-2 px-3 py-1.5 rounded-xl transition-all font-semibold nav-item-hover {% if active_page == 'history' %}nav-active-pill text-primary font-bold{% else %}text-on-surface-variant{% endif %}">
+                        <a href="/history" class="sidebar-nav-link flex items-center gap-2 px-3 py-1.5 rounded-xl transition-all font-semibold nav-item-hover {% if active_page == 'history' %}nav-active-pill text-primary font-bold{% else %}text-on-surface-variant{% endif %}">
                             <span class="material-symbols-outlined text-[17px] {% if active_page == 'history' %}fill-icon{% endif %}">history</span>
                             <span data-i18n="prediction_history">Prediction History</span>
                         </a>
 
-                        <a href="/analytics" class="flex items-center gap-2 px-3 py-1.5 rounded-xl transition-all font-semibold nav-item-hover {% if active_page == 'analytics' %}nav-active-pill text-primary font-bold{% else %}text-on-surface-variant{% endif %}">
+                        <a href="/analytics" class="sidebar-nav-link flex items-center gap-2 px-3 py-1.5 rounded-xl transition-all font-semibold nav-item-hover {% if active_page == 'analytics' %}nav-active-pill text-primary font-bold{% else %}text-on-surface-variant{% endif %}">
                             <span class="material-symbols-outlined text-[17px] {% if active_page == 'analytics' %}fill-icon{% endif %}">analytics</span>
                             <span data-i18n="analytics">Analytics</span>
                         </a>
@@ -459,45 +495,69 @@
 
                 <!-- SECTION 7: SETTINGS & GOVERNANCE -->
                 <div class="nav-group-wrapper" data-group="system">
-                    <button type="button" onclick="toggleNavGroup('system')" class="w-full flex items-center justify-between px-2.5 py-1.5 rounded-xl hover:bg-slate-100 transition-all text-left text-slate-700 font-extrabold text-[11px] group cursor-pointer">
+                    <button type="button" onclick="toggleNavGroup('system')" class="w-full flex items-center justify-between px-2.5 py-1.5 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800/60 transition-all text-left text-slate-700 dark:text-slate-200 font-extrabold text-[11px] group cursor-pointer">
                         <span class="flex items-center gap-2">
                             <span class="material-symbols-outlined text-[16px] text-amber-600">settings</span>
                             <span>System &amp; Account</span>
                         </span>
                         <div class="flex items-center gap-1.5">
-                            <span class="px-1.5 py-0.2 rounded-full bg-slate-200/80 text-slate-600 text-[9px] font-mono font-bold">4</span>
-                            <span class="material-symbols-outlined text-[16px] text-slate-400 group-hover:text-primary transition-transform" id="nav-arrow-system">{% if active_page in ['settings', 'sessions', 'help'] %}expand_less{% else %}expand_more{% endif %}</span>
+                            <span class="px-1.5 py-0.2 rounded-full bg-slate-200/80 dark:bg-slate-700 text-slate-600 dark:text-slate-300 text-[9px] font-mono font-bold">2</span>
+                            <span class="material-symbols-outlined text-[16px] text-slate-400 group-hover:text-primary transition-transform" id="nav-arrow-system">{% if active_page in ['settings', 'sessions'] %}expand_less{% else %}expand_more{% endif %}</span>
                         </div>
                     </button>
-                    <div id="nav-content-system" class="space-y-0.5 mt-0.5 pl-1.5 {% if active_page in ['settings', 'sessions', 'help'] %}{% else %}hidden{% endif %}">
-                        <a href="/settings" class="flex items-center gap-2 px-3 py-1.5 rounded-xl transition-all font-semibold nav-item-hover {% if active_page == 'settings' %}nav-active-pill text-primary font-bold{% else %}text-on-surface-variant{% endif %}">
+                    <div id="nav-content-system" class="space-y-0.5 mt-0.5 pl-1.5 {% if active_page in ['settings', 'sessions'] %}{% else %}hidden{% endif %}">
+                        <a href="/settings" class="sidebar-nav-link flex items-center gap-2 px-3 py-1.5 rounded-xl transition-all font-semibold nav-item-hover {% if active_page == 'settings' %}nav-active-pill text-primary font-bold{% else %}text-on-surface-variant{% endif %}">
                             <span class="material-symbols-outlined text-[17px]">settings</span>
                             <span data-i18n="settings">Account &amp; Settings</span>
                         </a>
 
-                        <a href="/ebook" target="_blank" class="flex items-center gap-2 px-3 py-1.5 rounded-xl transition-colors font-bold text-primary bg-primary/10 hover:bg-primary/20 border border-primary/30">
-                            <span class="material-symbols-outlined text-[17px]">menu_book</span>
-                            <span>Master eBook (88 Ch)</span>
-                            <span class="ml-auto text-[9px] bg-primary text-white px-1.5 py-0.2 rounded-full font-bold">NEW</span>
-                        </a>
-
-                        <a href="/auth/sessions" class="flex items-center gap-2 px-3 py-1.5 rounded-xl transition-all font-semibold nav-item-hover {% if active_page == 'sessions' %}nav-active-pill text-primary font-bold{% else %}text-on-surface-variant{% endif %}">
+                        <a href="/auth/sessions" class="sidebar-nav-link flex items-center gap-2 px-3 py-1.5 rounded-xl transition-all font-semibold nav-item-hover {% if active_page == 'sessions' %}nav-active-pill text-primary font-bold{% else %}text-on-surface-variant{% endif %}">
                             <span class="material-symbols-outlined text-[17px]">devices</span>
                             <span>Active Sessions</span>
-                        </a>
-
-                        <a href="/help" class="flex items-center gap-2 px-3 py-1.5 rounded-xl transition-all font-semibold nav-item-hover {% if active_page == 'help' %}nav-active-pill text-primary font-bold{% else %}text-on-surface-variant{% endif %}">
-                            <span class="material-symbols-outlined text-[17px]">help</span>
-                            <span data-i18n="help">Help &amp; Support</span>
                         </a>
                     </div>
                 </div>
             </div>
 
-            <!-- Bottom User & Logout -->
-            <div class="pt-2 border-t border-surface-variant/50">
-                <a href="/welcome?logout=true" class="flex items-center gap-2 px-3 py-2 rounded-xl text-error hover:bg-error-container/30 transition-colors font-bold text-xs">
-                    <span class="material-symbols-outlined text-[18px]">logout</span>
+            <!-- Clinical AI Telemetry Status Card -->
+            <div class="p-2.5 rounded-xl bg-slate-100/90 dark:bg-slate-800/80 border border-surface-variant/40 text-[10px] space-y-1.5 my-1">
+                <div class="flex items-center justify-between font-bold text-slate-700 dark:text-slate-200">
+                    <span class="flex items-center gap-1.5">
+                        <span class="relative flex h-2 w-2">
+                            <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                            <span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+                        </span>
+                        <span>Clinical AI v2.4</span>
+                    </span>
+                    <span class="text-emerald-600 dark:text-emerald-400 font-mono text-[9px] font-extrabold">99.98%</span>
+                </div>
+                <div class="flex items-center justify-between text-slate-500 dark:text-slate-400 text-[9.5px]">
+                    <span>Inference Latency</span>
+                    <span class="font-mono font-bold text-slate-700 dark:text-slate-300">~18ms</span>
+                </div>
+                <div class="w-full bg-slate-200 dark:bg-slate-700 h-1 rounded-full overflow-hidden">
+                    <div class="bg-gradient-to-r from-blue-600 via-teal-500 to-emerald-500 h-full w-[96%] rounded-full"></div>
+                </div>
+            </div>
+
+            <!-- Clinician Profile Card & Sign Out -->
+            <div class="pt-1.5 border-t border-surface-variant/50 space-y-1">
+                <div class="flex items-center justify-between px-2 py-1.5 rounded-xl bg-slate-100/80 dark:bg-slate-800/60 border border-surface-variant/30">
+                    <div class="flex items-center gap-2 min-w-0">
+                        <div class="w-7 h-7 rounded-lg bg-gradient-to-br from-primary to-blue-700 text-white font-bold text-[11px] flex items-center justify-center flex-shrink-0 shadow-sm">
+                            SV
+                        </div>
+                        <div class="min-w-0">
+                            <p class="text-[11px] font-bold text-on-surface truncate leading-tight">Dr. Sarah Vance</p>
+                            <p class="text-[9.5px] text-secondary truncate font-medium">Attending Cardiologist</p>
+                        </div>
+                    </div>
+                    <a href="/settings" title="Account Settings" class="p-1 rounded-lg text-slate-400 hover:text-primary hover:bg-primary/10 transition-colors">
+                        <span class="material-symbols-outlined text-[16px]">tune</span>
+                    </a>
+                </div>
+                <a href="/welcome?logout=true" class="flex items-center gap-2 px-3 py-1.5 rounded-xl text-error hover:bg-error-container/30 transition-colors font-bold text-xs">
+                    <span class="material-symbols-outlined text-[17px]">logout</span>
                     <span data-i18n="logout">Sign Out</span>
                 </a>
             </div>
@@ -1123,14 +1183,7 @@
             localStorage.setItem('hrp_nav_groups', JSON.stringify(states));
         }
 
-        // Restore saved desktop sidebar preference and bind Ctrl+B shortcut
-        document.addEventListener('DOMContentLoaded', () => {
-            const savedSidebarState = localStorage.getItem('hrp_sidebar_collapsed');
-            if (savedSidebarState === 'true') {
-                toggleDesktopSidebar(true);
-            }
-
-            // Group auto-expansion based on active page
+        function restoreNavGroupStates() {
             const PAGE_TO_GROUP = {
                 'dashboard': 'clinical',
                 'notifications': 'clinical',
@@ -1177,15 +1230,14 @@
                 'sessions': 'system',
                 'help': 'system'
             };
-
             const activePage = '{{ active_page|default("dashboard") }}';
             const activeGroup = PAGE_TO_GROUP[activePage] || 'clinical';
-
-            // Ensure active group is open, other groups start folded
             const allGroups = ['clinical', 'docs', 'ml', 'rl', 'portals', 'healthid', 'system'];
             allGroups.forEach(g => {
                 const c = document.getElementById(`nav-content-${g}`);
                 const a = document.getElementById(`nav-arrow-${g}`);
+                const w = document.querySelector(`.nav-group-wrapper[data-group="${g}"]`);
+                if (w) w.classList.remove('hidden');
                 if (c) {
                     if (g === activeGroup) {
                         c.classList.remove('hidden');
@@ -1196,12 +1248,102 @@
                     }
                 }
             });
+        }
+
+        // Fast In-Sidebar Filtering
+        function filterSidebarNav(query) {
+            const q = (query || '').trim().toLowerCase();
+            const clearBtn = document.getElementById('sidebar-search-clear');
+            if (clearBtn) {
+                if (q.length > 0) clearBtn.classList.remove('hidden');
+                else clearBtn.classList.add('hidden');
+            }
+
+            const allNavLinks = document.querySelectorAll('#desktop-sidebar a');
+            if (!q) {
+                allNavLinks.forEach(el => el.classList.remove('hidden'));
+                document.querySelectorAll('#desktop-sidebar .nav-group-wrapper').forEach(g => g.classList.remove('hidden'));
+                const pinned = document.getElementById('sidebar-pinned-workflows');
+                if (pinned) pinned.classList.remove('hidden');
+                restoreNavGroupStates();
+                return;
+            }
+
+            // Check pinned workflows
+            const pinned = document.getElementById('sidebar-pinned-workflows');
+            if (pinned) {
+                const pinnedLinks = pinned.querySelectorAll('a');
+                pinnedLinks.forEach(link => {
+                    const text = (link.textContent || '').toLowerCase();
+                    if (text.includes(q)) {
+                        link.classList.remove('hidden');
+                    } else {
+                        link.classList.add('hidden');
+                    }
+                });
+            }
+
+            // Check accordion groups
+            const groups = ['clinical', 'docs', 'ml', 'rl', 'portals', 'healthid', 'system'];
+            groups.forEach(gid => {
+                const groupEl = document.querySelector(`.nav-group-wrapper[data-group="${gid}"]`);
+                const contentEl = document.getElementById(`nav-content-${gid}`);
+                const arrowEl = document.getElementById(`nav-arrow-${gid}`);
+                if (!contentEl || !groupEl) return;
+
+                const links = contentEl.querySelectorAll('a');
+                let groupHasMatch = false;
+
+                links.forEach(link => {
+                    const text = (link.textContent || '').toLowerCase();
+                    if (text.includes(q)) {
+                        link.classList.remove('hidden');
+                        groupHasMatch = true;
+                    } else {
+                        link.classList.add('hidden');
+                    }
+                });
+
+                if (groupHasMatch) {
+                    groupEl.classList.remove('hidden');
+                    contentEl.classList.remove('hidden');
+                    if (arrowEl) arrowEl.textContent = 'expand_less';
+                } else {
+                    groupEl.classList.add('hidden');
+                }
+            });
+        }
+
+        function clearSidebarSearch() {
+            const input = document.getElementById('sidebar-nav-search');
+            if (input) {
+                input.value = '';
+                filterSidebarNav('');
+                input.focus();
+            }
+        }
+
+        // Restore saved desktop sidebar preference and bind Ctrl+B / Ctrl+K shortcuts
+        document.addEventListener('DOMContentLoaded', () => {
+            const savedSidebarState = localStorage.getItem('hrp_sidebar_collapsed');
+            if (savedSidebarState === 'true') {
+                toggleDesktopSidebar(true);
+            }
+            restoreNavGroupStates();
         });
 
         document.addEventListener('keydown', (e) => {
             if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'b') {
                 e.preventDefault();
                 toggleDesktopSidebar();
+            }
+            if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') {
+                const searchInput = document.getElementById('sidebar-nav-search');
+                if (searchInput) {
+                    e.preventDefault();
+                    searchInput.focus();
+                    searchInput.select();
+                }
             }
         });
 

@@ -2425,6 +2425,156 @@
                 gap: 8px;
             }
         }
+
+        /* 📺 3D Smart Wall TV & Video Songs Player Widget */
+        #study-3d-tv-modal {
+            position: fixed;
+            top: 68px;
+            right: 20px;
+            width: 380px;
+            max-width: calc(100vw - 40px);
+            background: rgba(13, 20, 36, 0.94);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(56, 189, 248, 0.35);
+            border-radius: 16px;
+            box-shadow: 0 16px 40px rgba(0, 0, 0, 0.65), 0 0 30px rgba(56, 189, 248, 0.2);
+            z-index: 100055;
+            display: none;
+            flex-direction: column;
+            overflow: hidden;
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        #study-3d-tv-modal.is-minimized {
+            width: 270px;
+        }
+        #study-3d-tv-modal.is-minimized .study-tv-video-body {
+            display: none;
+        }
+        .study-tv-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 9px 13px;
+            background: rgba(15, 23, 42, 0.9);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            user-select: none;
+        }
+        .study-tv-brand {
+            display: flex;
+            align-items: center;
+            gap: 7px;
+            font-size: 11.5px;
+            font-weight: 800;
+            color: #38bdf8;
+            font-family: 'Cinzel', serif;
+            letter-spacing: 0.5px;
+        }
+        .study-tv-actions {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+        .study-tv-action-btn {
+            background: transparent;
+            border: none;
+            color: #94a3b8;
+            cursor: pointer;
+            padding: 4px;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+        }
+        .study-tv-action-btn:hover {
+            color: #f8fafc;
+            background: rgba(255, 255, 255, 0.12);
+        }
+        .study-tv-video-body {
+            padding: 10px;
+            display: flex;
+            flex-direction: column;
+            gap: 9px;
+        }
+        .study-tv-iframe-wrap {
+            position: relative;
+            width: 100%;
+            padding-bottom: 56.25%; /* 16:9 Aspect Ratio */
+            height: 0;
+            border-radius: 10px;
+            overflow: hidden;
+            background: #000;
+            box-shadow: inset 0 0 12px rgba(0, 0, 0, 0.8), 0 4px 12px rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+        }
+        .study-tv-iframe-wrap iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border: 0;
+        }
+        .study-tv-info {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 8px;
+            padding: 1px 2px;
+        }
+        .study-tv-now-title {
+            font-size: 11px;
+            font-weight: 700;
+            color: #f1f5f9;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .study-tv-now-cat {
+            font-size: 9px;
+            font-weight: 800;
+            padding: 2px 7px;
+            border-radius: 6px;
+            background: rgba(56, 189, 248, 0.18);
+            color: #38bdf8;
+            border: 1px solid rgba(56, 189, 248, 0.35);
+            text-transform: uppercase;
+            flex-shrink: 0;
+        }
+        .study-tv-controls {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .study-tv-select {
+            flex: 1;
+            background: rgba(15, 23, 42, 0.88);
+            color: #e2e8f0;
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            border-radius: 8px;
+            padding: 5px 8px;
+            font-size: 11px;
+            font-weight: 600;
+            outline: none;
+            cursor: pointer;
+        }
+        .study-tv-nav-btn {
+            background: rgba(30, 41, 59, 0.8);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            color: #f8fafc;
+            padding: 5px 8px;
+            border-radius: 8px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+        }
+        .study-tv-nav-btn:hover {
+            background: #0284c7;
+            border-color: #38bdf8;
+        }
     </style>
 </head>
 <body class="font-serif">
@@ -2486,17 +2636,26 @@
             <!-- Right: Weather, Ambient Audio & Game Toys -->
             <div class="study-3d-hud-group">
                 <select id="study-3d-weather-select" onchange="StudyRoom3D.setWeather(this.value)" class="study-3d-select" title="Change Study Window Weather">
-                    <option value="rain">🌧️ Rain</option>
-                    <option value="night">🌙 Night</option>
-                    <option value="sunset">🌅 Sunset</option>
+                    <option value="sunrise" selected>🌅 Golden Sunrise</option>
+                    <option value="rain">🌧️ Rainy City</option>
+                    <option value="night">🌃 City Skyline (Night)</option>
+                    <option value="sunset">🌇 Sunset Glow</option>
                 </select>
                 <select id="study-3d-audio-select" onchange="StudyRoom3D.setAmbientSound(this.value)" class="study-3d-select" title="Synthesized Ambient Study Lofi">
+                    <option value="none" selected>🔇 Mute ASMR</option>
                     <option value="rain">🌧️ Rain ASMR</option>
                     <option value="fire">🔥 Fireplace</option>
                     <option value="cafe">☕ Cafe</option>
                     <option value="night">🌙 Crickets</option>
-                    <option value="none">🔇 Mute</option>
                 </select>
+                <button onclick="StudyRoom3D.toggleRoomLight()" id="study-3d-roomlight-btn" class="study-3d-btn active" title="Toggle Ceiling Room Chandelier Light (O)">
+                    <span class="material-symbols-outlined text-[15px]">wb_incandescent</span>
+                    <span class="desktop-only">Room Light</span>
+                </button>
+                <button onclick="StudyRoom3D.toggleTV()" id="study-3d-tv-btn" class="study-3d-btn" title="Toggle 3D Smart Wall TV &amp; Song Videos (T)">
+                    <span class="material-symbols-outlined text-[15px]">tv</span>
+                    <span class="desktop-only">Smart TV</span>
+                </button>
                 <button onclick="StudyRoom3D.toggleLamp()" id="study-3d-lamp-btn" class="study-3d-btn" title="Toggle Desk Lamp (L)">
                     <span class="material-symbols-outlined text-[15px]">lightbulb</span>
                 </button>
@@ -2507,6 +2666,44 @@
                     <span class="material-symbols-outlined text-[15px]">timer</span>
                     <span id="study-3d-pomodoro-text">25:00</span>
                 </button>
+            </div>
+        </div>
+
+        <!-- 📺 3D Smart Wall TV Floating Video Player -->
+        <div id="study-3d-tv-modal">
+            <div class="study-tv-header">
+                <div class="study-tv-brand">
+                    <span class="material-symbols-outlined text-[17px]">tv</span>
+                    <span>Smart Wall TV • Live Video &amp; Songs</span>
+                </div>
+                <div class="study-tv-actions">
+                    <button class="study-tv-action-btn" onclick="StudyRoom3D.minimizeTV()" title="Minimize / Expand Player">
+                        <span class="material-symbols-outlined text-[15px]" id="study-tv-minimize-icon">expand_more</span>
+                    </button>
+                    <button class="study-tv-action-btn" onclick="StudyRoom3D.toggleTV(false)" title="Close Smart TV (T)">
+                        <span class="material-symbols-outlined text-[15px]">close</span>
+                    </button>
+                </div>
+            </div>
+            <div class="study-tv-video-body">
+                <div class="study-tv-iframe-wrap">
+                    <iframe id="study-tv-iframe" src="" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                </div>
+                <div class="study-tv-info">
+                    <span class="study-tv-now-title" id="study-tv-playing-title">Deep Focus Study Lofi</span>
+                    <span class="study-tv-now-cat" id="study-tv-playing-cat">Study Lofi</span>
+                </div>
+                <div class="study-tv-controls">
+                    <button class="study-tv-nav-btn" onclick="StudyRoom3D.prevTVChannel()" title="Previous Video / Song">
+                        <span class="material-symbols-outlined text-[15px]">skip_previous</span>
+                    </button>
+                    <select id="study-tv-channel-select" onchange="StudyRoom3D.setTVChannel(parseInt(this.value))" class="study-tv-select">
+                        <!-- Populated dynamically by StudyRoom3D -->
+                    </select>
+                    <button class="study-tv-nav-btn" onclick="StudyRoom3D.nextTVChannel()" title="Next Video / Song">
+                        <span class="material-symbols-outlined text-[15px]">skip_next</span>
+                    </button>
+                </div>
             </div>
         </div>
 
@@ -8370,10 +8567,30 @@ CREATE TABLE medical_certificates (
         let roomGroup, deskGroup, bookGroup;
         let leftPageMesh, rightPageMesh, turningPivot, turningMesh;
         let lampLight, lampBulb, isLampOn = true;
+        let chandelierLight, chandelierGlow, sconceLightL, sconceLightR, isRoomLightOn = true;
+        let sunbeamLight;
         let coffeeMug, steamParticles, steamGeo;
         let clockCanvas, clockCtx, clockTexture, clockMesh;
-        let rainParticles, rainGeo, currentWeather = 'rain';
-        let windowGroup;
+        let rainParticles, rainGeo, currentWeather = 'sunrise';
+        let windowGroup, skyCanvas, sctx, skyTex, skyPane;
+
+        // 3D Smart Wall TV & Video Songs Player
+        let tvMesh, tvScreenCanvas, tvScreenCtx, tvScreenTexture, tvAmbilight;
+        let isTVOn = false;
+        let isTVMinimized = false;
+        let currentTVIndex = 0;
+        const STUDY_TV_PLAYLIST = [
+            { id: 'SQ4jZ-EAL88', title: 'Deep Focus Study Lofi • Cozy Beats', cat: 'Study Song' },
+            { id: 'Ans8Y59cvds', title: 'Late Night Library Coding & Study Vibes', cat: 'Study Song' },
+            { id: 'P8ZrtPx7Ug4', title: 'Cozy Rain & Coffee Shop Study Beats', cat: 'Study Song' },
+            { id: 'p38W0nRBnt0', title: 'Midnight City Skyline Chillhop & Ambient', cat: 'Study Song' },
+            { id: '8SYPKQMW_2Q', title: 'Peaceful Piano & Acoustic Study Session', cat: 'Study Song' },
+            { id: '0v5eHPfy5Lk', title: 'Endless Study Motivation • Alpha Waves Flow', cat: 'Study Song' },
+            { id: '9g8Je-X24tE', title: 'Healthcare AI & Hospital Readmission Project', cat: 'Project AI' },
+            { id: '6z4pZ8qeOts', title: 'Clinical Machine Learning & Risk Stratification', cat: 'Project AI' },
+            { id: 'HTNdy1MEwfM', title: 'Predictive Modeling in Healthcare Operations', cat: 'Project AI' },
+            { id: 'hnEGT6SxBo0', title: 'AI in Patient Care & Clinical Decision Support', cat: 'Project AI' }
+        ];
 
         // Dynamic 2D Canvases for 3D Book Spread
         let leftCanvas, leftCtx, leftTexture;
@@ -8405,7 +8622,7 @@ CREATE TABLE medical_certificates (
 
         // Procedural Web Audio Ambient Sound Generator
         let audioCtx = null;
-        let activeSound = 'rain';
+        let activeSound = 'none';
         let ambientGain = null;
         let currentNoiseSource = null;
         let currentFilter = null;
@@ -8422,10 +8639,10 @@ CREATE TABLE medical_certificates (
                 return;
             }
 
-            // 1. Scene & Renderer Setup
+            // 1. Scene & Renderer Setup (Golden Sunrise Atmosphere)
             scene = new THREE.Scene();
-            scene.background = new THREE.Color(0x070b16);
-            scene.fog = new THREE.FogExp2(0x070b16, 0.035);
+            scene.background = new THREE.Color(0x180f1d);
+            scene.fog = new THREE.FogExp2(0x180f1d, 0.028);
 
             camera = new THREE.PerspectiveCamera(35, window.innerWidth / window.innerHeight, 0.1, 100);
             camera.position.set(presets.reading.pos.x, presets.reading.pos.y, presets.reading.pos.z);
@@ -8436,7 +8653,7 @@ CREATE TABLE medical_certificates (
             renderer.shadowMap.enabled = true;
             renderer.shadowMap.type = THREE.PCFSoftShadowMap;
             renderer.toneMapping = THREE.ACESFilmicToneMapping;
-            renderer.toneMappingExposure = 1.05;
+            renderer.toneMappingExposure = 1.08;
             container.innerHTML = '';
             container.appendChild(renderer.domElement);
 
@@ -8451,27 +8668,30 @@ CREATE TABLE medical_certificates (
                 controls.maxDistance = 18;
             }
 
-            // 3. Lighting Architecture
+            // 3. Lighting Architecture (Warm Room Chandelier + Morning Sunbeam Light)
             setupLighting();
 
-            // 4. Procedural 3D Environment (Room, Desk, Window, Bookshelves)
+            // 4. Procedural 3D Environment (Panoramic Window, Smart Wall TV, Bookshelves, Desk)
             buildStudyRoomEnvironment();
 
             // 5. Procedural 3D Open Book Simulator
             build3DBook();
 
-            // 6. Raycasting for 3D clicks (Lamp, Mug, Book Pages, Clock)
+            // 6. Raycasting for 3D clicks (Lamp, Mug, Book Pages, Clock, Smart TV)
             setupRaycasting(container);
 
             // 7. Render initial active chapter onto book pages
             updateBookTextures(currentChapter);
             updateHUDLabels();
+            initTVChannels();
 
             // 8. Resize listener
             window.addEventListener('resize', onWindowResize);
 
             // 9. Ambient sound synthesizer start
-            setAmbientSound(activeSound);
+            if (activeSound !== 'none') {
+                setAmbientSound(activeSound);
+            }
 
             initialized = true;
             isOpen = true;
@@ -8487,26 +8707,63 @@ CREATE TABLE medical_certificates (
         }
 
         function setupLighting() {
-            // Soft moonlight / ambient fill
-            const hemiLight = new THREE.HemisphereLight(0xcfd8dc, 0x1e293b, 0.6);
+            // Warm ambient room fill (balanced so room is cozy and beautifully visible)
+            const hemiLight = new THREE.HemisphereLight(0xfff6ea, 0x1e293b, 1.05);
             scene.add(hemiLight);
 
-            // Window moonlight direction
-            const windowDir = new THREE.DirectionalLight(0x7dd3fc, 0.85);
-            windowDir.position.set(-7, 8, -4);
-            windowDir.castShadow = true;
-            windowDir.shadow.mapSize.width = 1024;
-            windowDir.shadow.mapSize.height = 1024;
-            windowDir.shadow.camera.near = 0.5;
-            windowDir.shadow.camera.far = 25;
-            windowDir.shadow.camera.left = -6;
-            windowDir.shadow.camera.right = 6;
-            windowDir.shadow.camera.top = 6;
-            windowDir.shadow.camera.bottom = -6;
-            windowDir.shadow.bias = -0.0005;
-            scene.add(windowDir);
+            // Ceiling Chandelier / Downlight (illuminates the entire study room warmly)
+            chandelierLight = new THREE.PointLight(0xffeed6, 1.65, 18, 1.15);
+            chandelierLight.position.set(0, 7.2, 0);
+            chandelierLight.castShadow = true;
+            chandelierLight.shadow.mapSize.width = 1024;
+            chandelierLight.shadow.mapSize.height = 1024;
+            chandelierLight.shadow.bias = -0.0005;
+            scene.add(chandelierLight);
 
-            // Warm incandescent Banker's Lamp spotlight onto the desk & book
+            // Chandelier glowing canopy fixture mesh
+            chandelierGlow = new THREE.Mesh(
+                new THREE.SphereGeometry(0.24, 16, 16),
+                new THREE.MeshBasicMaterial({ color: 0xffedd5 })
+            );
+            chandelierGlow.position.set(0, 7.25, 0);
+            scene.add(chandelierGlow);
+
+            // Ceiling brass fixture ring
+            const chandelierRing = new THREE.Mesh(
+                new THREE.TorusGeometry(0.55, 0.04, 12, 32),
+                new THREE.MeshStandardMaterial({ color: 0xb45309, metalness: 0.8, roughness: 0.3 })
+            );
+            chandelierRing.position.set(0, 7.22, 0);
+            chandelierRing.rotation.x = Math.PI / 2;
+            scene.add(chandelierRing);
+
+            // Warm Wall Sconces for architectural atmosphere
+            sconceLightL = new THREE.PointLight(0xffedd5, 0.75, 8);
+            sconceLightL.position.set(-8.2, 5.5, -2.0);
+            scene.add(sconceLightL);
+
+            sconceLightR = new THREE.PointLight(0xffedd5, 0.75, 8);
+            sconceLightR.position.set(7.5, 5.5, -2.0);
+            scene.add(sconceLightR);
+
+            // Window Sunbeam Directional Light (Golden Sunrise light streaming onto the desk)
+            sunbeamLight = new THREE.DirectionalLight(0xffd59e, 2.2);
+            sunbeamLight.position.set(-6, 7.5, -4);
+            sunbeamLight.target.position.set(0, 2.5, 0.1);
+            sunbeamLight.castShadow = true;
+            sunbeamLight.shadow.mapSize.width = 1024;
+            sunbeamLight.shadow.mapSize.height = 1024;
+            sunbeamLight.shadow.camera.near = 0.5;
+            sunbeamLight.shadow.camera.far = 28;
+            sunbeamLight.shadow.camera.left = -8;
+            sunbeamLight.shadow.camera.right = 8;
+            sunbeamLight.shadow.camera.top = 8;
+            sunbeamLight.shadow.camera.bottom = -8;
+            sunbeamLight.shadow.bias = -0.0005;
+            scene.add(sunbeamLight);
+            scene.add(sunbeamLight.target);
+
+            // Warm incandescent Banker's Lamp spotlight onto desk & book
             lampLight = new THREE.SpotLight(0xffb74d, 2.8, 8, Math.PI / 3.2, 0.55, 1.3);
             lampLight.position.set(-2.0, 3.8, -0.6);
             lampLight.target.position.set(0, 2.5, 0.1);
@@ -8560,8 +8817,8 @@ CREATE TABLE medical_certificates (
             floorMesh.receiveShadow = true;
             roomGroup.add(floorMesh);
 
-            // --- Walls: Deep Library Slate Navy with Wainscoting ---
-            const wallMat = new THREE.MeshStandardMaterial({ color: 0x131d2e, roughness: 0.85 });
+            // --- Walls: Elegant Library Slate Blue ---
+            const wallMat = new THREE.MeshStandardMaterial({ color: 0x1e293b, roughness: 0.82 });
             const backWall = new THREE.Mesh(new THREE.PlaneGeometry(24, 12), wallMat);
             backWall.position.set(0, 6, -5.2);
             backWall.receiveShadow = true;
@@ -8579,8 +8836,11 @@ CREATE TABLE medical_certificates (
             baseboard.position.set(0, 0.22, -5.14);
             roomGroup.add(baseboard);
 
-            // --- Study Window with Weather (Rain/Night Sky) ---
+            // --- Panoramic Architectural Glass Window overlooking City Skyline & Sunrise ---
             buildStudyWindow();
+
+            // --- 3D Smart Wall TV & Video Songs Player ---
+            buildSmartWallTV();
 
             // --- Library Bookshelf with Medical Volumes & Fairy Lights ---
             buildBookshelf();
@@ -8592,73 +8852,238 @@ CREATE TABLE medical_certificates (
             buildDeskAccessories();
         }
 
-        function buildStudyWindow() {
-            windowGroup = new THREE.Group();
-            windowGroup.position.set(-4.6, 5.4, -5.1);
+        function drawWindowSkyline(weather) {
+            if (!sctx || !skyCanvas) return;
+            const w = skyCanvas.width;
+            const h = skyCanvas.height;
+            sctx.clearRect(0, 0, w, h);
 
-            // Wooden outer frame
-            const frameMat = new THREE.MeshStandardMaterial({ color: 0x301e16, roughness: 0.7 });
-            const frame = new THREE.Mesh(new THREE.BoxGeometry(4.4, 4.8, 0.18), frameMat);
-            windowGroup.add(frame);
+            if (weather === 'sunrise') {
+                // Vibrant Golden Sunrise Sky
+                const skyGrad = sctx.createLinearGradient(0, 0, 0, h);
+                skyGrad.addColorStop(0, '#150d2a');    // Twilight Indigo
+                skyGrad.addColorStop(0.3, '#3b1842');  // Dawn Violet
+                skyGrad.addColorStop(0.58, '#932d32'); // Sunrise Coral
+                skyGrad.addColorStop(0.80, '#d95a1e'); // Golden Orange
+                skyGrad.addColorStop(0.92, '#f59e0b'); // Radiant Amber
+                skyGrad.addColorStop(1.0, '#fef08a');  // Morning Horizon Glow
+                sctx.fillStyle = skyGrad;
+                sctx.fillRect(0, 0, w, h);
 
-            // Inner glass opening
-            const skyCanvas = document.createElement('canvas');
-            skyCanvas.width = 512;
-            skyCanvas.height = 512;
-            const sctx = skyCanvas.getContext('2d');
-            // Gradient night sky
-            const skyGrad = sctx.createLinearGradient(0, 0, 0, 512);
-            skyGrad.addColorStop(0, '#040714');
-            skyGrad.addColorStop(0.7, '#0d1b2a');
-            skyGrad.addColorStop(1, '#1b263b');
-            sctx.fillStyle = skyGrad;
-            sctx.fillRect(0, 0, 512, 512);
+                // Rising Golden Sun with Multi-ring Corona
+                const sunX = w * 0.58;
+                const sunY = h * 0.58;
 
-            // Crescent moon
-            sctx.fillStyle = '#fef08a';
-            sctx.beginPath();
-            sctx.arc(380, 110, 36, 0, Math.PI * 2);
-            sctx.fill();
-            sctx.fillStyle = '#040714';
-            sctx.beginPath();
-            sctx.arc(368, 104, 30, 0, Math.PI * 2);
-            sctx.fill();
+                // Outer sun rays glow
+                const outerGrad = sctx.createRadialGradient(sunX, sunY, 30, sunX, sunY, 260);
+                outerGrad.addColorStop(0, 'rgba(255, 247, 237, 0.95)');
+                outerGrad.addColorStop(0.2, 'rgba(254, 215, 170, 0.7)');
+                outerGrad.addColorStop(0.5, 'rgba(251, 146, 60, 0.35)');
+                outerGrad.addColorStop(1, 'rgba(249, 115, 22, 0)');
+                sctx.fillStyle = outerGrad;
+                sctx.beginPath();
+                sctx.arc(sunX, sunY, 260, 0, Math.PI * 2);
+                sctx.fill();
 
-            // Distant skyline silhouette
-            sctx.fillStyle = '#050a14';
-            for (let bx = 0; bx < 512; bx += 28) {
-                const bHeight = 70 + (Math.sin(bx * 13) * 50) + 40;
-                sctx.fillRect(bx, 512 - bHeight, 26, bHeight);
-                // Windows in buildings
-                sctx.fillStyle = '#fef08a';
-                for (let wy = 512 - bHeight + 10; wy < 500; wy += 14) {
-                    if (Math.sin(bx + wy) > 0) sctx.fillRect(bx + 4, wy, 4, 6);
+                // Core sun disk
+                sctx.fillStyle = '#fffbeb';
+                sctx.beginPath();
+                sctx.arc(sunX, sunY, 48, 0, Math.PI * 2);
+                sctx.fill();
+
+                // Horizontal dawn clouds
+                sctx.fillStyle = 'rgba(254, 215, 170, 0.28)';
+                [
+                    { y: sunY - 42, h: 14, x1: 60, w1: w - 120 },
+                    { y: sunY + 22, h: 18, x1: 140, w1: w - 240 },
+                    { y: sunY - 95, h: 22, x1: 20, w1: w - 80 }
+                ].forEach(c => {
+                    sctx.fillRect(c.x1, c.y, c.w1, c.h);
+                });
+
+                // Procedural City Skyline (3 Depth Tiers)
+                // Tier 1: Distant background towers in purple morning mist
+                sctx.fillStyle = 'rgba(44, 23, 59, 0.65)';
+                for (let bx = 0; bx < w; bx += 32) {
+                    const bh = 140 + Math.sin(bx * 7.3) * 60 + Math.cos(bx * 13) * 40;
+                    sctx.fillRect(bx, h - bh, 30, bh);
+                    if (bx % 64 === 0) {
+                        sctx.fillRect(bx + 13, h - bh - 32, 4, 32);
+                    }
                 }
-                sctx.fillStyle = '#050a14';
+
+                // Tier 2: Mid-distance architectural skyscrapers
+                sctx.fillStyle = '#23122e';
+                for (let bx = 10; bx < w; bx += 48) {
+                    const bh = 220 + Math.sin(bx * 11.2) * 110 + Math.cos(bx * 5.1) * 50;
+                    sctx.fillRect(bx, h - bh, 44, bh);
+                    if (bh > 260) {
+                        sctx.fillRect(bx + 8, h - bh - 26, 28, 26);
+                        sctx.fillRect(bx + 19, h - bh - 54, 6, 28);
+                    }
+                    // Illuminated morning windows
+                    sctx.fillStyle = 'rgba(254, 240, 138, 0.45)';
+                    for (let wy = h - bh + 16; wy < h - 40; wy += 18) {
+                        for (let wx = bx + 6; wx < bx + 38; wx += 10) {
+                            if (Math.sin(wx * 3 + wy * 5) > -0.2) {
+                                sctx.fillRect(wx, wy, 5, 8);
+                            }
+                        }
+                    }
+                    sctx.fillStyle = '#23122e';
+                }
+
+                // Tier 3: Foreground high-rise commercial buildings & medical centers
+                sctx.fillStyle = '#120b18';
+                for (let bx = 0; bx < w; bx += 74) {
+                    const bh = 280 + Math.sin(bx * 3.7) * 130 + Math.cos(bx * 9.3) * 70;
+                    sctx.fillRect(bx, h - bh, 68, bh);
+                    
+                    if (bx % 148 === 0) {
+                        sctx.fillRect(bx + 31, h - bh - 40, 6, 40);
+                        sctx.fillStyle = '#ef4444';
+                        sctx.beginPath();
+                        sctx.arc(bx + 34, h - bh - 42, 3.5, 0, Math.PI * 2);
+                        sctx.fill();
+                        sctx.fillStyle = '#120b18';
+                    }
+
+                    // Grid windows
+                    sctx.fillStyle = 'rgba(254, 243, 199, 0.75)';
+                    for (let wy = h - bh + 20; wy < h - 20; wy += 20) {
+                        for (let wx = bx + 8; wx < bx + 60; wx += 12) {
+                            if (Math.sin(wx * 7 + wy * 11) > -0.3) {
+                                sctx.fillRect(wx, wy, 7, 10);
+                            }
+                        }
+                    }
+                    sctx.fillStyle = '#120b18';
+                }
+
+            } else if (weather === 'night') {
+                // Deep Indigo Night Sky
+                const skyGrad = sctx.createLinearGradient(0, 0, 0, h);
+                skyGrad.addColorStop(0, '#020617');
+                skyGrad.addColorStop(0.6, '#0b132b');
+                skyGrad.addColorStop(1, '#1c2541');
+                sctx.fillStyle = skyGrad;
+                sctx.fillRect(0, 0, w, h);
+
+                // Crescent Moon
+                sctx.fillStyle = '#fef08a';
+                sctx.beginPath();
+                sctx.arc(740, 110, 42, 0, Math.PI * 2);
+                sctx.fill();
+                sctx.fillStyle = '#020617';
+                sctx.beginPath();
+                sctx.arc(726, 102, 36, 0, Math.PI * 2);
+                sctx.fill();
+
+                // City Skyscrapers Night View
+                sctx.fillStyle = '#060a14';
+                for (let bx = 0; bx < w; bx += 40) {
+                    const bh = 180 + Math.sin(bx * 13) * 110 + 60;
+                    sctx.fillRect(bx, h - bh, 36, bh);
+                    sctx.fillStyle = '#fef08a';
+                    for (let wy = h - bh + 12; wy < h - 20; wy += 16) {
+                        if (Math.sin(bx + wy) > -0.1) {
+                            sctx.fillRect(bx + 6, wy, 6, 8);
+                        }
+                    }
+                    sctx.fillStyle = '#060a14';
+                }
+
+            } else if (weather === 'sunset') {
+                // Dramatic Sunset Glow
+                const skyGrad = sctx.createLinearGradient(0, 0, 0, h);
+                skyGrad.addColorStop(0, '#0f0c29');
+                skyGrad.addColorStop(0.3, '#302b63');
+                skyGrad.addColorStop(0.65, '#a21caf');
+                skyGrad.addColorStop(0.85, '#e11d48');
+                skyGrad.addColorStop(1.0, '#ea580c');
+                sctx.fillStyle = skyGrad;
+                sctx.fillRect(0, 0, w, h);
+
+                // Setting Sun
+                sctx.fillStyle = '#fde047';
+                sctx.beginPath();
+                sctx.arc(520, h * 0.72, 54, 0, Math.PI * 2);
+                sctx.fill();
+
+                // Sunset Silhouette
+                sctx.fillStyle = '#090514';
+                for (let bx = 0; bx < w; bx += 45) {
+                    const bh = 200 + Math.sin(bx * 9) * 120 + 40;
+                    sctx.fillRect(bx, h - bh, 42, bh);
+                }
+
+            } else { // rain
+                // Overcast Storm Sky
+                const skyGrad = sctx.createLinearGradient(0, 0, 0, h);
+                skyGrad.addColorStop(0, '#090d16');
+                skyGrad.addColorStop(0.6, '#1e293b');
+                skyGrad.addColorStop(1, '#334155');
+                sctx.fillStyle = skyGrad;
+                sctx.fillRect(0, 0, w, h);
+
+                // Misty skyline
+                sctx.fillStyle = 'rgba(10, 15, 26, 0.85)';
+                for (let bx = 0; bx < w; bx += 38) {
+                    const bh = 190 + Math.sin(bx * 13) * 90 + 50;
+                    sctx.fillRect(bx, h - bh, 35, bh);
+                    sctx.fillStyle = 'rgba(254, 240, 138, 0.3)';
+                    for (let wy = h - bh + 14; wy < h - 20; wy += 18) {
+                        if (Math.sin(bx + wy) > 0.2) sctx.fillRect(bx + 6, wy, 5, 7);
+                    }
+                    sctx.fillStyle = 'rgba(10, 15, 26, 0.85)';
+                }
             }
 
-            const skyTex = new THREE.CanvasTexture(skyCanvas);
-            const skyPane = new THREE.Mesh(
-                new THREE.PlaneGeometry(4.0, 4.4),
+            if (skyTex) skyTex.needsUpdate = true;
+        }
+
+        function buildStudyWindow() {
+            windowGroup = new THREE.Group();
+            windowGroup.position.set(-2.4, 5.6, -5.14);
+
+            // Grand Architectural Steel Window Frame
+            const frameMat = new THREE.MeshStandardMaterial({ color: 0x1e2229, metalness: 0.6, roughness: 0.4 });
+            const frame = new THREE.Mesh(new THREE.BoxGeometry(10.2, 5.8, 0.16), frameMat);
+            windowGroup.add(frame);
+
+            // Window Glass opening with Skyline Canvas
+            skyCanvas = document.createElement('canvas');
+            skyCanvas.width = 1024;
+            skyCanvas.height = 512;
+            sctx = skyCanvas.getContext('2d');
+            drawWindowSkyline(currentWeather);
+
+            skyTex = new THREE.CanvasTexture(skyCanvas);
+            skyPane = new THREE.Mesh(
+                new THREE.PlaneGeometry(9.8, 5.4),
                 new THREE.MeshBasicMaterial({ map: skyTex })
             );
             skyPane.position.set(0, 0, -0.05);
             windowGroup.add(skyPane);
 
-            // Window Mullions (cross frame)
-            const vertMullion = new THREE.Mesh(new THREE.BoxGeometry(0.12, 4.4, 0.1), frameMat);
-            const horizMullion = new THREE.Mesh(new THREE.BoxGeometry(4.0, 0.12, 0.1), frameMat);
-            windowGroup.add(vertMullion);
-            windowGroup.add(horizMullion);
+            // Architectural Steel Mullions (vertical & horizontal dividers)
+            [-2.45, 0, 2.45].forEach(mx => {
+                const vert = new THREE.Mesh(new THREE.BoxGeometry(0.1, 5.4, 0.08), frameMat);
+                vert.position.set(mx, 0, 0.02);
+                windowGroup.add(vert);
+            });
+            const horiz = new THREE.Mesh(new THREE.BoxGeometry(9.8, 0.1, 0.08), frameMat);
+            horiz.position.set(0, 0, 0.02);
+            windowGroup.add(horiz);
 
             // Falling Rain Particle System
             rainGeo = new THREE.BufferGeometry();
             const rainPos = [];
-            for (let i = 0; i < 280; i++) {
+            for (let i = 0; i < 360; i++) {
                 rainPos.push(
-                    (Math.random() - 0.5) * 3.8,
-                    (Math.random() - 0.5) * 4.2,
-                    0.02
+                    (Math.random() - 0.5) * 9.6,
+                    (Math.random() - 0.5) * 5.2,
+                    0.04
                 );
             }
             rainGeo.setAttribute('position', new THREE.Float32BufferAttribute(rainPos, 3));
@@ -8669,32 +9094,130 @@ CREATE TABLE medical_certificates (
                 opacity: 0.75
             });
             rainParticles = new THREE.Points(rainGeo, rainMat);
+            rainParticles.visible = (currentWeather === 'rain');
             windowGroup.add(rainParticles);
 
             roomGroup.add(windowGroup);
         }
 
+        function drawTVScreen() {
+            if (!tvScreenCtx || !tvScreenCanvas) return;
+            const w = tvScreenCanvas.width;
+            const h = tvScreenCanvas.height;
+
+            // Background
+            const grad = tvScreenCtx.createLinearGradient(0, 0, w, h);
+            grad.addColorStop(0, '#060d1d');
+            grad.addColorStop(1, '#0f172a');
+            tvScreenCtx.fillStyle = grad;
+            tvScreenCtx.fillRect(0, 0, w, h);
+
+            // Top Bar
+            tvScreenCtx.fillStyle = '#0284c7';
+            tvScreenCtx.fillRect(0, 0, w, 44);
+
+            tvScreenCtx.fillStyle = '#f8fafc';
+            tvScreenCtx.font = 'bold 18px "Inter", sans-serif';
+            tvScreenCtx.fillText('📺 HRP CareAI Smart TV • 4K HDR', 20, 28);
+
+            const ch = STUDY_TV_PLAYLIST[currentTVIndex];
+            tvScreenCtx.fillStyle = '#38bdf8';
+            tvScreenCtx.font = 'bold 15px "JetBrains Mono", monospace';
+            tvScreenCtx.textAlign = 'right';
+            tvScreenCtx.fillText(`CH ${currentTVIndex + 1}/10`, w - 20, 28);
+            tvScreenCtx.textAlign = 'left';
+
+            // Playing Banner
+            tvScreenCtx.fillStyle = '#e2e8f0';
+            tvScreenCtx.font = 'bold 20px "Cinzel", serif';
+            tvScreenCtx.fillText(ch.title.length > 34 ? ch.title.slice(0, 32) + '...' : ch.title, 24, 96);
+
+            tvScreenCtx.fillStyle = '#94a3b8';
+            tvScreenCtx.font = '600 15px "Inter", sans-serif';
+            tvScreenCtx.fillText(`Category: ${ch.cat}  •  Status: ${isTVOn ? '▶ Playing Video' : '⏸ Standby (Click to Open)'}`, 24, 126);
+
+            // Dynamic Pulsing Equalizer Bars
+            const barCount = 32;
+            const barW = (w - 48) / barCount - 4;
+            const t = Date.now() * 0.005;
+            for (let i = 0; i < barCount; i++) {
+                const hVal = isTVOn 
+                    ? (Math.sin(t + i * 0.4) * 0.5 + 0.5) * 65 + (Math.cos(t * 1.8 + i) * 0.3 + 0.3) * 35 + 10
+                    : (Math.sin(i * 0.5) * 0.2 + 0.3) * 20 + 6;
+                const bx = 24 + i * (barW + 4);
+                const by = 230 - hVal;
+                
+                const bGrad = tvScreenCtx.createLinearGradient(0, by, 0, 230);
+                bGrad.addColorStop(0, '#38bdf8');
+                bGrad.addColorStop(1, '#0284c7');
+                tvScreenCtx.fillStyle = bGrad;
+                tvScreenCtx.fillRect(bx, by, barW, hVal);
+            }
+
+            // Bottom Action Hint
+            tvScreenCtx.fillStyle = 'rgba(255, 255, 255, 0.1)';
+            tvScreenCtx.fillRect(0, 250, w, 38);
+            tvScreenCtx.fillStyle = '#94a3b8';
+            tvScreenCtx.font = '13px "Inter", sans-serif';
+            tvScreenCtx.textAlign = 'center';
+            tvScreenCtx.fillText('Press [ T ] or Click 3D Screen to Toggle Video & Remote', w / 2, 274);
+            tvScreenCtx.textAlign = 'left';
+        }
+
+        function buildSmartWallTV() {
+            const tvGroup = new THREE.Group();
+            tvGroup.position.set(5.5, 6.8, -5.02);
+
+            // Sleek TV Frame (obsidian black with brushed bezel)
+            const frameMat = new THREE.MeshStandardMaterial({ color: 0x0a0f1d, roughness: 0.3, metalness: 0.7 });
+            const tvCase = new THREE.Mesh(new THREE.BoxGeometry(3.3, 1.9, 0.08), frameMat);
+            tvGroup.add(tvCase);
+
+            // TV Screen Canvas Texture
+            tvScreenCanvas = document.createElement('canvas');
+            tvScreenCanvas.width = 512;
+            tvScreenCanvas.height = 288;
+            tvScreenCtx = tvScreenCanvas.getContext('2d');
+            drawTVScreen();
+
+            tvScreenTexture = new THREE.CanvasTexture(tvScreenCanvas);
+            const screenMat = new THREE.MeshBasicMaterial({ map: tvScreenTexture });
+            const tvScreenMesh = new THREE.Mesh(new THREE.PlaneGeometry(3.18, 1.78), screenMat);
+            tvScreenMesh.position.set(0, 0, 0.045);
+            tvGroup.add(tvScreenMesh);
+
+            // LED Ambilight Halo Light
+            tvAmbilight = new THREE.PointLight(0x38bdf8, 1.2, 5.5);
+            tvAmbilight.position.set(0, 0, 0.2);
+            tvGroup.add(tvAmbilight);
+
+            // Make TV clickable in 3D
+            clickableItems.push({ mesh: tvScreenMesh, name: 'tv' });
+            tvMesh = tvGroup;
+            roomGroup.add(tvGroup);
+        }
+
         function buildBookshelf() {
             const shelfGroup = new THREE.Group();
-            shelfGroup.position.set(4.4, 4.8, -4.95);
+            shelfGroup.position.set(5.5, 3.2, -4.95);
 
             const woodMat = new THREE.MeshStandardMaterial({ color: 0x2b1810, roughness: 0.7 });
             // Bookshelf frame
-            const backPanel = new THREE.Mesh(new THREE.BoxGeometry(4.2, 5.6, 0.1), woodMat);
+            const backPanel = new THREE.Mesh(new THREE.BoxGeometry(3.6, 4.4, 0.1), woodMat);
             shelfGroup.add(backPanel);
 
             // 4 Horizontal Shelves
-            [-2.4, -0.8, 0.8, 2.4].forEach(y => {
-                const shelf = new THREE.Mesh(new THREE.BoxGeometry(4.2, 0.12, 0.75), woodMat);
+            [-1.8, -0.6, 0.6, 1.8].forEach(y => {
+                const shelf = new THREE.Mesh(new THREE.BoxGeometry(3.6, 0.12, 0.75), woodMat);
                 shelf.position.set(0, y, 0.35);
                 shelfGroup.add(shelf);
             });
 
             // Colorful Leather Book Volumes
             const bookColors = [0x881337, 0x1e3a8a, 0x064e3b, 0x78350f, 0x1e293b, 0xb45309];
-            [-2.4, -0.8, 0.8].forEach(shelfY => {
-                let currX = -1.85;
-                while (currX < 1.7) {
+            [-1.8, -0.6, 0.6].forEach(shelfY => {
+                let currX = -1.6;
+                while (currX < 1.45) {
                     const width = 0.09 + Math.random() * 0.08;
                     const height = 0.9 + Math.random() * 0.35;
                     const depth = 0.55;
@@ -8708,12 +9231,12 @@ CREATE TABLE medical_certificates (
             });
 
             // Fairy Lights string along shelf
-            for (let fx = -1.9; fx <= 1.9; fx += 0.35) {
+            for (let fx = -1.6; fx <= 1.6; fx += 0.35) {
                 const bulb = new THREE.Mesh(
                     new THREE.SphereGeometry(0.035, 8, 8),
                     new THREE.MeshBasicMaterial({ color: 0xfef08a })
                 );
-                bulb.position.set(fx, 2.38 + Math.sin(fx * 3) * 0.06, 0.72);
+                bulb.position.set(fx, 1.8 + Math.sin(fx * 3) * 0.06, 0.72);
                 shelfGroup.add(bulb);
             }
 
@@ -9428,21 +9951,143 @@ CREATE TABLE medical_certificates (
         function setWeather(val) {
             currentWeather = val;
             if (rainParticles) {
-                rainParticles.visible = val === 'rain';
+                rainParticles.visible = (val === 'rain');
             }
             if (scene) {
-                if (val === 'sunset') {
+                if (val === 'sunrise') {
+                    scene.background.setHex(0x180f1d);
+                    scene.fog.color.setHex(0x180f1d);
+                    if (sunbeamLight) {
+                        sunbeamLight.color.setHex(0xffd59e);
+                        sunbeamLight.intensity = 2.2;
+                    }
+                } else if (val === 'sunset') {
                     scene.background.setHex(0x1a0f1d);
                     scene.fog.color.setHex(0x1a0f1d);
+                    if (sunbeamLight) {
+                        sunbeamLight.color.setHex(0xf97316);
+                        sunbeamLight.intensity = 1.6;
+                    }
                 } else if (val === 'night') {
                     scene.background.setHex(0x04060f);
                     scene.fog.color.setHex(0x04060f);
-                } else {
+                    if (sunbeamLight) {
+                        sunbeamLight.color.setHex(0x60a5fa);
+                        sunbeamLight.intensity = 0.5;
+                    }
+                } else { // rain
                     scene.background.setHex(0x070b16);
                     scene.fog.color.setHex(0x070b16);
+                    if (sunbeamLight) {
+                        sunbeamLight.color.setHex(0x93c5fd);
+                        sunbeamLight.intensity = 0.8;
+                    }
                 }
             }
+            drawWindowSkyline(val);
             showToast(`Weather updated: ${val.toUpperCase()}`, 'cloud');
+        }
+
+        // --- 📺 3D Smart Wall TV & Video Songs Controller ---
+        function initTVChannels() {
+            const select = document.getElementById('study-tv-channel-select');
+            if (!select) return;
+            select.innerHTML = '';
+            STUDY_TV_PLAYLIST.forEach((item, idx) => {
+                const opt = document.createElement('option');
+                opt.value = idx;
+                opt.textContent = `Ch ${idx + 1}: ${item.title.slice(0, 36)}`;
+                select.appendChild(opt);
+            });
+            select.value = currentTVIndex;
+        }
+
+        function toggleTV(forceState) {
+            triggerHaptic(15);
+            const modal = document.getElementById('study-3d-tv-modal');
+            const btn = document.getElementById('study-3d-tv-btn');
+            const iframe = document.getElementById('study-tv-iframe');
+            if (!modal) return;
+
+            const shouldOpen = forceState !== undefined ? forceState : (modal.style.display === 'none' || !modal.style.display);
+            isTVOn = shouldOpen;
+
+            if (shouldOpen) {
+                modal.style.display = 'flex';
+                if (btn) btn.classList.add('active');
+                if (iframe && (!iframe.src || iframe.src === '' || iframe.src === 'about:blank')) {
+                    setTVChannel(currentTVIndex);
+                }
+                if (tvAmbilight) tvAmbilight.intensity = 1.8;
+                showToast(`3D Smart TV: ${STUDY_TV_PLAYLIST[currentTVIndex].title}`, 'tv');
+            } else {
+                modal.style.display = 'none';
+                if (btn) btn.classList.remove('active');
+                if (iframe) iframe.src = '';
+                if (tvAmbilight) tvAmbilight.intensity = 0.4;
+                showToast('Smart TV Standby Mode', 'tv_off');
+            }
+        }
+
+        function setTVChannel(idx) {
+            triggerHaptic(15);
+            if (idx < 0) idx = STUDY_TV_PLAYLIST.length - 1;
+            if (idx >= STUDY_TV_PLAYLIST.length) idx = 0;
+            currentTVIndex = idx;
+
+            const ch = STUDY_TV_PLAYLIST[idx];
+            const iframe = document.getElementById('study-tv-iframe');
+            const select = document.getElementById('study-tv-channel-select');
+            const titleEl = document.getElementById('study-tv-playing-title');
+            const catEl = document.getElementById('study-tv-playing-cat');
+
+            if (iframe) {
+                iframe.src = `https://www.youtube-nocookie.com/embed/${ch.id}?autoplay=1&enablejsapi=1&rel=0`;
+            }
+            if (select) select.value = idx;
+            if (titleEl) titleEl.textContent = ch.title;
+            if (catEl) catEl.textContent = ch.cat;
+
+            if (tvAmbilight) {
+                if (ch.cat === 'Project AI') {
+                    tvAmbilight.color.setHex(0x10b981); // Emerald green for AI Project
+                } else {
+                    tvAmbilight.color.setHex(0x38bdf8); // Sky blue for Lofi Beats
+                }
+            }
+
+            drawTVScreen();
+            showToast(`Now Playing: ${ch.title}`, 'play_arrow');
+        }
+
+        function nextTVChannel() {
+            setTVChannel(currentTVIndex + 1);
+        }
+
+        function prevTVChannel() {
+            setTVChannel(currentTVIndex - 1);
+        }
+
+        function minimizeTV() {
+            triggerHaptic(10);
+            const modal = document.getElementById('study-3d-tv-modal');
+            const icon = document.getElementById('study-tv-minimize-icon');
+            if (!modal) return;
+            isTVMinimized = !isTVMinimized;
+            modal.classList.toggle('is-minimized', isTVMinimized);
+            if (icon) icon.textContent = isTVMinimized ? 'expand_less' : 'expand_more';
+        }
+
+        function toggleRoomLight() {
+            triggerHaptic(15);
+            isRoomLightOn = !isRoomLightOn;
+            if (chandelierLight) chandelierLight.intensity = isRoomLightOn ? 1.65 : 0.22;
+            if (chandelierGlow) chandelierGlow.material.color.setHex(isRoomLightOn ? 0xffedd5 : 0x334155);
+            if (sconceLightL) sconceLightL.intensity = isRoomLightOn ? 0.75 : 0.1;
+            if (sconceLightR) sconceLightR.intensity = isRoomLightOn ? 0.75 : 0.1;
+            const btn = document.getElementById('study-3d-roomlight-btn');
+            if (btn) btn.classList.toggle('active', isRoomLightOn);
+            showToast(isRoomLightOn ? 'Room Ceiling Light ON (Warm)' : 'Room Light Dimmed (Night Mode)', 'wb_incandescent');
         }
 
         // --- Procedural Web Audio Synthesizer (Rain, Fireplace, Cafe, Crickets) ---
@@ -9650,6 +10295,7 @@ CREATE TABLE medical_certificates (
                         else if (item.name === 'clock') togglePomodoro();
                         else if (item.name === 'next-page') nextPage();
                         else if (item.name === 'prev-page') prevPage();
+                        else if (item.name === 'tv') toggleTV();
                     }
                 }
             });
@@ -9671,6 +10317,12 @@ CREATE TABLE medical_certificates (
 
             if (controls && controls.enabled) {
                 controls.update();
+            }
+
+            // Animate 3D Smart TV screen visualizer & live channel graphics
+            if (tvScreenCanvas && tvScreenCtx && tvScreenTexture) {
+                drawTVScreen();
+                tvScreenTexture.needsUpdate = true;
             }
 
             // Animate steam particles above coffee mug
@@ -9713,6 +10365,7 @@ CREATE TABLE medical_certificates (
         function close() {
             isOpen = false;
             stopCurrentAmbient();
+            toggleTV(false);
             // Synchronize scroll position in treatise
             const chapters = getChapterHeadings();
             const target = chapters[currentChapter - 1];
@@ -9734,10 +10387,37 @@ CREATE TABLE medical_certificates (
             togglePomodoro,
             setWeather,
             setAmbientSound,
+            toggleRoomLight,
+            toggleTV,
+            setTVChannel,
+            nextTVChannel,
+            prevTVChannel,
+            minimizeTV,
             get initialized() { return initialized; },
             get isOpen() { return isOpen; }
         };
     })();
+
+    // 3D Study Room Global Keyboard Controls (T = TV, O = Room Light, L = Lamp, P = Pomodoro, Arrows/Space = Turn)
+    document.addEventListener('keydown', (e) => {
+        if (!StudyRoom3D.isOpen) return;
+        if (['INPUT', 'TEXTAREA', 'SELECT'].includes(document.activeElement.tagName)) return;
+        if (e.key === 'ArrowRight' || e.key === ' ' || e.key.toLowerCase() === 'd') {
+            StudyRoom3D.nextPage();
+        } else if (e.key === 'ArrowLeft' || e.key.toLowerCase() === 'a') {
+            StudyRoom3D.prevPage();
+        } else if (e.key.toLowerCase() === 'l') {
+            StudyRoom3D.toggleLamp();
+        } else if (e.key.toLowerCase() === 'p') {
+            StudyRoom3D.togglePomodoro();
+        } else if (e.key.toLowerCase() === 't') {
+            StudyRoom3D.toggleTV();
+        } else if (e.key.toLowerCase() === 'o') {
+            StudyRoom3D.toggleRoomLight();
+        } else if (e.key === 'Escape') {
+            toggleStudyRoom3D();
+        }
+    });
 
     /* 36. Master Init on DOM Loaded & KaTeX Auto-Renderer */
     document.addEventListener('DOMContentLoaded', () => {
