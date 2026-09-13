@@ -2216,6 +2216,43 @@
             z-index: 100065;
             pointer-events: none;
             flex-wrap: wrap;
+            transition: opacity 0.3s ease, transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .study-3d-show-hud-pill {
+            position: absolute;
+            top: 14px;
+            right: 14px;
+            z-index: 100075;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            background: rgba(15, 23, 42, 0.90);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(56, 189, 248, 0.45);
+            color: #38bdf8;
+            font-size: 12px;
+            font-weight: 700;
+            padding: 8px 15px;
+            border-radius: 9999px;
+            cursor: pointer;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.55), 0 0 16px rgba(56, 189, 248, 0.25);
+            transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+            animation: fadeInPill 0.3s ease;
+        }
+        @keyframes fadeInPill {
+            from { opacity: 0; transform: translateY(-10px) scale(0.92); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+        .study-3d-show-hud-pill:hover {
+            background: #0284c7;
+            color: #ffffff;
+            border-color: #38bdf8;
+            transform: scale(1.05);
+            box-shadow: 0 10px 28px rgba(2, 132, 199, 0.6);
+        }
+        .study-3d-bottom-nav {
+            transition: opacity 0.3s ease, transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
         }
         .study-3d-hud-group {
             display: flex;
@@ -2424,31 +2461,91 @@
             transform: translateY(-3px) scale(1.04);
             box-shadow: 0 10px 28px rgba(2, 132, 199, 0.55);
         }
-        @media (max-width: 640px) {
+        @media (max-width: 768px) {
             #quick-study-room-badge {
-                bottom: 68px;
+                bottom: calc(76px + env(safe-area-inset-bottom, 0px));
                 left: 12px;
-                padding: 6px 12px;
-                font-size: 11px;
+                padding: 7px 14px;
+                font-size: 11.5px;
             }
+            /* Smooth horizontal swipable HUD for mobile without taking up half the screen */
             .study-3d-hud {
                 top: 8px;
                 left: 8px;
                 right: 8px;
+                flex-wrap: nowrap !important;
+                overflow-x: auto !important;
+                -webkit-overflow-scrolling: touch;
+                scrollbar-width: none;
                 gap: 6px;
+                padding-bottom: 4px;
+            }
+            .study-3d-hud::-webkit-scrollbar {
+                display: none;
             }
             .study-3d-hud-group {
+                flex-shrink: 0;
                 padding: 4px 6px;
                 gap: 4px;
+                border-radius: 12px;
             }
             .study-3d-btn {
-                font-size: 10.5px;
-                padding: 5px 7px;
+                font-size: 11px;
+                padding: 6px 8px;
+                min-height: 38px;
             }
             .study-3d-bottom-nav {
-                bottom: 14px;
+                bottom: calc(12px + env(safe-area-inset-bottom, 0px));
                 padding: 6px 14px;
                 gap: 8px;
+                max-width: calc(100vw - 20px);
+            }
+            .study-3d-title-chip {
+                max-width: 170px;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                white-space: nowrap;
+                font-size: 11px;
+            }
+            /* Docked Bottom Sheet TV Player on Mobile */
+            #study-3d-tv-modal {
+                top: auto !important;
+                bottom: 0 !important;
+                left: 0 !important;
+                right: 0 !important;
+                width: 100% !important;
+                max-width: 100% !important;
+                border-radius: 20px 20px 0 0 !important;
+                border-bottom: none !important;
+                padding-bottom: env(safe-area-inset-bottom, 8px);
+                box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.7) !important;
+            }
+            #study-3d-tv-modal.is-minimized {
+                width: 100% !important;
+            }
+            /* Responsive Artwork Dialog */
+            .study-artwork-dialog {
+                width: 100% !important;
+                max-width: 100% !important;
+                max-height: 88vh !important;
+                border-radius: 20px 20px 0 0 !important;
+            }
+            .study-artwork-body {
+                flex-direction: column !important;
+                padding: 16px !important;
+                gap: 16px !important;
+            }
+            .study-artwork-frame {
+                flex: 0 0 auto !important;
+                width: 100% !important;
+                max-height: 280px !important;
+                display: flex !important;
+                justify-content: center !important;
+            }
+            .study-artwork-img {
+                max-height: 260px !important;
+                object-fit: contain !important;
+                margin: 0 auto !important;
             }
         }
 
@@ -2754,6 +2851,12 @@
             <p style="font-size: 11.5px; color: #94a3b8; margin-top: 4px;">Procedural Mahogany Desk • Brass Lamp • 88-Chapter 3D Book</p>
         </div>
 
+        <!-- Floating Pill to Restore Hidden Controls -->
+        <button id="study-show-hud-btn" onclick="StudyRoom3D.toggleHUD()" class="study-3d-show-hud-pill" style="display: none;" title="Show Controls (H)">
+            <span class="material-symbols-outlined text-[16px]">visibility</span>
+            <span>Show Controls (H)</span>
+        </button>
+
         <!-- 3D Top Glassmorphic HUD -->
         <div class="study-3d-hud">
             <!-- Left: Exit & Chapter Selection -->
@@ -2794,6 +2897,12 @@
                 <button id="study-fullscreen-btn" onclick="StudyRoom3D.toggleFullscreen()" class="study-3d-btn" title="Toggle Immersive Fullscreen (F)">
                     <span class="material-symbols-outlined text-[15px]" id="study-fullscreen-icon">fullscreen</span>
                     <span class="desktop-only" id="study-fullscreen-label">Fullscreen</span>
+                </button>
+                <div style="width: 1px; height: 16px; background: rgba(255,255,255,0.15);"></div>
+                <!-- 👁️ Button Hide Option / Clean Zen Reading Mode -->
+                <button id="study-hide-hud-btn" onclick="StudyRoom3D.toggleHUD()" class="study-3d-btn" title="Hide All Controls for Clean Reading (H)" style="color: #38bdf8;">
+                    <span class="material-symbols-outlined text-[15px]">visibility_off</span>
+                    <span class="desktop-only">Hide UI</span>
                 </button>
             </div>
 
@@ -8836,6 +8945,7 @@ CREATE TABLE medical_certificates (
 
         let currentChapter = 1;
         let isPageFlipping = false;
+        let isHUDVisible = true;
 
         // Camera Presets
         const presets = {
@@ -10283,6 +10393,46 @@ CREATE TABLE medical_certificates (
             }
         }
 
+        /* 👁️ Hide / Show UI Controls Option (Zen Reading Mode) */
+        function toggleHUD(forceState) {
+            triggerHaptic(15);
+            isHUDVisible = (forceState !== undefined) ? forceState : !isHUDVisible;
+            const hud = document.querySelector('.study-3d-hud');
+            const bottomNav = document.querySelector('.study-3d-bottom-nav');
+            const showBtn = document.getElementById('study-show-hud-btn');
+            const hideBtn = document.getElementById('study-hide-hud-btn');
+
+            if (isHUDVisible) {
+                if (hud) {
+                    hud.style.opacity = '1';
+                    hud.style.pointerEvents = 'auto';
+                    hud.style.transform = 'translateY(0)';
+                }
+                if (bottomNav) {
+                    bottomNav.style.opacity = '1';
+                    bottomNav.style.pointerEvents = 'auto';
+                    bottomNav.style.transform = 'translateX(-50%) translateY(0)';
+                }
+                if (showBtn) showBtn.style.display = 'none';
+                if (hideBtn) hideBtn.classList.remove('active');
+                showToast('Controls Visible (Press H to hide)', 'visibility');
+            } else {
+                if (hud) {
+                    hud.style.opacity = '0';
+                    hud.style.pointerEvents = 'none';
+                    hud.style.transform = 'translateY(-24px)';
+                }
+                if (bottomNav) {
+                    bottomNav.style.opacity = '0';
+                    bottomNav.style.pointerEvents = 'none';
+                    bottomNav.style.transform = 'translateX(-50%) translateY(24px)';
+                }
+                if (showBtn) showBtn.style.display = 'flex';
+                if (hideBtn) hideBtn.classList.add('active');
+                showToast('Controls Hidden • Clean Reading Mode (Press H to show)', 'visibility_off');
+            }
+        }
+
         /* ⛶ Fullscreen Display Management */
         function toggleFullscreen() {
             triggerHaptic(15);
@@ -10349,15 +10499,31 @@ CREATE TABLE medical_certificates (
             leftCanvas.height = 1448;
             leftCtx = leftCanvas.getContext('2d');
             leftTexture = new THREE.CanvasTexture(leftCanvas);
+            leftTexture.colorSpace = THREE.SRGBColorSpace;
+            leftTexture.minFilter = THREE.LinearFilter;
+            leftTexture.generateMipmaps = false;
 
             rightCanvas = document.createElement('canvas');
             rightCanvas.width = 1024;
             rightCanvas.height = 1448;
             rightCtx = rightCanvas.getContext('2d');
             rightTexture = new THREE.CanvasTexture(rightCanvas);
+            rightTexture.colorSpace = THREE.SRGBColorSpace;
+            rightTexture.minFilter = THREE.LinearFilter;
+            rightTexture.generateMipmaps = false;
 
-            const pageMatL = new THREE.MeshStandardMaterial({ map: leftTexture, roughness: 0.85 });
-            const pageMatR = new THREE.MeshStandardMaterial({ map: rightTexture, roughness: 0.85 });
+            const pageMatL = new THREE.MeshStandardMaterial({
+                map: leftTexture,
+                roughness: 1.0,
+                metalness: 0.0,
+                color: 0xffffff
+            });
+            const pageMatR = new THREE.MeshStandardMaterial({
+                map: rightTexture,
+                roughness: 1.0,
+                metalness: 0.0,
+                color: 0xffffff
+            });
 
             // Curved Left Page (slightly curved down into spine)
             const leftGeo = new THREE.PlaneGeometry(1.68, 2.28, 16, 16);
@@ -10388,12 +10554,18 @@ CREATE TABLE medical_certificates (
             turningFrontCanvas.height = 1448;
             turningFrontCtx = turningFrontCanvas.getContext('2d');
             turningFrontTexture = new THREE.CanvasTexture(turningFrontCanvas);
+            turningFrontTexture.colorSpace = THREE.SRGBColorSpace;
+            turningFrontTexture.minFilter = THREE.LinearFilter;
+            turningFrontTexture.generateMipmaps = false;
 
             turningBackCanvas = document.createElement('canvas');
             turningBackCanvas.width = 1024;
             turningBackCanvas.height = 1448;
             turningBackCtx = turningBackCanvas.getContext('2d');
             turningBackTexture = new THREE.CanvasTexture(turningBackCanvas);
+            turningBackTexture.colorSpace = THREE.SRGBColorSpace;
+            turningBackTexture.minFilter = THREE.LinearFilter;
+            turningBackTexture.generateMipmaps = false;
 
             const turningGeo = new THREE.PlaneGeometry(1.68, 2.28, 24, 24);
             turningGeo.rotateX(-Math.PI / 2);
@@ -10528,210 +10700,220 @@ CREATE TABLE medical_certificates (
             rightTexture.needsUpdate = true;
         }
 
-        /* 📖 High-Density Left Page Renderer (Full Page Fill) */
+        /* 📖 High-Density Left Page Renderer (Pitch-Black Sharp Typography & Rich Detailing) */
         function drawFullLeftPage(ctx, d) {
             const w = 1024, h = 1448;
-            ctx.fillStyle = '#faf7ef'; // Warm ivory archival book paper
+            // Bright Ivory Archival Book Stock
+            ctx.fillStyle = '#fefdfa';
             ctx.fillRect(0, 0, w, h);
 
+            // Subtle paper border frame
+            ctx.strokeStyle = '#e2d9c8';
+            ctx.lineWidth = 1;
+            ctx.strokeRect(36, 36, w - 72, h - 72);
+
             // Spine gutter fold shadow
-            const spineGrad = ctx.createLinearGradient(w - 90, 0, w, 0);
+            const spineGrad = ctx.createLinearGradient(w - 100, 0, w, 0);
             spineGrad.addColorStop(0, 'rgba(0,0,0,0)');
-            spineGrad.addColorStop(0.6, 'rgba(0,0,0,0.04)');
-            spineGrad.addColorStop(1, 'rgba(0,0,0,0.14)');
+            spineGrad.addColorStop(0.5, 'rgba(0,0,0,0.06)');
+            spineGrad.addColorStop(1, 'rgba(0,0,0,0.18)');
             ctx.fillStyle = spineGrad;
-            ctx.fillRect(w - 90, 0, 90, h);
+            ctx.fillRect(w - 100, 0, 100, h);
 
             const mx = 104;
             const cw = w - 190;
 
             // Running Header
-            ctx.fillStyle = '#005bbf';
-            ctx.font = 'bold 17px "JetBrains Mono", monospace';
+            ctx.fillStyle = '#002f6c';
+            ctx.font = 'bold 18px "JetBrains Mono", monospace';
             ctx.textAlign = 'left';
-            ctx.fillText(d.header.length > 52 ? d.header.slice(0, 50) + '...' : d.header, mx, 78);
+            ctx.fillText(d.header.length > 54 ? d.header.slice(0, 52) + '...' : d.header, mx, 76);
 
-            ctx.strokeStyle = '#cbd5e1';
-            ctx.lineWidth = 1.5;
+            ctx.strokeStyle = '#002f6c';
+            ctx.lineWidth = 2;
             ctx.beginPath();
-            ctx.moveTo(mx, 92);
-            ctx.lineTo(w - 86, 92);
+            ctx.moveTo(mx, 90);
+            ctx.lineTo(w - 86, 90);
             ctx.stroke();
 
-            let y = 138;
+            let y = 136;
 
             // Chapter Number Kicker
-            ctx.fillStyle = '#d97706';
-            ctx.font = 'bold 20px "JetBrains Mono", monospace';
+            ctx.fillStyle = '#b45309';
+            ctx.font = 'bold 22px "JetBrains Mono", monospace';
             ctx.fillText(`✦ CHAPTER ${d.chapterNum} ✦`, mx, y);
-            y += 32;
+            y += 34;
 
-            // Grand Chapter Title
-            ctx.fillStyle = '#090d16';
-            ctx.font = 'bold 40px "Cinzel", Georgia, serif';
-            y = wrapText(ctx, d.title, mx, y, cw, 48, 3);
-            y += 18;
+            // Grand Chapter Title (Pitch Black #000000 Bold Serif)
+            ctx.fillStyle = '#000000';
+            ctx.font = 'bold 42px "Cinzel", Georgia, serif';
+            y = wrapText(ctx, d.title, mx, y, cw, 50, 3);
+            y += 20;
 
-            // Gold ornament divider
+            // Rich Gold divider ribbon
             ctx.strokeStyle = '#d97706';
-            ctx.lineWidth = 2.5;
+            ctx.lineWidth = 3;
             ctx.beginPath();
             ctx.moveTo(mx, y);
-            ctx.lineTo(mx + 140, y);
+            ctx.lineTo(mx + 160, y);
             ctx.stroke();
-            y += 36;
+            y += 38;
 
             // Section 1 Heading
             ctx.fillStyle = '#003e8a';
-            ctx.font = 'bold 24px "Cinzel", Georgia, serif';
-            ctx.fillText(d.sec1, mx, y);
-            y += 34;
+            ctx.font = 'bold 26px "Cinzel", Georgia, serif';
+            ctx.fillText(`§ ${d.sec1}`, mx, y);
+            y += 36;
 
-            // Paragraph 1 with illuminated Drop Cap
-            ctx.fillStyle = '#0f172a';
+            // Paragraph 1 with illuminated Royal Blue Drop Cap
             const firstLetter = d.para1.charAt(0);
             const restPara1 = d.para1.slice(1);
 
-            ctx.font = 'bold 88px "Cinzel", Georgia, serif';
+            ctx.font = 'bold 92px "Cinzel", Georgia, serif';
             ctx.fillStyle = '#005bbf';
-            ctx.fillText(firstLetter, mx, y + 70);
+            ctx.fillText(firstLetter, mx, y + 74);
 
-            ctx.font = '500 23px "Merriweather", Georgia, serif';
-            ctx.fillStyle = '#0f172a';
-            y = wrapText(ctx, restPara1, mx + 88, y, cw - 88, 35, 3);
+            ctx.font = '600 23px "Merriweather", Georgia, serif';
+            ctx.fillStyle = '#000000';
+            y = wrapText(ctx, restPara1, mx + 92, y, cw - 92, 36, 3);
             y += 24;
 
-            // Paragraph 2
-            ctx.font = '500 23px "Merriweather", Georgia, serif';
-            ctx.fillStyle = '#0f172a';
-            y = wrapText(ctx, d.para2, mx, y, cw, 35, 4);
+            // Paragraph 2 (Deep Sharp Black)
+            ctx.font = '600 23px "Merriweather", Georgia, serif';
+            ctx.fillStyle = '#000000';
+            y = wrapText(ctx, d.para2, mx, y, cw, 36, 4);
             y += 28;
 
-            // Clinical Transition Metric Data Grid Box
-            ctx.fillStyle = 'rgba(2, 132, 199, 0.05)';
-            ctx.strokeStyle = 'rgba(2, 132, 199, 0.35)';
-            ctx.lineWidth = 1.5;
-            ctx.fillRect(mx, y, cw, 108);
-            ctx.strokeRect(mx, y, cw, 108);
+            // Clinical Transition Metric Data Grid Box (High Contrast)
+            ctx.fillStyle = '#f0f9ff';
+            ctx.strokeStyle = '#0284c7';
+            ctx.lineWidth = 2;
+            ctx.fillRect(mx, y, cw, 114);
+            ctx.strokeRect(mx, y, cw, 114);
 
             const colW = cw / 3;
             const metrics = [
-                { val: '2.3M+', lbl: 'Annual Readmissions', sub: 'Medicare CMS Data' },
-                { val: '$26B+', lbl: 'Economic Burden', sub: 'Annual Hospital Costs' },
-                { val: '72 Hours', lbl: 'Critical Window', sub: 'High Acuity Triage' }
+                { val: '2.3M+', lbl: 'Annual Readmissions', sub: 'Medicare CMS Data', color: '#0369a1' },
+                { val: '$26B+', lbl: 'Economic Burden', sub: 'Preventable Costs', color: '#b45309' },
+                { val: '72 Hours', lbl: 'Critical Care Window', sub: 'High Acuity Triage', color: '#047857' }
             ];
             metrics.forEach((m, i) => {
                 const cx = mx + colW * i + colW / 2;
                 ctx.textAlign = 'center';
-                ctx.fillStyle = '#0284c7';
-                ctx.font = 'bold 26px "JetBrains Mono", monospace';
-                ctx.fillText(m.val, cx, y + 36);
+                ctx.fillStyle = m.color;
+                ctx.font = 'bold 28px "JetBrains Mono", monospace';
+                ctx.fillText(m.val, cx, y + 38);
 
-                ctx.fillStyle = '#0f172a';
+                ctx.fillStyle = '#000000';
                 ctx.font = 'bold 15px "Inter", sans-serif';
-                ctx.fillText(m.lbl, cx, y + 64);
+                ctx.fillText(m.lbl, cx, y + 68);
 
-                ctx.fillStyle = '#64748b';
-                ctx.font = '13px "Inter", sans-serif';
-                ctx.fillText(m.sub, cx, y + 88);
+                ctx.fillStyle = '#475569';
+                ctx.font = 'bold 13px "Inter", sans-serif';
+                ctx.fillText(m.sub, cx, y + 92);
             });
             ctx.textAlign = 'left';
-            y += 134;
+            y += 142;
 
-            // Target Disease Cohorts Checklist
+            // Target Disease Cohorts Section
             ctx.fillStyle = '#003e8a';
-            ctx.font = 'bold 22px "Cinzel", Georgia, serif';
+            ctx.font = 'bold 23px "Cinzel", Georgia, serif';
             ctx.fillText('Key High-Acuity Target Disease Cohorts:', mx, y);
-            y += 30;
+            y += 32;
 
             d.listItems.forEach(item => {
                 ctx.fillStyle = '#d97706';
-                ctx.font = 'bold 18px "JetBrains Mono", monospace';
+                ctx.font = 'bold 20px "JetBrains Mono", monospace';
                 ctx.fillText('▸', mx + 6, y);
 
-                ctx.fillStyle = '#1e293b';
-                ctx.font = '500 21px "Merriweather", Georgia, serif';
-                y = wrapText(ctx, item, mx + 28, y, cw - 32, 31, 2);
+                ctx.fillStyle = '#000000';
+                ctx.font = '600 22px "Merriweather", Georgia, serif';
+                y = wrapText(ctx, item, mx + 30, y, cw - 34, 32, 2);
                 y += 10;
             });
 
             // Running Footer
-            ctx.fillStyle = '#64748b';
-            ctx.font = 'bold 19px "JetBrains Mono", monospace';
+            ctx.fillStyle = '#002f6c';
+            ctx.font = 'bold 20px "JetBrains Mono", monospace';
             ctx.textAlign = 'left';
             ctx.fillText(`- ${d.pageNum} -`, mx, h - 55);
 
-            ctx.fillStyle = '#94a3b8';
-            ctx.font = '15px "Inter", sans-serif';
+            ctx.fillStyle = '#475569';
+            ctx.font = 'bold 15px "Inter", sans-serif';
             ctx.textAlign = 'right';
             ctx.fillText("Hospital Readmission Predictor • Team Nexora", w - 86, h - 55);
             ctx.textAlign = 'left';
         }
 
-        /* 📖 High-Density Right Page Renderer (Full Page Fill) */
+        /* 📖 High-Density Right Page Renderer (Pitch-Black Sharp Typography & Rich Detailing) */
         function drawFullRightPage(ctx, d) {
             const w = 1024, h = 1448;
-            ctx.fillStyle = '#faf7ef'; // Warm ivory archival book paper
+            ctx.fillStyle = '#fefdfa';
             ctx.fillRect(0, 0, w, h);
 
+            // Subtle paper border frame
+            ctx.strokeStyle = '#e2d9c8';
+            ctx.lineWidth = 1;
+            ctx.strokeRect(36, 36, w - 72, h - 72);
+
             // Spine gutter fold shadow
-            const spineGrad = ctx.createLinearGradient(0, 0, 90, 0);
-            spineGrad.addColorStop(0, 'rgba(0,0,0,0.14)');
-            spineGrad.addColorStop(0.4, 'rgba(0,0,0,0.04)');
+            const spineGrad = ctx.createLinearGradient(0, 0, 100, 0);
+            spineGrad.addColorStop(0, 'rgba(0,0,0,0.18)');
+            spineGrad.addColorStop(0.5, 'rgba(0,0,0,0.06)');
             spineGrad.addColorStop(1, 'rgba(0,0,0,0)');
             ctx.fillStyle = spineGrad;
-            ctx.fillRect(0, 0, 90, h);
+            ctx.fillRect(0, 0, 100, h);
 
             const mx = 86;
             const cw = w - 190;
 
             // Running Header
-            ctx.fillStyle = '#64748b';
-            ctx.font = 'bold 17px "JetBrains Mono", monospace';
+            ctx.fillStyle = '#002f6c';
+            ctx.font = 'bold 18px "JetBrains Mono", monospace';
             ctx.textAlign = 'right';
-            ctx.fillText(d.header, w - mx, 78);
+            ctx.fillText(d.header, w - mx, 76);
             ctx.textAlign = 'left';
 
-            ctx.strokeStyle = '#cbd5e1';
-            ctx.lineWidth = 1.5;
+            ctx.strokeStyle = '#002f6c';
+            ctx.lineWidth = 2;
             ctx.beginPath();
-            ctx.moveTo(mx, 92);
-            ctx.lineTo(w - mx, 92);
+            ctx.moveTo(mx, 90);
+            ctx.lineTo(w - mx, 90);
             ctx.stroke();
 
-            let y = 138;
+            let y = 136;
 
             // Section 2 Heading
             ctx.fillStyle = '#003e8a';
-            ctx.font = 'bold 24px "Cinzel", Georgia, serif';
-            ctx.fillText(d.sec2, mx, y);
-            y += 34;
+            ctx.font = 'bold 26px "Cinzel", Georgia, serif';
+            ctx.fillText(`§ ${d.sec2}`, mx, y);
+            y += 36;
 
-            // Paragraph 3 (Dense analytical body text)
-            ctx.font = '500 23px "Merriweather", Georgia, serif';
-            ctx.fillStyle = '#0f172a';
-            y = wrapText(ctx, d.para3, mx, y, cw, 35, 5);
+            // Paragraph 3 (Pitch Black #000000 Body Text)
+            ctx.font = '600 23px "Merriweather", Georgia, serif';
+            ctx.fillStyle = '#000000';
+            y = wrapText(ctx, d.para3, mx, y, cw, 36, 5);
             y += 28;
 
             // Prominent Clinical Triage Directive Callout Box
-            ctx.fillStyle = '#f0fdf4'; // Soft clinical sage tint
-            ctx.strokeStyle = '#10b981';
-            ctx.lineWidth = 2;
-            ctx.fillRect(mx, y, cw, 230);
-            ctx.strokeRect(mx, y, cw, 230);
+            ctx.fillStyle = '#f0fdf4'; // Light clinical sage
+            ctx.strokeStyle = '#059669';
+            ctx.lineWidth = 2.5;
+            ctx.fillRect(mx, y, cw, 234);
+            ctx.strokeRect(mx, y, cw, 234);
 
             // Callout Title
             ctx.fillStyle = '#065f46';
-            ctx.font = 'bold 22px "Inter", sans-serif';
-            ctx.fillText('🩺 CLINICAL REALITY & TRIAGE PROTOCOL', mx + 24, y + 38);
+            ctx.font = 'bold 23px "Inter", sans-serif';
+            ctx.fillText('🩺 CLINICAL REALITY & TRIAGE PROTOCOL', mx + 24, y + 40);
 
-            // Callout Body
-            ctx.fillStyle = '#1e293b';
-            ctx.font = '500 21px "Merriweather", Georgia, serif';
-            wrapText(ctx, d.callout, mx + 24, y + 74, cw - 48, 32, 3);
+            // Callout Body (Pitch Black)
+            ctx.fillStyle = '#000000';
+            ctx.font = '600 21px "Merriweather", Georgia, serif';
+            wrapText(ctx, d.callout, mx + 24, y + 78, cw - 48, 33, 3);
 
             // Protocol Checklist Badges
-            const pBoxY = y + 172;
+            const pBoxY = y + 176;
             const badges = [
                 { icon: '✓', text: 'Physician Review < 72h' },
                 { icon: '✓', text: 'Pharmacy MTM Reconciliation' },
@@ -10741,63 +10923,66 @@ CREATE TABLE medical_certificates (
             badges.forEach((b, i) => {
                 const bx = mx + 24 + (badgeW + 10) * i;
                 ctx.fillStyle = '#dcfce7';
-                ctx.strokeStyle = '#86efac';
-                ctx.lineWidth = 1;
-                ctx.fillRect(bx, pBoxY, badgeW, 36);
-                ctx.strokeRect(bx, pBoxY, badgeW, 36);
+                ctx.strokeStyle = '#16a34a';
+                ctx.lineWidth = 1.5;
+                ctx.fillRect(bx, pBoxY, badgeW, 38);
+                ctx.strokeRect(bx, pBoxY, badgeW, 38);
 
-                ctx.fillStyle = '#15803d';
-                ctx.font = 'bold 13px "Inter", sans-serif';
+                ctx.fillStyle = '#14532d';
+                ctx.font = 'bold 14px "Inter", sans-serif';
                 ctx.textAlign = 'center';
-                ctx.fillText(`${b.icon} ${b.text}`, bx + badgeW / 2, pBoxY + 23);
+                ctx.fillText(`${b.icon} ${b.text}`, bx + badgeW / 2, pBoxY + 24);
             });
             ctx.textAlign = 'left';
-            y += 262;
+            y += 268;
 
-            // Section 3: Architectural Takeaways
+            // Section 3: Architectural Takeaways Heading
             ctx.fillStyle = '#003e8a';
-            ctx.font = 'bold 24px "Cinzel", Georgia, serif';
-            ctx.fillText(d.sec3, mx, y);
-            y += 34;
+            ctx.font = 'bold 26px "Cinzel", Georgia, serif';
+            ctx.fillText(`§ ${d.sec3}`, mx, y);
+            y += 36;
 
             d.takeaways.forEach((tk, idx) => {
                 // Circular numbered badge
-                ctx.fillStyle = '#0284c7';
+                ctx.fillStyle = '#005bbf';
                 ctx.beginPath();
-                ctx.arc(mx + 14, y + 8, 12, 0, Math.PI * 2);
+                ctx.arc(mx + 14, y + 9, 13, 0, Math.PI * 2);
                 ctx.fill();
 
                 ctx.fillStyle = '#ffffff';
-                ctx.font = 'bold 13px "Inter", sans-serif';
+                ctx.font = 'bold 14px "Inter", sans-serif';
                 ctx.textAlign = 'center';
-                ctx.fillText(String(idx + 1), mx + 14, y + 13);
+                ctx.fillText(String(idx + 1), mx + 14, y + 14);
                 ctx.textAlign = 'left';
 
-                ctx.fillStyle = '#0f172a';
-                ctx.font = '500 21px "Merriweather", Georgia, serif';
-                y = wrapText(ctx, tk, mx + 38, y, cw - 44, 32, 2);
+                ctx.fillStyle = '#000000';
+                ctx.font = '600 22px "Merriweather", Georgia, serif';
+                y = wrapText(ctx, tk, mx + 40, y, cw - 46, 33, 2);
                 y += 14;
             });
             y += 18;
 
-            // Validation Metric Ribbon Pill
-            ctx.fillStyle = '#0f172a';
-            ctx.fillRect(mx, y, cw, 54);
+            // Validation Metric Ribbon Pill (Pitch Black Background with Neon Cyan Text)
+            ctx.fillStyle = '#050c1e';
+            ctx.fillRect(mx, y, cw, 56);
+            ctx.strokeStyle = '#38bdf8';
+            ctx.lineWidth = 1.5;
+            ctx.strokeRect(mx, y, cw, 56);
 
             ctx.fillStyle = '#38bdf8';
-            ctx.font = 'bold 18px "JetBrains Mono", monospace';
+            ctx.font = 'bold 19px "JetBrains Mono", monospace';
             ctx.textAlign = 'center';
-            ctx.fillText(`✦ ${d.keyMetric} ✦`, mx + cw / 2, y + 34);
+            ctx.fillText(`✦ ${d.keyMetric} ✦`, mx + cw / 2, y + 35);
             ctx.textAlign = 'left';
 
             // Running Footer
-            ctx.fillStyle = '#94a3b8';
-            ctx.font = '15px "Inter", sans-serif';
+            ctx.fillStyle = '#475569';
+            ctx.font = 'bold 15px "Inter", sans-serif';
             ctx.textAlign = 'left';
             ctx.fillText(`Executive Clinical Treatise • 88 Chapters`, mx, h - 55);
 
-            ctx.fillStyle = '#64748b';
-            ctx.font = 'bold 19px "JetBrains Mono", monospace';
+            ctx.fillStyle = '#002f6c';
+            ctx.font = 'bold 20px "JetBrains Mono", monospace';
             ctx.textAlign = 'right';
             ctx.fillText(`- ${d.pageNum} -`, w - mx, h - 55);
             ctx.textAlign = 'left';
@@ -11547,6 +11732,7 @@ CREATE TABLE medical_certificates (
             cycleFan,
             toggleFullscreen,
             updateFullscreenUI,
+            toggleHUD,
             openArtworkViewer,
             closeArtworkViewer,
             setWeather,
@@ -11580,6 +11766,8 @@ CREATE TABLE medical_certificates (
             StudyRoom3D.cycleFan();
         } else if (e.key.toLowerCase() === 'f') {
             StudyRoom3D.toggleFullscreen();
+        } else if (e.key.toLowerCase() === 'h' || e.key.toLowerCase() === 'z') {
+            StudyRoom3D.toggleHUD();
         } else if (e.key.toLowerCase() === 't') {
             StudyRoom3D.toggleTV();
         } else if (e.key.toLowerCase() === 'o') {

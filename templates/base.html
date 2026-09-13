@@ -622,7 +622,7 @@
                             <span class="material-symbols-outlined text-[14px] text-secondary">expand_more</span>
                         </button>
                         <!-- Language Menu Dropdown (7 Languages) — Solid Opaque Card -->
-                        <div id="lang-dropdown-menu" class="hidden absolute right-0 mt-2 w-56 sm:w-60 rounded-2xl p-2.5 z-[9999] animate-scale-up space-y-1" style="background:#ffffff !important; border:1px solid #cbd5e1 !important; box-shadow: 0 20px 40px -10px rgba(0,0,0,0.22), 0 0 0 1px rgba(0,0,0,0.06) !important;">
+                        <div id="lang-dropdown-menu" class="hidden absolute right-0 mt-2 w-56 sm:w-60 max-w-[calc(100vw-24px)] rounded-2xl p-2.5 z-[9999] animate-scale-up space-y-1" style="background:#ffffff !important; border:1px solid #cbd5e1 !important; box-shadow: 0 20px 40px -10px rgba(0,0,0,0.22), 0 0 0 1px rgba(0,0,0,0.06) !important;">
                             <div class="px-2.5 py-1.5 border-b border-slate-100 mb-1 flex items-center justify-between">
                                 <span class="text-[10px] font-extrabold uppercase tracking-wider text-secondary" data-i18n="language">Choose Language</span>
                                 <span class="text-[9px] text-primary font-mono font-extrabold bg-primary/10 px-1.5 py-0.5 rounded-full">7 Languages</span>
@@ -713,7 +713,7 @@
                         </button>
 
                         <!-- Notification Dropdown Popover (Solid Opaque, High-Z) -->
-                        <div id="notifications-dropdown-menu" class="hidden absolute right-0 mt-2 w-80 sm:w-96 rounded-3xl p-3 z-[9999] animate-scale-up space-y-2" style="background:#ffffff !important; border:1px solid #cbd5e1 !important; box-shadow: 0 20px 40px -10px rgba(0,0,0,0.22), 0 0 0 1px rgba(0,0,0,0.06) !important;">
+                        <div id="notifications-dropdown-menu" class="hidden absolute right-0 mt-2 w-80 sm:w-96 max-w-[calc(100vw-20px)] rounded-3xl p-3 z-[9999] animate-scale-up space-y-2" style="background:#ffffff !important; border:1px solid #cbd5e1 !important; box-shadow: 0 20px 40px -10px rgba(0,0,0,0.22), 0 0 0 1px rgba(0,0,0,0.06) !important;">
                             <div class="flex items-center justify-between px-2.5 py-1.5 border-b border-surface-variant">
                                 <div class="flex items-center gap-1.5">
                                     <span class="material-symbols-outlined text-primary text-base">notifications_active</span>
@@ -1016,8 +1016,8 @@
         <!-- ================================================================= -->
         <nav class="fixed bottom-0 left-0 w-full z-40 flex justify-around items-center
                     px-2 md:hidden"
-             style="height: 64px;
-                    padding-bottom: env(safe-area-inset-bottom, 4px);
+             style="height: calc(64px + env(safe-area-inset-bottom, 0px));
+                    padding-bottom: env(safe-area-inset-bottom, 8px);
                     background: rgba(255, 255, 255, 0.96);
                     backdrop-filter: blur(20px) saturate(180%);
                     -webkit-backdrop-filter: blur(20px) saturate(180%);
