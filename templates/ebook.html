@@ -16,6 +16,11 @@
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;900&family=Merriweather:ital,wght@0,300;0,400;0,700;1,300;1,400&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
 
+    <!-- 🎮 Three.js 3D WebGL Engine, OrbitControls & TWEEN for 3D Study Room & Book Simulator -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tween.js/18.6.4/tween.umd.js"></script>
+
     <style>
         :root {
             --primary: #005bbf;
@@ -31,6 +36,9 @@
             --warning-bg: #fffbeb;
             --warning-border: #f59e0b;
             --book-font-size: 16px;
+            --book-line-height: 1.78;
+            --book-max-width: 1020px;
+            --book-text-align: left;
         }
 
         /* 📜 Sepia Paper Theme */
@@ -108,7 +116,7 @@
         * { box-sizing: border-box; }
         body {
             font-size: var(--book-font-size);
-            line-height: 1.78;
+            line-height: var(--book-line-height, 1.78);
             color: var(--text-main);
             background: var(--bg-page);
             margin: 0;
@@ -118,10 +126,11 @@
 
         /* 3D Book Layout Container with Realistic Hardcover Depth */
         .book-viewport {
-            max-width: 1020px;
+            max-width: var(--book-max-width, 1020px);
             margin: 28px auto 60px;
             padding: 0 16px;
             perspective: 1600px;
+            transition: max-width 0.3s ease;
         }
 
         .book-container {
@@ -136,6 +145,8 @@
                 inset 24px 0 28px -12px rgba(0, 0, 0, 0.08); /* Spine depth shading */
             overflow-x: hidden;
             word-wrap: break-word;
+            line-height: var(--book-line-height, 1.78);
+            text-align: var(--book-text-align, left);
             transition: transform 0.45s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.3s ease;
             transform-style: preserve-3d;
         }
@@ -1887,12 +1898,668 @@
             background: linear-gradient(135deg, #10b981, #047857) !important;
             box-shadow: 0 4px 16px rgba(16, 185, 129, 0.5) !important;
         }
+
+        /* 📖 Resume Reading Floating Banner */
+        #resume-reading-banner {
+            position: fixed;
+            top: 66px;
+            left: 50%;
+            transform: translateX(-50%) translateY(-20px);
+            background: rgba(15, 23, 42, 0.94);
+            color: #f8fafc;
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1.5px solid rgba(56, 189, 248, 0.4);
+            border-radius: 16px;
+            padding: 10px 18px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            box-shadow: 0 14px 40px rgba(0,0,0,0.45);
+            z-index: 100015;
+            opacity: 0;
+            pointer-events: none;
+            transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+            max-width: min(520px, 92vw);
+        }
+        #resume-reading-banner.is-visible {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+            pointer-events: auto;
+        }
+
+        /* 🖍️ Text Highlighting & Annotations Popover Toolbar */
+        #text-highlight-popup {
+            position: absolute;
+            z-index: 100025;
+            background: #0f172a;
+            color: white;
+            border: 1px solid rgba(255,255,255,0.18);
+            border-radius: 30px;
+            padding: 6px 10px;
+            display: none;
+            align-items: center;
+            gap: 7px;
+            box-shadow: 0 12px 30px rgba(0,0,0,0.5);
+            transform: translate(-50%, -100%) translateY(-10px);
+            animation: hlPopupFade 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        @keyframes hlPopupFade {
+            from { opacity: 0; transform: translate(-50%, -90%) translateY(-5px); }
+            to { opacity: 1; transform: translate(-50%, -100%) translateY(-10px); }
+        }
+        .hl-dot-btn {
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            border: 2px solid white;
+            cursor: pointer;
+            transition: transform 0.15s ease;
+        }
+        .hl-dot-btn:hover { transform: scale(1.25); }
+        .hl-dot-yellow { background: #facc15; }
+        .hl-dot-emerald { background: #10b981; }
+        .hl-dot-cyan { background: #06b6d4; }
+        .hl-dot-purple { background: #a855f7; }
+
+        /* Highlight classes in book body */
+        mark.user-hl-yellow { background: rgba(250, 204, 21, 0.42); border-radius: 4px; padding: 1px 3px; }
+        mark.user-hl-emerald { background: rgba(16, 185, 129, 0.38); border-radius: 4px; padding: 1px 3px; }
+        mark.user-hl-cyan { background: rgba(6, 182, 212, 0.38); border-radius: 4px; padding: 1px 3px; }
+        mark.user-hl-purple { background: rgba(168, 85, 247, 0.38); border-radius: 4px; padding: 1px 3px; }
+
+        .highlight-item-card {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            gap: 10px;
+            padding: 11px 13px;
+            margin: 5px 12px;
+            border-radius: 12px;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            transition: all 0.2s ease;
+            cursor: pointer;
+        }
+        .highlight-item-card:hover {
+            border-color: var(--primary);
+            transform: translateX(3px);
+            box-shadow: 0 4px 12px rgba(0, 91, 191, 0.1);
+        }
+        .highlight-color-badge {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            flex-shrink: 0;
+            margin-top: 4px;
+        }
+
+        /* 🎙️ Continuous TTS Active Reading Glow */
+        .tts-reading-active {
+            background: rgba(56, 189, 248, 0.12) !important;
+            border-left: 4px solid #0284c7 !important;
+            padding-left: 12px !important;
+            border-radius: 6px;
+            transition: all 0.25s ease;
+            box-shadow: 0 0 24px rgba(56, 189, 248, 0.18);
+        }
+        body.theme-night .tts-reading-active {
+            background: rgba(56, 189, 248, 0.22) !important;
+            border-left-color: #38bdf8 !important;
+        }
+        body.theme-sepia .tts-reading-active {
+            background: rgba(245, 158, 11, 0.18) !important;
+            border-left-color: #d97706 !important;
+        }
+
+        /* 📑 TOC Part Filter Chips */
+        .toc-part-chips {
+            display: flex;
+            gap: 6px;
+            overflow-x: auto;
+            padding: 8px 16px;
+            border-bottom: 1px solid var(--border);
+            background: rgba(0, 91, 191, 0.02);
+            scrollbar-width: none;
+        }
+        .toc-part-chips::-webkit-scrollbar { display: none; }
+        .toc-chip {
+            padding: 4px 10px;
+            border-radius: 9999px;
+            font-size: 11px;
+            font-weight: 700;
+            border: 1px solid var(--border);
+            background: var(--bg-card);
+            color: var(--text-muted);
+            cursor: pointer;
+            white-space: nowrap;
+            transition: all 0.2s ease;
+        }
+        .toc-chip.active, .toc-chip:hover {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+
+        /* Chapter Read Completed Badge */
+        .toc-read-badge {
+            font-size: 10.5px;
+            color: #10b981;
+            display: inline-flex;
+            align-items: center;
+            margin-left: 4px;
+            opacity: 0.9;
+        }
+
+        /* 📋 Copy Code & Formula Buttons */
+        .code-block {
+            position: relative;
+        }
+        .code-copy-btn {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            background: rgba(15, 23, 42, 0.75);
+            color: #e2e8f0;
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            border-radius: 6px;
+            padding: 3px 8px;
+            font-size: 11px;
+            font-family: 'JetBrains Mono', monospace;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            opacity: 0.75;
+        }
+        .code-block:hover .code-copy-btn { opacity: 1; }
+        .code-copy-btn:hover {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+
+        /* 📊 Reading Analytics & Shortcuts Modals */
+        .reader-modal-backdrop {
+            position: fixed;
+            inset: 0;
+            background: rgba(10, 25, 47, 0.7);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            z-index: 100030;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 16px;
+        }
+        .reader-modal-backdrop.is-open {
+            opacity: 1;
+            pointer-events: auto;
+        }
+        .reader-modal-card {
+            background: var(--bg-card);
+            border: 1.5px solid var(--border);
+            border-radius: 20px;
+            box-shadow: 0 24px 60px rgba(0,0,0,0.4);
+            width: 100%;
+            max-width: 520px;
+            max-height: 85vh;
+            overflow-y: auto;
+            padding: 24px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            transform: scale(0.95);
+            transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .reader-modal-backdrop.is-open .reader-modal-card {
+            transform: scale(1);
+        }
+
+        /* 🔝 Floating Back to Top Button */
+        #back-to-top-btn {
+            position: fixed;
+            bottom: calc(76px + env(safe-area-inset-bottom, 0px));
+            right: 18px;
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            background: var(--bg-card);
+            color: var(--primary);
+            border: 1.5px solid var(--border);
+            box-shadow: 0 8px 24px rgba(0,0,0,0.18);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            z-index: 92;
+            opacity: 0;
+            pointer-events: none;
+            transform: translateY(12px);
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        #back-to-top-btn.is-visible {
+            opacity: 1;
+            pointer-events: auto;
+            transform: translateY(0);
+        }
+        #back-to-top-btn:hover {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+            transform: translateY(-3px);
+        }
+
+        /* 📜 Hands-Free Auto-Scroll Indicator */
+        #auto-scroll-indicator {
+            position: fixed;
+            top: 68px;
+            right: 16px;
+            background: rgba(15, 23, 42, 0.9);
+            color: #38bdf8;
+            border: 1px solid rgba(56, 189, 248, 0.3);
+            border-radius: 9999px;
+            padding: 5px 12px;
+            font-size: 11.5px;
+            font-weight: 700;
+            display: none;
+            align-items: center;
+            gap: 6px;
+            z-index: 100018;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.3);
+        }
+        #auto-scroll-indicator.is-active { display: flex; }
+
+        /* 🎮 3D Interactive Study Room & Book Simulator Environment */
+        #study-room-3d-overlay {
+            position: fixed;
+            inset: 0;
+            z-index: 100060;
+            background: #070a12;
+            display: none;
+            opacity: 0;
+            transition: opacity 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            overflow: hidden;
+            user-select: none;
+            -webkit-user-select: none;
+        }
+        #study-room-3d-overlay.is-active {
+            display: block;
+            opacity: 1;
+        }
+        #study-room-canvas-container {
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            inset: 0;
+            cursor: grab;
+        }
+        #study-room-canvas-container:active {
+            cursor: grabbing;
+        }
+
+        /* 3D Glassmorphic Top HUD */
+        .study-3d-hud {
+            position: absolute;
+            top: 14px;
+            left: 14px;
+            right: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+            z-index: 100065;
+            pointer-events: none;
+            flex-wrap: wrap;
+        }
+        .study-3d-hud-group {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            background: rgba(15, 23, 42, 0.82);
+            backdrop-filter: blur(14px);
+            -webkit-backdrop-filter: blur(14px);
+            border: 1px solid rgba(255, 255, 255, 0.14);
+            border-radius: 14px;
+            padding: 5px 8px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.45);
+            pointer-events: auto;
+        }
+        .study-3d-btn {
+            background: transparent;
+            border: none;
+            color: #cbd5e1;
+            font-size: 11.5px;
+            font-weight: 600;
+            padding: 6px 10px;
+            border-radius: 9px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            transition: all 0.2s ease;
+        }
+        .study-3d-btn:hover {
+            background: rgba(255, 255, 255, 0.12);
+            color: #ffffff;
+        }
+        .study-3d-btn.active {
+            background: linear-gradient(135deg, #0284c7, #0369a1);
+            color: #ffffff;
+            box-shadow: 0 2px 10px rgba(2, 132, 199, 0.4);
+        }
+        .study-3d-btn-accent {
+            background: rgba(56, 189, 248, 0.15);
+            color: #38bdf8;
+            border: 1px solid rgba(56, 189, 248, 0.3);
+        }
+        .study-3d-btn-accent:hover {
+            background: rgba(56, 189, 248, 0.28);
+            color: #ffffff;
+        }
+        .study-3d-select {
+            background: rgba(15, 23, 42, 0.9);
+            color: #f1f5f9;
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            border-radius: 9px;
+            padding: 5px 8px;
+            font-size: 11.5px;
+            font-weight: 600;
+            outline: none;
+            cursor: pointer;
+        }
+
+        /* 3D Bottom Floating Page Turn Nav */
+        .study-3d-bottom-nav {
+            position: absolute;
+            bottom: 22px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            z-index: 100065;
+            background: rgba(15, 23, 42, 0.88);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            border-radius: 9999px;
+            padding: 8px 18px;
+            box-shadow: 0 12px 36px rgba(0, 0, 0, 0.55);
+            pointer-events: auto;
+        }
+        .study-3d-page-btn {
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            color: #f8fafc;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .study-3d-page-btn:hover {
+            background: #0284c7;
+            border-color: #38bdf8;
+            transform: scale(1.08);
+        }
+        .study-3d-title-chip {
+            color: #f8fafc;
+            font-size: 12.5px;
+            font-weight: 700;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            max-width: 260px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            line-height: 1.25;
+            cursor: pointer;
+        }
+        .study-3d-subtext {
+            font-size: 10px;
+            color: #94a3b8;
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        /* 3D Cozy Interaction Toast */
+        #study-room-toast {
+            position: absolute;
+            top: 76px;
+            left: 50%;
+            transform: translateX(-50%) translateY(-20px);
+            background: rgba(15, 23, 42, 0.92);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(56, 189, 248, 0.3);
+            border-radius: 9999px;
+            padding: 7px 18px;
+            color: #f8fafc;
+            font-size: 12px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            z-index: 100070;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+            opacity: 0;
+            pointer-events: none;
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        #study-room-toast.is-visible {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+        }
+
+        /* 3D Loading Spinner */
+        #study-room-loading {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: #070a12;
+            z-index: 100062;
+            color: #f8fafc;
+            transition: opacity 0.5s ease;
+        }
+
+        /* Floating Quick Switch Badge on Treatise Page */
+        #quick-study-room-badge {
+            position: fixed;
+            bottom: 74px;
+            left: 20px;
+            z-index: 100010;
+            background: linear-gradient(135deg, #0284c7, #0369a1);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 9999px;
+            box-shadow: 0 6px 20px rgba(2, 132, 199, 0.4);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 12px;
+            font-weight: 700;
+            cursor: pointer;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        #quick-study-room-badge:hover {
+            transform: translateY(-3px) scale(1.04);
+            box-shadow: 0 10px 28px rgba(2, 132, 199, 0.55);
+        }
+        @media (max-width: 640px) {
+            #quick-study-room-badge {
+                bottom: 68px;
+                left: 12px;
+                padding: 6px 12px;
+                font-size: 11px;
+            }
+            .study-3d-hud {
+                top: 8px;
+                left: 8px;
+                right: 8px;
+                gap: 6px;
+            }
+            .study-3d-hud-group {
+                padding: 4px 6px;
+                gap: 4px;
+            }
+            .study-3d-btn {
+                font-size: 10.5px;
+                padding: 5px 7px;
+            }
+            .study-3d-bottom-nav {
+                bottom: 14px;
+                padding: 6px 14px;
+                gap: 8px;
+            }
+        }
     </style>
 </head>
 <body class="font-serif">
     
     <!-- Top Reading Progress Bar -->
     <div id="reading-progress-track"></div>
+
+    <!-- 🎮 3D Interactive Study Room & Book Simulator Overlay -->
+    <div id="study-room-3d-overlay">
+        <div id="study-room-canvas-container"></div>
+
+        <!-- 3D Loading Screen -->
+        <div id="study-room-loading">
+            <div style="width: 54px; height: 54px; border-radius: 16px; background: linear-gradient(135deg, #0284c7, #0369a1); display: flex; align-items: center; justify-content: center; box-shadow: 0 8px 24px rgba(2, 132, 199, 0.4); margin-bottom: 14px;">
+                <span class="material-symbols-outlined text-[30px] animate-spin" style="color: white;">view_in_ar</span>
+            </div>
+            <strong style="font-family: 'Cinzel', serif; font-size: 16px; color: #f8fafc; letter-spacing: 0.5px;">Initializing 3D Study Room &amp; Book Simulator...</strong>
+            <p style="font-size: 11.5px; color: #94a3b8; margin-top: 4px;">Procedural Mahogany Desk • Brass Lamp • 88-Chapter 3D Book</p>
+        </div>
+
+        <!-- 3D Top Glassmorphic HUD -->
+        <div class="study-3d-hud">
+            <!-- Left: Exit & Chapter Selection -->
+            <div class="study-3d-hud-group">
+                <button onclick="toggleStudyRoom3D()" class="study-3d-btn" title="Exit 3D Room back to Standard Reader (Esc)" style="color: #f87171;">
+                    <span class="material-symbols-outlined text-[16px]">close</span>
+                    <span>Exit 3D</span>
+                </button>
+                <div style="width: 1px; height: 16px; background: rgba(255,255,255,0.15);"></div>
+                <select id="study-3d-chapter-select" onchange="StudyRoom3D.jumpToChapter(this.value)" class="study-3d-select" title="Jump to Chapter">
+                    <option value="1">Ch. 1: Clinical Problem Formulation</option>
+                </select>
+                <button onclick="toggleTTS()" class="study-3d-btn" title="Listen to AI Audio Narration in 3D Room">
+                    <span class="material-symbols-outlined text-[15px]">volume_up</span>
+                    <span class="desktop-only">Audio Read</span>
+                </button>
+            </div>
+
+            <!-- Middle: Camera Presets -->
+            <div class="study-3d-hud-group">
+                <button id="cam-preset-reading" onclick="StudyRoom3D.setCameraPreset('reading')" class="study-3d-btn active" title="Top-down Ergonomic Reading Slant">
+                    <span class="material-symbols-outlined text-[15px]">menu_book</span>
+                    <span>Reading</span>
+                </button>
+                <button id="cam-preset-desk" onclick="StudyRoom3D.setCameraPreset('desk')" class="study-3d-btn" title="Sitting at Study Desk Perspective">
+                    <span class="material-symbols-outlined text-[15px]">desk</span>
+                    <span>Desk</span>
+                </button>
+                <button id="cam-preset-room" onclick="StudyRoom3D.setCameraPreset('room')" class="study-3d-btn" title="Cozy Library Diorama Isometric View">
+                    <span class="material-symbols-outlined text-[15px]">cottage</span>
+                    <span>Room</span>
+                </button>
+                <button id="cam-preset-orbit" onclick="StudyRoom3D.setCameraPreset('orbit')" class="study-3d-btn" title="Free 360° Mouse / Touch Rotation">
+                    <span class="material-symbols-outlined text-[15px]">360</span>
+                    <span>Orbit</span>
+                </button>
+            </div>
+
+            <!-- Right: Weather, Ambient Audio & Game Toys -->
+            <div class="study-3d-hud-group">
+                <select id="study-3d-weather-select" onchange="StudyRoom3D.setWeather(this.value)" class="study-3d-select" title="Change Study Window Weather">
+                    <option value="rain">🌧️ Rain</option>
+                    <option value="night">🌙 Night</option>
+                    <option value="sunset">🌅 Sunset</option>
+                </select>
+                <select id="study-3d-audio-select" onchange="StudyRoom3D.setAmbientSound(this.value)" class="study-3d-select" title="Synthesized Ambient Study Lofi">
+                    <option value="rain">🌧️ Rain ASMR</option>
+                    <option value="fire">🔥 Fireplace</option>
+                    <option value="cafe">☕ Cafe</option>
+                    <option value="night">🌙 Crickets</option>
+                    <option value="none">🔇 Mute</option>
+                </select>
+                <button onclick="StudyRoom3D.toggleLamp()" id="study-3d-lamp-btn" class="study-3d-btn" title="Toggle Desk Lamp (L)">
+                    <span class="material-symbols-outlined text-[15px]">lightbulb</span>
+                </button>
+                <button onclick="StudyRoom3D.sipCoffee()" class="study-3d-btn" title="Take a Sip of Warm Coffee">
+                    <span class="material-symbols-outlined text-[15px]">coffee</span>
+                </button>
+                <button onclick="StudyRoom3D.togglePomodoro()" class="study-3d-btn study-3d-btn-accent" title="Pomodoro Study Timer (P)">
+                    <span class="material-symbols-outlined text-[15px]">timer</span>
+                    <span id="study-3d-pomodoro-text">25:00</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- 3D Bottom Floating Page Turn Nav -->
+        <div class="study-3d-bottom-nav">
+            <button class="study-3d-page-btn" onclick="StudyRoom3D.prevPage()" title="Previous Chapter / Page (← or A)">
+                <span class="material-symbols-outlined text-[20px]">chevron_left</span>
+            </button>
+            <div class="study-3d-title-chip" onclick="toggleTOC()" title="Click to view Chapter List">
+                <span id="study-3d-bottom-ch-title">Chapter 1: Clinical Problem Formulation</span>
+                <span class="study-3d-subtext" id="study-3d-bottom-page-num">Chapter 1 of 88 • Click 3D pages to turn</span>
+            </div>
+            <button class="study-3d-page-btn" onclick="StudyRoom3D.nextPage()" title="Next Chapter / Page (→ or Space or D)">
+                <span class="material-symbols-outlined text-[20px]">chevron_right</span>
+            </button>
+        </div>
+
+        <!-- 3D Cozy Toast Notification -->
+        <div id="study-room-toast">
+            <span class="material-symbols-outlined text-[16px]" id="study-toast-icon">check_circle</span>
+            <span id="study-toast-msg">Cozy notification</span>
+        </div>
+    </div>
+
+    <!-- Floating Quick Switch to 3D Simulator Badge -->
+    <div id="quick-study-room-badge" onclick="toggleStudyRoom3D()" class="no-print" title="Enter 3D Study Room &amp; Book Simulator">
+        <span class="material-symbols-outlined text-[18px]">view_in_ar</span>
+        <span>3D Study Simulator</span>
+    </div>
+
+    <!-- 📖 Resume Reading Floating Banner -->
+    <div id="resume-reading-banner" class="no-print">
+        <span class="material-symbols-outlined text-[20px]" style="color: #38bdf8;">auto_stories</span>
+        <div style="flex: 1; font-size: 12px; line-height: 1.3;">
+            <div style="font-weight: 700; color: #f8fafc;">Welcome back to HRP Treatise!</div>
+            <div id="resume-chapter-text" style="color: #94a3b8; font-size: 11px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 240px;">Resume last read position</div>
+        </div>
+        <button onclick="resumeReadingPosition()" class="hud-btn hud-btn-primary" style="padding: 5px 12px; font-size: 11px;">Resume ➔</button>
+        <button onclick="dismissResumeBanner()" style="background: none; border: none; color: #94a3b8; cursor: pointer; padding: 2px; font-size: 14px;">✕</button>
+    </div>
+
+    <!-- 🖍️ Selection Highlight Toolbar Popover -->
+    <div id="text-highlight-popup" class="no-print">
+        <button class="hl-dot-btn hl-dot-yellow" onclick="applyTextHighlight('yellow')" title="Key Concept (Yellow)"></button>
+        <button class="hl-dot-btn hl-dot-emerald" onclick="applyTextHighlight('emerald')" title="Clinical Finding (Green)"></button>
+        <button class="hl-dot-btn hl-dot-cyan" onclick="applyTextHighlight('cyan')" title="Data / Metric (Cyan)"></button>
+        <button class="hl-dot-btn hl-dot-purple" onclick="applyTextHighlight('purple')" title="Action Protocol (Purple)"></button>
+        <div style="width: 1px; height: 16px; background: rgba(255,255,255,0.2); margin: 0 2px;"></div>
+        <button onclick="addClinicalNoteToSelection()" class="hud-btn" style="padding: 3px 8px; font-size: 11px; background: rgba(255,255,255,0.1); color: white; border: none;" title="Add Clinical Note">
+            <span class="material-symbols-outlined text-[14px]">edit_note</span>
+            <span>Note</span>
+        </button>
+    </div>
 
     <!-- 🌙 Night Light Amber Eye-Care Tint Filter -->
     <div id="night-light-overlay"></div>
@@ -1915,9 +2582,9 @@
         </button>
     </div>
 
-    <!-- 🎙️ AI Audio Read-Aloud Narration Player -->
+    <!-- 🎙️ Continuous AI Audio Read-Aloud Narration Player -->
     <div id="mobile-tts-player" class="no-print">
-        <div style="display: flex; align-items: center; gap: 8px; overflow: hidden;">
+        <div style="display: flex; align-items: center; gap: 8px; overflow: hidden; flex: 1;">
             <div class="tts-equalizer" id="tts-equalizer">
                 <div class="tts-equalizer-bar"></div>
                 <div class="tts-equalizer-bar"></div>
@@ -1929,11 +2596,18 @@
                 <div id="tts-chapter-label" style="font-size: 10px; color: #94a3b8; max-width: 140px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">Current Chapter</div>
             </div>
         </div>
-        <div style="display: flex; align-items: center; gap: 6px; flex-shrink: 0;">
-            <button onclick="cycleTTSSpeed()" id="tts-speed-btn" class="tts-speed-pill" title="Playback Speed">1.0x</button>
+        <div style="display: flex; align-items: center; gap: 5px; flex-shrink: 0;">
+            <button onclick="skipTTSParagraph(-1)" class="tts-control-btn" title="Previous Paragraph / Replay">
+                <span class="material-symbols-outlined text-[16px]">replay_10</span>
+            </button>
             <button onclick="toggleTTSPlayback()" id="tts-play-pause-btn" class="tts-control-btn" title="Pause / Play">
                 <span class="material-symbols-outlined text-[18px]" id="tts-play-icon">pause</span>
             </button>
+            <button onclick="skipTTSParagraph(1)" class="tts-control-btn" title="Next Paragraph">
+                <span class="material-symbols-outlined text-[16px]">forward_10</span>
+            </button>
+            <button onclick="cycleTTSSpeed()" id="tts-speed-btn" class="tts-speed-pill" title="Playback Speed">1.0x</button>
+            <select id="tts-voice-select" onchange="changeTTSVoice(this.value)" style="display: none; background: #1e293b; color: white; border: 1px solid rgba(255,255,255,0.2); border-radius: 8px; padding: 2px 4px; font-size: 10.5px;"></select>
             <button onclick="stopTTS()" class="tts-control-btn" title="Stop Reading">
                 <span class="material-symbols-outlined text-[18px]">close</span>
             </button>
@@ -1944,6 +2618,118 @@
     <div id="reader-toast" class="no-print">
         <span class="material-symbols-outlined text-[18px]" id="toast-icon" style="color: #38bdf8;">check_circle</span>
         <span id="toast-msg">Action confirmed</span>
+    </div>
+
+    <!-- 🔝 Floating Back to Top Button -->
+    <button id="back-to-top-btn" class="no-print" onclick="scrollToTopTreatise()" title="Back to Top / Cover">
+        <span class="material-symbols-outlined text-[20px]">vertical_align_top</span>
+    </button>
+
+    <!-- 📜 Hands-Free Auto-Scroll Indicator -->
+    <div id="auto-scroll-indicator" class="no-print">
+        <span class="material-symbols-outlined text-[16px] animate-spin">autorenew</span>
+        <span id="auto-scroll-speed-text">Auto-Scroll 1x</span>
+        <button onclick="toggleAutoScroll()" style="background: none; border: none; color: white; cursor: pointer; padding: 0 4px; font-size: 11px;">✕</button>
+    </div>
+
+    <!-- 📊 Reading Analytics Modal -->
+    <div id="reading-stats-modal" class="reader-modal-backdrop no-print" onclick="closeReadingStatsModal(event)">
+        <div class="reader-modal-card" onclick="event.stopPropagation()">
+            <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); padding-bottom: 12px;">
+                <div style="display: flex; align-items: center; gap: 8px;">
+                    <span class="material-symbols-outlined text-[24px]" style="color: var(--primary);">analytics</span>
+                    <strong style="font-family: 'Cinzel', serif; font-size: 17px; color: var(--primary);">Treatise Reading Analytics</strong>
+                </div>
+                <button onclick="closeReadingStatsModal()" class="sheet-close-btn">✕</button>
+            </div>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 6px;">
+                <div style="background: rgba(0,91,191,0.06); padding: 14px; border-radius: 14px; border: 1px solid var(--border); text-align: center;">
+                    <div style="font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase;">Treatise Progress</div>
+                    <div id="stats-progress-pct" style="font-size: 24px; font-weight: 800; color: var(--primary); font-family: 'JetBrains Mono', monospace; margin: 4px 0;">0%</div>
+                    <div id="stats-chapters-read" style="font-size: 11.5px; color: var(--text-muted);">0 / 88 Chapters</div>
+                </div>
+                <div style="background: rgba(34,211,238,0.08); padding: 14px; border-radius: 14px; border: 1px solid var(--border); text-align: center;">
+                    <div style="font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase;">Estimated Time Left</div>
+                    <div id="stats-time-left" style="font-size: 20px; font-weight: 800; color: #0891b2; font-family: 'JetBrains Mono', monospace; margin: 4px 0;">~4h 15m</div>
+                    <div style="font-size: 11.5px; color: var(--text-muted);">at 200 words / min</div>
+                </div>
+                <div style="background: rgba(16,185,129,0.08); padding: 14px; border-radius: 14px; border: 1px solid var(--border); text-align: center;">
+                    <div style="font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase;">Treatise Word Count</div>
+                    <div id="stats-word-count" style="font-size: 20px; font-weight: 800; color: #059669; font-family: 'JetBrains Mono', monospace; margin: 4px 0;">~62,500</div>
+                    <div style="font-size: 11.5px; color: var(--text-muted);">Total Inpatient Science</div>
+                </div>
+                <div style="background: rgba(245,158,11,0.08); padding: 14px; border-radius: 14px; border: 1px solid var(--border); text-align: center;">
+                    <div style="font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase;">Session Time</div>
+                    <div id="stats-session-timer" style="font-size: 20px; font-weight: 800; color: #d97706; font-family: 'JetBrains Mono', monospace; margin: 4px 0;">00:00</div>
+                    <div style="font-size: 11.5px; color: var(--text-muted);">Active Reader Time</div>
+                </div>
+            </div>
+            <div style="display: flex; gap: 8px; justify-content: flex-end; margin-top: 10px;">
+                <button onclick="exportReadingSummary()" class="hud-btn" style="padding: 8px 14px;">
+                    <span class="material-symbols-outlined text-[16px]">file_download</span>
+                    <span>Export Reading Log</span>
+                </button>
+                <button onclick="closeReadingStatsModal()" class="hud-btn hud-btn-primary" style="padding: 8px 18px;">Done</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ⌨️ Keyboard Shortcuts Cheatsheet Modal -->
+    <div id="shortcuts-modal" class="reader-modal-backdrop no-print" onclick="closeShortcutsModal(event)">
+        <div class="reader-modal-card" onclick="event.stopPropagation()">
+            <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); padding-bottom: 12px;">
+                <div style="display: flex; align-items: center; gap: 8px;">
+                    <span class="material-symbols-outlined text-[24px]" style="color: var(--primary);">keyboard</span>
+                    <strong style="font-family: 'Cinzel', serif; font-size: 17px; color: var(--primary);">Keyboard Shortcuts</strong>
+                </div>
+                <button onclick="closeShortcutsModal()" class="sheet-close-btn">✕</button>
+            </div>
+            <div style="display: flex; flex-direction: column; gap: 8px; font-size: 12.5px;">
+                <div style="display: flex; justify-content: space-between; padding: 6px 0; border-bottom: 1px solid var(--border);">
+                    <span>Next Chapter / Page</span>
+                    <span style="font-family: 'JetBrains Mono', monospace; font-weight: 700; background: var(--bg-page); padding: 2px 8px; border-radius: 6px; border: 1px solid var(--border);">→ or Space or PgDn</span>
+                </div>
+                <div style="display: flex; justify-content: space-between; padding: 6px 0; border-bottom: 1px solid var(--border);">
+                    <span>Previous Chapter / Page</span>
+                    <span style="font-family: 'JetBrains Mono', monospace; font-weight: 700; background: var(--bg-page); padding: 2px 8px; border-radius: 6px; border: 1px solid var(--border);">← or Shift+Space or PgUp</span>
+                </div>
+                <div style="display: flex; justify-content: space-between; padding: 6px 0; border-bottom: 1px solid var(--border);">
+                    <span>Toggle Table of Contents</span>
+                    <span style="font-family: 'JetBrains Mono', monospace; font-weight: 700; background: var(--bg-page); padding: 2px 8px; border-radius: 6px; border: 1px solid var(--border);">T</span>
+                </div>
+                <div style="display: flex; justify-content: space-between; padding: 6px 0; border-bottom: 1px solid var(--border);">
+                    <span>Bookmark Active Chapter</span>
+                    <span style="font-family: 'JetBrains Mono', monospace; font-weight: 700; background: var(--bg-page); padding: 2px 8px; border-radius: 6px; border: 1px solid var(--border);">B</span>
+                </div>
+                <div style="display: flex; justify-content: space-between; padding: 6px 0; border-bottom: 1px solid var(--border);">
+                    <span>Distraction-Free Zen Fullscreen</span>
+                    <span style="font-family: 'JetBrains Mono', monospace; font-weight: 700; background: var(--bg-page); padding: 2px 8px; border-radius: 6px; border: 1px solid var(--border);">Z</span>
+                </div>
+                <div style="display: flex; justify-content: space-between; padding: 6px 0; border-bottom: 1px solid var(--border);">
+                    <span>AI Audio Read-Aloud Player</span>
+                    <span style="font-family: 'JetBrains Mono', monospace; font-weight: 700; background: var(--bg-page); padding: 2px 8px; border-radius: 6px; border: 1px solid var(--border);">A</span>
+                </div>
+                <div style="display: flex; justify-content: space-between; padding: 6px 0; border-bottom: 1px solid var(--border);">
+                    <span>Auto-Scroll Hands-Free Mode</span>
+                    <span style="font-family: 'JetBrains Mono', monospace; font-weight: 700; background: var(--bg-page); padding: 2px 8px; border-radius: 6px; border: 1px solid var(--border);">S</span>
+                </div>
+                <div style="display: flex; justify-content: space-between; padding: 6px 0; border-bottom: 1px solid var(--border);">
+                    <span>Cycle Theme (Day, Sepia, Night)</span>
+                    <span style="font-family: 'JetBrains Mono', monospace; font-weight: 700; background: var(--bg-page); padding: 2px 8px; border-radius: 6px; border: 1px solid var(--border);">D</span>
+                </div>
+                <div style="display: flex; justify-content: space-between; padding: 6px 0; border-bottom: 1px solid var(--border);">
+                    <span>In-eBook Keyword Search</span>
+                    <span style="font-family: 'JetBrains Mono', monospace; font-weight: 700; background: var(--bg-page); padding: 2px 8px; border-radius: 6px; border: 1px solid var(--border);">Ctrl+F or /</span>
+                </div>
+                <div style="display: flex; justify-content: space-between; padding: 6px 0;">
+                    <span>Close Active Drawers / Modals</span>
+                    <span style="font-family: 'JetBrains Mono', monospace; font-weight: 700; background: var(--bg-page); padding: 2px 8px; border-radius: 6px; border: 1px solid var(--border);">Esc</span>
+                </div>
+            </div>
+            <div style="text-align: right; margin-top: 8px;">
+                <button onclick="closeShortcutsModal()" class="hud-btn hud-btn-primary" style="padding: 7px 18px;">Got It</button>
+            </div>
+        </div>
     </div>
 
     <!-- Floating Page Turn Controls (Left & Right Edge) -->
@@ -1987,21 +2773,40 @@
             </button>
         </div>
         
-        <!-- 📑 Dual Navigation Tabs: Chapters vs Bookmarks -->
+        <!-- 📑 Triple Navigation Tabs: Chapters vs Bookmarks vs Highlights/Notes -->
         <div class="toc-nav-tabs">
             <button class="toc-tab-btn active" id="tab-btn-chapters" onclick="switchTocTab('chapters')">
-                <span class="material-symbols-outlined text-[16px]">menu_book</span>
-                <span>Chapters (88)</span>
+                <span class="material-symbols-outlined text-[15px]">menu_book</span>
+                <span>Chapters</span>
             </button>
             <button class="toc-tab-btn" id="tab-btn-bookmarks" onclick="switchTocTab('bookmarks')">
-                <span class="material-symbols-outlined text-[16px]">bookmark</span>
-                <span>Bookmarks (<span id="bookmark-count">0</span>)</span>
+                <span class="material-symbols-outlined text-[15px]">bookmark</span>
+                <span>Saved (<span id="bookmark-count">0</span>)</span>
             </button>
+            <button class="toc-tab-btn" id="tab-btn-highlights" onclick="switchTocTab('highlights')">
+                <span class="material-symbols-outlined text-[15px]">edit_note</span>
+                <span>Notes (<span id="highlight-count">0</span>)</span>
+            </button>
+        </div>
+
+        <!-- 🏷️ Quick Part Filter Chips -->
+        <div class="toc-part-chips" id="toc-part-chips">
+            <button class="toc-chip active" onclick="filterTOCByPart('all')">All (88)</button>
+            <button class="toc-chip" onclick="filterTOCByPart('I')">Part I: Clinical</button>
+            <button class="toc-chip" onclick="filterTOCByPart('II')">Part II: Data</button>
+            <button class="toc-chip" onclick="filterTOCByPart('III')">Part III: Engineering</button>
+            <button class="toc-chip" onclick="filterTOCByPart('IV')">Part IV: Benchmark</button>
+            <button class="toc-chip" onclick="filterTOCByPart('V')">Part V: Explainable</button>
+            <button class="toc-chip" onclick="filterTOCByPart('VI')">Part VI: Telehealth</button>
+            <button class="toc-chip" onclick="filterTOCByPart('VII')">Part VII: Protocols</button>
+            <button class="toc-chip" onclick="filterTOCByPart('VIII')">Part VIII: Ethics</button>
+            <button class="toc-chip" onclick="filterTOCByPart('Appendix')">Appendices A–H</button>
         </div>
         
         <div class="toc-search-wrap">
             <span class="material-symbols-outlined text-[18px] text-muted">search</span>
             <input type="text" id="toc-search" class="toc-search-input" placeholder="Search 88 Chapters, Equations, Appendices..." onkeyup="filterTOC(this.value)">
+            <input type="number" min="1" max="88" placeholder="Ch #" id="toc-quick-jump" onchange="jumpDirectChapter(this.value)" title="Jump directly to Chapter (1-88)" style="width: 58px; padding: 7px 6px; border-radius: 10px; border: 1.5px solid var(--border); font-size: 12px; font-weight: 700; text-align: center; background: var(--bg-page); color: var(--text-main); outline: none;">
         </div>
 
         <div id="toc-list">
@@ -2010,6 +2815,11 @@
 
         <!-- 🔖 Dedicated Bookmarks Tab Container -->
         <div id="toc-bookmarks-list" style="display: none; flex: 1; overflow-y: auto; padding: 10px 4px 40px; flex-direction: column; gap: 4px;">
+            <!-- Rendered dynamically by JS -->
+        </div>
+
+        <!-- 🖍️ Dedicated Highlights & Clinical Notes Tab Container -->
+        <div id="toc-highlights-list" style="display: none; flex: 1; overflow-y: auto; padding: 10px 4px 40px; flex-direction: column; gap: 6px;">
             <!-- Rendered dynamically by JS -->
         </div>
     </div>
@@ -2095,6 +2905,51 @@
             <input type="range" id="night-light-slider" min="0" max="45" value="0" class="scrubber-range-input" oninput="setNightLight(this.value)" style="background: rgba(245, 158, 11, 0.18);">
         </div>
 
+        <!-- Line Spacing Section -->
+        <div class="sheet-section">
+            <div class="sheet-label">Line Spacing</div>
+            <div class="sheet-pill-group" style="grid-template-columns: repeat(3, 1fr);">
+                <button onclick="setLineSpacing(1.5)" id="btn-spacing-tight" class="sheet-pill-btn">Tight (1.5)</button>
+                <button onclick="setLineSpacing(1.78)" id="btn-spacing-normal" class="sheet-pill-btn active">Normal</button>
+                <button onclick="setLineSpacing(2.1)" id="btn-spacing-relaxed" class="sheet-pill-btn">Relaxed</button>
+            </div>
+        </div>
+
+        <!-- Page Width Section -->
+        <div class="sheet-section">
+            <div class="sheet-label">Reading Width</div>
+            <div class="sheet-pill-group" style="grid-template-columns: repeat(3, 1fr);">
+                <button onclick="setPageWidth('780px')" id="btn-width-compact" class="sheet-pill-btn">Compact</button>
+                <button onclick="setPageWidth('1020px')" id="btn-width-standard" class="sheet-pill-btn active">Standard</button>
+                <button onclick="setPageWidth('1280px')" id="btn-width-wide" class="sheet-pill-btn">Wide</button>
+            </div>
+        </div>
+
+        <!-- Text Alignment Section -->
+        <div class="sheet-section">
+            <div class="sheet-label">Text Alignment</div>
+            <div class="sheet-pill-group">
+                <button onclick="setTextAlign('left')" id="btn-align-left" class="sheet-pill-btn active">Left-Aligned</button>
+                <button onclick="setTextAlign('justify')" id="btn-align-justify" class="sheet-pill-btn">Justified</button>
+            </div>
+        </div>
+
+        <!-- Hands-Free Auto-Scroll Section -->
+        <div class="sheet-section">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <div class="sheet-label">Hands-Free Auto-Scroll</div>
+                <button onclick="toggleAutoScroll()" id="auto-scroll-toggle-btn" class="hud-btn" style="padding: 4px 10px; font-size: 11px;">
+                    <span class="material-symbols-outlined text-[16px]">play_arrow</span>
+                    <span id="auto-scroll-btn-text">Start</span>
+                </button>
+            </div>
+            <div class="sheet-pill-group" style="grid-template-columns: repeat(3, 1fr);">
+                <button onclick="setAutoScrollSpeed(1)" id="scroll-speed-1" class="sheet-pill-btn active">1x Slow</button>
+                <button onclick="setAutoScrollSpeed(2)" id="scroll-speed-2" class="sheet-pill-btn">2x Normal</button>
+                <button onclick="setAutoScrollSpeed(3)" id="scroll-speed-3" class="sheet-pill-btn">3x Fast</button>
+            </div>
+        </div>
+
         <!-- ⚡ Power Reading Tools Grid -->
         <div class="sheet-section">
             <div class="sheet-label">Power Reading Tools</div>
@@ -2114,6 +2969,14 @@
                 <button onclick="shareOrCiteChapter();" class="sheet-pill-btn" style="display: flex; align-items: center; justify-content: center; gap: 6px;">
                     <span class="material-symbols-outlined text-[18px]" style="color: var(--primary);">share</span>
                     <span>Share / Cite</span>
+                </button>
+                <button onclick="openReadingStatsModal(); toggleReaderSettings();" class="sheet-pill-btn" style="display: flex; align-items: center; justify-content: center; gap: 6px;">
+                    <span class="material-symbols-outlined text-[18px]" style="color: var(--primary);">analytics</span>
+                    <span>Reading Stats</span>
+                </button>
+                <button onclick="openShortcutsModal(); toggleReaderSettings();" class="sheet-pill-btn" style="display: flex; align-items: center; justify-content: center; gap: 6px;">
+                    <span class="material-symbols-outlined text-[18px]" style="color: var(--primary);">keyboard</span>
+                    <span>Shortcuts (?)</span>
                 </button>
             </div>
         </div>
@@ -2144,6 +3007,10 @@
                 <span class="material-symbols-outlined text-[16px]">auto_stories</span>
                 <span>Flip</span>
             </button>
+            <button onclick="toggleStudyRoom3D()" id="hud-study-room-btn" class="hud-btn hud-btn-primary" style="background: linear-gradient(135deg, #0284c7, #0369a1); color: white; border: none; box-shadow: 0 4px 12px rgba(2,132,199,0.35); font-weight: 700; gap: 6px;" title="Switch to 3D Study Room & Book Simulator">
+                <span class="material-symbols-outlined text-[17px]">view_in_ar</span>
+                <span>3D Study Room</span>
+            </button>
         </div>
 
         <!-- Middle: Title (Desktop Only) -->
@@ -2159,12 +3026,27 @@
             </button>
 
             <!-- Audio Narrate -->
-            <button onclick="toggleTTS()" class="hud-btn" title="AI Audio Narration (Read Aloud)">
+            <button onclick="toggleTTS()" class="hud-btn" title="Continuous AI Audio Narration">
                 <span class="material-symbols-outlined text-[16px]">volume_up</span>
             </button>
 
+            <!-- Auto-Scroll -->
+            <button onclick="toggleAutoScroll()" id="hud-autoscroll-btn" class="hud-btn" title="Toggle Auto-Scroll (S)">
+                <span class="material-symbols-outlined text-[16px]">keyboard_double_arrow_down</span>
+            </button>
+
+            <!-- Reading Stats -->
+            <button onclick="openReadingStatsModal()" class="hud-btn" title="Reading Analytics & Progress">
+                <span class="material-symbols-outlined text-[16px]">analytics</span>
+            </button>
+
+            <!-- Keyboard Shortcuts -->
+            <button onclick="openShortcutsModal()" class="hud-btn" title="Keyboard Shortcuts (?)">
+                <span class="material-symbols-outlined text-[16px]">keyboard</span>
+            </button>
+
             <!-- Zen Fullscreen -->
-            <button onclick="toggleZenMode()" class="hud-btn" title="Zen Distraction-Free Immersion">
+            <button onclick="toggleZenMode()" class="hud-btn" title="Zen Distraction-Free Immersion (Z)">
                 <span class="material-symbols-outlined text-[16px]">fullscreen</span>
             </button>
 
@@ -2178,7 +3060,7 @@
             </button>
 
             <!-- Theme Switcher -->
-            <button onclick="cycleTheme()" id="theme-btn" class="hud-btn" title="Cycle Theme (Day, Sepia, Night)">
+            <button onclick="cycleTheme()" id="theme-btn" class="hud-btn" title="Cycle Theme (Day, Sepia, Night - D)">
                 <span class="material-symbols-outlined text-[16px]" id="theme-icon">wb_sunny</span>
             </button>
 
@@ -5459,6 +6341,29 @@ CREATE TABLE medical_certificates (
         }
     }
 
+    function getReadChapters() {
+        try {
+            return JSON.parse(localStorage.getItem('hrp_ebook_read_chapters') || '[]');
+        } catch (e) {
+            return [];
+        }
+    }
+
+    function markChapterAsRead(chIdx) {
+        if (!chIdx || chIdx < 1) return;
+        let readList = getReadChapters();
+        if (!readList.includes(chIdx)) {
+            readList.push(chIdx);
+            localStorage.setItem('hrp_ebook_read_chapters', JSON.stringify(readList));
+            const badge = document.querySelector(`.toc-chapter-row[data-ch-index="${chIdx}"] .toc-read-badge`);
+            if (badge) {
+                badge.classList.add('is-read');
+                badge.textContent = '✓';
+                badge.title = 'Completed';
+            }
+        }
+    }
+
     function buildTOC() {
         const tocList = document.getElementById('toc-list');
         if (!tocList) return;
@@ -5466,6 +6371,8 @@ CREATE TABLE medical_certificates (
 
         const headings = document.querySelectorAll('.book-part-title, .book-chapter-title');
         let chapterCounter = 0;
+        let currentPart = 'I';
+        const readList = getReadChapters();
 
         headings.forEach((h, idx) => {
             if (!h.id) {
@@ -5475,8 +6382,15 @@ CREATE TABLE medical_certificates (
             const rawText = h.textContent.trim();
 
             if (isPart) {
+                const partMatch = rawText.match(/Part\s+([IVXLCDM]+)/i);
+                if (partMatch) {
+                    currentPart = partMatch[1].toUpperCase();
+                } else if (rawText.toLowerCase().includes('appendix') || rawText.toLowerCase().includes('back matter')) {
+                    currentPart = 'Appendix';
+                }
                 const partCard = document.createElement('div');
                 partCard.className = 'toc-part-card';
+                partCard.setAttribute('data-part', currentPart);
                 partCard.innerHTML = `<span style="margin-right: 6px;">📑</span> ${rawText}`;
                 tocList.appendChild(partCard);
             } else {
@@ -5484,6 +6398,8 @@ CREATE TABLE medical_certificates (
                 const item = document.createElement('a');
                 item.href = '#' + h.id;
                 item.className = 'toc-chapter-row';
+                item.setAttribute('data-part', currentPart);
+                item.setAttribute('data-ch-index', chapterCounter);
                 
                 // Extract chapter label or number if available
                 let badgeText = chapterCounter < 10 ? '0' + chapterCounter : '' + chapterCounter;
@@ -5492,9 +6408,12 @@ CREATE TABLE medical_certificates (
                     badgeText = m ? 'APP ' + m[1].toUpperCase() : 'APP';
                 }
 
+                const isRead = readList.includes(chapterCounter);
+
                 item.innerHTML = `
                     <span class="toc-num-badge">${badgeText}</span>
                     <span class="toc-row-title">${rawText}</span>
+                    <span class="toc-read-badge ${isRead ? 'is-read' : ''}" title="${isRead ? 'Completed' : 'Unread'}">${isRead ? '✓' : ''}</span>
                     <span class="material-symbols-outlined toc-arrow-icon">arrow_forward</span>
                 `;
 
@@ -5529,6 +6448,57 @@ CREATE TABLE medical_certificates (
         partCards.forEach(pc => {
             pc.style.display = pc.textContent.toLowerCase().includes(q) ? 'block' : 'none';
         });
+    }
+
+    function filterTOCByPart(partId) {
+        triggerHaptic(8);
+        const chips = document.querySelectorAll('#toc-part-chips .toc-chip');
+        chips.forEach(c => c.classList.remove('active'));
+        if (window.event && window.event.target && window.event.target.classList.contains('toc-chip')) {
+            window.event.target.classList.add('active');
+        }
+
+        const items = document.querySelectorAll('#toc-list .toc-chapter-row');
+        const partCards = document.querySelectorAll('#toc-list .toc-part-card');
+
+        if (partId === 'all') {
+            items.forEach(el => el.style.display = 'flex');
+            partCards.forEach(el => el.style.display = 'block');
+            return;
+        }
+
+        items.forEach(el => {
+            const itemPart = el.getAttribute('data-part') || '';
+            if (partId === 'Appendix') {
+                el.style.display = (itemPart === 'Appendix' || el.textContent.toLowerCase().includes('appendix')) ? 'flex' : 'none';
+            } else {
+                el.style.display = (itemPart.toUpperCase() === partId.toUpperCase()) ? 'flex' : 'none';
+            }
+        });
+
+        partCards.forEach(pc => {
+            const pcPart = pc.getAttribute('data-part') || '';
+            if (partId === 'Appendix') {
+                pc.style.display = (pcPart === 'Appendix' || pc.textContent.toLowerCase().includes('appendix') || pc.textContent.toLowerCase().includes('back matter')) ? 'block' : 'none';
+            } else {
+                pc.style.display = (pcPart.toUpperCase() === partId.toUpperCase()) ? 'block' : 'none';
+            }
+        });
+    }
+
+    function jumpDirectChapter(val) {
+        const num = parseInt(val);
+        if (isNaN(num) || num < 1) return;
+        const chIdx = Math.min(88, num);
+        const chapters = getChapterHeadings();
+        const target = chapters[chIdx - 1];
+        if (target) {
+            triggerHaptic(15);
+            toggleTOC();
+            triggerDirectionalFlip('next', () => {
+                target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            });
+        }
     }
 
     /* 4. Realistic Web Audio API Triple-Stage Paper Turn Synthesizer */
@@ -5784,7 +6754,7 @@ CREATE TABLE medical_certificates (
         updateBookmarkRibbonState(activeChapter || chapters[0]);
     }
 
-    /* 9. Keyboard Arrow Navigation (← / →), Search & Escape */
+    /* 9. Comprehensive Keyboard Shortcuts Suite */
     window.addEventListener('keydown', (e) => {
         // Ctrl+F / Cmd+F opens in-page treatise search
         if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'f') {
@@ -5794,6 +6764,20 @@ CREATE TABLE medical_certificates (
         }
 
         if (e.key === 'Escape') {
+            if (typeof StudyRoom3D !== 'undefined' && StudyRoom3D.isOpen) {
+                toggleStudyRoom3D();
+                return;
+            }
+            const statsModal = document.getElementById('reading-stats-modal');
+            if (statsModal && statsModal.classList.contains('is-open')) {
+                closeReadingStatsModal();
+                return;
+            }
+            const shortcutsModal = document.getElementById('shortcuts-modal');
+            if (shortcutsModal && shortcutsModal.classList.contains('is-open')) {
+                closeShortcutsModal();
+                return;
+            }
             const searchBar = document.getElementById('search-overlay-bar');
             if (searchBar && searchBar.classList.contains('is-active')) {
                 closeSearchOverlay();
@@ -5813,17 +6797,103 @@ CREATE TABLE medical_certificates (
                 toggleReaderSettings();
                 return;
             }
+            const hlPopup = document.getElementById('text-highlight-popup');
+            if (hlPopup && hlPopup.classList.contains('is-visible')) {
+                hlPopup.classList.remove('is-visible');
+                return;
+            }
             return;
         }
 
-        // Only trigger arrow navigation when user is not typing
+        // Only trigger reader shortcuts when user is not typing in an input
         if (['INPUT', 'TEXTAREA', 'SELECT'].includes(document.activeElement.tagName)) return;
-        if (e.key === 'ArrowRight' || e.key === 'PageDown') {
+
+        // 3D Study Room & Book Simulator Keyboard Controls
+        if (typeof StudyRoom3D !== 'undefined' && StudyRoom3D.isOpen) {
+            if (e.key === 'ArrowRight' || e.key === 'PageDown' || (!e.shiftKey && e.key === ' ') || e.key === 'd' || e.key === 'D') {
+                e.preventDefault();
+                StudyRoom3D.nextPage();
+                return;
+            }
+            if (e.key === 'ArrowLeft' || e.key === 'PageUp' || (e.shiftKey && e.key === ' ') || e.key === 'a' || e.key === 'A') {
+                e.preventDefault();
+                StudyRoom3D.prevPage();
+                return;
+            }
+            if (e.key === 'l' || e.key === 'L') {
+                e.preventDefault();
+                StudyRoom3D.toggleLamp();
+                return;
+            }
+            if (e.key === 'p' || e.key === 'P') {
+                e.preventDefault();
+                StudyRoom3D.togglePomodoro();
+                return;
+            }
+            if (e.key === 'c' || e.key === 'C') {
+                e.preventDefault();
+                StudyRoom3D.sipCoffee();
+                return;
+            }
+            if (e.key === '1') {
+                e.preventDefault();
+                StudyRoom3D.setCameraPreset('reading');
+                return;
+            }
+            if (e.key === '2') {
+                e.preventDefault();
+                StudyRoom3D.setCameraPreset('desk');
+                return;
+            }
+            if (e.key === '3') {
+                e.preventDefault();
+                StudyRoom3D.setCameraPreset('room');
+                return;
+            }
+            if (e.key === '4') {
+                e.preventDefault();
+                StudyRoom3D.setCameraPreset('orbit');
+                return;
+            }
+            return;
+        }
+
+        if (e.key === '?' || (e.shiftKey && e.key === '/')) {
+            e.preventDefault();
+            openShortcutsModal();
+        } else if (e.key === 'ArrowRight' || e.key === 'PageDown' || (!e.shiftKey && e.key === ' ')) {
             e.preventDefault();
             flipToNextChapter();
-        } else if (e.key === 'ArrowLeft' || e.key === 'PageUp') {
+        } else if (e.key === 'ArrowLeft' || e.key === 'PageUp' || (e.shiftKey && e.key === ' ')) {
             e.preventDefault();
             flipToPrevChapter();
+        } else if (e.key === 't' || e.key === 'T') {
+            e.preventDefault();
+            toggleTOC();
+        } else if (e.key === 'b' || e.key === 'B') {
+            e.preventDefault();
+            toggleCurrentBookmark();
+        } else if (e.key === 'z' || e.key === 'Z') {
+            e.preventDefault();
+            toggleZenMode();
+        } else if (e.key === 'a' || e.key === 'A') {
+            e.preventDefault();
+            toggleTTS();
+        } else if (e.key === 's' || e.key === 'S') {
+            e.preventDefault();
+            toggleAutoScroll();
+        } else if (e.key === 'd' || e.key === 'D') {
+            e.preventDefault();
+            cycleTheme();
+        } else if (e.key === 'h' || e.key === 'H') {
+            e.preventDefault();
+            const selection = window.getSelection();
+            if (selection && !selection.isCollapsed && selection.toString().trim().length > 0) {
+                applyTextHighlight('yellow');
+            } else {
+                toggleTOC();
+                switchTocTab('highlights');
+            }
         }
     });
 
@@ -5953,7 +7023,8 @@ CREATE TABLE medical_certificates (
         localStorage.setItem('hrp_ebook_size', currentFontSize);
     }
 
-    /* 15. Reading Progress Tracker & Scroll Listener */
+    /* 15. Reading Progress Tracker & Dynamic Scroll Listener */
+    let lastSaveTime = 0;
     window.addEventListener('scroll', () => {
         const track = document.getElementById('reading-progress-track');
         if (track) {
@@ -5964,6 +7035,19 @@ CREATE TABLE medical_certificates (
             }
         }
         updateChapterIndicator();
+
+        // Floating Back to Top button visibility
+        const btt = document.getElementById('back-to-top-btn');
+        if (btt) {
+            btt.classList.toggle('is-visible', window.scrollY > 500);
+        }
+
+        // Throttle reading state persistence & read progress
+        const now = Date.now();
+        if (now - lastSaveTime > 1200) {
+            lastSaveTime = now;
+            saveCurrentReadingPosition();
+        }
     }, { passive: true });
 
     /* 17. Physical Haptic Feedback Engine */
@@ -6115,23 +7199,41 @@ CREATE TABLE medical_certificates (
         triggerHaptic(10);
         const tabChapters = document.getElementById('tab-btn-chapters');
         const tabBookmarks = document.getElementById('tab-btn-bookmarks');
+        const tabHighlights = document.getElementById('tab-btn-highlights');
         const listChapters = document.getElementById('toc-list');
         const listBookmarks = document.getElementById('toc-bookmarks-list');
+        const listHighlights = document.getElementById('toc-highlights-list');
+        const partChips = document.getElementById('toc-part-chips');
         const searchWrap = document.querySelector('.toc-search-wrap');
+
+        // Reset tab buttons
+        if (tabChapters) tabChapters.classList.remove('active');
+        if (tabBookmarks) tabBookmarks.classList.remove('active');
+        if (tabHighlights) tabHighlights.classList.remove('active');
 
         if (tab === 'chapters') {
             if (tabChapters) tabChapters.classList.add('active');
-            if (tabBookmarks) tabBookmarks.classList.remove('active');
             if (listChapters) listChapters.style.display = 'flex';
             if (listBookmarks) listBookmarks.style.display = 'none';
+            if (listHighlights) listHighlights.style.display = 'none';
+            if (partChips) partChips.style.display = 'flex';
             if (searchWrap) searchWrap.style.display = 'flex';
-        } else {
-            if (tabChapters) tabChapters.classList.remove('active');
+        } else if (tab === 'bookmarks') {
             if (tabBookmarks) tabBookmarks.classList.add('active');
             if (listChapters) listChapters.style.display = 'none';
             if (listBookmarks) listBookmarks.style.display = 'flex';
+            if (listHighlights) listHighlights.style.display = 'none';
+            if (partChips) partChips.style.display = 'none';
             if (searchWrap) searchWrap.style.display = 'none';
             renderBookmarksList();
+        } else if (tab === 'highlights') {
+            if (tabHighlights) tabHighlights.classList.add('active');
+            if (listChapters) listChapters.style.display = 'none';
+            if (listBookmarks) listBookmarks.style.display = 'none';
+            if (listHighlights) listHighlights.style.display = 'flex';
+            if (partChips) partChips.style.display = 'none';
+            if (searchWrap) searchWrap.style.display = 'none';
+            renderHighlightsList();
         }
     }
 
@@ -6175,12 +7277,358 @@ CREATE TABLE medical_certificates (
         }
     }
 
-    /* 21. AI Audio Read-Aloud Narration Player */
+    /* 21. Text Highlighting & Clinical Margin Notes Suite */
+    function getSavedHighlights() {
+        try {
+            return JSON.parse(localStorage.getItem('hrp_ebook_highlights') || '[]');
+        } catch (e) {
+            return [];
+        }
+    }
+
+    function saveHighlights(hls) {
+        localStorage.setItem('hrp_ebook_highlights', JSON.stringify(hls));
+        updateHighlightsCount();
+    }
+
+    function updateHighlightsCount() {
+        const hls = getSavedHighlights();
+        const countElem = document.getElementById('highlight-count');
+        if (countElem) countElem.textContent = hls.length;
+    }
+
+    function setupTextHighlightListener() {
+        const bookCard = document.getElementById('book-content-card');
+        const popup = document.getElementById('text-highlight-popup');
+        if (!bookCard || !popup) return;
+
+        function checkSelection() {
+            const sel = window.getSelection();
+            if (!sel || sel.isCollapsed) {
+                popup.classList.remove('is-visible');
+                return;
+            }
+
+            const text = sel.toString().trim();
+            if (text.length < 3) {
+                popup.classList.remove('is-visible');
+                return;
+            }
+
+            const range = sel.getRangeAt(0);
+            if (!bookCard.contains(range.commonAncestorContainer)) {
+                popup.classList.remove('is-visible');
+                return;
+            }
+
+            const rect = range.getBoundingClientRect();
+            const top = rect.top + window.scrollY - 46;
+            const left = Math.max(12, Math.min(window.innerWidth - 220, rect.left + (rect.width / 2) - 100));
+
+            popup.style.top = `${top}px`;
+            popup.style.left = `${left}px`;
+            popup.classList.add('is-visible');
+        }
+
+        document.addEventListener('mouseup', (e) => {
+            if (popup.contains(e.target)) return;
+            setTimeout(checkSelection, 40);
+        });
+
+        document.addEventListener('touchend', (e) => {
+            if (popup.contains(e.target)) return;
+            setTimeout(checkSelection, 120);
+        });
+
+        document.addEventListener('mousedown', (e) => {
+            if (!popup.contains(e.target) && popup.classList.contains('is-visible')) {
+                const sel = window.getSelection();
+                if (!sel || sel.isCollapsed) {
+                    popup.classList.remove('is-visible');
+                }
+            }
+        });
+    }
+
+    function applyTextHighlight(color = 'yellow') {
+        triggerHaptic(15);
+        const sel = window.getSelection();
+        if (!sel || sel.isCollapsed) return;
+
+        const text = sel.toString().trim();
+        if (!text) return;
+
+        const popup = document.getElementById('text-highlight-popup');
+        if (popup) popup.classList.remove('is-visible');
+
+        const curr = getCurrentActiveChapterInfo();
+        const hlId = 'hl_' + Date.now();
+
+        try {
+            const range = sel.getRangeAt(0);
+            const mark = document.createElement('mark');
+            mark.className = `user-hl-${color}`;
+            mark.setAttribute('data-hl-id', hlId);
+            mark.title = `Highlighted in Ch. ${curr.index}`;
+            mark.appendChild(range.extractContents());
+            range.insertNode(mark);
+        } catch (e) {
+            console.debug('[Highlight] Range wrap fallback:', e);
+        }
+
+        const hls = getSavedHighlights();
+        hls.push({
+            id: hlId,
+            color: color,
+            text: text,
+            chapterId: curr.id,
+            chapterTitle: curr.title,
+            chapterIndex: curr.index,
+            timestamp: Date.now(),
+            note: ''
+        });
+        saveHighlights(hls);
+
+        sel.removeAllRanges();
+        showToast('Text highlighted', 'border_color');
+    }
+
+    function addClinicalNoteToSelection() {
+        triggerHaptic(15);
+        const sel = window.getSelection();
+        if (!sel || sel.isCollapsed) return;
+
+        const text = sel.toString().trim();
+        if (!text) return;
+
+        const popup = document.getElementById('text-highlight-popup');
+        if (popup) popup.classList.remove('is-visible');
+
+        const note = prompt('Add Clinical Margin Note for this excerpt:');
+        if (note === null || !note.trim()) return;
+
+        const curr = getCurrentActiveChapterInfo();
+        const hlId = 'hl_' + Date.now();
+
+        try {
+            const range = sel.getRangeAt(0);
+            const mark = document.createElement('mark');
+            mark.className = 'user-hl-yellow';
+            mark.setAttribute('data-hl-id', hlId);
+            mark.title = `Clinical Note: ${note}`;
+            mark.appendChild(range.extractContents());
+            range.insertNode(mark);
+        } catch (e) {
+            console.debug('[Highlight Note] Range wrap fallback:', e);
+        }
+
+        const hls = getSavedHighlights();
+        hls.push({
+            id: hlId,
+            color: 'yellow',
+            text: text,
+            chapterId: curr.id,
+            chapterTitle: curr.title,
+            chapterIndex: curr.index,
+            timestamp: Date.now(),
+            note: note.trim()
+        });
+        saveHighlights(hls);
+
+        sel.removeAllRanges();
+        showToast('Clinical note attached', 'edit_note');
+    }
+
+    function renderHighlightsList() {
+        const list = document.getElementById('toc-highlights-list');
+        if (!list) return;
+        const hls = getSavedHighlights();
+
+        if (hls.length === 0) {
+            list.innerHTML = `
+                <div style="text-align: center; padding: 44px 16px; color: var(--text-muted);">
+                    <span class="material-symbols-outlined text-[40px]" style="opacity: 0.35; margin-bottom: 8px; display: block;">edit_note</span>
+                    <p style="font-size: 13.5px; font-weight: 700; color: var(--text-main); margin-bottom: 4px;">No Highlights or Notes Yet</p>
+                    <p style="font-size: 11.5px; line-height: 1.5; opacity: 0.8;">Select any clinical sentence or equation in the treatise to highlight in 4 colors or pin margin notes.</p>
+                </div>
+            `;
+            return;
+        }
+
+        list.innerHTML = `
+            <div style="display: flex; justify-content: space-between; align-items: center; padding: 4px 6px 10px; border-bottom: 1px solid var(--border); margin-bottom: 6px;">
+                <span style="font-size: 12px; font-weight: 700; color: var(--text-main);">${hls.length} Highlight${hls.length > 1 ? 's' : ''} & Notes</span>
+                <button onclick="exportHighlightsMarkdown()" class="hud-btn" style="padding: 4px 8px; font-size: 11px;">
+                    <span class="material-symbols-outlined text-[13px]">file_download</span>
+                    <span>Export MD</span>
+                </button>
+            </div>
+        `;
+
+        hls.slice().reverse().forEach(hl => {
+            const card = document.createElement('div');
+            card.className = 'highlight-item-card';
+            card.onclick = () => jumpToHighlight(hl.id);
+
+            const colorHexMap = {
+                yellow: '#f59e0b',
+                emerald: '#10b981',
+                cyan: '#06b6d4',
+                purple: '#8b5cf6'
+            };
+            const dotColor = colorHexMap[hl.color] || '#f59e0b';
+
+            card.innerHTML = `
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+                    <div style="display: flex; align-items: center; gap: 6px;">
+                        <span style="width: 8px; height: 8px; border-radius: 50%; background: ${dotColor}; display: inline-block;"></span>
+                        <span class="toc-num-badge" style="padding: 2px 6px; font-size: 10px;">Ch. ${hl.chapterIndex}</span>
+                    </div>
+                    <span class="material-symbols-outlined bookmark-del-btn text-[16px]" onclick="deleteHighlight('${hl.id}', event)" title="Delete Highlight">delete</span>
+                </div>
+                <div class="highlight-item-quote">"${hl.text}"</div>
+                ${hl.note ? `
+                    <div class="highlight-item-note">
+                        <span class="material-symbols-outlined text-[13px]">edit_note</span>
+                        <span>${hl.note}</span>
+                    </div>
+                ` : ''}
+            `;
+            list.appendChild(card);
+        });
+    }
+
+    function jumpToHighlight(id) {
+        triggerHaptic(15);
+        toggleTOC();
+        const mark = document.querySelector(`mark[data-hl-id="${id}"]`);
+        if (mark) {
+            triggerDirectionalFlip('next', () => {
+                mark.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                mark.style.outline = '3px solid var(--primary)';
+                setTimeout(() => { mark.style.outline = 'none'; }, 2000);
+            });
+            return;
+        }
+
+        const hls = getSavedHighlights();
+        const hl = hls.find(h => h.id === id);
+        if (hl && hl.chapterId) {
+            const target = document.getElementById(hl.chapterId);
+            if (target) {
+                triggerDirectionalFlip('next', () => {
+                    target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                });
+            }
+        }
+    }
+
+    function deleteHighlight(id, e) {
+        if (e) e.stopPropagation();
+        triggerHaptic(15);
+        let hls = getSavedHighlights();
+        hls = hls.filter(h => h.id !== id);
+        saveHighlights(hls);
+
+        const mark = document.querySelector(`mark[data-hl-id="${id}"]`);
+        if (mark && mark.parentNode) {
+            const parent = mark.parentNode;
+            while (mark.firstChild) {
+                parent.insertBefore(mark.firstChild, mark);
+            }
+            parent.removeChild(mark);
+            parent.normalize();
+        }
+
+        renderHighlightsList();
+        showToast('Highlight deleted', 'delete');
+    }
+
+    function exportHighlightsMarkdown() {
+        const hls = getSavedHighlights();
+        if (hls.length === 0) return;
+
+        let md = `# Hospital Readmission Predictor: Clinical Highlights & Notes\n`;
+        md += `*Exported on ${new Date().toLocaleDateString()} • Team Nexora LUMINIX'26*\n\n`;
+
+        hls.forEach((hl, i) => {
+            md += `### ${i + 1}. Chapter ${hl.chapterIndex}: ${hl.chapterTitle}\n`;
+            md += `> "${hl.text}"\n\n`;
+            if (hl.note) {
+                md += `**Clinical Margin Note**: ${hl.note}\n\n`;
+            }
+            md += `*Tag*: \`${hl.color.toUpperCase()}\` • *Timestamp*: ${new Date(hl.timestamp).toLocaleString()}\n\n---\n\n`;
+        });
+
+        const blob = new Blob([md], { type: 'text/markdown;charset=utf-8' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'HRP_eBook_Clinical_Notes.md';
+        document.body.appendChild(a);
+        a.click();
+        setTimeout(() => { a.remove(); URL.revokeObjectURL(url); }, 500);
+        showToast('Exported notes to Markdown', 'file_download');
+    }
+
+    /* 22. Continuous AI Audio Read-Aloud Narration Player */
     let speechSynth = window.speechSynthesis || null;
     let currentUtterance = null;
     let isSpeaking = false;
     const ttsSpeeds = [1.0, 1.25, 1.5, 2.0];
     let ttsSpeedIdx = 0;
+    let ttsParagraphs = [];
+    let currentTTSParaIdx = 0;
+    let selectedVoice = null;
+
+    function populateVoiceSelect() {
+        if (!speechSynth) return;
+        const select = document.getElementById('tts-voice-select');
+        if (!select) return;
+
+        const voices = speechSynth.getVoices();
+        if (voices.length === 0) return;
+
+        select.innerHTML = '';
+        const enVoices = voices.filter(v => v.lang.startsWith('en'));
+        const displayVoices = enVoices.length > 0 ? enVoices : voices;
+
+        displayVoices.forEach(v => {
+            const opt = document.createElement('option');
+            opt.value = v.voiceURI;
+            opt.textContent = `${v.name.slice(0, 20)} (${v.lang})`;
+            select.appendChild(opt);
+        });
+
+        const savedVoice = localStorage.getItem('hrp_ebook_tts_voice');
+        if (savedVoice) {
+            select.value = savedVoice;
+            selectedVoice = voices.find(v => v.voiceURI === savedVoice);
+        } else {
+            const natural = displayVoices.find(v => v.name.includes('Natural') || v.name.includes('Google') || v.name.includes('Neural') || v.name.includes('Premium'));
+            if (natural) {
+                select.value = natural.voiceURI;
+                selectedVoice = natural;
+            }
+        }
+        select.style.display = 'inline-block';
+    }
+
+    if (speechSynth) {
+        speechSynth.onvoiceschanged = populateVoiceSelect;
+    }
+
+    function changeTTSVoice(val) {
+        if (!speechSynth) return;
+        const voices = speechSynth.getVoices();
+        selectedVoice = voices.find(v => v.voiceURI === val);
+        localStorage.setItem('hrp_ebook_tts_voice', val);
+
+        if (isSpeaking) {
+            speechSynth.cancel();
+            speakCurrentParagraph();
+        }
+    }
 
     function toggleTTS() {
         triggerHaptic(15);
@@ -6198,68 +7646,124 @@ CREATE TABLE medical_certificates (
         }
     }
 
+    function buildTTSParagraphListForChapter(targetHeading) {
+        const list = [];
+        if (!targetHeading) return list;
+
+        list.push(targetHeading);
+        let sibling = targetHeading.nextElementSibling;
+        while (sibling && !sibling.classList.contains('book-chapter-title') && !sibling.classList.contains('book-part-title')) {
+            if (['P', 'UL', 'OL', 'BLOCKQUOTE', 'H3', 'H4'].includes(sibling.tagName)) {
+                if (sibling.textContent.trim().length > 5) {
+                    list.push(sibling);
+                }
+            }
+            sibling = sibling.nextElementSibling;
+        }
+        return list;
+    }
+
     function startTTSForCurrentChapter() {
         if (!speechSynth) return;
         speechSynth.cancel();
+        stopTTSHighlight();
 
         const curr = getCurrentActiveChapterInfo();
         const targetHeading = document.getElementById(curr.id);
-        let textToRead = '';
 
-        if (targetHeading) {
-            textToRead = targetHeading.textContent + '. ';
-            let sibling = targetHeading.nextElementSibling;
-            let wordLimit = 250;
-            while (sibling && !sibling.classList.contains('book-chapter-title') && !sibling.classList.contains('book-part-title')) {
-                if (['P', 'UL', 'OL', 'BLOCKQUOTE'].includes(sibling.tagName)) {
-                    textToRead += sibling.textContent + ' ';
-                    if (textToRead.split(/\s+/).length > wordLimit) break;
-                }
-                sibling = sibling.nextElementSibling;
-            }
+        ttsParagraphs = buildTTSParagraphListForChapter(targetHeading);
+        currentTTSParaIdx = 0;
+
+        const player = document.getElementById('mobile-tts-player');
+        const chapterLabel = document.getElementById('tts-chapter-label');
+        if (chapterLabel) chapterLabel.textContent = curr.title;
+        if (player) player.classList.add('is-active');
+
+        speakCurrentParagraph();
+        showToast(`Reading: ${curr.title.slice(0, 24)}...`, 'volume_up');
+    }
+
+    function speakCurrentParagraph() {
+        if (!speechSynth || ttsParagraphs.length === 0) return;
+        stopTTSHighlight();
+
+        if (currentTTSParaIdx >= ttsParagraphs.length) {
+            advanceTTSToNextChapter();
+            return;
         }
 
-        if (!textToRead.trim()) {
-            textToRead = "Hospital Readmission Predictor. Comprehensive Healthcare AI and Telemedicine Treatise.";
-        }
+        const el = ttsParagraphs[currentTTSParaIdx];
+        el.classList.add('tts-reading-active');
+        el.scrollIntoView({ behavior: 'smooth', block: 'center' });
 
-        currentUtterance = new SpeechSynthesisUtterance(textToRead);
+        const rawText = el.textContent.trim();
+        currentUtterance = new SpeechSynthesisUtterance(rawText);
         currentUtterance.rate = ttsSpeeds[ttsSpeedIdx];
         currentUtterance.pitch = 1.0;
 
-        const voices = speechSynth.getVoices();
-        const enVoice = voices.find(v => v.lang.startsWith('en') && (v.name.includes('Natural') || v.name.includes('Google') || v.name.includes('Neural') || v.name.includes('Premium')));
-        if (enVoice) currentUtterance.voice = enVoice;
+        if (selectedVoice) {
+            currentUtterance.voice = selectedVoice;
+        } else {
+            const voices = speechSynth.getVoices();
+            const natural = voices.find(v => v.lang.startsWith('en') && (v.name.includes('Natural') || v.name.includes('Google') || v.name.includes('Neural')));
+            if (natural) currentUtterance.voice = natural;
+        }
 
         const player = document.getElementById('mobile-tts-player');
         const playIcon = document.getElementById('tts-play-icon');
         const statusText = document.getElementById('tts-status-text');
-        const chapterLabel = document.getElementById('tts-chapter-label');
-
-        if (chapterLabel) chapterLabel.textContent = curr.title;
 
         currentUtterance.onstart = () => {
             isSpeaking = true;
             if (player) player.classList.add('is-speaking');
             if (playIcon) playIcon.textContent = 'pause';
-            if (statusText) statusText.textContent = 'Reading Aloud';
+            if (statusText) statusText.textContent = `Reading § ${currentTTSParaIdx + 1}/${ttsParagraphs.length}`;
         };
 
         currentUtterance.onend = () => {
-            isSpeaking = false;
-            if (player) player.classList.remove('is-speaking');
-            if (playIcon) playIcon.textContent = 'play_arrow';
-            if (statusText) statusText.textContent = 'Finished';
+            if (isSpeaking) {
+                currentTTSParaIdx++;
+                setTimeout(speakCurrentParagraph, 160);
+            }
         };
 
-        currentUtterance.onerror = () => {
-            isSpeaking = false;
-            if (player) player.classList.remove('is-speaking');
-            if (playIcon) playIcon.textContent = 'play_arrow';
+        currentUtterance.onerror = (err) => {
+            console.debug('[TTS] Speech utterance error:', err);
+            if (isSpeaking) {
+                currentTTSParaIdx++;
+                setTimeout(speakCurrentParagraph, 160);
+            }
         };
 
         speechSynth.speak(currentUtterance);
-        showToast(`Reading: ${curr.title.slice(0, 24)}...`, 'volume_up');
+    }
+
+    function skipTTSParagraph(delta) {
+        triggerHaptic(10);
+        if (!speechSynth || ttsParagraphs.length === 0) return;
+        speechSynth.cancel();
+
+        if (delta === -1) {
+            currentTTSParaIdx = Math.max(0, currentTTSParaIdx - 1);
+        } else {
+            currentTTSParaIdx = Math.min(ttsParagraphs.length - 1, currentTTSParaIdx + 1);
+        }
+        speakCurrentParagraph();
+    }
+
+    function advanceTTSToNextChapter() {
+        stopTTSHighlight();
+        const chapters = getChapterHeadings();
+        const curr = getCurrentActiveChapterInfo();
+        if (curr.index < chapters.length) {
+            flipToNextChapter();
+            setTimeout(() => {
+                startTTSForCurrentChapter();
+            }, 850);
+        } else {
+            stopTTS();
+            showToast('Finished reading entire treatise!', 'celebration');
+        }
     }
 
     function toggleTTSPlayback() {
@@ -6294,21 +7798,310 @@ CREATE TABLE medical_certificates (
         if (btn) btn.textContent = speed + 'x';
         if (speechSynth && speechSynth.speaking) {
             speechSynth.cancel();
-            startTTSForCurrentChapter();
+            speakCurrentParagraph();
         }
+    }
+
+    function stopTTSHighlight() {
+        document.querySelectorAll('.tts-reading-active').forEach(el => {
+            el.classList.remove('tts-reading-active');
+        });
     }
 
     function stopTTS() {
         triggerHaptic(10);
         if (speechSynth) speechSynth.cancel();
         isSpeaking = false;
+        stopTTSHighlight();
+
         const player = document.getElementById('mobile-tts-player');
-        if (player) {
-            player.classList.remove('is-active', 'is-speaking');
+        const playIcon = document.getElementById('tts-play-icon');
+        const statusText = document.getElementById('tts-status-text');
+        if (player) player.classList.remove('is-active', 'is-speaking');
+        if (playIcon) playIcon.textContent = 'play_arrow';
+        if (statusText) statusText.textContent = 'Stopped';
+    }
+
+    /* 23. Hands-Free Teleprompter Auto-Scroll Engine */
+    let autoScrollTimer = null;
+    let autoScrollSpeed = 1;
+    let isAutoScrolling = false;
+    const autoScrollSpeeds = { 1: 0.9, 2: 1.8, 3: 3.2 };
+
+    function toggleAutoScroll() {
+        triggerHaptic(15);
+        if (isAutoScrolling) {
+            stopAutoScroll();
+            showToast('Auto-scroll paused', 'pause');
+        } else {
+            startAutoScrollLoop();
+            showToast('Auto-scroll started', 'play_arrow');
         }
     }
 
-    /* 22. Distraction-Free Full-Screen Zen Immersion Mode */
+    function startAutoScrollLoop() {
+        isAutoScrolling = true;
+        const ind = document.getElementById('auto-scroll-indicator');
+        const btnText = document.getElementById('auto-scroll-btn-text');
+        if (ind) ind.classList.add('is-active');
+        if (btnText) btnText.textContent = 'Pause';
+
+        if (autoScrollTimer) cancelAnimationFrame(autoScrollTimer);
+
+        function step() {
+            if (!isAutoScrolling) return;
+            const velocity = autoScrollSpeeds[autoScrollSpeed] || 1.0;
+            window.scrollBy(0, velocity);
+
+            if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight - 8) {
+                stopAutoScroll();
+                showToast('Reached end of treatise', 'flag');
+                return;
+            }
+            autoScrollTimer = requestAnimationFrame(step);
+        }
+        autoScrollTimer = requestAnimationFrame(step);
+    }
+
+    function stopAutoScroll() {
+        isAutoScrolling = false;
+        if (autoScrollTimer) cancelAnimationFrame(autoScrollTimer);
+        const ind = document.getElementById('auto-scroll-indicator');
+        const btnText = document.getElementById('auto-scroll-btn-text');
+        if (ind) ind.classList.remove('is-active');
+        if (btnText) btnText.textContent = 'Start';
+    }
+
+    function setAutoScrollSpeed(spd) {
+        triggerHaptic(10);
+        autoScrollSpeed = spd;
+        [1, 2, 3].forEach(s => {
+            const btn = document.getElementById(`scroll-speed-${s}`);
+            if (btn) btn.classList.toggle('active', s === spd);
+        });
+        const speedText = document.getElementById('auto-scroll-speed-text');
+        if (speedText) speedText.textContent = `Auto-Scroll ${spd}x`;
+    }
+
+    window.addEventListener('wheel', (e) => {
+        if (isAutoScrolling && Math.abs(e.deltaY) > 80) {
+            stopAutoScroll();
+        }
+    }, { passive: true });
+
+    /* 24. Copy Code Buttons on Pre & KaTeX Elements */
+    function injectCodeCopyButtons() {
+        const codeBlocks = document.querySelectorAll('pre, .code-block');
+        codeBlocks.forEach(block => {
+            if (block.querySelector('.code-copy-btn')) return;
+            block.style.position = 'relative';
+
+            const btn = document.createElement('button');
+            btn.className = 'code-copy-btn no-print';
+            btn.innerHTML = `<span class="material-symbols-outlined text-[13px]">content_copy</span><span>Copy</span>`;
+            btn.title = 'Copy code snippet';
+
+            btn.onclick = (e) => {
+                e.stopPropagation();
+                triggerHaptic(10);
+                const codeElem = block.querySelector('code') || block;
+                const text = codeElem.innerText.trim();
+
+                if (navigator.clipboard && navigator.clipboard.writeText) {
+                    navigator.clipboard.writeText(text).then(() => {
+                        btn.innerHTML = `<span class="material-symbols-outlined text-[13px]">check</span><span>Copied!</span>`;
+                        setTimeout(() => {
+                            btn.innerHTML = `<span class="material-symbols-outlined text-[13px]">content_copy</span><span>Copy</span>`;
+                        }, 2000);
+                        showToast('Code copied to clipboard', 'content_copy');
+                    }).catch(() => {
+                        prompt('Copy code:', text);
+                    });
+                } else {
+                    prompt('Copy code:', text);
+                }
+            };
+            block.appendChild(btn);
+        });
+    }
+
+    /* 25. Typography & Appearance Controls */
+    function setLineSpacing(val) {
+        triggerHaptic(10);
+        document.documentElement.style.setProperty('--book-line-height', val);
+        localStorage.setItem('hrp_ebook_line_height', val);
+
+        const tight = document.getElementById('btn-spacing-tight');
+        const normal = document.getElementById('btn-spacing-normal');
+        const relaxed = document.getElementById('btn-spacing-relaxed');
+        if (tight) tight.classList.toggle('active', val === 1.5);
+        if (normal) normal.classList.toggle('active', val === 1.78);
+        if (relaxed) relaxed.classList.toggle('active', val === 2.1);
+    }
+
+    function setPageWidth(val) {
+        triggerHaptic(10);
+        document.documentElement.style.setProperty('--book-max-width', val);
+        localStorage.setItem('hrp_ebook_page_width', val);
+
+        const compact = document.getElementById('btn-width-compact');
+        const standard = document.getElementById('btn-width-standard');
+        const wide = document.getElementById('btn-width-wide');
+        if (compact) compact.classList.toggle('active', val === '780px');
+        if (standard) standard.classList.toggle('active', val === '1020px');
+        if (wide) wide.classList.toggle('active', val === '1280px');
+    }
+
+    function setTextAlign(val) {
+        triggerHaptic(10);
+        document.documentElement.style.setProperty('--book-text-align', val);
+        localStorage.setItem('hrp_ebook_text_align', val);
+
+        const left = document.getElementById('btn-align-left');
+        const justify = document.getElementById('btn-align-justify');
+        if (left) left.classList.toggle('active', val === 'left');
+        if (justify) justify.classList.toggle('active', val === 'justify');
+    }
+
+    /* 26. Reading Analytics & Progress Dashboard Modal */
+    const readerSessionStart = Date.now();
+
+    function openReadingStatsModal() {
+        triggerHaptic(15);
+        const modal = document.getElementById('reading-stats-modal');
+        if (!modal) return;
+
+        const readCount = getReadChapters().length;
+        const pct = Math.min(100, Math.round((readCount / 88) * 100));
+        const wordsRead = Math.round(62500 * (readCount / 88));
+        const wordsLeft = Math.max(0, 62500 - wordsRead);
+        const minsLeft = Math.ceil(wordsLeft / 200);
+        const hoursLeft = Math.floor(minsLeft / 60);
+        const remMins = minsLeft % 60;
+
+        const sessionMins = Math.floor((Date.now() - readerSessionStart) / 60000);
+        const sessionSecs = Math.floor(((Date.now() - readerSessionStart) % 60000) / 1000);
+
+        const pctEl = document.getElementById('stats-progress-pct');
+        const chEl = document.getElementById('stats-chapters-read');
+        const timeEl = document.getElementById('stats-time-left');
+        const wordEl = document.getElementById('stats-word-count');
+        const sessEl = document.getElementById('stats-session-timer');
+
+        if (pctEl) pctEl.textContent = `${pct}%`;
+        if (chEl) chEl.textContent = `${readCount} / 88 Chapters Read`;
+        if (timeEl) timeEl.textContent = `~${hoursLeft}h ${remMins}m`;
+        if (wordEl) wordEl.textContent = `~${wordsRead.toLocaleString()} / 62,500`;
+        if (sessEl) sessEl.textContent = `${sessionMins < 10 ? '0' + sessionMins : sessionMins}:${sessionSecs < 10 ? '0' + sessionSecs : sessionSecs}`;
+
+        modal.classList.add('is-open');
+    }
+
+    function closeReadingStatsModal(e) {
+        if (e && e.target !== e.currentTarget) return;
+        const modal = document.getElementById('reading-stats-modal');
+        if (modal) modal.classList.remove('is-open');
+    }
+
+    function exportReadingSummary() {
+        const readCount = getReadChapters().length;
+        const pct = Math.min(100, Math.round((readCount / 88) * 100));
+        const sessionMins = Math.floor((Date.now() - readerSessionStart) / 60000);
+        const bms = getSavedBookmarks().length;
+        const hls = getSavedHighlights().length;
+
+        let log = `# Hospital Readmission Predictor: Reading Log\n`;
+        log += `*Treatise Study Progress • Team Nexora LUMINIX'26*\n\n`;
+        log += `- **Overall Progress**: ${pct}% (${readCount} / 88 Chapters Read)\n`;
+        log += `- **Session Duration**: ${sessionMins} minutes\n`;
+        log += `- **Saved Bookmarks**: ${bms}\n`;
+        log += `- **Clinical Notes & Highlights**: ${hls}\n`;
+        log += `- **Date**: ${new Date().toLocaleString()}\n`;
+
+        const blob = new Blob([log], { type: 'text/markdown;charset=utf-8' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'HRP_Clinical_Reading_Progress.md';
+        document.body.appendChild(a);
+        a.click();
+        setTimeout(() => { a.remove(); URL.revokeObjectURL(url); }, 500);
+        showToast('Reading progress exported', 'file_download');
+    }
+
+    /* 27. Keyboard Shortcuts Cheatsheet Modal */
+    function openShortcutsModal() {
+        triggerHaptic(15);
+        const modal = document.getElementById('shortcuts-modal');
+        if (modal) modal.classList.add('is-open');
+    }
+
+    function closeShortcutsModal(e) {
+        if (e && e.target !== e.currentTarget) return;
+        const modal = document.getElementById('shortcuts-modal');
+        if (modal) modal.classList.remove('is-open');
+    }
+
+    /* 28. Resume Reading State Persistence */
+    function saveCurrentReadingPosition() {
+        const curr = getCurrentActiveChapterInfo();
+        localStorage.setItem('hrp_ebook_last_pos', JSON.stringify({
+            id: curr.id,
+            title: curr.title,
+            index: curr.index,
+            scrollY: window.scrollY,
+            timestamp: Date.now()
+        }));
+        markChapterAsRead(curr.index);
+    }
+
+    function checkResumeReadingBanner() {
+        try {
+            const raw = localStorage.getItem('hrp_ebook_last_pos');
+            if (!raw) return;
+            const pos = JSON.parse(raw);
+            if (pos && pos.scrollY > 400 && window.scrollY < 200) {
+                const banner = document.getElementById('resume-reading-banner');
+                const text = document.getElementById('resume-chapter-text');
+                if (text) text.textContent = `Ch. ${pos.index}: ${pos.title.slice(0, 32)}...`;
+                if (banner) banner.classList.add('is-visible');
+            }
+        } catch (e) {
+            console.debug('[Resume] Position check error:', e);
+        }
+    }
+
+    function resumeReadingPosition() {
+        triggerHaptic(20);
+        dismissResumeBanner();
+        try {
+            const raw = localStorage.getItem('hrp_ebook_last_pos');
+            if (!raw) return;
+            const pos = JSON.parse(raw);
+            if (pos && pos.scrollY) {
+                triggerDirectionalFlip('next', () => {
+                    window.scrollTo({ top: pos.scrollY, behavior: 'smooth' });
+                });
+                showToast(`Resumed Ch. ${pos.index}`, 'auto_stories');
+            }
+        } catch (e) {
+            console.debug('[Resume] Jump error:', e);
+        }
+    }
+
+    function dismissResumeBanner() {
+        const banner = document.getElementById('resume-reading-banner');
+        if (banner) banner.classList.remove('is-visible');
+    }
+
+    /* 29. Floating Back to Top Button */
+    function scrollToTopTreatise() {
+        triggerHaptic(15);
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+        showToast('Returned to Treatise Cover', 'vertical_align_top');
+    }
+
+    /* 30. Distraction-Free Full-Screen Zen Immersion Mode */
     function toggleZenMode() {
         triggerHaptic(25);
         const isZen = document.body.classList.toggle('zen-mode');
@@ -6340,7 +8133,7 @@ CREATE TABLE medical_certificates (
         }, { passive: true });
     }
 
-    /* 23. In-eBook Live Search & Jump-to-Match Highlighter */
+    /* 31. In-eBook Live Search & Jump-to-Match Highlighter */
     let currentSearchResults = [];
     let searchCurrentIndex = -1;
 
@@ -6466,7 +8259,7 @@ CREATE TABLE medical_certificates (
         }
     }
 
-    /* 24. Night-Light Amber Warmth Eye Care */
+    /* 32. Night-Light Amber Warmth Eye Care */
     function setNightLight(val) {
         const num = parseInt(val);
         const opacity = (num / 100) * 0.7;
@@ -6478,7 +8271,7 @@ CREATE TABLE medical_certificates (
         localStorage.setItem('hrp_ebook_night_light', val);
     }
 
-    /* 25. Native Mobile Share & APA Citation Generator */
+    /* 33. Native Mobile Share & APA Citation Generator */
     function shareOrCiteChapter() {
         triggerHaptic(20);
         const curr = getCurrentActiveChapterInfo();
@@ -6512,7 +8305,7 @@ CREATE TABLE medical_certificates (
         }
     }
 
-    /* 26. Chapter Reading Time & Word Count Estimator */
+    /* 34. Chapter Reading Time & Word Count Estimator */
     function injectReadingTimeBadges() {
         const chapters = document.querySelectorAll('.book-chapter-title');
         chapters.forEach(ch => {
@@ -6540,13 +8333,1438 @@ CREATE TABLE medical_certificates (
         });
     }
 
-    /* 27. Init on DOM Loaded & KaTeX Auto-Renderer */
+    /* ==========================================================
+       35. 3D BOOK SIMULATOR & COZY STUDY ROOM GAME ENGINE
+       Powered by Three.js, Procedural Modeling, Dynamic Canvas Paging & Web Audio
+       ========================================================== */
+    function toggleStudyRoom3D() {
+        triggerHaptic(20);
+        const overlay = document.getElementById('study-room-3d-overlay');
+        if (!overlay) return;
+
+        const isOpening = !overlay.classList.contains('is-active');
+        if (isOpening) {
+            overlay.classList.add('is-active');
+            // Sync active chapter from standard reader
+            const curr = getCurrentActiveChapterInfo();
+            if (!StudyRoom3D.initialized) {
+                StudyRoom3D.init(curr.index);
+            } else {
+                StudyRoom3D.open(curr.index);
+            }
+            showToast('Entered 3D Study Room & Book Simulator', 'view_in_ar');
+        } else {
+            StudyRoom3D.close();
+            overlay.classList.remove('is-active');
+            showToast('Returned to Scroll Treatise Reader', 'menu_book');
+        }
+    }
+
+    const StudyRoom3D = (function() {
+        let initialized = false;
+        let isOpen = false;
+        let scene, camera, renderer, controls;
+        let animId = null;
+
+        // Meshes & Groups
+        let roomGroup, deskGroup, bookGroup;
+        let leftPageMesh, rightPageMesh, turningPivot, turningMesh;
+        let lampLight, lampBulb, isLampOn = true;
+        let coffeeMug, steamParticles, steamGeo;
+        let clockCanvas, clockCtx, clockTexture, clockMesh;
+        let rainParticles, rainGeo, currentWeather = 'rain';
+        let windowGroup;
+
+        // Dynamic 2D Canvases for 3D Book Spread
+        let leftCanvas, leftCtx, leftTexture;
+        let rightCanvas, rightCtx, rightTexture;
+        let turningFrontCanvas, turningFrontCtx, turningFrontTexture;
+        let turningBackCanvas, turningBackCtx, turningBackTexture;
+
+        let currentChapter = 1;
+        let isPageFlipping = false;
+
+        // Camera Presets
+        const presets = {
+            reading: { pos: { x: 0, y: 4.35, z: 2.55 }, target: { x: 0, y: 2.55, z: 0.12 }, fov: 35 },
+            desk:    { pos: { x: 0, y: 3.85, z: 4.80 }, target: { x: 0, y: 2.65, z: 0 }, fov: 44 },
+            room:    { pos: { x: 5.4, y: 6.0, z: 6.4 }, target: { x: 0, y: 2.3, z: 0 }, fov: 46 },
+            orbit:   null
+        };
+        let currentPreset = 'reading';
+
+        // Raycasting for 3D clicks
+        let raycaster, mouse;
+        const clickableItems = [];
+
+        // Pomodoro Timer State
+        let pomodoroSeconds = 25 * 60;
+        let pomodoroRunning = false;
+        let pomodoroTimer = null;
+        let pomodoroMode = 'study';
+
+        // Procedural Web Audio Ambient Sound Generator
+        let audioCtx = null;
+        let activeSound = 'rain';
+        let ambientGain = null;
+        let currentNoiseSource = null;
+        let currentFilter = null;
+        let cricketInterval = null;
+
+        function init(startChapter = 1) {
+            currentChapter = startChapter || 1;
+            const container = document.getElementById('study-room-canvas-container');
+            const loading = document.getElementById('study-room-loading');
+            if (!container) return;
+
+            if (typeof THREE === 'undefined') {
+                showToast('3D WebGL engine loading... please retry in a moment', 'hourglass_empty');
+                return;
+            }
+
+            // 1. Scene & Renderer Setup
+            scene = new THREE.Scene();
+            scene.background = new THREE.Color(0x070b16);
+            scene.fog = new THREE.FogExp2(0x070b16, 0.035);
+
+            camera = new THREE.PerspectiveCamera(35, window.innerWidth / window.innerHeight, 0.1, 100);
+            camera.position.set(presets.reading.pos.x, presets.reading.pos.y, presets.reading.pos.z);
+
+            renderer = new THREE.WebGLRenderer({ antialias: true, powerPreference: 'high-performance' });
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+            renderer.shadowMap.enabled = true;
+            renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+            renderer.toneMapping = THREE.ACESFilmicToneMapping;
+            renderer.toneMappingExposure = 1.05;
+            container.innerHTML = '';
+            container.appendChild(renderer.domElement);
+
+            // 2. OrbitControls
+            if (typeof THREE.OrbitControls !== 'undefined') {
+                controls = new THREE.OrbitControls(camera, renderer.domElement);
+                controls.enableDamping = true;
+                controls.dampingFactor = 0.05;
+                controls.target.set(presets.reading.target.x, presets.reading.target.y, presets.reading.target.z);
+                controls.maxPolarAngle = Math.PI / 2 - 0.04; // Don't clip beneath floor
+                controls.minDistance = 1.2;
+                controls.maxDistance = 18;
+            }
+
+            // 3. Lighting Architecture
+            setupLighting();
+
+            // 4. Procedural 3D Environment (Room, Desk, Window, Bookshelves)
+            buildStudyRoomEnvironment();
+
+            // 5. Procedural 3D Open Book Simulator
+            build3DBook();
+
+            // 6. Raycasting for 3D clicks (Lamp, Mug, Book Pages, Clock)
+            setupRaycasting(container);
+
+            // 7. Render initial active chapter onto book pages
+            updateBookTextures(currentChapter);
+            updateHUDLabels();
+
+            // 8. Resize listener
+            window.addEventListener('resize', onWindowResize);
+
+            // 9. Ambient sound synthesizer start
+            setAmbientSound(activeSound);
+
+            initialized = true;
+            isOpen = true;
+
+            // Hide loading screen
+            if (loading) {
+                loading.style.opacity = '0';
+                setTimeout(() => { loading.style.display = 'none'; }, 500);
+            }
+
+            // Start animation render loop
+            animate();
+        }
+
+        function setupLighting() {
+            // Soft moonlight / ambient fill
+            const hemiLight = new THREE.HemisphereLight(0xcfd8dc, 0x1e293b, 0.6);
+            scene.add(hemiLight);
+
+            // Window moonlight direction
+            const windowDir = new THREE.DirectionalLight(0x7dd3fc, 0.85);
+            windowDir.position.set(-7, 8, -4);
+            windowDir.castShadow = true;
+            windowDir.shadow.mapSize.width = 1024;
+            windowDir.shadow.mapSize.height = 1024;
+            windowDir.shadow.camera.near = 0.5;
+            windowDir.shadow.camera.far = 25;
+            windowDir.shadow.camera.left = -6;
+            windowDir.shadow.camera.right = 6;
+            windowDir.shadow.camera.top = 6;
+            windowDir.shadow.camera.bottom = -6;
+            windowDir.shadow.bias = -0.0005;
+            scene.add(windowDir);
+
+            // Warm incandescent Banker's Lamp spotlight onto the desk & book
+            lampLight = new THREE.SpotLight(0xffb74d, 2.8, 8, Math.PI / 3.2, 0.55, 1.3);
+            lampLight.position.set(-2.0, 3.8, -0.6);
+            lampLight.target.position.set(0, 2.5, 0.1);
+            lampLight.castShadow = true;
+            lampLight.shadow.mapSize.width = 1024;
+            lampLight.shadow.mapSize.height = 1024;
+            lampLight.shadow.bias = -0.0008;
+            scene.add(lampLight);
+            scene.add(lampLight.target);
+
+            // Secondary warm lamp ambient glow point
+            const lampGlow = new THREE.PointLight(0xff9800, 0.8, 6);
+            lampGlow.position.set(-2.0, 3.75, -0.6);
+            scene.add(lampGlow);
+        }
+
+        function buildStudyRoomEnvironment() {
+            roomGroup = new THREE.Group();
+            scene.add(roomGroup);
+
+            // --- Floor: Procedural Herringbone Oak Wood Planks ---
+            const floorCanvas = document.createElement('canvas');
+            floorCanvas.width = 512;
+            floorCanvas.height = 512;
+            const fctx = floorCanvas.getContext('2d');
+            fctx.fillStyle = '#261711';
+            fctx.fillRect(0, 0, 512, 512);
+            for (let y = 0; y < 512; y += 32) {
+                for (let x = 0; x < 512; x += 64) {
+                    const shade = 28 + (Math.sin(x * 7 + y) * 8);
+                    fctx.fillStyle = `rgb(${shade + 8}, ${shade - 6}, ${shade - 14})`;
+                    fctx.fillRect(x + 1, y + 1, 62, 30);
+                    fctx.strokeStyle = '#140c08';
+                    fctx.lineWidth = 1.5;
+                    fctx.strokeRect(x, y, 64, 32);
+                }
+            }
+            const floorTex = new THREE.CanvasTexture(floorCanvas);
+            floorTex.wrapS = THREE.RepeatWrapping;
+            floorTex.wrapT = THREE.RepeatWrapping;
+            floorTex.repeat.set(4, 4);
+
+            const floorGeo = new THREE.PlaneGeometry(24, 24);
+            const floorMat = new THREE.MeshStandardMaterial({
+                map: floorTex,
+                roughness: 0.5,
+                metalness: 0.05
+            });
+            const floorMesh = new THREE.Mesh(floorGeo, floorMat);
+            floorMesh.rotation.x = -Math.PI / 2;
+            floorMesh.receiveShadow = true;
+            roomGroup.add(floorMesh);
+
+            // --- Walls: Deep Library Slate Navy with Wainscoting ---
+            const wallMat = new THREE.MeshStandardMaterial({ color: 0x131d2e, roughness: 0.85 });
+            const backWall = new THREE.Mesh(new THREE.PlaneGeometry(24, 12), wallMat);
+            backWall.position.set(0, 6, -5.2);
+            backWall.receiveShadow = true;
+            roomGroup.add(backWall);
+
+            const leftWall = new THREE.Mesh(new THREE.PlaneGeometry(24, 12), wallMat);
+            leftWall.position.set(-8.5, 6, 0);
+            leftWall.rotation.y = Math.PI / 2;
+            leftWall.receiveShadow = true;
+            roomGroup.add(leftWall);
+
+            // Baseboard molding
+            const baseboardMat = new THREE.MeshStandardMaterial({ color: 0x3d271d, roughness: 0.6 });
+            const baseboard = new THREE.Mesh(new THREE.BoxGeometry(24, 0.45, 0.12), baseboardMat);
+            baseboard.position.set(0, 0.22, -5.14);
+            roomGroup.add(baseboard);
+
+            // --- Study Window with Weather (Rain/Night Sky) ---
+            buildStudyWindow();
+
+            // --- Library Bookshelf with Medical Volumes & Fairy Lights ---
+            buildBookshelf();
+
+            // --- Mahogany Study Desk ---
+            buildMahoganyDesk();
+
+            // --- Banker's Brass Lamp, Coffee Mug, Pomodoro Clock, Stethoscope ---
+            buildDeskAccessories();
+        }
+
+        function buildStudyWindow() {
+            windowGroup = new THREE.Group();
+            windowGroup.position.set(-4.6, 5.4, -5.1);
+
+            // Wooden outer frame
+            const frameMat = new THREE.MeshStandardMaterial({ color: 0x301e16, roughness: 0.7 });
+            const frame = new THREE.Mesh(new THREE.BoxGeometry(4.4, 4.8, 0.18), frameMat);
+            windowGroup.add(frame);
+
+            // Inner glass opening
+            const skyCanvas = document.createElement('canvas');
+            skyCanvas.width = 512;
+            skyCanvas.height = 512;
+            const sctx = skyCanvas.getContext('2d');
+            // Gradient night sky
+            const skyGrad = sctx.createLinearGradient(0, 0, 0, 512);
+            skyGrad.addColorStop(0, '#040714');
+            skyGrad.addColorStop(0.7, '#0d1b2a');
+            skyGrad.addColorStop(1, '#1b263b');
+            sctx.fillStyle = skyGrad;
+            sctx.fillRect(0, 0, 512, 512);
+
+            // Crescent moon
+            sctx.fillStyle = '#fef08a';
+            sctx.beginPath();
+            sctx.arc(380, 110, 36, 0, Math.PI * 2);
+            sctx.fill();
+            sctx.fillStyle = '#040714';
+            sctx.beginPath();
+            sctx.arc(368, 104, 30, 0, Math.PI * 2);
+            sctx.fill();
+
+            // Distant skyline silhouette
+            sctx.fillStyle = '#050a14';
+            for (let bx = 0; bx < 512; bx += 28) {
+                const bHeight = 70 + (Math.sin(bx * 13) * 50) + 40;
+                sctx.fillRect(bx, 512 - bHeight, 26, bHeight);
+                // Windows in buildings
+                sctx.fillStyle = '#fef08a';
+                for (let wy = 512 - bHeight + 10; wy < 500; wy += 14) {
+                    if (Math.sin(bx + wy) > 0) sctx.fillRect(bx + 4, wy, 4, 6);
+                }
+                sctx.fillStyle = '#050a14';
+            }
+
+            const skyTex = new THREE.CanvasTexture(skyCanvas);
+            const skyPane = new THREE.Mesh(
+                new THREE.PlaneGeometry(4.0, 4.4),
+                new THREE.MeshBasicMaterial({ map: skyTex })
+            );
+            skyPane.position.set(0, 0, -0.05);
+            windowGroup.add(skyPane);
+
+            // Window Mullions (cross frame)
+            const vertMullion = new THREE.Mesh(new THREE.BoxGeometry(0.12, 4.4, 0.1), frameMat);
+            const horizMullion = new THREE.Mesh(new THREE.BoxGeometry(4.0, 0.12, 0.1), frameMat);
+            windowGroup.add(vertMullion);
+            windowGroup.add(horizMullion);
+
+            // Falling Rain Particle System
+            rainGeo = new THREE.BufferGeometry();
+            const rainPos = [];
+            for (let i = 0; i < 280; i++) {
+                rainPos.push(
+                    (Math.random() - 0.5) * 3.8,
+                    (Math.random() - 0.5) * 4.2,
+                    0.02
+                );
+            }
+            rainGeo.setAttribute('position', new THREE.Float32BufferAttribute(rainPos, 3));
+            const rainMat = new THREE.PointsMaterial({
+                color: 0x93c5fd,
+                size: 0.035,
+                transparent: true,
+                opacity: 0.75
+            });
+            rainParticles = new THREE.Points(rainGeo, rainMat);
+            windowGroup.add(rainParticles);
+
+            roomGroup.add(windowGroup);
+        }
+
+        function buildBookshelf() {
+            const shelfGroup = new THREE.Group();
+            shelfGroup.position.set(4.4, 4.8, -4.95);
+
+            const woodMat = new THREE.MeshStandardMaterial({ color: 0x2b1810, roughness: 0.7 });
+            // Bookshelf frame
+            const backPanel = new THREE.Mesh(new THREE.BoxGeometry(4.2, 5.6, 0.1), woodMat);
+            shelfGroup.add(backPanel);
+
+            // 4 Horizontal Shelves
+            [-2.4, -0.8, 0.8, 2.4].forEach(y => {
+                const shelf = new THREE.Mesh(new THREE.BoxGeometry(4.2, 0.12, 0.75), woodMat);
+                shelf.position.set(0, y, 0.35);
+                shelfGroup.add(shelf);
+            });
+
+            // Colorful Leather Book Volumes
+            const bookColors = [0x881337, 0x1e3a8a, 0x064e3b, 0x78350f, 0x1e293b, 0xb45309];
+            [-2.4, -0.8, 0.8].forEach(shelfY => {
+                let currX = -1.85;
+                while (currX < 1.7) {
+                    const width = 0.09 + Math.random() * 0.08;
+                    const height = 0.9 + Math.random() * 0.35;
+                    const depth = 0.55;
+                    const col = bookColors[Math.floor(Math.random() * bookColors.length)];
+                    const bMat = new THREE.MeshStandardMaterial({ color: col, roughness: 0.6 });
+                    const book = new THREE.Mesh(new THREE.BoxGeometry(width, height, depth), bMat);
+                    book.position.set(currX + width / 2, shelfY + height / 2 + 0.06, 0.38);
+                    shelfGroup.add(book);
+                    currX += width + 0.02;
+                }
+            });
+
+            // Fairy Lights string along shelf
+            for (let fx = -1.9; fx <= 1.9; fx += 0.35) {
+                const bulb = new THREE.Mesh(
+                    new THREE.SphereGeometry(0.035, 8, 8),
+                    new THREE.MeshBasicMaterial({ color: 0xfef08a })
+                );
+                bulb.position.set(fx, 2.38 + Math.sin(fx * 3) * 0.06, 0.72);
+                shelfGroup.add(bulb);
+            }
+
+            roomGroup.add(shelfGroup);
+        }
+
+        function buildMahoganyDesk() {
+            deskGroup = new THREE.Group();
+
+            const mahoganyMat = new THREE.MeshStandardMaterial({
+                color: 0x3d1c12,
+                roughness: 0.35,
+                metalness: 0.1
+            });
+
+            // Tabletop
+            const topGeo = new THREE.BoxGeometry(6.6, 0.18, 4.0);
+            const tabletop = new THREE.Mesh(topGeo, mahoganyMat);
+            tabletop.position.set(0, 2.4, 0);
+            tabletop.castShadow = true;
+            tabletop.receiveShadow = true;
+            deskGroup.add(tabletop);
+
+            // Desk Apron & Drawers
+            const apron = new THREE.Mesh(new THREE.BoxGeometry(6.3, 0.55, 3.7), mahoganyMat);
+            apron.position.set(0, 2.05, 0);
+            apron.castShadow = true;
+            deskGroup.add(apron);
+
+            // 4 Turned Desk Legs
+            const legMat = new THREE.MeshStandardMaterial({ color: 0x2e150d, roughness: 0.5 });
+            const legCoords = [
+                [-3.0, -1.7], [3.0, -1.7],
+                [-3.0, 1.7], [3.0, 1.7]
+            ];
+            legCoords.forEach(([lx, lz]) => {
+                const leg = new THREE.Mesh(new THREE.CylinderGeometry(0.12, 0.08, 2.4, 16), legMat);
+                leg.position.set(lx, 1.2, lz);
+                leg.castShadow = true;
+                deskGroup.add(leg);
+            });
+
+            // Green Leather Desk Blotter / Pad (under book)
+            const blotterMat = new THREE.MeshStandardMaterial({
+                color: 0x064e3b,
+                roughness: 0.65,
+                metalness: 0.08
+            });
+            const blotter = new THREE.Mesh(new THREE.BoxGeometry(4.4, 0.025, 2.7), blotterMat);
+            blotter.position.set(0, 2.50, 0.1);
+            blotter.receiveShadow = true;
+            deskGroup.add(blotter);
+
+            scene.add(deskGroup);
+        }
+
+        function buildDeskAccessories() {
+            // --- 1. Banker's Brass Lamp ---
+            const lampGroup = new THREE.Group();
+            lampGroup.position.set(-2.2, 2.50, -0.75);
+
+            const brassMat = new THREE.MeshStandardMaterial({ color: 0xd97706, roughness: 0.25, metalness: 0.85 });
+            const shadeMat = new THREE.MeshPhysicalMaterial({ color: 0x065f46, roughness: 0.2, transmission: 0.55, opacity: 0.95 });
+
+            // Base
+            const lbase = new THREE.Mesh(new THREE.CylinderGeometry(0.28, 0.32, 0.08, 24), brassMat);
+            lbase.position.y = 0.04;
+            lampGroup.add(lbase);
+
+            // Gooseneck Stem
+            const stem = new THREE.Mesh(new THREE.CylinderGeometry(0.04, 0.04, 1.1, 12), brassMat);
+            stem.position.set(0, 0.6, 0);
+            lampGroup.add(stem);
+
+            const arm = new THREE.Mesh(new THREE.CylinderGeometry(0.035, 0.035, 0.6, 12), brassMat);
+            arm.position.set(0.2, 1.15, 0.15);
+            arm.rotation.z = -Math.PI / 4;
+            lampGroup.add(arm);
+
+            // Emerald Shade
+            const shade = new THREE.Mesh(new THREE.CylinderGeometry(0.22, 0.28, 0.55, 24, 1, false, 0, Math.PI), shadeMat);
+            shade.position.set(0.42, 1.25, 0.25);
+            shade.rotation.z = Math.PI / 2;
+            shade.rotation.y = Math.PI;
+            lampGroup.add(shade);
+
+            // Bulb
+            lampBulb = new THREE.Mesh(new THREE.SphereGeometry(0.09, 16, 16), new THREE.MeshBasicMaterial({ color: 0xffedd5 }));
+            lampBulb.position.set(0.42, 1.22, 0.25);
+            lampGroup.add(lampBulb);
+
+            lampGroup.name = 'lamp';
+            clickableItems.push({ mesh: lbase, name: 'lamp' }, { mesh: shade, name: 'lamp' });
+            scene.add(lampGroup);
+
+            // --- 2. Ceramic Coffee Mug with Rising Steam ---
+            const mugGroup = new THREE.Group();
+            mugGroup.position.set(2.2, 2.50, -0.6);
+
+            const ceramicMat = new THREE.MeshStandardMaterial({ color: 0xf8fafc, roughness: 0.15 });
+            const mugBody = new THREE.Mesh(new THREE.CylinderGeometry(0.20, 0.18, 0.44, 24), ceramicMat);
+            mugBody.position.y = 0.22;
+            mugBody.castShadow = true;
+            mugGroup.add(mugBody);
+
+            const mugHandle = new THREE.Mesh(new THREE.TorusGeometry(0.12, 0.035, 12, 24, Math.PI * 1.2), ceramicMat);
+            mugHandle.position.set(0.22, 0.22, 0);
+            mugHandle.rotation.z = -Math.PI / 2;
+            mugGroup.add(mugHandle);
+
+            // Coffee liquid
+            const coffeeMat = new THREE.MeshStandardMaterial({ color: 0x1f140e, roughness: 0.1 });
+            const coffeeSurf = new THREE.Mesh(new THREE.CircleGeometry(0.18, 24), coffeeMat);
+            coffeeSurf.rotation.x = -Math.PI / 2;
+            coffeeSurf.position.y = 0.42;
+            mugGroup.add(coffeeSurf);
+
+            // Rising Steam Particles
+            steamGeo = new THREE.BufferGeometry();
+            const sPos = [];
+            for (let i = 0; i < 35; i++) {
+                sPos.push(
+                    (Math.random() - 0.5) * 0.12,
+                    0.44 + Math.random() * 0.6,
+                    (Math.random() - 0.5) * 0.12
+                );
+            }
+            steamGeo.setAttribute('position', new THREE.Float32BufferAttribute(sPos, 3));
+            const steamMat = new THREE.PointsMaterial({
+                color: 0xffffff,
+                size: 0.045,
+                transparent: true,
+                opacity: 0.35
+            });
+            steamParticles = new THREE.Points(steamGeo, steamMat);
+            mugGroup.add(steamParticles);
+
+            mugGroup.name = 'coffee';
+            clickableItems.push({ mesh: mugBody, name: 'coffee' });
+            scene.add(mugGroup);
+
+            // --- 3. Interactive Pomodoro Desk Clock ---
+            clockCanvas = document.createElement('canvas');
+            clockCanvas.width = 256;
+            clockCanvas.height = 128;
+            clockCtx = clockCanvas.getContext('2d');
+            clockTexture = new THREE.CanvasTexture(clockCanvas);
+            drawClockFace('25:00', 'POMODORO');
+
+            const clockGroup = new THREE.Group();
+            clockGroup.position.set(2.2, 2.50, 0.85);
+
+            const cWoodMat = new THREE.MeshStandardMaterial({ color: 0x2e150d, roughness: 0.4 });
+            const cBody = new THREE.Mesh(new THREE.BoxGeometry(0.65, 0.45, 0.35), cWoodMat);
+            cBody.position.y = 0.22;
+            clockGroup.add(cBody);
+
+            const cFace = new THREE.Mesh(new THREE.PlaneGeometry(0.58, 0.38), new THREE.MeshBasicMaterial({ map: clockTexture }));
+            cFace.position.set(0, 0.22, 0.18);
+            clockGroup.add(cFace);
+
+            clockGroup.name = 'clock';
+            clickableItems.push({ mesh: cBody, name: 'clock' }, { mesh: cFace, name: 'clock' });
+            scene.add(clockGroup);
+
+            // --- 4. Clinical Stethoscope & Patient Chart Clipboard ---
+            const medGroup = new THREE.Group();
+            medGroup.position.set(-2.0, 2.50, 0.75);
+
+            // Clipboard
+            const cbMat = new THREE.MeshStandardMaterial({ color: 0x5a3825, roughness: 0.5 });
+            const clipBoard = new THREE.Mesh(new THREE.BoxGeometry(0.9, 0.03, 1.2), cbMat);
+            clipBoard.position.set(0, 0.015, 0);
+            clipBoard.rotation.y = 0.25;
+            medGroup.add(clipBoard);
+
+            const paperMat = new THREE.MeshBasicMaterial({ color: 0xfdfdfd });
+            const cbPaper = new THREE.Mesh(new THREE.PlaneGeometry(0.78, 1.05), paperMat);
+            cbPaper.rotation.x = -Math.PI / 2;
+            cbPaper.rotation.z = -0.25;
+            cbPaper.position.set(0, 0.035, 0);
+            medGroup.add(cbPaper);
+
+            // Metal Stethoscope Head
+            const stethMat = new THREE.MeshStandardMaterial({ color: 0x94a3b8, roughness: 0.2, metalness: 0.9 });
+            const chestPiece = new THREE.Mesh(new THREE.CylinderGeometry(0.14, 0.14, 0.04, 24), stethMat);
+            chestPiece.position.set(0.6, 0.02, 0.2);
+            medGroup.add(chestPiece);
+
+            scene.add(medGroup);
+        }
+
+        function drawClockFace(timeStr, label) {
+            if (!clockCtx) return;
+            clockCtx.fillStyle = '#0f172a';
+            clockCtx.fillRect(0, 0, 256, 128);
+
+            // Border
+            clockCtx.strokeStyle = '#38bdf8';
+            clockCtx.lineWidth = 4;
+            clockCtx.strokeRect(6, 6, 244, 116);
+
+            // LED Time
+            clockCtx.fillStyle = pomodoroRunning ? '#22c55e' : '#f59e0b';
+            clockCtx.font = 'bold 54px monospace';
+            clockCtx.textAlign = 'center';
+            clockCtx.textBaseline = 'middle';
+            clockCtx.fillText(timeStr, 128, 54);
+
+            // Subtitle
+            clockCtx.fillStyle = '#94a3b8';
+            clockCtx.font = 'bold 16px Inter, sans-serif';
+            clockCtx.fillText(label || 'POMODORO', 128, 100);
+
+            if (clockTexture) clockTexture.needsUpdate = true;
+        }
+
+        function build3DBook() {
+            bookGroup = new THREE.Group();
+            bookGroup.position.set(0, 2.52, 0.12);
+            bookGroup.rotation.x = 0.06; // Pleasant slight tilt toward reader
+
+            // --- 1. Hardcover Base ---
+            const coverMat = new THREE.MeshStandardMaterial({
+                color: 0x0f172a, // Deep navy blue leatherette
+                roughness: 0.45,
+                metalness: 0.1
+            });
+            const cover = new THREE.Mesh(new THREE.BoxGeometry(3.6, 0.08, 2.45), coverMat);
+            cover.castShadow = true;
+            cover.receiveShadow = true;
+            bookGroup.add(cover);
+
+            // Gold Embossed Spine Ribbon along center
+            const goldMat = new THREE.MeshStandardMaterial({ color: 0xd97706, roughness: 0.3, metalness: 0.85 });
+            const spineRib = new THREE.Mesh(new THREE.BoxGeometry(0.12, 0.09, 2.46), goldMat);
+            spineRib.position.y = 0.01;
+            bookGroup.add(spineRib);
+
+            // --- 2. Curved Left & Right Pages with Dynamic Canvases ---
+            leftCanvas = document.createElement('canvas');
+            leftCanvas.width = 1024;
+            leftCanvas.height = 1448;
+            leftCtx = leftCanvas.getContext('2d');
+            leftTexture = new THREE.CanvasTexture(leftCanvas);
+
+            rightCanvas = document.createElement('canvas');
+            rightCanvas.width = 1024;
+            rightCanvas.height = 1448;
+            rightCtx = rightCanvas.getContext('2d');
+            rightTexture = new THREE.CanvasTexture(rightCanvas);
+
+            const pageMatL = new THREE.MeshStandardMaterial({ map: leftTexture, roughness: 0.85 });
+            const pageMatR = new THREE.MeshStandardMaterial({ map: rightTexture, roughness: 0.85 });
+
+            // Curved Left Page (slightly curved down into spine)
+            const leftGeo = new THREE.PlaneGeometry(1.68, 2.28, 16, 16);
+            leftGeo.rotateX(-Math.PI / 2);
+            leftPageMesh = new THREE.Mesh(leftGeo, pageMatL);
+            leftPageMesh.position.set(-0.84, 0.05, 0);
+            leftPageMesh.receiveShadow = true;
+            leftPageMesh.name = 'left-page';
+            clickableItems.push({ mesh: leftPageMesh, name: 'prev-page' });
+            bookGroup.add(leftPageMesh);
+
+            // Curved Right Page
+            const rightGeo = new THREE.PlaneGeometry(1.68, 2.28, 16, 16);
+            rightGeo.rotateX(-Math.PI / 2);
+            rightPageMesh = new THREE.Mesh(rightGeo, pageMatR);
+            rightPageMesh.position.set(0.84, 0.05, 0);
+            rightPageMesh.receiveShadow = true;
+            rightPageMesh.name = 'right-page';
+            clickableItems.push({ mesh: rightPageMesh, name: 'next-page' });
+            bookGroup.add(rightPageMesh);
+
+            // --- 3. 3D Turning Page Leaf Pivot (for real 3D page flip) ---
+            turningPivot = new THREE.Group();
+            turningPivot.position.set(0, 0.052, 0);
+
+            turningFrontCanvas = document.createElement('canvas');
+            turningFrontCanvas.width = 1024;
+            turningFrontCanvas.height = 1448;
+            turningFrontCtx = turningFrontCanvas.getContext('2d');
+            turningFrontTexture = new THREE.CanvasTexture(turningFrontCanvas);
+
+            turningBackCanvas = document.createElement('canvas');
+            turningBackCanvas.width = 1024;
+            turningBackCanvas.height = 1448;
+            turningBackCtx = turningBackCanvas.getContext('2d');
+            turningBackTexture = new THREE.CanvasTexture(turningBackCanvas);
+
+            const turningGeo = new THREE.PlaneGeometry(1.68, 2.28, 24, 24);
+            turningGeo.rotateX(-Math.PI / 2);
+            turningGeo.translate(0.84, 0, 0); // Anchor along the left edge / spine
+
+            // Double sided turning leaf materials
+            const turningMatFront = new THREE.MeshStandardMaterial({ map: turningFrontTexture, roughness: 0.85, side: THREE.FrontSide });
+            turningMesh = new THREE.Mesh(turningGeo, turningMatFront);
+            turningMesh.castShadow = true;
+            turningMesh.visible = false; // only visible while flipping
+            turningPivot.add(turningMesh);
+
+            bookGroup.add(turningPivot);
+            scene.add(bookGroup);
+        }
+
+        function updateBookTextures(chIdx) {
+            currentChapter = Math.max(1, Math.min(88, chIdx));
+            const chapters = getChapterHeadings();
+            const currHeading = chapters[currentChapter - 1];
+
+            const title = currHeading ? currHeading.textContent.trim() : `Chapter ${currentChapter}: Clinical Precision Modeling`;
+            const part = currHeading && currHeading.getAttribute('data-part') ? `Part ${currHeading.getAttribute('data-part')}` : 'Part I: Clinical Fundamentals';
+
+            // Extract readable text from actual treatise HTML
+            let bodyParas = [];
+            if (currHeading) {
+                let sib = currHeading.nextElementSibling;
+                while (sib && bodyParas.length < 5 && !sib.classList.contains('book-chapter-title') && !sib.classList.contains('book-part-title')) {
+                    if (['P', 'BLOCKQUOTE'].includes(sib.tagName) && sib.textContent.trim().length > 15) {
+                        bodyParas.push(sib.textContent.trim());
+                    }
+                    sib = sib.nextElementSibling;
+                }
+            }
+            if (bodyParas.length === 0) {
+                bodyParas = [
+                    "Hospital Readmission Predictor represents a next-generation Clinical Decision Support System engineered to predict unplanned 30-day inpatient returns with calibrated XGBoost and TreeSHAP explainability.",
+                    "By harmonizing longitudinal electronic health records, acute laboratory biomarkers, and pharmacological titration vectors, clinical teams achieve high-sensitivity risk tier stratification prior to patient discharge.",
+                    "Mandated intervention protocols for high-risk cohorts include physician video follow-up within 72 hours, pharmacist-led medication therapy reconciliation, and biometric remote patient monitoring."
+                ];
+            }
+
+            // Draw Left Page (Chapter Header, Part, Big Title, Body Paras)
+            drawPageCanvas(leftCtx, {
+                isLeft: true,
+                header: `HOSPITAL READMISSION PREDICTOR • ${part.toUpperCase()}`,
+                chapterNum: currentChapter,
+                title: title,
+                paras: bodyParas.slice(0, 2),
+                pageNum: (currentChapter * 2) - 1,
+                hasDropCap: true
+            });
+            leftTexture.needsUpdate = true;
+
+            // Draw Right Page (Clinical Takeaways, Continued Text, Formula snippet)
+            drawPageCanvas(rightCtx, {
+                isLeft: false,
+                header: `EXECUTIVE CLINICAL TREATISE • 88 CHAPTERS`,
+                chapterNum: currentChapter,
+                title: '',
+                paras: bodyParas.slice(2),
+                pageNum: currentChapter * 2,
+                hasHighlightBox: true,
+                keyMetric: `ROC-AUC 0.9794 • PR-AUC 0.9621`
+            });
+            rightTexture.needsUpdate = true;
+        }
+
+        function drawPageCanvas(ctx, opts) {
+            const w = 1024;
+            const h = 1448;
+
+            // Warm paper parchment base
+            ctx.fillStyle = '#fbf8f1';
+            ctx.fillRect(0, 0, w, h);
+
+            // Subtle paper edge shadow on spine
+            const spineGrad = ctx.createLinearGradient(opts.isLeft ? w - 70 : 0, 0, opts.isLeft ? w : 70, 0);
+            spineGrad.addColorStop(opts.isLeft ? 0 : 1, 'rgba(0,0,0,0)');
+            spineGrad.addColorStop(opts.isLeft ? 1 : 0, 'rgba(0,0,0,0.08)');
+            ctx.fillStyle = spineGrad;
+            ctx.fillRect(opts.isLeft ? w - 70 : 0, 0, 70, h);
+
+            // Page Margins
+            const mx = opts.isLeft ? 110 : 90;
+            const contentW = w - 200;
+
+            // Top Header Rule
+            ctx.fillStyle = '#64748b';
+            ctx.font = 'bold 18px "JetBrains Mono", monospace';
+            ctx.textAlign = opts.isLeft ? 'left' : 'right';
+            ctx.fillText(opts.header, opts.isLeft ? mx : w - mx, 80);
+
+            ctx.strokeStyle = '#e2e8f0';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.moveTo(mx, 96);
+            ctx.lineTo(w - mx, 96);
+            ctx.stroke();
+
+            let y = 140;
+
+            // Chapter Title (Left Page)
+            if (opts.title) {
+                ctx.fillStyle = '#005bbf';
+                ctx.font = 'bold 22px "JetBrains Mono", monospace';
+                ctx.textAlign = 'left';
+                ctx.fillText(`CHAPTER ${opts.chapterNum}`, mx, y);
+                y += 38;
+
+                ctx.fillStyle = '#0f172a';
+                ctx.font = 'bold 44px "Cinzel", Georgia, serif';
+                y = wrapText(ctx, opts.title, mx, y, contentW, 52);
+                y += 24;
+
+                // Gold divider line
+                ctx.strokeStyle = '#d97706';
+                ctx.lineWidth = 3;
+                ctx.beginPath();
+                ctx.moveTo(mx, y);
+                ctx.lineTo(mx + 120, y);
+                ctx.stroke();
+                y += 42;
+            } else {
+                y = 130;
+            }
+
+            // Paragraphs
+            ctx.fillStyle = '#1e293b';
+            ctx.font = '300 24px "Merriweather", Georgia, serif';
+            ctx.textAlign = 'left';
+
+            opts.paras.forEach((para, pIdx) => {
+                if (opts.hasDropCap && pIdx === 0) {
+                    // Big Drop Cap
+                    const firstLetter = para.charAt(0);
+                    const restText = para.slice(1);
+                    ctx.font = 'bold 84px "Cinzel", Georgia, serif';
+                    ctx.fillStyle = '#005bbf';
+                    ctx.fillText(firstLetter, mx, y + 68);
+
+                    ctx.font = '300 24px "Merriweather", Georgia, serif';
+                    ctx.fillStyle = '#1e293b';
+                    y = wrapText(ctx, restText, mx + 84, y, contentW - 84, 38, 2);
+                    y += 18;
+                } else {
+                    y = wrapText(ctx, para, mx, y, contentW, 38);
+                    y += 26;
+                }
+            });
+
+            // Clinical Callout Box (Right Page)
+            if (opts.hasHighlightBox) {
+                y = Math.max(y + 10, 520);
+                ctx.fillStyle = 'rgba(0, 91, 191, 0.06)';
+                ctx.strokeStyle = '#005bbf';
+                ctx.lineWidth = 2;
+                ctx.roundRect ? ctx.roundRect(mx, y, contentW, 260, 16) : ctx.strokeRect(mx, y, contentW, 260);
+                ctx.fill();
+                ctx.stroke();
+
+                ctx.fillStyle = '#005bbf';
+                ctx.font = 'bold 22px "Inter", sans-serif';
+                ctx.fillText('🩺 CLINICAL TRIAGE DIRECTIVE', mx + 24, y + 42);
+
+                ctx.fillStyle = '#334155';
+                ctx.font = 'italic 20px "Merriweather", Georgia, serif';
+                wrapText(ctx, 'For patients scoring in the High Risk Tier (>=61%), immediate post-discharge clinical coordination protocol requires physician telehealth confirmation and pharmacy reconciliation within 72 hours.', mx + 24, y + 80, contentW - 48, 32);
+
+                if (opts.keyMetric) {
+                    ctx.fillStyle = '#059669';
+                    ctx.font = 'bold 19px "JetBrains Mono", monospace';
+                    ctx.fillText(opts.keyMetric, mx + 24, y + 225);
+                }
+            }
+
+            // Bottom Page Number & Footer
+            ctx.fillStyle = '#64748b';
+            ctx.font = 'bold 20px "JetBrains Mono", monospace';
+            ctx.textAlign = opts.isLeft ? 'left' : 'right';
+            ctx.fillText(`- ${opts.pageNum} -`, opts.isLeft ? mx : w - mx, h - 60);
+
+            ctx.fillStyle = '#94a3b8';
+            ctx.font = '16px "Inter", sans-serif';
+            ctx.textAlign = opts.isLeft ? 'right' : 'left';
+            ctx.fillText(opts.isLeft ? "Team Nexora • LUMINIX'26" : "Hospital Readmission Predictor", opts.isLeft ? w - mx : mx, h - 60);
+        }
+
+        function wrapText(ctx, text, x, y, maxWidth, lineHeight, maxLines = 99) {
+            const words = text.split(' ');
+            let line = '';
+            let linesDrawn = 0;
+
+            for (let n = 0; n < words.length; n++) {
+                const testLine = line + words[n] + ' ';
+                const metrics = ctx.measureText(testLine);
+                if (metrics.width > maxWidth && n > 0) {
+                    ctx.fillText(line, x, y);
+                    line = words[n] + ' ';
+                    y += lineHeight;
+                    linesDrawn++;
+                    if (linesDrawn >= maxLines) break;
+                } else {
+                    line = testLine;
+                }
+            }
+            if (line && linesDrawn < maxLines) {
+                ctx.fillText(line, x, y);
+                y += lineHeight;
+            }
+            return y;
+        }
+
+        function turnPage(direction = 'next') {
+            if (isPageFlipping) return;
+            if (direction === 'next' && currentChapter >= 88) {
+                showToast('Reached final chapter of Treatise', 'celebration');
+                return;
+            }
+            if (direction === 'prev' && currentChapter <= 1) {
+                showToast('At Chapter 1', 'info');
+                return;
+            }
+
+            isPageFlipping = true;
+            triggerHaptic(15);
+            playPaperTurnSound();
+
+            const targetCh = direction === 'next' ? currentChapter + 1 : currentChapter - 1;
+
+            // Set up turning leaf textures
+            if (direction === 'next') {
+                // Front has current right page, Back has next left page
+                turningFrontCtx.drawImage(rightCanvas, 0, 0);
+                turningFrontTexture.needsUpdate = true;
+
+                drawPageCanvas(turningBackCtx, {
+                    isLeft: true,
+                    header: `HOSPITAL READMISSION PREDICTOR`,
+                    chapterNum: targetCh,
+                    title: `Chapter ${targetCh}`,
+                    paras: ["Advancing to Chapter " + targetCh + "..."],
+                    pageNum: (targetCh * 2) - 1
+                });
+                turningBackTexture.needsUpdate = true;
+
+                turningPivot.rotation.y = 0;
+                turningMesh.visible = true;
+
+                if (typeof TWEEN !== 'undefined') {
+                    new TWEEN.Tween(turningPivot.rotation)
+                        .to({ y: -Math.PI }, 680)
+                        .easing(TWEEN.Easing.Quadratic.InOut)
+                        .onComplete(() => {
+                            turningMesh.visible = false;
+                            turningPivot.rotation.y = 0;
+                            currentChapter = targetCh;
+                            updateBookTextures(currentChapter);
+                            updateHUDLabels();
+                            isPageFlipping = false;
+                        })
+                        .start();
+                } else {
+                    turningMesh.visible = false;
+                    currentChapter = targetCh;
+                    updateBookTextures(currentChapter);
+                    updateHUDLabels();
+                    isPageFlipping = false;
+                }
+            } else {
+                // Prev turn: from left to right
+                turningFrontCtx.drawImage(leftCanvas, 0, 0);
+                turningFrontTexture.needsUpdate = true;
+
+                turningPivot.rotation.y = -Math.PI;
+                turningMesh.visible = true;
+
+                if (typeof TWEEN !== 'undefined') {
+                    new TWEEN.Tween(turningPivot.rotation)
+                        .to({ y: 0 }, 680)
+                        .easing(TWEEN.Easing.Quadratic.InOut)
+                        .onComplete(() => {
+                            turningMesh.visible = false;
+                            currentChapter = targetCh;
+                            updateBookTextures(currentChapter);
+                            updateHUDLabels();
+                            isPageFlipping = false;
+                        })
+                        .start();
+                } else {
+                    turningMesh.visible = false;
+                    currentChapter = targetCh;
+                    updateBookTextures(currentChapter);
+                    updateHUDLabels();
+                    isPageFlipping = false;
+                }
+            }
+        }
+
+        function nextPage() {
+            turnPage('next');
+        }
+
+        function prevPage() {
+            turnPage('prev');
+        }
+
+        function jumpToChapter(val, animateTurn = true) {
+            const num = parseInt(val);
+            if (isNaN(num) || num < 1 || num > 88) return;
+            currentChapter = num;
+            updateBookTextures(currentChapter);
+            updateHUDLabels();
+            if (animateTurn) {
+                playPaperTurnSound();
+            }
+            showToast(`Loaded Chapter ${num} in 3D`, 'auto_stories');
+        }
+
+        function updateHUDLabels() {
+            const select = document.getElementById('study-3d-chapter-select');
+            const bottomTitle = document.getElementById('study-3d-bottom-ch-title');
+            const bottomPage = document.getElementById('study-3d-bottom-page-num');
+
+            const chapters = getChapterHeadings();
+            const currHeading = chapters[currentChapter - 1];
+            const title = currHeading ? currHeading.textContent.trim() : `Chapter ${currentChapter}`;
+
+            if (select && select.value != currentChapter) select.value = currentChapter;
+            if (bottomTitle) bottomTitle.textContent = title;
+            if (bottomPage) bottomPage.textContent = `Chapter ${currentChapter} of 88 • Click 3D page to turn`;
+        }
+
+        function setCameraPreset(presetKey) {
+            currentPreset = presetKey;
+            ['reading', 'desk', 'room', 'orbit'].forEach(p => {
+                const btn = document.getElementById(`cam-preset-${p}`);
+                if (btn) btn.classList.toggle('active', p === presetKey);
+            });
+
+            if (presetKey === 'orbit') {
+                if (controls) controls.enabled = true;
+                showToast('Free 360° Orbit Mode: Drag mouse or finger', '360');
+                return;
+            }
+
+            const p = presets[presetKey];
+            if (!p) return;
+
+            if (typeof TWEEN !== 'undefined') {
+                new TWEEN.Tween(camera.position)
+                    .to(p.pos, 850)
+                    .easing(TWEEN.Easing.Cubic.Out)
+                    .start();
+
+                new TWEEN.Tween(controls.target)
+                    .to(p.target, 850)
+                    .easing(TWEEN.Easing.Cubic.Out)
+                    .start();
+            } else {
+                camera.position.set(p.pos.x, p.pos.y, p.pos.z);
+                if (controls) controls.target.set(p.target.x, p.target.y, p.target.z);
+            }
+            showToast(`Switched Camera: ${presetKey.toUpperCase()}`, 'videocam');
+        }
+
+        function toggleLamp() {
+            triggerHaptic(15);
+            isLampOn = !isLampOn;
+            if (lampLight) lampLight.intensity = isLampOn ? 2.8 : 0.05;
+            if (lampBulb) lampBulb.material.color.setHex(isLampOn ? 0xffedd5 : 0x475569);
+            const btn = document.getElementById('study-3d-lamp-btn');
+            if (btn) btn.classList.toggle('active', isLampOn);
+            showToast(isLampOn ? 'Desk Lamp Turned ON' : 'Desk Lamp Turned OFF', 'lightbulb');
+        }
+
+        function sipCoffee() {
+            triggerHaptic(15);
+            playCoffeeSipSound();
+            showToast('Cozy sip of coffee... Energy +10 ☕', 'coffee');
+        }
+
+        function togglePomodoro() {
+            triggerHaptic(15);
+            pomodoroRunning = !pomodoroRunning;
+            const textEl = document.getElementById('study-3d-pomodoro-text');
+
+            if (pomodoroRunning) {
+                if (!pomodoroTimer) {
+                    pomodoroTimer = setInterval(() => {
+                        if (pomodoroSeconds > 0) {
+                            pomodoroSeconds--;
+                            const m = Math.floor(pomodoroSeconds / 60);
+                            const s = pomodoroSeconds % 60;
+                            const timeStr = `${m < 10 ? '0' + m : m}:${s < 10 ? '0' + s : s}`;
+                            if (textEl) textEl.textContent = timeStr;
+                            drawClockFace(timeStr, pomodoroMode.toUpperCase());
+                        } else {
+                            // Completed interval!
+                            playBellChime();
+                            pomodoroMode = pomodoroMode === 'study' ? 'break' : 'study';
+                            pomodoroSeconds = pomodoroMode === 'study' ? 25 * 60 : 5 * 60;
+                            showToast(pomodoroMode === 'break' ? 'Study session complete! Take a 5m break.' : 'Break finished! Time to study.', 'timer');
+                        }
+                    }, 1000);
+                }
+                showToast('Pomodoro Study Timer Started (25:00)', 'play_arrow');
+            } else {
+                if (pomodoroTimer) {
+                    clearInterval(pomodoroTimer);
+                    pomodoroTimer = null;
+                }
+                showToast('Pomodoro Timer Paused', 'pause');
+            }
+            const m = Math.floor(pomodoroSeconds / 60);
+            const s = pomodoroSeconds % 60;
+            const timeStr = `${m < 10 ? '0' + m : m}:${s < 10 ? '0' + s : s}`;
+            drawClockFace(timeStr, pomodoroMode.toUpperCase());
+        }
+
+        function setWeather(val) {
+            currentWeather = val;
+            if (rainParticles) {
+                rainParticles.visible = val === 'rain';
+            }
+            if (scene) {
+                if (val === 'sunset') {
+                    scene.background.setHex(0x1a0f1d);
+                    scene.fog.color.setHex(0x1a0f1d);
+                } else if (val === 'night') {
+                    scene.background.setHex(0x04060f);
+                    scene.fog.color.setHex(0x04060f);
+                } else {
+                    scene.background.setHex(0x070b16);
+                    scene.fog.color.setHex(0x070b16);
+                }
+            }
+            showToast(`Weather updated: ${val.toUpperCase()}`, 'cloud');
+        }
+
+        // --- Procedural Web Audio Synthesizer (Rain, Fireplace, Cafe, Crickets) ---
+        function getAudioContext() {
+            if (!audioCtx) {
+                const AudioContext = window.AudioContext || window.webkitAudioContext;
+                if (AudioContext) audioCtx = new AudioContext();
+            }
+            if (audioCtx && audioCtx.state === 'suspended') {
+                audioCtx.resume();
+            }
+            return audioCtx;
+        }
+
+        function setAmbientSound(type) {
+            activeSound = type;
+            stopCurrentAmbient();
+            if (type === 'none') {
+                showToast('Ambient Audio Muted', 'volume_off');
+                return;
+            }
+
+            const ctx = getAudioContext();
+            if (!ctx) return;
+
+            ambientGain = ctx.createGain();
+            ambientGain.gain.setValueAtTime(0.35, ctx.currentTime);
+            ambientGain.connect(ctx.destination);
+
+            if (type === 'rain') {
+                startSynthesizedRain(ctx, ambientGain);
+                showToast('Rain ASMR Soundscape Active', 'water_drop');
+            } else if (type === 'fire') {
+                startSynthesizedFireplace(ctx, ambientGain);
+                showToast('Cozy Fireplace Crackle Active', 'local_fire_department');
+            } else if (type === 'cafe') {
+                startSynthesizedCafe(ctx, ambientGain);
+                showToast('Cozy Cafe Murmur Active', 'coffee');
+            } else if (type === 'night') {
+                startSynthesizedNight(ctx, ambientGain);
+                showToast('Night Crickets & Breeze Active', 'bedtime');
+            }
+        }
+
+        function stopCurrentAmbient() {
+            if (currentNoiseSource) {
+                try { currentNoiseSource.stop(); } catch (e) {}
+                currentNoiseSource = null;
+            }
+            if (cricketInterval) {
+                clearInterval(cricketInterval);
+                cricketInterval = null;
+            }
+        }
+
+        function startSynthesizedRain(ctx, out) {
+            // Filtered pink noise loop
+            const bufferSize = ctx.sampleRate * 2;
+            const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
+            const data = buffer.getChannelData(0);
+            let b0 = 0, b1 = 0, b2 = 0;
+            for (let i = 0; i < bufferSize; i++) {
+                const white = Math.random() * 2 - 1;
+                b0 = 0.99886 * b0 + white * 0.0555179;
+                b1 = 0.99332 * b1 + white * 0.0750759;
+                b2 = 0.96900 * b2 + white * 0.1538520;
+                data[i] = (b0 + b1 + b2) * 0.22;
+            }
+
+            currentNoiseSource = ctx.createBufferSource();
+            currentNoiseSource.buffer = buffer;
+            currentNoiseSource.loop = true;
+
+            const bandpass = ctx.createBiquadFilter();
+            bandpass.type = 'bandpass';
+            bandpass.frequency.setValueAtTime(1400, ctx.currentTime);
+            bandpass.Q.setValueAtTime(1.2, ctx.currentTime);
+
+            currentNoiseSource.connect(bandpass);
+            bandpass.connect(out);
+            currentNoiseSource.start();
+        }
+
+        function startSynthesizedFireplace(ctx, out) {
+            const bufferSize = ctx.sampleRate * 2;
+            const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
+            const data = buffer.getChannelData(0);
+            for (let i = 0; i < bufferSize; i++) {
+                // Low rumble + occasional random crackle pops
+                let sample = (Math.random() * 2 - 1) * 0.06;
+                if (Math.random() < 0.0018) {
+                    sample = (Math.random() * 2 - 1) * 0.85; // crackle pop
+                }
+                data[i] = sample;
+            }
+
+            currentNoiseSource = ctx.createBufferSource();
+            currentNoiseSource.buffer = buffer;
+            currentNoiseSource.loop = true;
+
+            const lp = ctx.createBiquadFilter();
+            lp.type = 'lowpass';
+            lp.frequency.setValueAtTime(800, ctx.currentTime);
+
+            currentNoiseSource.connect(lp);
+            lp.connect(out);
+            currentNoiseSource.start();
+        }
+
+        function startSynthesizedCafe(ctx, out) {
+            const bufferSize = ctx.sampleRate * 2;
+            const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
+            const data = buffer.getChannelData(0);
+            for (let i = 0; i < bufferSize; i++) {
+                data[i] = (Math.random() * 2 - 1) * 0.08;
+            }
+            currentNoiseSource = ctx.createBufferSource();
+            currentNoiseSource.buffer = buffer;
+            currentNoiseSource.loop = true;
+
+            const bp = ctx.createBiquadFilter();
+            bp.type = 'bandpass';
+            bp.frequency.setValueAtTime(450, ctx.currentTime);
+            bp.Q.setValueAtTime(0.8, ctx.currentTime);
+
+            currentNoiseSource.connect(bp);
+            bp.connect(out);
+            currentNoiseSource.start();
+        }
+
+        function startSynthesizedNight(ctx, out) {
+            // Soft sine chirps
+            cricketInterval = setInterval(() => {
+                if (activeSound !== 'night') return;
+                const osc = ctx.createOscillator();
+                const g = ctx.createGain();
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(4400, ctx.currentTime);
+                g.gain.setValueAtTime(0.0001, ctx.currentTime);
+                g.gain.exponentialRampToValueAtTime(0.04, ctx.currentTime + 0.04);
+                g.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + 0.12);
+                osc.connect(g);
+                g.connect(out);
+                osc.start(ctx.currentTime);
+                osc.stop(ctx.currentTime + 0.15);
+            }, 850);
+        }
+
+        function playCoffeeSipSound() {
+            try {
+                const ctx = getAudioContext();
+                if (!ctx) return;
+                const osc = ctx.createOscillator();
+                const g = ctx.createGain();
+                osc.type = 'triangle';
+                osc.frequency.setValueAtTime(320, ctx.currentTime);
+                osc.frequency.exponentialRampToValueAtTime(180, ctx.currentTime + 0.25);
+                g.gain.setValueAtTime(0.12, ctx.currentTime);
+                g.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.25);
+                osc.connect(g);
+                g.connect(ctx.destination);
+                osc.start();
+                osc.stop(ctx.currentTime + 0.26);
+            } catch (e) {}
+        }
+
+        function playBellChime() {
+            try {
+                const ctx = getAudioContext();
+                if (!ctx) return;
+                [523.25, 659.25, 783.99].forEach((freq, i) => {
+                    const osc = ctx.createOscillator();
+                    const g = ctx.createGain();
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(freq, ctx.currentTime + (i * 0.08));
+                    g.gain.setValueAtTime(0.18, ctx.currentTime + (i * 0.08));
+                    g.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + 1.8);
+                    osc.connect(g);
+                    g.connect(ctx.destination);
+                    osc.start(ctx.currentTime + (i * 0.08));
+                    osc.stop(ctx.currentTime + 1.9);
+                });
+            } catch (e) {}
+        }
+
+        function setupRaycasting(container) {
+            raycaster = new THREE.Raycaster();
+            mouse = new THREE.Vector2();
+
+            container.addEventListener('pointerdown', (e) => {
+                const rect = container.getBoundingClientRect();
+                mouse.x = ((e.clientX - rect.left) / rect.width) * 2 - 1;
+                mouse.y = -((e.clientY - rect.top) / rect.height) * 2 + 1;
+
+                raycaster.setFromCamera(mouse, camera);
+                const meshes = clickableItems.map(c => c.mesh);
+                const hits = raycaster.intersectObjects(meshes, true);
+
+                if (hits.length > 0) {
+                    const hitMesh = hits[0].object;
+                    const item = clickableItems.find(c => c.mesh === hitMesh || (hitMesh.parent && c.mesh === hitMesh.parent));
+                    if (item) {
+                        if (item.name === 'lamp') toggleLamp();
+                        else if (item.name === 'coffee') sipCoffee();
+                        else if (item.name === 'clock') togglePomodoro();
+                        else if (item.name === 'next-page') nextPage();
+                        else if (item.name === 'prev-page') prevPage();
+                    }
+                }
+            });
+        }
+
+        function onWindowResize() {
+            if (!camera || !renderer) return;
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        }
+
+        function animate() {
+            animId = requestAnimationFrame(animate);
+
+            if (typeof TWEEN !== 'undefined') {
+                TWEEN.update();
+            }
+
+            if (controls && controls.enabled) {
+                controls.update();
+            }
+
+            // Animate steam particles above coffee mug
+            if (steamParticles && steamGeo) {
+                const pos = steamGeo.attributes.position.array;
+                for (let i = 1; i < pos.length; i += 3) {
+                    pos[i] += 0.004; // rise
+                    pos[i - 1] += Math.sin(Date.now() * 0.003 + i) * 0.001; // wobble
+                    if (pos[i] > 1.1) {
+                        pos[i] = 0.44;
+                        pos[i - 1] = (Math.random() - 0.5) * 0.12;
+                    }
+                }
+                steamGeo.attributes.position.needsUpdate = true;
+            }
+
+            // Animate falling rain streaks past window
+            if (rainParticles && rainGeo && currentWeather === 'rain') {
+                const rPos = rainGeo.attributes.position.array;
+                for (let j = 1; j < rPos.length; j += 3) {
+                    rPos[j] -= 0.08;
+                    if (rPos[j] < -2.1) {
+                        rPos[j] = 2.1;
+                    }
+                }
+                rainGeo.attributes.position.needsUpdate = true;
+            }
+
+            if (renderer && scene && camera) {
+                renderer.render(scene, camera);
+            }
+        }
+
+        function open(chIdx) {
+            isOpen = true;
+            jumpToChapter(chIdx || 1, false);
+            if (!animId) animate();
+        }
+
+        function close() {
+            isOpen = false;
+            stopCurrentAmbient();
+            // Synchronize scroll position in treatise
+            const chapters = getChapterHeadings();
+            const target = chapters[currentChapter - 1];
+            if (target) {
+                target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+        }
+
+        return {
+            init,
+            open,
+            close,
+            nextPage,
+            prevPage,
+            jumpToChapter,
+            setCameraPreset,
+            toggleLamp,
+            sipCoffee,
+            togglePomodoro,
+            setWeather,
+            setAmbientSound,
+            get initialized() { return initialized; },
+            get isOpen() { return isOpen; }
+        };
+    })();
+
+    /* 36. Master Init on DOM Loaded & KaTeX Auto-Renderer */
     document.addEventListener('DOMContentLoaded', () => {
         buildTOC();
         updateChapterIndicator();
         updateBookmarkUI();
+        updateHighlightsCount();
         injectReadingTimeBadges();
+        injectCodeCopyButtons();
         setupDoubleTapZen();
+        setupTextHighlightListener();
+        populateVoiceSelect();
+        checkResumeReadingBanner();
+
+        // Populate 3D Study Room Chapter Selector (1 to 88)
+        const study3DSelect = document.getElementById('study-3d-chapter-select');
+        if (study3DSelect) {
+            study3DSelect.innerHTML = '';
+            const chHeadings = getChapterHeadings();
+            chHeadings.forEach((h, i) => {
+                const opt = document.createElement('option');
+                opt.value = i + 1;
+                const titleText = h.textContent.replace(/^Chapter\s*\d+[:.\s-]*/i, '').trim();
+                opt.textContent = `Ch. ${i + 1}: ${titleText.slice(0, 32)}`;
+                study3DSelect.appendChild(opt);
+            });
+        }
 
         // Restore user preferences
         const savedTheme = localStorage.getItem('hrp_ebook_theme') || 'theme-day';
@@ -6566,6 +9784,21 @@ CREATE TABLE medical_certificates (
         const savedNightLight = localStorage.getItem('hrp_ebook_night_light');
         if (savedNightLight) {
             setNightLight(savedNightLight);
+        }
+
+        const savedSpacing = localStorage.getItem('hrp_ebook_line_height');
+        if (savedSpacing) {
+            setLineSpacing(parseFloat(savedSpacing));
+        }
+
+        const savedWidth = localStorage.getItem('hrp_ebook_page_width');
+        if (savedWidth) {
+            setPageWidth(savedWidth);
+        }
+
+        const savedAlign = localStorage.getItem('hrp_ebook_text_align');
+        if (savedAlign) {
+            setTextAlign(savedAlign);
         }
 
         // Render KaTeX Formulas across all 88 Chapters

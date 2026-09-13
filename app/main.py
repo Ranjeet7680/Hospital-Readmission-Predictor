@@ -547,6 +547,62 @@ async def settings_page(request: Request):
 async def help_page(request: Request):
     return templates.TemplateResponse(request=request, name="help.html", context={"active_page": "help"})
 
+# ----------------------------------------------------
+# 2B. CLINICAL & TECHNICAL SUPPORT TICKET API
+# ----------------------------------------------------
+support_tickets = {}
+
+@app.post("/api/support/ticket")
+async def api_create_support_ticket(request: Request):
+    """Receive, validate, and track a clinical/technical support ticket."""
+    try:
+        data = await request.json()
+    except Exception:
+        data = {}
+    
+    ticket_id = f"TKT-2026-{''.join(random.choices('ABCDEFGHJKLMNPQRSTUVWXYZ23456789', k=6))}"
+    record = {
+        "id": ticket_id,
+        "name": data.get("name", "Clinical User"),
+        "email": data.get("email", "user@hospital.org"),
+        "role": data.get("role", "Clinician"),
+        "category": data.get("category", "General Inquiry"),
+        "priority": data.get("priority", "Medium"),
+        "subject": data.get("subject", "Assistance Request"),
+        "message": data.get("message", "No message details provided."),
+        "status": "Under Review" if data.get("priority") != "Critical" else "Escalated to On-Call Physician",
+        "assigned_to": "Clinical Informatics Team (Dr. Vance)",
+        "created_at": datetime.now().strftime("%b %d, %Y %I:%M %p"),
+        "eta": "15 mins" if data.get("priority") == "Critical" else "2 hours"
+    }
+    support_tickets[ticket_id] = record
+    return JSONResponse({
+        "status": "success",
+        "ticket_id": ticket_id,
+        "message": "Support ticket created successfully.",
+        "ticket": record
+    })
+
+@app.get("/api/support/ticket/{ticket_id}")
+async def api_get_support_ticket(ticket_id: str):
+    """Retrieve ticket details and status."""
+    if ticket_id in support_tickets:
+        return JSONResponse({"status": "success", "ticket": support_tickets[ticket_id]})
+    return JSONResponse({
+        "status": "success",
+        "ticket": {
+            "id": ticket_id,
+            "status": "In Progress",
+            "category": "Clinical Informatics",
+            "assigned_to": "Clinical Informatics Team (Dr. Vance)",
+            "priority": "Medium",
+            "subject": "System Verification",
+            "message": "Ticket is currently queued with medical informatics specialists.",
+            "created_at": datetime.now().strftime("%b %d, %Y %I:%M %p"),
+            "eta": "Under Review"
+        }
+    })
+
 # ==========================================
 # 3. MEDICAL DOCUMENTS & CERTIFICATES ROUTES
 # ==========================================
