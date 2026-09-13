@@ -8919,6 +8919,10 @@ CREATE TABLE medical_certificates (
         let windowGroup, skyCanvas, sctx, skyTex, skyPane;
         let photoFrameGroup, artworkMesh;
 
+        // 3D Study Desk Chair & Additional Study Room Furniture
+        let chairGroup, chairSeatPivot, isChairSwiveling = false;
+        let floorLampGroup, floorLampLight, floorLampBulb, isFloorLampOn = true;
+
         // 3D Smart Wall TV & Video Songs Player
         let tvMesh, tvScreenCanvas, tvScreenCtx, tvScreenTexture, tvAmbilight;
         let isTVOn = false;
@@ -9205,6 +9209,25 @@ CREATE TABLE medical_certificates (
 
             // --- Banker's Brass Lamp, Coffee Mug, Pomodoro Clock, Stethoscope ---
             buildDeskAccessories();
+
+            // --- Cozy Persian Woven Area Rug Under Desk & Chair ---
+            buildStudyRug();
+
+            // --- 3D Executive Study Desk Chair ("chir") ---
+            buildStudyChair();
+
+            // --- Desk Stationery Pen Holder Cup & Clinical Textbooks Stack ---
+            buildPenHolder();
+            buildDeskBookStack();
+
+            // --- Wiremesh Wastepaper Basket with Drafts ---
+            buildWasteBasket();
+
+            // --- Corner Lush Botanical Monstera Plant ---
+            buildCornerPlant();
+
+            // --- Classical Library Standing Floor Lamp ---
+            buildFloorLamp();
         }
 
         function drawWindowSkyline(weather) {
@@ -9933,6 +9956,668 @@ CREATE TABLE medical_certificates (
             medGroup.add(chestPiece);
 
             scene.add(medGroup);
+        }
+
+        /* 🪑 3D Executive Study Desk Chair ("chir") */
+        function buildStudyChair() {
+            chairGroup = new THREE.Group();
+            chairGroup.position.set(0, 0, 2.45);
+            chairGroup.rotation.y = Math.PI; // Orient directly facing the mahogany study desk
+
+            const chromeMat = new THREE.MeshStandardMaterial({
+                color: 0xe2e8f0,
+                metalness: 0.92,
+                roughness: 0.18
+            });
+            const darkSteelMat = new THREE.MeshStandardMaterial({
+                color: 0x1e293b,
+                metalness: 0.8,
+                roughness: 0.35
+            });
+            const leatherMat = new THREE.MeshStandardMaterial({
+                color: 0x3d2218, // Rich dark cognac executive leather
+                roughness: 0.42,
+                metalness: 0.12
+            });
+            const tuftMat = new THREE.MeshStandardMaterial({
+                color: 0x2e1810,
+                roughness: 0.5,
+                metalness: 0.1
+            });
+
+            // --- Base Assembly (5-Star Caster Base) ---
+            const hub = new THREE.Mesh(new THREE.CylinderGeometry(0.18, 0.20, 0.12, 24), chromeMat);
+            hub.position.y = 0.16;
+            hub.castShadow = true;
+            chairGroup.add(hub);
+
+            // 5 Chrome Radial Spokes with Heavy-Duty Dual Caster Wheels
+            for (let i = 0; i < 5; i++) {
+                const angle = (i * Math.PI * 2) / 5;
+                const legLen = 0.72;
+
+                // Sloped Chrome Spoke
+                const spoke = new THREE.Mesh(new THREE.BoxGeometry(0.08, 0.05, legLen), chromeMat);
+                spoke.position.set(
+                    Math.sin(angle) * (legLen / 2),
+                    0.12,
+                    Math.cos(angle) * (legLen / 2)
+                );
+                spoke.rotation.y = angle;
+                spoke.rotation.x = 0.07;
+                spoke.castShadow = true;
+                chairGroup.add(spoke);
+
+                // Caster Fork Housing & Twin Wheels
+                const wheelX = Math.sin(angle) * (legLen - 0.02);
+                const wheelZ = Math.cos(angle) * (legLen - 0.02);
+
+                const wheelFork = new THREE.Mesh(new THREE.BoxGeometry(0.06, 0.06, 0.06), darkSteelMat);
+                wheelFork.position.set(wheelX, 0.08, wheelZ);
+                chairGroup.add(wheelFork);
+
+                const wheelGeo = new THREE.CylinderGeometry(0.042, 0.042, 0.038, 16);
+                wheelGeo.rotateZ(Math.PI / 2);
+                const wheel = new THREE.Mesh(wheelGeo, darkSteelMat);
+                wheel.position.set(wheelX, 0.042, wheelZ);
+                wheel.castShadow = true;
+                chairGroup.add(wheel);
+            }
+
+            // --- Pneumatic Gas-Lift Pedestal Column ---
+            const outerColumn = new THREE.Mesh(new THREE.CylinderGeometry(0.068, 0.072, 0.42, 20), darkSteelMat);
+            outerColumn.position.y = 0.38;
+            outerColumn.castShadow = true;
+            chairGroup.add(outerColumn);
+
+            const innerPiston = new THREE.Mesh(new THREE.CylinderGeometry(0.046, 0.046, 0.55, 20), chromeMat);
+            innerPiston.position.y = 0.74;
+            innerPiston.castShadow = true;
+            chairGroup.add(innerPiston);
+
+            // --- Swiveling Upper Assembly (Seat, Backrest, Armrests) ---
+            chairSeatPivot = new THREE.Group();
+            chairSeatPivot.position.set(0, 0.98, 0);
+
+            // Mechanism Housing Block & Tilt Knob
+            const mechBox = new THREE.Mesh(new THREE.BoxGeometry(0.38, 0.09, 0.38), darkSteelMat);
+            mechBox.position.y = 0.045;
+            chairSeatPivot.add(mechBox);
+
+            const tiltKnob = new THREE.Mesh(new THREE.CylinderGeometry(0.04, 0.04, 0.16, 16), chromeMat);
+            tiltKnob.position.set(0.18, -0.02, 0);
+            tiltKnob.rotation.z = Math.PI / 2;
+            chairSeatPivot.add(tiltKnob);
+
+            // Contoured Ergonomic Seat Cushion (Slides under desk apron)
+            const seatPan = new THREE.Mesh(new THREE.BoxGeometry(1.42, 0.16, 1.38), leatherMat);
+            seatPan.position.set(0, 0.16, 0.02);
+            seatPan.castShadow = true;
+            seatPan.receiveShadow = true;
+            chairSeatPivot.add(seatPan);
+
+            // Waterfall Front Thigh Edge Roll
+            const frontRollGeo = new THREE.CylinderGeometry(0.08, 0.08, 1.42, 20);
+            frontRollGeo.rotateZ(Math.PI / 2);
+            const frontRoll = new THREE.Mesh(frontRollGeo, leatherMat);
+            frontRoll.position.set(0, 0.14, 0.70);
+            frontRoll.castShadow = true;
+            chairSeatPivot.add(frontRoll);
+
+            // Seat Center Comfort Indentation / Tufting Accent
+            const seatTuft = new THREE.Mesh(new THREE.BoxGeometry(0.98, 0.02, 0.94), tuftMat);
+            seatTuft.position.set(0, 0.245, 0.02);
+            chairSeatPivot.add(seatTuft);
+
+            // --- Ergonomic High-Back Executive Backrest ---
+            const spineBracket = new THREE.Mesh(new THREE.BoxGeometry(0.10, 0.95, 0.05), chromeMat);
+            spineBracket.position.set(0, 0.65, -0.66);
+            spineBracket.rotation.x = -0.06;
+            spineBracket.castShadow = true;
+            chairSeatPivot.add(spineBracket);
+
+            const backrestGeo = new THREE.BoxGeometry(1.32, 1.55, 0.14);
+            const backrest = new THREE.Mesh(backrestGeo, leatherMat);
+            backrest.position.set(0, 0.98, -0.62);
+            backrest.rotation.x = -0.06;
+            backrest.castShadow = true;
+            backrest.receiveShadow = true;
+            chairSeatPivot.add(backrest);
+
+            // Padded Ergonomic Lumbar Bolster
+            const lumbarGeo = new THREE.BoxGeometry(1.18, 0.42, 0.08);
+            const lumbar = new THREE.Mesh(lumbarGeo, tuftMat);
+            lumbar.position.set(0, 0.58, -0.55);
+            lumbar.rotation.x = -0.06;
+            lumbar.castShadow = true;
+            chairSeatPivot.add(lumbar);
+
+            // Executive Headrest Cushion
+            const headrestGeo = new THREE.BoxGeometry(1.02, 0.34, 0.14);
+            const headrest = new THREE.Mesh(headrestGeo, leatherMat);
+            headrest.position.set(0, 1.78, -0.72);
+            headrest.rotation.x = -0.06;
+            headrest.castShadow = true;
+            chairSeatPivot.add(headrest);
+
+            // --- Dual Curved Padded Armrests ---
+            [-0.72, 0.72].forEach(ax => {
+                const armPost = new THREE.Mesh(new THREE.CylinderGeometry(0.032, 0.032, 0.45, 16), chromeMat);
+                armPost.position.set(ax, 0.38, 0.02);
+                armPost.castShadow = true;
+                chairSeatPivot.add(armPost);
+
+                const armPad = new THREE.Mesh(new THREE.BoxGeometry(0.16, 0.06, 0.78), leatherMat);
+                armPad.position.set(ax, 0.60, 0.02);
+                armPad.castShadow = true;
+                chairSeatPivot.add(armPad);
+            });
+
+            chairSeatPivot.name = 'chair';
+            clickableItems.push(
+                { mesh: seatPan, name: 'chair' },
+                { mesh: backrest, name: 'chair' },
+                { mesh: headrest, name: 'chair' }
+            );
+
+            chairGroup.add(chairSeatPivot);
+            roomGroup.add(chairGroup);
+        }
+
+        /* 🧶 Cozy Persian Woven Study Area Rug Beneath Desk & Chair */
+        function buildStudyRug() {
+            const rugCanvas = document.createElement('canvas');
+            rugCanvas.width = 512;
+            rugCanvas.height = 512;
+            const rctx = rugCanvas.getContext('2d');
+
+            // Royal Midnight Navy Ground
+            rctx.fillStyle = '#0f1d3a';
+            rctx.fillRect(0, 0, 512, 512);
+
+            // Deep Burgundy Wide Outer Border
+            rctx.strokeStyle = '#581c2b';
+            rctx.lineWidth = 36;
+            rctx.strokeRect(18, 18, 476, 476);
+
+            // Golden Filigree Meander Accent Ribbons
+            rctx.strokeStyle = '#d4af37';
+            rctx.lineWidth = 4;
+            rctx.strokeRect(38, 38, 436, 436);
+
+            rctx.strokeStyle = '#d4af37';
+            rctx.lineWidth = 2;
+            rctx.strokeRect(44, 44, 424, 424);
+
+            // Inner Crimson Border
+            rctx.strokeStyle = '#4a1525';
+            rctx.lineWidth = 14;
+            rctx.strokeRect(52, 52, 408, 408);
+
+            // Woven Diamond Lattice Pattern
+            rctx.strokeStyle = 'rgba(212, 175, 55, 0.22)';
+            rctx.lineWidth = 1.5;
+            for (let x = 64; x <= 448; x += 32) {
+                rctx.beginPath();
+                rctx.moveTo(x, 64);
+                rctx.lineTo(x + 192, 256);
+                rctx.lineTo(x, 448);
+                rctx.stroke();
+
+                rctx.beginPath();
+                rctx.moveTo(x, 64);
+                rctx.lineTo(x - 192, 256);
+                rctx.lineTo(x, 448);
+                rctx.stroke();
+            }
+
+            // Grand Central Ornate Medallion
+            const cx = 256, cy = 256;
+            const radGrad = rctx.createRadialGradient(cx, cy, 10, cx, cy, 110);
+            radGrad.addColorStop(0, '#d4af37');
+            radGrad.addColorStop(0.35, '#854d0e');
+            radGrad.addColorStop(0.7, '#4a1525');
+            radGrad.addColorStop(1, '#0f1d3a');
+            rctx.fillStyle = radGrad;
+
+            rctx.beginPath();
+            for (let i = 0; i < 16; i++) {
+                const a = (i * Math.PI * 2) / 16;
+                const r = (i % 2 === 0) ? 96 : 64;
+                const px = cx + Math.cos(a) * r;
+                const py = cy + Math.sin(a) * r;
+                if (i === 0) rctx.moveTo(px, py);
+                else rctx.lineTo(px, py);
+            }
+            rctx.closePath();
+            rctx.fill();
+            rctx.strokeStyle = '#fef08a';
+            rctx.lineWidth = 3;
+            rctx.stroke();
+
+            // Medallion Golden Center Star
+            rctx.fillStyle = '#fef08a';
+            rctx.beginPath();
+            for (let i = 0; i < 8; i++) {
+                const a = (i * Math.PI * 2) / 8;
+                const r = (i % 2 === 0) ? 32 : 14;
+                const px = cx + Math.cos(a) * r;
+                const py = cy + Math.sin(a) * r;
+                if (i === 0) rctx.moveTo(px, py);
+                else rctx.lineTo(px, py);
+            }
+            rctx.closePath();
+            rctx.fill();
+
+            // 4 Corner Medallions
+            const corners = [[88, 88], [424, 88], [88, 424], [424, 424]];
+            corners.forEach(([kx, ky]) => {
+                rctx.fillStyle = '#854d0e';
+                rctx.beginPath();
+                rctx.arc(kx, ky, 24, 0, Math.PI * 2);
+                rctx.fill();
+                rctx.strokeStyle = '#d4af37';
+                rctx.lineWidth = 2;
+                rctx.stroke();
+            });
+
+            // Woven Off-White Fringe Along Edges
+            rctx.fillStyle = '#f1f5f9';
+            for (let x = 0; x < 512; x += 4) {
+                rctx.fillRect(x, 0, 2, 7);
+                rctx.fillRect(x, 505, 2, 7);
+            }
+
+            const rugTex = new THREE.CanvasTexture(rugCanvas);
+            if (typeof THREE.SRGBColorSpace !== 'undefined') {
+                rugTex.colorSpace = THREE.SRGBColorSpace;
+            }
+
+            const rugGeo = new THREE.PlaneGeometry(8.6, 8.0);
+            const rugMat = new THREE.MeshStandardMaterial({
+                map: rugTex,
+                roughness: 0.85,
+                metalness: 0.05
+            });
+            const rugMesh = new THREE.Mesh(rugGeo, rugMat);
+            rugMesh.rotation.x = -Math.PI / 2;
+            rugMesh.position.set(0, 0.012, 0.7);
+            rugMesh.receiveShadow = true;
+            roomGroup.add(rugMesh);
+        }
+
+        /* 🖋️ Brass Desk Pen Holder Cup with Pens, Stylus & Pencil */
+        function buildPenHolder() {
+            const penGroup = new THREE.Group();
+            penGroup.position.set(-2.4, 2.50, -0.15); // On desk beside blotter and banker's lamp
+
+            const brassMat = new THREE.MeshStandardMaterial({
+                color: 0xd97706,
+                roughness: 0.25,
+                metalness: 0.85
+            });
+            const feltMat = new THREE.MeshStandardMaterial({ color: 0x1e293b, roughness: 0.9 });
+
+            // Brass Cup Cylinder
+            const cupMesh = new THREE.Mesh(new THREE.CylinderGeometry(0.13, 0.15, 0.38, 24), brassMat);
+            cupMesh.position.y = 0.19;
+            cupMesh.castShadow = true;
+            penGroup.add(cupMesh);
+
+            const baseFelt = new THREE.Mesh(new THREE.CircleGeometry(0.12, 16), feltMat);
+            baseFelt.position.y = 0.375;
+            baseFelt.rotation.x = -Math.PI / 2;
+            penGroup.add(baseFelt);
+
+            // 1. Luxury Fountain Pen (Black Lacquer + Gold Clip)
+            const fPenMat = new THREE.MeshStandardMaterial({ color: 0x090d16, roughness: 0.15, metalness: 0.6 });
+            const fPen = new THREE.Mesh(new THREE.CylinderGeometry(0.016, 0.016, 0.54, 12), fPenMat);
+            fPen.position.set(0.03, 0.32, 0.02);
+            fPen.rotation.z = 0.18;
+            fPen.rotation.x = -0.12;
+            fPen.castShadow = true;
+            penGroup.add(fPen);
+
+            const fClip = new THREE.Mesh(new THREE.BoxGeometry(0.008, 0.18, 0.025), brassMat);
+            fClip.position.set(0.065, 0.44, 0.02);
+            penGroup.add(fClip);
+
+            // 2. Clinical Silver Medical Stylus
+            const silverMat = new THREE.MeshStandardMaterial({ color: 0xe2e8f0, roughness: 0.2, metalness: 0.9 });
+            const sPen = new THREE.Mesh(new THREE.CylinderGeometry(0.014, 0.014, 0.50, 12), silverMat);
+            sPen.position.set(-0.04, 0.30, -0.03);
+            sPen.rotation.z = -0.22;
+            sPen.rotation.x = 0.14;
+            sPen.castShadow = true;
+            penGroup.add(sPen);
+
+            // 3. Yellow Wooden Drafting Pencil
+            const pencilMat = new THREE.MeshStandardMaterial({ color: 0xf59e0b, roughness: 0.4 });
+            const ferruleMat = new THREE.MeshStandardMaterial({ color: 0xd97706, metalness: 0.8, roughness: 0.3 });
+            const eraserMat = new THREE.MeshStandardMaterial({ color: 0xf43f5e, roughness: 0.7 });
+
+            const pencil = new THREE.Mesh(new THREE.CylinderGeometry(0.014, 0.014, 0.56, 6), pencilMat);
+            pencil.position.set(-0.03, 0.34, 0.04);
+            pencil.rotation.z = -0.15;
+            pencil.rotation.x = -0.16;
+            pencil.castShadow = true;
+            penGroup.add(pencil);
+
+            const ferrule = new THREE.Mesh(new THREE.CylinderGeometry(0.015, 0.015, 0.04, 12), ferruleMat);
+            ferrule.position.set(-0.07, 0.58, 0.08);
+            ferrule.rotation.z = -0.15;
+            ferrule.rotation.x = -0.16;
+            penGroup.add(ferrule);
+
+            const eraser = new THREE.Mesh(new THREE.CylinderGeometry(0.014, 0.014, 0.03, 12), eraserMat);
+            eraser.position.set(-0.076, 0.61, 0.09);
+            eraser.rotation.z = -0.15;
+            eraser.rotation.x = -0.16;
+            penGroup.add(eraser);
+
+            // 4. Blue Highlighting Marker
+            const markerMat = new THREE.MeshStandardMaterial({ color: 0x0284c7, roughness: 0.3 });
+            const marker = new THREE.Mesh(new THREE.CylinderGeometry(0.022, 0.022, 0.46, 16), markerMat);
+            marker.position.set(0.04, 0.28, -0.04);
+            marker.rotation.z = 0.16;
+            marker.rotation.x = 0.18;
+            marker.castShadow = true;
+            penGroup.add(marker);
+
+            penGroup.name = 'pen-holder';
+            clickableItems.push({ mesh: cupMesh, name: 'pen-holder' });
+            roomGroup.add(penGroup);
+        }
+
+        /* 📚 Hardcover Clinical Reference Textbooks Stack */
+        function buildDeskBookStack() {
+            const stackGroup = new THREE.Group();
+            stackGroup.position.set(-2.4, 2.50, 1.05); // Left side of desk near clipboard
+
+            const pageEdgeMat = new THREE.MeshStandardMaterial({ color: 0xfef9c3, roughness: 0.8 });
+            const goldTrimMat = new THREE.MeshStandardMaterial({ color: 0xd4af37, metalness: 0.85, roughness: 0.25 });
+
+            // Book 1 (Bottom): Deep Navy Clinical Epidemiology Manual
+            const book1Mat = new THREE.MeshStandardMaterial({ color: 0x1e3a8a, roughness: 0.5 });
+            const book1 = new THREE.Mesh(new THREE.BoxGeometry(0.82, 0.14, 1.15), book1Mat);
+            book1.position.y = 0.07;
+            book1.castShadow = true;
+            stackGroup.add(book1);
+
+            const b1Pages = new THREE.Mesh(new THREE.BoxGeometry(0.78, 0.11, 1.10), pageEdgeMat);
+            b1Pages.position.set(0.015, 0.07, 0);
+            stackGroup.add(b1Pages);
+
+            // Book 2 (Middle): Harrison's Crimson Internal Medicine
+            const book2Mat = new THREE.MeshStandardMaterial({ color: 0x881337, roughness: 0.5 });
+            const book2 = new THREE.Mesh(new THREE.BoxGeometry(0.76, 0.12, 1.08), book2Mat);
+            book2.position.set(0, 0.20, 0);
+            book2.rotation.y = 0.09;
+            book2.castShadow = true;
+            stackGroup.add(book2);
+
+            const b2Pages = new THREE.Mesh(new THREE.BoxGeometry(0.72, 0.09, 1.03), pageEdgeMat);
+            b2Pages.position.set(0.015, 0.20, 0);
+            b2Pages.rotation.y = 0.09;
+            stackGroup.add(b2Pages);
+
+            // Book 3 (Top): Emerald AI in Predictive Medicine
+            const book3Mat = new THREE.MeshStandardMaterial({ color: 0x065f46, roughness: 0.45 });
+            const book3 = new THREE.Mesh(new THREE.BoxGeometry(0.70, 0.10, 1.02), book3Mat);
+            book3.position.set(0, 0.31, 0);
+            book3.rotation.y = -0.06;
+            book3.castShadow = true;
+            stackGroup.add(book3);
+
+            const goldRibbon = new THREE.Mesh(new THREE.BoxGeometry(0.04, 0.02, 1.04), goldTrimMat);
+            goldRibbon.position.set(-0.33, 0.36, 0);
+            goldRibbon.rotation.y = -0.06;
+            stackGroup.add(goldRibbon);
+
+            // Red Satin Bookmark Ribbon Drape
+            const ribbonMat = new THREE.MeshStandardMaterial({ color: 0xd97706, roughness: 0.35, side: THREE.DoubleSide });
+            const drape = new THREE.Mesh(new THREE.PlaneGeometry(0.04, 0.24), ribbonMat);
+            drape.position.set(0.02, 0.22, 0.52);
+            drape.rotation.y = -0.06;
+            stackGroup.add(drape);
+
+            stackGroup.name = 'book-stack';
+            clickableItems.push({ mesh: book3, name: 'book-stack' }, { mesh: book2, name: 'book-stack' });
+            roomGroup.add(stackGroup);
+        }
+
+        /* 🗑️ Wiremesh Wastepaper Basket with Discarded Drafts */
+        function buildWasteBasket() {
+            const basketGroup = new THREE.Group();
+            basketGroup.position.set(3.4, 0, 0.7); // Beside right desk leg
+
+            const bronzeMat = new THREE.MeshStandardMaterial({
+                color: 0x451a03,
+                metalness: 0.75,
+                roughness: 0.35,
+                side: THREE.DoubleSide
+            });
+            const rimMat = new THREE.MeshStandardMaterial({ color: 0xd97706, metalness: 0.8, roughness: 0.3 });
+
+            const basePlate = new THREE.Mesh(new THREE.CylinderGeometry(0.32, 0.34, 0.04, 24), bronzeMat);
+            basePlate.position.y = 0.02;
+            basePlate.castShadow = true;
+            basketGroup.add(basePlate);
+
+            const basketBody = new THREE.Mesh(
+                new THREE.CylinderGeometry(0.44, 0.33, 0.76, 24, 1, true),
+                bronzeMat
+            );
+            basketBody.position.y = 0.40;
+            basketBody.castShadow = true;
+            basketGroup.add(basketBody);
+
+            const topRim = new THREE.Mesh(new THREE.TorusGeometry(0.44, 0.025, 12, 32), rimMat);
+            topRim.position.y = 0.78;
+            topRim.rotation.x = Math.PI / 2;
+            basketGroup.add(topRim);
+
+            // Crumpled Paper Drafts Inside Basket
+            const paperMat = new THREE.MeshStandardMaterial({ color: 0xfdfdfd, roughness: 0.85 });
+            const drafts = [
+                { x: -0.08, y: 0.12, z: 0.04, s: 0.11, r: 0.4 },
+                { x: 0.10, y: 0.14, z: -0.06, s: 0.09, r: 1.1 },
+                { x: 0.02, y: 0.22, z: 0.07, s: 0.10, r: 2.3 }
+            ];
+            drafts.forEach(d => {
+                const ball = new THREE.Mesh(new THREE.DodecahedronGeometry(d.s, 1), paperMat);
+                ball.position.set(d.x, d.y, d.z);
+                ball.rotation.set(d.r, d.r * 1.5, d.r * 0.7);
+                ball.castShadow = true;
+                basketGroup.add(ball);
+            });
+
+            basketGroup.name = 'wastebasket';
+            clickableItems.push({ mesh: basketBody, name: 'wastebasket' }, { mesh: topRim, name: 'wastebasket' });
+            roomGroup.add(basketGroup);
+        }
+
+        /* 🌿 Corner Botanical Monstera Deliciosa Planter */
+        function buildCornerPlant() {
+            const plantGroup = new THREE.Group();
+            plantGroup.position.set(-6.8, 0, -3.8); // Corner near sunrise window & left wall
+
+            const potMat = new THREE.MeshStandardMaterial({
+                color: 0xf8fafc, // Glazed White Fluted Ceramic
+                roughness: 0.25,
+                metalness: 0.08
+            });
+            const saucerMat = new THREE.MeshStandardMaterial({
+                color: 0x9a3412, // Terracotta Saucer
+                roughness: 0.6
+            });
+            const soilMat = new THREE.MeshStandardMaterial({
+                color: 0x24160c, // Rich organic potting soil
+                roughness: 0.95
+            });
+            const stemMat = new THREE.MeshStandardMaterial({
+                color: 0x166534,
+                roughness: 0.5
+            });
+            const leafMat = new THREE.MeshStandardMaterial({
+                color: 0x15803d, // Lush Monstera Tropical Green
+                roughness: 0.35,
+                metalness: 0.05,
+                side: THREE.DoubleSide
+            });
+            const leafHighlightMat = new THREE.MeshStandardMaterial({
+                color: 0x22c55e,
+                roughness: 0.3,
+                side: THREE.DoubleSide
+            });
+
+            // Terracotta Drainage Saucer
+            const saucer = new THREE.Mesh(new THREE.CylinderGeometry(0.72, 0.72, 0.08, 28), saucerMat);
+            saucer.position.y = 0.04;
+            saucer.castShadow = true;
+            plantGroup.add(saucer);
+
+            // Glazed Ceramic Planter Pot
+            const pot = new THREE.Mesh(new THREE.CylinderGeometry(0.66, 0.50, 1.25, 28), potMat);
+            pot.position.y = 0.665;
+            pot.castShadow = true;
+            pot.receiveShadow = true;
+            plantGroup.add(pot);
+
+            const potRim = new THREE.Mesh(new THREE.TorusGeometry(0.66, 0.04, 12, 28), potMat);
+            potRim.position.y = 1.29;
+            potRim.rotation.x = Math.PI / 2;
+            plantGroup.add(potRim);
+
+            const soil = new THREE.Mesh(new THREE.CircleGeometry(0.63, 24), soilMat);
+            soil.position.y = 1.24;
+            soil.rotation.x = -Math.PI / 2;
+            plantGroup.add(soil);
+
+            // Lush Monstera Tropical Fronds & Stems:
+            const leafConfigs = [
+                { sx: 0.0, sy: 1.24, sz: 0.0, ex: 0.65, ey: 2.2, ez: 0.35, rotX: 0.45, rotY: 0.3, rotZ: -0.4, scale: 0.85 },
+                { sx: 0.0, sy: 1.24, sz: 0.0, ex: -0.55, ey: 2.4, ez: 0.45, rotX: 0.40, rotY: -0.5, rotZ: 0.5, scale: 0.95 },
+                { sx: 0.0, sy: 1.24, sz: 0.0, ex: 0.50, ey: 2.6, ez: -0.40, rotX: -0.35, rotY: 1.2, rotZ: -0.3, scale: 0.90 },
+                { sx: 0.0, sy: 1.24, sz: 0.0, ex: -0.45, ey: 2.1, ez: -0.50, rotX: -0.40, rotY: -1.4, rotZ: 0.4, scale: 0.80 },
+                { sx: 0.0, sy: 1.24, sz: 0.0, ex: 0.15, ey: 2.85, ez: 0.10, rotX: 0.15, rotY: 0.1, rotZ: -0.15, scale: 1.10 },
+                { sx: 0.0, sy: 1.24, sz: 0.0, ex: -0.20, ey: 2.95, ez: -0.15, rotX: -0.10, rotY: -0.2, rotZ: 0.20, scale: 1.05 },
+                { sx: 0.0, sy: 1.24, sz: 0.0, ex: 0.70, ey: 1.85, ez: -0.15, rotX: 0.1, rotY: 1.0, rotZ: -0.6, scale: 0.75 }
+            ];
+
+            leafConfigs.forEach((c, idx) => {
+                const stemHeight = Math.hypot(c.ex - c.sx, c.ey - c.sy, c.ez - c.sz);
+                const stem = new THREE.Mesh(new THREE.CylinderGeometry(0.022, 0.035, stemHeight, 10), stemMat);
+                stem.position.set((c.sx + c.ex) / 2, (c.sy + c.ey) / 2, (c.sz + c.ez) / 2);
+                stem.lookAt(c.ex, c.ey, c.ez);
+                stem.rotateX(Math.PI / 2);
+                stem.castShadow = true;
+                plantGroup.add(stem);
+
+                const leafGeo = new THREE.CircleGeometry(0.44 * c.scale, 16);
+                leafGeo.scale(1.0, 1.5, 1.0);
+                const lMesh = new THREE.Mesh(leafGeo, idx % 2 === 0 ? leafMat : leafHighlightMat);
+                lMesh.position.set(c.ex, c.ey, c.ez);
+                lMesh.rotation.set(c.rotX, c.rotY, c.rotZ);
+                lMesh.castShadow = true;
+                plantGroup.add(lMesh);
+            });
+
+            plantGroup.name = 'plant';
+            clickableItems.push({ mesh: pot, name: 'plant' }, { mesh: saucer, name: 'plant' });
+            roomGroup.add(plantGroup);
+        }
+
+        /* 💡 Standing Classical Floor Lamp in Library Corner */
+        function buildFloorLamp() {
+            floorLampGroup = new THREE.Group();
+            floorLampGroup.position.set(7.5, 0, 1.8); // Library corner beside bookshelf
+
+            const brassMat = new THREE.MeshStandardMaterial({
+                color: 0xd97706,
+                metalness: 0.88,
+                roughness: 0.22
+            });
+            const shadeMat = new THREE.MeshStandardMaterial({
+                color: 0xffedd5, // Warm Ivory Linen Fabric
+                roughness: 0.65,
+                side: THREE.DoubleSide
+            });
+
+            const base = new THREE.Mesh(new THREE.CylinderGeometry(0.55, 0.62, 0.12, 24), brassMat);
+            base.position.y = 0.06;
+            base.castShadow = true;
+            floorLampGroup.add(base);
+
+            const pole = new THREE.Mesh(new THREE.CylinderGeometry(0.045, 0.045, 5.8, 16), brassMat);
+            pole.position.y = 2.96;
+            pole.castShadow = true;
+            floorLampGroup.add(pole);
+
+            [1.8, 3.6, 5.2].forEach(ky => {
+                const ring = new THREE.Mesh(new THREE.TorusGeometry(0.07, 0.02, 10, 20), brassMat);
+                ring.position.y = ky;
+                ring.rotation.x = Math.PI / 2;
+                floorLampGroup.add(ring);
+            });
+
+            const shadeGeo = new THREE.CylinderGeometry(0.38, 0.68, 0.85, 24, 1, true);
+            const shade = new THREE.Mesh(shadeGeo, shadeMat);
+            shade.position.y = 5.65;
+            shade.castShadow = true;
+            floorLampGroup.add(shade);
+
+            floorLampLight = new THREE.PointLight(0xffeed6, 1.1, 9, 1.2);
+            floorLampLight.position.set(0, 5.55, 0);
+            floorLampGroup.add(floorLampLight);
+
+            floorLampBulb = new THREE.Mesh(
+                new THREE.SphereGeometry(0.09, 16, 16),
+                new THREE.MeshBasicMaterial({ color: 0xffedd5 })
+            );
+            floorLampBulb.position.set(0, 5.55, 0);
+            floorLampGroup.add(floorLampBulb);
+
+            floorLampGroup.name = 'floor-lamp';
+            clickableItems.push({ mesh: shade, name: 'floor-lamp' }, { mesh: base, name: 'floor-lamp' });
+            roomGroup.add(floorLampGroup);
+        }
+
+        function toggleFloorLamp() {
+            isFloorLampOn = !isFloorLampOn;
+            if (floorLampLight) floorLampLight.intensity = isFloorLampOn ? 1.1 : 0;
+            if (floorLampBulb) {
+                floorLampBulb.material.color.setHex(isFloorLampOn ? 0xffedd5 : 0x334155);
+            }
+            triggerHaptic(10);
+            showToast(isFloorLampOn ? 'Standing Floor Lamp: Turned ON • Cozy Corner Illumination' : 'Standing Floor Lamp: Turned OFF', 'wb_incandescent');
+        }
+
+        /* 🪑 Executive Chair Swivel Animation on Click */
+        function onChairClick() {
+            triggerHaptic(15);
+            if (!chairSeatPivot) return;
+
+            if (!isChairSwiveling && typeof TWEEN !== 'undefined') {
+                isChairSwiveling = true;
+                const currentRot = chairSeatPivot.rotation.y;
+                const targetRot = currentRot + (Math.random() > 0.5 ? 0.22 : -0.22);
+
+                new TWEEN.Tween(chairSeatPivot.rotation)
+                    .to({ y: targetRot }, 320)
+                    .easing(TWEEN.Easing.Quadratic.Out)
+                    .chain(
+                        new TWEEN.Tween(chairSeatPivot.rotation)
+                            .to({ y: 0 }, 450)
+                            .easing(TWEEN.Easing.Quadratic.InOut)
+                            .onComplete(() => {
+                                isChairSwiveling = false;
+                            })
+                    )
+                    .start();
+            }
+
+            showToast('Executive Study Chair: Swivel adjusted • Ergonomic posture aligned', 'chair');
         }
 
         function drawSmartClockDevice() {
@@ -11604,6 +12289,12 @@ CREATE TABLE medical_certificates (
                         else if (item.name === 'next-page') nextPage();
                         else if (item.name === 'prev-page') prevPage();
                         else if (item.name === 'tv') toggleTV();
+                        else if (item.name === 'chair') onChairClick();
+                        else if (item.name === 'floor-lamp') toggleFloorLamp();
+                        else if (item.name === 'pen-holder') showToast('Stationery Cup: Clinical charting stylus, fountain pen, and drafting pencils ready.', 'edit');
+                        else if (item.name === 'book-stack') showToast('Reference Volumes: Clinical Epidemiology & Deep Learning in Biomedicine.', 'menu_book');
+                        else if (item.name === 'wastebasket') showToast('Study Wastebasket: Discarded draft hypotheses & clinical notes.', 'delete');
+                        else if (item.name === 'plant') showToast('Monstera Deliciosa: Thriving under natural golden sunrise light.', 'eco');
                     }
                 }
             });
@@ -11743,6 +12434,8 @@ CREATE TABLE medical_certificates (
             nextTVChannel,
             prevTVChannel,
             minimizeTV,
+            onChairClick,
+            toggleFloorLamp,
             get initialized() { return initialized; },
             get isOpen() { return isOpen; }
         };
