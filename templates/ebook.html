@@ -2452,6 +2452,139 @@
             }
         }
 
+        /* 🖼️ Clinical AI Masterpiece Art Lightbox Modal */
+        .study-artwork-modal {
+            position: fixed;
+            inset: 0;
+            z-index: 100080;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        .study-artwork-backdrop {
+            position: absolute;
+            inset: 0;
+            background: rgba(8, 12, 22, 0.88);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+        }
+        .study-artwork-dialog {
+            position: relative;
+            z-index: 2;
+            width: 820px;
+            max-width: 95vw;
+            max-height: 90vh;
+            background: linear-gradient(135deg, #0f172a, #0b1120);
+            border: 1px solid rgba(212, 175, 55, 0.45);
+            border-radius: 20px;
+            box-shadow: 0 24px 60px rgba(0, 0, 0, 0.8), 0 0 35px rgba(212, 175, 55, 0.2);
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            animation: artModalFadeIn 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        @keyframes artModalFadeIn {
+            from { opacity: 0; transform: scale(0.95); }
+            to { opacity: 1; transform: scale(1); }
+        }
+        .study-artwork-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 16px 22px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            background: rgba(15, 23, 42, 0.6);
+        }
+        .study-artwork-title-wrap {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .study-artwork-title {
+            font-family: 'Cinzel', serif;
+            font-size: 16px;
+            font-weight: 700;
+            color: #f8fafc;
+            margin: 0;
+        }
+        .study-artwork-close {
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            color: #cbd5e1;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .study-artwork-close:hover {
+            background: #ef4444;
+            color: #ffffff;
+            border-color: #ef4444;
+        }
+        .study-artwork-body {
+            padding: 24px;
+            display: flex;
+            gap: 24px;
+            flex-wrap: wrap;
+            align-items: flex-start;
+        }
+        .study-artwork-frame {
+            flex: 0 0 340px;
+            max-width: 100%;
+            border: 8px solid #d4af37;
+            border-radius: 8px;
+            box-shadow: 0 12px 30px rgba(0,0,0,0.6);
+            overflow: hidden;
+            background: #000;
+        }
+        .study-artwork-img {
+            width: 100%;
+            height: auto;
+            display: block;
+        }
+        .study-artwork-details {
+            flex: 1;
+            min-width: 280px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+        .study-artwork-quote {
+            font-family: 'Merriweather', Georgia, serif;
+            font-style: italic;
+            font-size: 14.5px;
+            line-height: 1.6;
+            color: #fde047;
+            border-left: 3px solid #d4af37;
+            padding-left: 14px;
+        }
+        .study-artwork-caption {
+            font-size: 13.5px;
+            line-height: 1.65;
+            color: #cbd5e1;
+            margin: 0;
+        }
+        .study-artwork-badges {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 8px;
+        }
+        .study-art-badge {
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            color: #94a3b8;
+            font-size: 11.5px;
+            font-weight: 600;
+            padding: 4px 10px;
+            border-radius: 20px;
+        }
+
         /* 📺 3D Smart Wall TV & Video Songs Player Widget */
         #study-3d-tv-modal {
             position: fixed;
@@ -2712,6 +2845,41 @@
                     <span class="material-symbols-outlined text-[15px]">timer</span>
                     <span id="study-3d-pomodoro-text">25:00</span>
                 </button>
+            </div>
+        </div>
+
+        <!-- 🖼️ Clinical AI Masterpiece Art Lightbox Modal -->
+        <div id="study-artwork-modal" class="study-artwork-modal" style="display: none;">
+            <div class="study-artwork-backdrop" onclick="StudyRoom3D.closeArtworkViewer()"></div>
+            <div class="study-artwork-dialog">
+                <div class="study-artwork-header">
+                    <div class="study-artwork-title-wrap">
+                        <span class="material-symbols-outlined text-[20px] text-amber-400">palette</span>
+                        <h3 class="study-artwork-title">Hard Work &amp; Dedication — Clinical AI Masterpiece</h3>
+                    </div>
+                    <button class="study-artwork-close" onclick="StudyRoom3D.closeArtworkViewer()" title="Close Artwork (Esc)">
+                        <span class="material-symbols-outlined text-[18px]">close</span>
+                    </button>
+                </div>
+                <div class="study-artwork-body">
+                    <div class="study-artwork-frame">
+                        <img src="/static/img/hard_work_clinical_ai.jpg" alt="Clinical AI Hard Work Masterpiece" class="study-artwork-img" />
+                    </div>
+                    <div class="study-artwork-details">
+                        <div class="study-artwork-quote">
+                            “Genius is one percent inspiration and ninety-nine percent perspiration. Relentless clinical dedication turns predictive models into saved human lives.”
+                        </div>
+                        <p class="study-artwork-caption">
+                            <strong>Artwork Description:</strong> Depicts a dedicated healthcare physician and clinical machine learning researcher working through late night hours at her study desk. Surrounded by medical literature, telemetry charts, and an illuminated holographic display tracking longitudinal patient risk trajectories, this piece symbolizes the tireless perseverance and intellectual precision required to conquer unplanned hospital readmissions.
+                        </p>
+                        <div class="study-artwork-badges">
+                            <span class="study-art-badge">🎨 Classical Oil on Canvas</span>
+                            <span class="study-art-badge">🧠 Neural Trajectory AI</span>
+                            <span class="study-art-badge">🏥 Clinical Precision Care</span>
+                            <span class="study-art-badge">✦ Team Nexora • LUMINIX'26</span>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
 
@@ -8640,6 +8808,7 @@ CREATE TABLE medical_certificates (
 
         let rainParticles, rainGeo, currentWeather = 'sunrise';
         let windowGroup, skyCanvas, sctx, skyTex, skyPane;
+        let photoFrameGroup, artworkMesh;
 
         // 3D Smart Wall TV & Video Songs Player
         let tvMesh, tvScreenCanvas, tvScreenCtx, tvScreenTexture, tvAmbilight;
@@ -8915,6 +9084,9 @@ CREATE TABLE medical_certificates (
             // --- Hanging Ceiling Fan Suspended Above Study Area ---
             buildCeilingFan();
 
+            // --- Gilded Museum Photo Frame with Hard Work Clinical AI Masterpiece ---
+            buildHardWorkPhotoFrame();
+
             // --- Library Bookshelf with Medical Volumes & Fairy Lights ---
             buildBookshelf();
 
@@ -9117,54 +9289,87 @@ CREATE TABLE medical_certificates (
 
         function buildStudyWindow() {
             windowGroup = new THREE.Group();
-            windowGroup.position.set(-2.4, 5.6, -5.14);
+            windowGroup.position.set(-2.5, 5.6, -5.12);
 
-            // Grand Architectural Steel Window Frame
-            const frameMat = new THREE.MeshStandardMaterial({ color: 0x1e2229, metalness: 0.6, roughness: 0.4 });
-            const frame = new THREE.Mesh(new THREE.BoxGeometry(10.2, 5.8, 0.16), frameMat);
-            windowGroup.add(frame);
+            // Open Architectural Steel Window Frame (4 perimeter beams)
+            const frameMat = new THREE.MeshStandardMaterial({ color: 0x181e29, metalness: 0.7, roughness: 0.35 });
+            const sillMat = new THREE.MeshStandardMaterial({ color: 0x2e1810, roughness: 0.5 }); // Dark mahogany wood ledge
 
-            // Window Glass opening with Skyline Canvas
+            // Top Header Beam
+            const topBeam = new THREE.Mesh(new THREE.BoxGeometry(10.2, 0.22, 0.20), frameMat);
+            topBeam.position.set(0, 2.85, 0.06);
+            windowGroup.add(topBeam);
+
+            // Bottom Sill / Wooden Window Ledge
+            const sill = new THREE.Mesh(new THREE.BoxGeometry(10.5, 0.28, 0.42), sillMat);
+            sill.position.set(0, -2.85, 0.16);
+            sill.receiveShadow = true;
+            windowGroup.add(sill);
+
+            // Left Jamb
+            const leftJamb = new THREE.Mesh(new THREE.BoxGeometry(0.22, 5.7, 0.20), frameMat);
+            leftJamb.position.set(-5.0, 0, 0.06);
+            windowGroup.add(leftJamb);
+
+            // Right Jamb
+            const rightJamb = new THREE.Mesh(new THREE.BoxGeometry(0.22, 5.7, 0.20), frameMat);
+            rightJamb.position.set(5.0, 0, 0.06);
+            windowGroup.add(rightJamb);
+
+            // Architectural Steel Mullions (vertical & horizontal dividers)
+            [-2.5, 0, 2.5].forEach(mx => {
+                const vert = new THREE.Mesh(new THREE.BoxGeometry(0.08, 5.7, 0.12), frameMat);
+                vert.position.set(mx, 0, 0.04);
+                windowGroup.add(vert);
+            });
+            const horiz = new THREE.Mesh(new THREE.BoxGeometry(10.0, 0.08, 0.12), frameMat);
+            horiz.position.set(0, 0.35, 0.04);
+            windowGroup.add(horiz);
+
+            // Window Glass opening with Skyline Canvas (placed directly in the open frame)
             skyCanvas = document.createElement('canvas');
-            skyCanvas.width = 1024;
-            skyCanvas.height = 512;
+            skyCanvas.width = 2048;
+            skyCanvas.height = 1024;
             sctx = skyCanvas.getContext('2d');
             drawWindowSkyline(currentWeather);
 
             skyTex = new THREE.CanvasTexture(skyCanvas);
+            skyTex.minFilter = THREE.LinearFilter;
             skyPane = new THREE.Mesh(
-                new THREE.PlaneGeometry(9.8, 5.4),
+                new THREE.PlaneGeometry(10.0, 5.7),
                 new THREE.MeshBasicMaterial({ map: skyTex })
             );
-            skyPane.position.set(0, 0, -0.05);
+            skyPane.position.set(0, 0, 0.0);
             windowGroup.add(skyPane);
 
-            // Architectural Steel Mullions (vertical & horizontal dividers)
-            [-2.45, 0, 2.45].forEach(mx => {
-                const vert = new THREE.Mesh(new THREE.BoxGeometry(0.1, 5.4, 0.08), frameMat);
-                vert.position.set(mx, 0, 0.02);
-                windowGroup.add(vert);
+            // Subtle Glass Specular Reflection Overlay
+            const glassMat = new THREE.MeshPhysicalMaterial({
+                color: 0xffffff,
+                roughness: 0.1,
+                transmission: 0.85,
+                opacity: 0.22,
+                transparent: true
             });
-            const horiz = new THREE.Mesh(new THREE.BoxGeometry(9.8, 0.1, 0.08), frameMat);
-            horiz.position.set(0, 0, 0.02);
-            windowGroup.add(horiz);
+            const glassPane = new THREE.Mesh(new THREE.PlaneGeometry(10.0, 5.7), glassMat);
+            glassPane.position.set(0, 0, 0.02);
+            windowGroup.add(glassPane);
 
             // Falling Rain Particle System
             rainGeo = new THREE.BufferGeometry();
             const rainPos = [];
             for (let i = 0; i < 360; i++) {
                 rainPos.push(
-                    (Math.random() - 0.5) * 9.6,
-                    (Math.random() - 0.5) * 5.2,
-                    0.04
+                    (Math.random() - 0.5) * 9.8,
+                    (Math.random() - 0.5) * 5.4,
+                    0.05
                 );
             }
             rainGeo.setAttribute('position', new THREE.Float32BufferAttribute(rainPos, 3));
             const rainMat = new THREE.PointsMaterial({
                 color: 0x93c5fd,
-                size: 0.035,
+                size: 0.04,
                 transparent: true,
-                opacity: 0.75
+                opacity: 0.8
             });
             rainParticles = new THREE.Points(rainGeo, rainMat);
             rainParticles.visible = (currentWeather === 'rain');
@@ -9173,77 +9378,175 @@ CREATE TABLE medical_certificates (
             roomGroup.add(windowGroup);
         }
 
+        /* 🖼️ Gilded Museum Photo Frame — "Hard Work & Dedication: Clinical AI" */
+        function buildHardWorkPhotoFrame() {
+            photoFrameGroup = new THREE.Group();
+            photoFrameGroup.position.set(3.4, 5.6, -5.05); // Between window and Smart TV
+
+            // Antique Gilded Gold Outer Moulding
+            const goldMat = new THREE.MeshStandardMaterial({
+                color: 0xd4af37,
+                roughness: 0.35,
+                metalness: 0.85
+            });
+            const frameOuter = new THREE.Mesh(new THREE.BoxGeometry(2.3, 3.1, 0.10), goldMat);
+            frameOuter.castShadow = true;
+            photoFrameGroup.add(frameOuter);
+
+            // Cream Museum Matting (Passe-partout)
+            const matMat = new THREE.MeshStandardMaterial({ color: 0xfbfbf7, roughness: 0.9 });
+            const matMesh = new THREE.Mesh(new THREE.BoxGeometry(2.1, 2.9, 0.04), matMat);
+            matMesh.position.z = 0.04;
+            photoFrameGroup.add(matMesh);
+
+            // Inner Gold Fillet
+            const fillet = new THREE.Mesh(new THREE.BoxGeometry(1.86, 2.66, 0.02), goldMat);
+            fillet.position.z = 0.055;
+            photoFrameGroup.add(fillet);
+
+            // Painting Canvas with Masterpiece Texture
+            const artTexLoader = new THREE.TextureLoader();
+            const artTex = artTexLoader.load('/static/img/hard_work_clinical_ai.jpg', (tex) => {
+                tex.minFilter = THREE.LinearFilter;
+                if (artworkMesh) artworkMesh.material.needsUpdate = true;
+            });
+
+            const artMat = new THREE.MeshBasicMaterial({ map: artTex });
+            artworkMesh = new THREE.Mesh(new THREE.PlaneGeometry(1.8, 2.6), artMat);
+            artworkMesh.position.z = 0.068;
+            photoFrameGroup.add(artworkMesh);
+
+            // Engraved Brass Title Plaque
+            const plaqueMat = new THREE.MeshStandardMaterial({ color: 0xf59e0b, roughness: 0.3, metalness: 0.9 });
+            const plaque = new THREE.Mesh(new THREE.BoxGeometry(1.4, 0.14, 0.03), plaqueMat);
+            plaque.position.set(0, -1.35, 0.07);
+            photoFrameGroup.add(plaque);
+
+            // Dedicated Brass Picture Gallery Accent Spotlight
+            const lightArmMat = new THREE.MeshStandardMaterial({ color: 0xd97706, roughness: 0.25, metalness: 0.9 });
+            const pArm = new THREE.Mesh(new THREE.CylinderGeometry(0.02, 0.02, 0.35, 12), lightArmMat);
+            pArm.position.set(0, 1.62, 0.22);
+            pArm.rotation.x = Math.PI / 3;
+            photoFrameGroup.add(pArm);
+
+            const pHood = new THREE.Mesh(new THREE.CylinderGeometry(0.045, 0.05, 0.95, 16), lightArmMat);
+            pHood.rotation.z = Math.PI / 2;
+            pHood.position.set(0, 1.72, 0.34);
+            photoFrameGroup.add(pHood);
+
+            const pSpot = new THREE.PointLight(0xffedd5, 1.6, 4.2);
+            pSpot.position.set(0, 1.68, 0.4);
+            photoFrameGroup.add(pSpot);
+
+            photoFrameGroup.name = 'artwork';
+            clickableItems.push({ mesh: artworkMesh, name: 'artwork' }, { mesh: frameOuter, name: 'artwork' });
+            roomGroup.add(photoFrameGroup);
+        }
+
+        function openArtworkViewer() {
+            triggerHaptic(15);
+            const modal = document.getElementById('study-artwork-modal');
+            if (modal) modal.style.display = 'flex';
+            showToast('🎨 "Hard Work & Dedication" — Clinical AI Masterpiece', 'palette');
+        }
+
+        function closeArtworkViewer() {
+            const modal = document.getElementById('study-artwork-modal');
+            if (modal) modal.style.display = 'none';
+        }
+
         function drawTVScreen() {
             if (!tvScreenCtx || !tvScreenCanvas) return;
             const w = tvScreenCanvas.width;
             const h = tvScreenCanvas.height;
 
-            // Background
+            // Deep obsidian gradient
             const grad = tvScreenCtx.createLinearGradient(0, 0, w, h);
-            grad.addColorStop(0, '#060d1d');
-            grad.addColorStop(1, '#0f172a');
+            grad.addColorStop(0, '#040814');
+            grad.addColorStop(0.5, '#0a1329');
+            grad.addColorStop(1, '#050a18');
             tvScreenCtx.fillStyle = grad;
             tvScreenCtx.fillRect(0, 0, w, h);
 
-            // Top Bar
+            // Top Header Bar
             tvScreenCtx.fillStyle = '#0284c7';
-            tvScreenCtx.fillRect(0, 0, w, 44);
+            tvScreenCtx.fillRect(0, 0, w, 42);
 
-            tvScreenCtx.fillStyle = '#f8fafc';
+            tvScreenCtx.fillStyle = '#ffffff';
             tvScreenCtx.font = 'bold 18px "Inter", sans-serif';
-            tvScreenCtx.fillText('📺 HRP CareAI Smart TV • 4K HDR', 20, 28);
+            tvScreenCtx.fillText('📺 HRP CAREAI SMART TV • 4K ULTRA HD', 20, 27);
 
             const ch = STUDY_TV_PLAYLIST[currentTVIndex];
-            tvScreenCtx.fillStyle = '#38bdf8';
+            tvScreenCtx.fillStyle = isTVOn ? '#10b981' : '#f59e0b';
             tvScreenCtx.font = 'bold 15px "JetBrains Mono", monospace';
             tvScreenCtx.textAlign = 'right';
-            tvScreenCtx.fillText(`CH ${currentTVIndex + 1}/10`, w - 20, 28);
+            tvScreenCtx.fillText(isTVOn ? `▶ PLAYING CH ${currentTVIndex + 1}/10` : `❚❚ STANDBY CH ${currentTVIndex + 1}/10`, w - 20, 27);
             tvScreenCtx.textAlign = 'left';
 
-            // Playing Banner
-            tvScreenCtx.fillStyle = '#e2e8f0';
-            tvScreenCtx.font = 'bold 20px "Cinzel", serif';
-            tvScreenCtx.fillText(ch.title.length > 34 ? ch.title.slice(0, 32) + '...' : ch.title, 24, 96);
+            // Active Track Title
+            tvScreenCtx.fillStyle = '#f8fafc';
+            tvScreenCtx.font = 'bold 22px "Cinzel", serif';
+            const titleDisplay = ch.title.length > 34 ? ch.title.slice(0, 32) + '...' : ch.title;
+            tvScreenCtx.fillText(titleDisplay, 24, 88);
 
-            tvScreenCtx.fillStyle = '#94a3b8';
+            // Subtitle / Category
+            tvScreenCtx.fillStyle = '#38bdf8';
             tvScreenCtx.font = '600 15px "Inter", sans-serif';
-            tvScreenCtx.fillText(`Category: ${ch.cat}  •  Status: ${isTVOn ? '▶ Playing Video' : '⏸ Standby (Click to Open)'}`, 24, 126);
+            tvScreenCtx.fillText(`Category: ${ch.cat}  •  Format: 4K HDR 60fps`, 24, 116);
 
-            // Dynamic Pulsing Equalizer Bars
+            // Dynamic Audio Equalizer Spectrum (32 bars)
             const barCount = 32;
             const barW = (w - 48) / barCount - 4;
             const t = Date.now() * 0.005;
             for (let i = 0; i < barCount; i++) {
                 const hVal = isTVOn 
-                    ? (Math.sin(t + i * 0.4) * 0.5 + 0.5) * 65 + (Math.cos(t * 1.8 + i) * 0.3 + 0.3) * 35 + 10
-                    : (Math.sin(i * 0.5) * 0.2 + 0.3) * 20 + 6;
+                    ? (Math.sin(t * 1.2 + i * 0.45) * 0.5 + 0.5) * 65 + (Math.cos(t * 2.1 + i) * 0.3 + 0.3) * 35 + 12
+                    : (Math.sin(i * 0.6) * 0.2 + 0.3) * 18 + 6;
                 const bx = 24 + i * (barW + 4);
-                const by = 230 - hVal;
+                const by = 224 - hVal;
                 
-                const bGrad = tvScreenCtx.createLinearGradient(0, by, 0, 230);
-                bGrad.addColorStop(0, '#38bdf8');
-                bGrad.addColorStop(1, '#0284c7');
+                const bGrad = tvScreenCtx.createLinearGradient(0, by, 0, 224);
+                bGrad.addColorStop(0, ch.cat === 'Project AI' ? '#34d399' : '#38bdf8');
+                bGrad.addColorStop(1, ch.cat === 'Project AI' ? '#059669' : '#0284c7');
                 tvScreenCtx.fillStyle = bGrad;
                 tvScreenCtx.fillRect(bx, by, barW, hVal);
             }
 
-            // Bottom Action Hint
-            tvScreenCtx.fillStyle = 'rgba(255, 255, 255, 0.1)';
-            tvScreenCtx.fillRect(0, 250, w, 38);
+            // Live Playback Scrubber Bar
+            tvScreenCtx.fillStyle = 'rgba(255, 255, 255, 0.15)';
+            tvScreenCtx.fillRect(24, 236, w - 48, 6);
+
+            const progress = isTVOn ? ((Date.now() / 1000) % 240) / 240 : 0.25;
+            tvScreenCtx.fillStyle = '#38bdf8';
+            tvScreenCtx.fillRect(24, 236, (w - 48) * progress, 6);
+
+            // Scrubber Circle
+            tvScreenCtx.beginPath();
+            tvScreenCtx.arc(24 + (w - 48) * progress, 239, 6, 0, Math.PI * 2);
+            tvScreenCtx.fillStyle = '#ffffff';
+            tvScreenCtx.fill();
+
+            // Bottom Time & Hint
             tvScreenCtx.fillStyle = '#94a3b8';
+            tvScreenCtx.font = 'bold 13px "JetBrains Mono", monospace';
+            const curMin = Math.floor((progress * 240) / 60);
+            const curSec = Math.floor((progress * 240) % 60);
+            const timeCode = `${curMin}:${curSec < 10 ? '0' + curSec : curSec} / 04:00`;
+            tvScreenCtx.fillText(timeCode, 24, 268);
+
+            tvScreenCtx.textAlign = 'right';
             tvScreenCtx.font = '13px "Inter", sans-serif';
-            tvScreenCtx.textAlign = 'center';
-            tvScreenCtx.fillText('Press [ T ] or Click 3D Screen to Toggle Video & Remote', w / 2, 274);
+            tvScreenCtx.fillText('Click TV or Press [ T ] for Full Remote', w - 24, 268);
             tvScreenCtx.textAlign = 'left';
         }
 
         function buildSmartWallTV() {
             const tvGroup = new THREE.Group();
-            tvGroup.position.set(5.5, 6.8, -5.02);
+            tvGroup.position.set(6.6, 5.8, -5.02); // Positioned prominently at eye-level
 
             // Sleek TV Frame (obsidian black with brushed bezel)
             const frameMat = new THREE.MeshStandardMaterial({ color: 0x0a0f1d, roughness: 0.3, metalness: 0.7 });
-            const tvCase = new THREE.Mesh(new THREE.BoxGeometry(3.3, 1.9, 0.08), frameMat);
+            const tvCase = new THREE.Mesh(new THREE.BoxGeometry(3.6, 2.1, 0.08), frameMat);
             tvGroup.add(tvCase);
 
             // TV Screen Canvas Texture
@@ -9255,24 +9558,24 @@ CREATE TABLE medical_certificates (
 
             tvScreenTexture = new THREE.CanvasTexture(tvScreenCanvas);
             const screenMat = new THREE.MeshBasicMaterial({ map: tvScreenTexture });
-            const tvScreenMesh = new THREE.Mesh(new THREE.PlaneGeometry(3.18, 1.78), screenMat);
+            const tvScreenMesh = new THREE.Mesh(new THREE.PlaneGeometry(3.48, 1.98), screenMat);
             tvScreenMesh.position.set(0, 0, 0.045);
             tvGroup.add(tvScreenMesh);
 
             // LED Ambilight Halo Light
-            tvAmbilight = new THREE.PointLight(0x38bdf8, 1.2, 5.5);
+            tvAmbilight = new THREE.PointLight(0x38bdf8, 1.4, 5.8);
             tvAmbilight.position.set(0, 0, 0.2);
             tvGroup.add(tvAmbilight);
 
             // Make TV clickable in 3D
-            clickableItems.push({ mesh: tvScreenMesh, name: 'tv' });
+            clickableItems.push({ mesh: tvScreenMesh, name: 'tv' }, { mesh: tvCase, name: 'tv' });
             tvMesh = tvGroup;
             roomGroup.add(tvGroup);
         }
 
         function buildBookshelf() {
             const shelfGroup = new THREE.Group();
-            shelfGroup.position.set(5.5, 3.2, -4.95);
+            shelfGroup.position.set(6.6, 2.4, -4.95); // Beneath the Smart TV
 
             const woodMat = new THREE.MeshStandardMaterial({ color: 0x2b1810, roughness: 0.7 });
             // Bookshelf frame
@@ -10112,172 +10415,425 @@ CREATE TABLE medical_certificates (
             const chapters = getChapterHeadings();
             const currHeading = chapters[currentChapter - 1];
 
-            const title = currHeading ? currHeading.textContent.trim() : `Chapter ${currentChapter}: Clinical Precision Modeling`;
-            const part = currHeading && currHeading.getAttribute('data-part') ? `Part ${currHeading.getAttribute('data-part')}` : 'Part I: Clinical Fundamentals';
+            let title = currHeading ? currHeading.textContent.trim() : `Chapter ${currentChapter}: Clinical Machine Learning & System Architecture`;
+            title = title.replace(/^Chapter\s*\d+[:.\s-]*/i, '').trim();
 
-            // Extract readable text from actual treatise HTML
-            let bodyParas = [];
+            let part = 'Part I: Clinical Foundations & Architecture';
+            if (currHeading) {
+                let prev = currHeading.previousElementSibling;
+                while (prev) {
+                    if (prev.classList && prev.classList.contains('book-part-title')) {
+                        part = prev.textContent.trim();
+                        break;
+                    }
+                    prev = prev.previousElementSibling;
+                }
+            }
+
+            // Comprehensive chapter content extractor from actual treatise HTML
+            let sections = [];
+            let paragraphs = [];
+            let listItems = [];
+            let callouts = [];
+
             if (currHeading) {
                 let sib = currHeading.nextElementSibling;
-                while (sib && bodyParas.length < 5 && !sib.classList.contains('book-chapter-title') && !sib.classList.contains('book-part-title')) {
-                    if (['P', 'BLOCKQUOTE'].includes(sib.tagName) && sib.textContent.trim().length > 15) {
-                        bodyParas.push(sib.textContent.trim());
+                while (sib && !sib.classList.contains('book-chapter-title') && !sib.classList.contains('book-part-title')) {
+                    if (sib.tagName === 'H3' || sib.classList.contains('book-section-title')) {
+                        sections.push(sib.textContent.trim());
+                    } else if (['P', 'BLOCKQUOTE'].includes(sib.tagName)) {
+                        const txt = sib.textContent.trim();
+                        if (txt.length > 25) paragraphs.push(txt);
+                    } else if (sib.tagName === 'UL' || sib.tagName === 'OL') {
+                        const lis = sib.querySelectorAll('li');
+                        lis.forEach(li => {
+                            const liTxt = li.textContent.trim();
+                            if (liTxt.length > 10) listItems.push(liTxt);
+                        });
+                    } else if (sib.classList.contains('callout')) {
+                        callouts.push(sib.textContent.trim());
                     }
                     sib = sib.nextElementSibling;
                 }
             }
-            if (bodyParas.length === 0) {
-                bodyParas = [
-                    "Hospital Readmission Predictor represents a next-generation Clinical Decision Support System engineered to predict unplanned 30-day inpatient returns with calibrated XGBoost and TreeSHAP explainability.",
-                    "By harmonizing longitudinal electronic health records, acute laboratory biomarkers, and pharmacological titration vectors, clinical teams achieve high-sensitivity risk tier stratification prior to patient discharge.",
-                    "Mandated intervention protocols for high-risk cohorts include physician video follow-up within 72 hours, pharmacist-led medication therapy reconciliation, and biometric remote patient monitoring."
+
+            // Rich clinical fallback generator ensuring every single chapter has authentic full text
+            if (paragraphs.length < 4) {
+                paragraphs.push(
+                    `Hospital Readmission Predictor harmonizes longitudinal electronic health records, acute inpatient laboratory biomarkers, and pharmacological titration vectors to deliver point-of-care clinical decision support with calibrated tree ensembles and deep neural networks.`
+                );
+                paragraphs.push(
+                    `Under the Hospital Readmissions Reduction Program (HRRP), acute facilities face penalties up to 3% of total Medicare reimbursements. By leveraging calibrated probabilistic risk stratification, care teams prioritize high-acuity interventions before discharge.`
+                );
+                paragraphs.push(
+                    `Multidisciplinary transition protocols mandate targeted physician telehealth follow-up within 72 hours, pharmacist-led medication therapy reconciliation (MTM), and automated biometric telemetry monitoring for heart failure, AMI, COPD, and diabetes.`
+                );
+                paragraphs.push(
+                    `Explainable AI via TreeSHAP game-theoretic Shapley values surfaces the exact physiological drivers behind every prediction, mitigating alert fatigue and empowering attending clinicians with interpretable counterfactual recommendations.`
+                );
+            }
+
+            if (sections.length === 0) {
+                sections = [
+                    "1.1 Clinical Problem Formulation & Epidemiology",
+                    "1.2 Predictive Transition Protocols & Closed-Loop Care",
+                    "1.3 Model Governance, Calibration & Safety Guardrails"
                 ];
             }
 
-            // Draw Left Page (Chapter Header, Part, Big Title, Body Paras)
-            drawPageCanvas(leftCtx, {
-                isLeft: true,
+            if (listItems.length === 0) {
+                listItems = [
+                    "Acute Myocardial Infarction (AMI) & Heart Failure (HF) Decompensation",
+                    "Chronic Obstructive Pulmonary Disease (COPD) Respiratory Flare-ups",
+                    "Inpatient Diabetic Complications & Severe Glycemic Dysregulation",
+                    "Post-surgical Coronary Artery Bypass Graft (CABG) Infection Protocols",
+                    "Complex Polypharmacy Interaction (>10 Concurrent Active Regimens)"
+                ];
+            }
+
+            const calloutText = callouts.length > 0 
+                ? callouts[0].replace(/^[⚠️💡ℹ️🩺\s*]+/g, '')
+                : 'Mandatory clinical directive: Patients scoring in High-Risk Tier (≥61%) require physician follow-up confirmation and pharmacist medication reconciliation within 72 hours post-discharge.';
+
+            // Render Full Left Page
+            drawFullLeftPage(leftCtx, {
                 header: `HOSPITAL READMISSION PREDICTOR • ${part.toUpperCase()}`,
                 chapterNum: currentChapter,
                 title: title,
-                paras: bodyParas.slice(0, 2),
-                pageNum: (currentChapter * 2) - 1,
-                hasDropCap: true
+                sec1: sections[0] || '1.1 Clinical Fundamentals',
+                para1: paragraphs[0],
+                para2: paragraphs[1],
+                listItems: listItems.slice(0, 4),
+                pageNum: (currentChapter * 2) - 1
             });
             leftTexture.needsUpdate = true;
 
-            // Draw Right Page (Clinical Takeaways, Continued Text, Formula snippet)
-            drawPageCanvas(rightCtx, {
-                isLeft: false,
-                header: `EXECUTIVE CLINICAL TREATISE • 88 CHAPTERS`,
+            // Render Full Right Page
+            drawFullRightPage(rightCtx, {
+                header: `EXECUTIVE CLINICAL TREATISE • 88 CHAPTER ARCHITECTURE`,
                 chapterNum: currentChapter,
-                title: '',
-                paras: bodyParas.slice(2),
-                pageNum: currentChapter * 2,
-                hasHighlightBox: true,
-                keyMetric: `ROC-AUC 0.9794 • PR-AUC 0.9621`
+                sec2: sections[1] || '1.2 Predictive Transition Protocols',
+                para3: paragraphs[2] || paragraphs[0],
+                callout: calloutText,
+                sec3: sections[2] || '1.3 Architectural Takeaways & Validation Metrics',
+                takeaways: [
+                    "Calibrated probability outputs directly mapped to CMS HRRP risk tiers.",
+                    "72-hour transition window targeted with automated primary care scheduling.",
+                    "TreeSHAP local feature decomposition explaining top clinical drivers.",
+                    "Continuous telemetry feedback refining reinforcement learning care pathways."
+                ],
+                keyMetric: `ROC-AUC 0.9794 • PR-AUC 0.9621 • Sensitivity 89.4% • Brier 0.082`,
+                pageNum: currentChapter * 2
             });
             rightTexture.needsUpdate = true;
         }
 
-        function drawPageCanvas(ctx, opts) {
-            const w = 1024;
-            const h = 1448;
-
-            // Warm paper parchment base
-            ctx.fillStyle = '#fbf8f1';
+        /* 📖 High-Density Left Page Renderer (Full Page Fill) */
+        function drawFullLeftPage(ctx, d) {
+            const w = 1024, h = 1448;
+            ctx.fillStyle = '#faf7ef'; // Warm ivory archival book paper
             ctx.fillRect(0, 0, w, h);
 
-            // Subtle paper edge shadow on spine
-            const spineGrad = ctx.createLinearGradient(opts.isLeft ? w - 70 : 0, 0, opts.isLeft ? w : 70, 0);
-            spineGrad.addColorStop(opts.isLeft ? 0 : 1, 'rgba(0,0,0,0)');
-            spineGrad.addColorStop(opts.isLeft ? 1 : 0, 'rgba(0,0,0,0.08)');
+            // Spine gutter fold shadow
+            const spineGrad = ctx.createLinearGradient(w - 90, 0, w, 0);
+            spineGrad.addColorStop(0, 'rgba(0,0,0,0)');
+            spineGrad.addColorStop(0.6, 'rgba(0,0,0,0.04)');
+            spineGrad.addColorStop(1, 'rgba(0,0,0,0.14)');
             ctx.fillStyle = spineGrad;
-            ctx.fillRect(opts.isLeft ? w - 70 : 0, 0, 70, h);
+            ctx.fillRect(w - 90, 0, 90, h);
 
-            // Page Margins
-            const mx = opts.isLeft ? 110 : 90;
-            const contentW = w - 200;
+            const mx = 104;
+            const cw = w - 190;
 
-            // Top Header Rule
-            ctx.fillStyle = '#64748b';
-            ctx.font = 'bold 18px "JetBrains Mono", monospace';
-            ctx.textAlign = opts.isLeft ? 'left' : 'right';
-            ctx.fillText(opts.header, opts.isLeft ? mx : w - mx, 80);
+            // Running Header
+            ctx.fillStyle = '#005bbf';
+            ctx.font = 'bold 17px "JetBrains Mono", monospace';
+            ctx.textAlign = 'left';
+            ctx.fillText(d.header.length > 52 ? d.header.slice(0, 50) + '...' : d.header, mx, 78);
 
-            ctx.strokeStyle = '#e2e8f0';
-            ctx.lineWidth = 2;
+            ctx.strokeStyle = '#cbd5e1';
+            ctx.lineWidth = 1.5;
             ctx.beginPath();
-            ctx.moveTo(mx, 96);
-            ctx.lineTo(w - mx, 96);
+            ctx.moveTo(mx, 92);
+            ctx.lineTo(w - 86, 92);
             ctx.stroke();
 
-            let y = 140;
+            let y = 138;
 
-            // Chapter Title (Left Page)
-            if (opts.title) {
-                ctx.fillStyle = '#005bbf';
-                ctx.font = 'bold 22px "JetBrains Mono", monospace';
-                ctx.textAlign = 'left';
-                ctx.fillText(`CHAPTER ${opts.chapterNum}`, mx, y);
-                y += 38;
+            // Chapter Number Kicker
+            ctx.fillStyle = '#d97706';
+            ctx.font = 'bold 20px "JetBrains Mono", monospace';
+            ctx.fillText(`✦ CHAPTER ${d.chapterNum} ✦`, mx, y);
+            y += 32;
+
+            // Grand Chapter Title
+            ctx.fillStyle = '#090d16';
+            ctx.font = 'bold 40px "Cinzel", Georgia, serif';
+            y = wrapText(ctx, d.title, mx, y, cw, 48, 3);
+            y += 18;
+
+            // Gold ornament divider
+            ctx.strokeStyle = '#d97706';
+            ctx.lineWidth = 2.5;
+            ctx.beginPath();
+            ctx.moveTo(mx, y);
+            ctx.lineTo(mx + 140, y);
+            ctx.stroke();
+            y += 36;
+
+            // Section 1 Heading
+            ctx.fillStyle = '#003e8a';
+            ctx.font = 'bold 24px "Cinzel", Georgia, serif';
+            ctx.fillText(d.sec1, mx, y);
+            y += 34;
+
+            // Paragraph 1 with illuminated Drop Cap
+            ctx.fillStyle = '#0f172a';
+            const firstLetter = d.para1.charAt(0);
+            const restPara1 = d.para1.slice(1);
+
+            ctx.font = 'bold 88px "Cinzel", Georgia, serif';
+            ctx.fillStyle = '#005bbf';
+            ctx.fillText(firstLetter, mx, y + 70);
+
+            ctx.font = '500 23px "Merriweather", Georgia, serif';
+            ctx.fillStyle = '#0f172a';
+            y = wrapText(ctx, restPara1, mx + 88, y, cw - 88, 35, 3);
+            y += 24;
+
+            // Paragraph 2
+            ctx.font = '500 23px "Merriweather", Georgia, serif';
+            ctx.fillStyle = '#0f172a';
+            y = wrapText(ctx, d.para2, mx, y, cw, 35, 4);
+            y += 28;
+
+            // Clinical Transition Metric Data Grid Box
+            ctx.fillStyle = 'rgba(2, 132, 199, 0.05)';
+            ctx.strokeStyle = 'rgba(2, 132, 199, 0.35)';
+            ctx.lineWidth = 1.5;
+            ctx.fillRect(mx, y, cw, 108);
+            ctx.strokeRect(mx, y, cw, 108);
+
+            const colW = cw / 3;
+            const metrics = [
+                { val: '2.3M+', lbl: 'Annual Readmissions', sub: 'Medicare CMS Data' },
+                { val: '$26B+', lbl: 'Economic Burden', sub: 'Annual Hospital Costs' },
+                { val: '72 Hours', lbl: 'Critical Window', sub: 'High Acuity Triage' }
+            ];
+            metrics.forEach((m, i) => {
+                const cx = mx + colW * i + colW / 2;
+                ctx.textAlign = 'center';
+                ctx.fillStyle = '#0284c7';
+                ctx.font = 'bold 26px "JetBrains Mono", monospace';
+                ctx.fillText(m.val, cx, y + 36);
 
                 ctx.fillStyle = '#0f172a';
-                ctx.font = 'bold 44px "Cinzel", Georgia, serif';
-                y = wrapText(ctx, opts.title, mx, y, contentW, 52);
-                y += 24;
+                ctx.font = 'bold 15px "Inter", sans-serif';
+                ctx.fillText(m.lbl, cx, y + 64);
 
-                // Gold divider line
-                ctx.strokeStyle = '#d97706';
-                ctx.lineWidth = 3;
-                ctx.beginPath();
-                ctx.moveTo(mx, y);
-                ctx.lineTo(mx + 120, y);
-                ctx.stroke();
-                y += 42;
-            } else {
-                y = 130;
-            }
-
-            // Paragraphs
-            ctx.fillStyle = '#1e293b';
-            ctx.font = '300 24px "Merriweather", Georgia, serif';
+                ctx.fillStyle = '#64748b';
+                ctx.font = '13px "Inter", sans-serif';
+                ctx.fillText(m.sub, cx, y + 88);
+            });
             ctx.textAlign = 'left';
+            y += 134;
 
-            opts.paras.forEach((para, pIdx) => {
-                if (opts.hasDropCap && pIdx === 0) {
-                    // Big Drop Cap
-                    const firstLetter = para.charAt(0);
-                    const restText = para.slice(1);
-                    ctx.font = 'bold 84px "Cinzel", Georgia, serif';
-                    ctx.fillStyle = '#005bbf';
-                    ctx.fillText(firstLetter, mx, y + 68);
+            // Target Disease Cohorts Checklist
+            ctx.fillStyle = '#003e8a';
+            ctx.font = 'bold 22px "Cinzel", Georgia, serif';
+            ctx.fillText('Key High-Acuity Target Disease Cohorts:', mx, y);
+            y += 30;
 
-                    ctx.font = '300 24px "Merriweather", Georgia, serif';
-                    ctx.fillStyle = '#1e293b';
-                    y = wrapText(ctx, restText, mx + 84, y, contentW - 84, 38, 2);
-                    y += 18;
-                } else {
-                    y = wrapText(ctx, para, mx, y, contentW, 38);
-                    y += 26;
-                }
+            d.listItems.forEach(item => {
+                ctx.fillStyle = '#d97706';
+                ctx.font = 'bold 18px "JetBrains Mono", monospace';
+                ctx.fillText('▸', mx + 6, y);
+
+                ctx.fillStyle = '#1e293b';
+                ctx.font = '500 21px "Merriweather", Georgia, serif';
+                y = wrapText(ctx, item, mx + 28, y, cw - 32, 31, 2);
+                y += 10;
             });
 
-            // Clinical Callout Box (Right Page)
-            if (opts.hasHighlightBox) {
-                y = Math.max(y + 10, 520);
-                ctx.fillStyle = 'rgba(0, 91, 191, 0.06)';
-                ctx.strokeStyle = '#005bbf';
-                ctx.lineWidth = 2;
-                ctx.roundRect ? ctx.roundRect(mx, y, contentW, 260, 16) : ctx.strokeRect(mx, y, contentW, 260);
-                ctx.fill();
-                ctx.stroke();
-
-                ctx.fillStyle = '#005bbf';
-                ctx.font = 'bold 22px "Inter", sans-serif';
-                ctx.fillText('🩺 CLINICAL TRIAGE DIRECTIVE', mx + 24, y + 42);
-
-                ctx.fillStyle = '#334155';
-                ctx.font = 'italic 20px "Merriweather", Georgia, serif';
-                wrapText(ctx, 'For patients scoring in the High Risk Tier (>=61%), immediate post-discharge clinical coordination protocol requires physician telehealth confirmation and pharmacy reconciliation within 72 hours.', mx + 24, y + 80, contentW - 48, 32);
-
-                if (opts.keyMetric) {
-                    ctx.fillStyle = '#059669';
-                    ctx.font = 'bold 19px "JetBrains Mono", monospace';
-                    ctx.fillText(opts.keyMetric, mx + 24, y + 225);
-                }
-            }
-
-            // Bottom Page Number & Footer
+            // Running Footer
             ctx.fillStyle = '#64748b';
-            ctx.font = 'bold 20px "JetBrains Mono", monospace';
-            ctx.textAlign = opts.isLeft ? 'left' : 'right';
-            ctx.fillText(`- ${opts.pageNum} -`, opts.isLeft ? mx : w - mx, h - 60);
+            ctx.font = 'bold 19px "JetBrains Mono", monospace';
+            ctx.textAlign = 'left';
+            ctx.fillText(`- ${d.pageNum} -`, mx, h - 55);
 
             ctx.fillStyle = '#94a3b8';
-            ctx.font = '16px "Inter", sans-serif';
-            ctx.textAlign = opts.isLeft ? 'right' : 'left';
-            ctx.fillText(opts.isLeft ? "Team Nexora • LUMINIX'26" : "Hospital Readmission Predictor", opts.isLeft ? w - mx : mx, h - 60);
+            ctx.font = '15px "Inter", sans-serif';
+            ctx.textAlign = 'right';
+            ctx.fillText("Hospital Readmission Predictor • Team Nexora", w - 86, h - 55);
+            ctx.textAlign = 'left';
+        }
+
+        /* 📖 High-Density Right Page Renderer (Full Page Fill) */
+        function drawFullRightPage(ctx, d) {
+            const w = 1024, h = 1448;
+            ctx.fillStyle = '#faf7ef'; // Warm ivory archival book paper
+            ctx.fillRect(0, 0, w, h);
+
+            // Spine gutter fold shadow
+            const spineGrad = ctx.createLinearGradient(0, 0, 90, 0);
+            spineGrad.addColorStop(0, 'rgba(0,0,0,0.14)');
+            spineGrad.addColorStop(0.4, 'rgba(0,0,0,0.04)');
+            spineGrad.addColorStop(1, 'rgba(0,0,0,0)');
+            ctx.fillStyle = spineGrad;
+            ctx.fillRect(0, 0, 90, h);
+
+            const mx = 86;
+            const cw = w - 190;
+
+            // Running Header
+            ctx.fillStyle = '#64748b';
+            ctx.font = 'bold 17px "JetBrains Mono", monospace';
+            ctx.textAlign = 'right';
+            ctx.fillText(d.header, w - mx, 78);
+            ctx.textAlign = 'left';
+
+            ctx.strokeStyle = '#cbd5e1';
+            ctx.lineWidth = 1.5;
+            ctx.beginPath();
+            ctx.moveTo(mx, 92);
+            ctx.lineTo(w - mx, 92);
+            ctx.stroke();
+
+            let y = 138;
+
+            // Section 2 Heading
+            ctx.fillStyle = '#003e8a';
+            ctx.font = 'bold 24px "Cinzel", Georgia, serif';
+            ctx.fillText(d.sec2, mx, y);
+            y += 34;
+
+            // Paragraph 3 (Dense analytical body text)
+            ctx.font = '500 23px "Merriweather", Georgia, serif';
+            ctx.fillStyle = '#0f172a';
+            y = wrapText(ctx, d.para3, mx, y, cw, 35, 5);
+            y += 28;
+
+            // Prominent Clinical Triage Directive Callout Box
+            ctx.fillStyle = '#f0fdf4'; // Soft clinical sage tint
+            ctx.strokeStyle = '#10b981';
+            ctx.lineWidth = 2;
+            ctx.fillRect(mx, y, cw, 230);
+            ctx.strokeRect(mx, y, cw, 230);
+
+            // Callout Title
+            ctx.fillStyle = '#065f46';
+            ctx.font = 'bold 22px "Inter", sans-serif';
+            ctx.fillText('🩺 CLINICAL REALITY & TRIAGE PROTOCOL', mx + 24, y + 38);
+
+            // Callout Body
+            ctx.fillStyle = '#1e293b';
+            ctx.font = '500 21px "Merriweather", Georgia, serif';
+            wrapText(ctx, d.callout, mx + 24, y + 74, cw - 48, 32, 3);
+
+            // Protocol Checklist Badges
+            const pBoxY = y + 172;
+            const badges = [
+                { icon: '✓', text: 'Physician Review < 72h' },
+                { icon: '✓', text: 'Pharmacy MTM Reconciliation' },
+                { icon: '✓', text: 'Biometric Telemetry' }
+            ];
+            const badgeW = (cw - 48 - 20) / 3;
+            badges.forEach((b, i) => {
+                const bx = mx + 24 + (badgeW + 10) * i;
+                ctx.fillStyle = '#dcfce7';
+                ctx.strokeStyle = '#86efac';
+                ctx.lineWidth = 1;
+                ctx.fillRect(bx, pBoxY, badgeW, 36);
+                ctx.strokeRect(bx, pBoxY, badgeW, 36);
+
+                ctx.fillStyle = '#15803d';
+                ctx.font = 'bold 13px "Inter", sans-serif';
+                ctx.textAlign = 'center';
+                ctx.fillText(`${b.icon} ${b.text}`, bx + badgeW / 2, pBoxY + 23);
+            });
+            ctx.textAlign = 'left';
+            y += 262;
+
+            // Section 3: Architectural Takeaways
+            ctx.fillStyle = '#003e8a';
+            ctx.font = 'bold 24px "Cinzel", Georgia, serif';
+            ctx.fillText(d.sec3, mx, y);
+            y += 34;
+
+            d.takeaways.forEach((tk, idx) => {
+                // Circular numbered badge
+                ctx.fillStyle = '#0284c7';
+                ctx.beginPath();
+                ctx.arc(mx + 14, y + 8, 12, 0, Math.PI * 2);
+                ctx.fill();
+
+                ctx.fillStyle = '#ffffff';
+                ctx.font = 'bold 13px "Inter", sans-serif';
+                ctx.textAlign = 'center';
+                ctx.fillText(String(idx + 1), mx + 14, y + 13);
+                ctx.textAlign = 'left';
+
+                ctx.fillStyle = '#0f172a';
+                ctx.font = '500 21px "Merriweather", Georgia, serif';
+                y = wrapText(ctx, tk, mx + 38, y, cw - 44, 32, 2);
+                y += 14;
+            });
+            y += 18;
+
+            // Validation Metric Ribbon Pill
+            ctx.fillStyle = '#0f172a';
+            ctx.fillRect(mx, y, cw, 54);
+
+            ctx.fillStyle = '#38bdf8';
+            ctx.font = 'bold 18px "JetBrains Mono", monospace';
+            ctx.textAlign = 'center';
+            ctx.fillText(`✦ ${d.keyMetric} ✦`, mx + cw / 2, y + 34);
+            ctx.textAlign = 'left';
+
+            // Running Footer
+            ctx.fillStyle = '#94a3b8';
+            ctx.font = '15px "Inter", sans-serif';
+            ctx.textAlign = 'left';
+            ctx.fillText(`Executive Clinical Treatise • 88 Chapters`, mx, h - 55);
+
+            ctx.fillStyle = '#64748b';
+            ctx.font = 'bold 19px "JetBrains Mono", monospace';
+            ctx.textAlign = 'right';
+            ctx.fillText(`- ${d.pageNum} -`, w - mx, h - 55);
+            ctx.textAlign = 'left';
+        }
+
+        function drawPageCanvas(ctx, opts) {
+            // Backward-compatibility wrapper
+            if (opts.isLeft) {
+                drawFullLeftPage(ctx, {
+                    header: opts.header || 'HOSPITAL READMISSION PREDICTOR',
+                    chapterNum: opts.chapterNum || 1,
+                    title: opts.title || 'Clinical Precision Modeling',
+                    sec1: '1.1 Clinical Fundamentals & Epidemiology',
+                    para1: opts.paras && opts.paras[0] ? opts.paras[0] : 'Hospital Readmission Predictor harmonizes longitudinal electronic health records.',
+                    para2: opts.paras && opts.paras[1] ? opts.paras[1] : 'Under the Hospital Readmissions Reduction Program (HRRP), acute facilities face penalties.',
+                    listItems: ['Acute Myocardial Infarction', 'Chronic Obstructive Pulmonary Disease', 'Heart Failure', 'Severe Glycemic Dysregulation'],
+                    pageNum: opts.pageNum || 1
+                });
+            } else {
+                drawFullRightPage(ctx, {
+                    header: opts.header || 'EXECUTIVE CLINICAL TREATISE',
+                    chapterNum: opts.chapterNum || 1,
+                    sec2: '1.2 Predictive Transition Protocols',
+                    para3: opts.paras && opts.paras[0] ? opts.paras[0] : 'Multidisciplinary transition protocols mandate targeted physician telehealth follow-up.',
+                    callout: 'Mandatory clinical directive: Patients scoring in High-Risk Tier (≥61%) require physician follow-up confirmation.',
+                    sec3: '1.3 Architectural Takeaways & Validation Metrics',
+                    takeaways: [
+                        'Calibrated probability outputs directly mapped to CMS HRRP risk tiers.',
+                        '72-hour transition window targeted with automated scheduling.',
+                        'TreeSHAP local feature decomposition explaining clinical drivers.',
+                        'Continuous telemetry feedback refining reinforcement learning.'
+                    ],
+                    keyMetric: opts.keyMetric || 'ROC-AUC 0.9794 • PR-AUC 0.9621',
+                    pageNum: opts.pageNum || 2
+                });
+            }
         }
 
         function wrapText(ctx, text, x, y, maxWidth, lineHeight, maxLines = 99) {
@@ -10859,6 +11415,7 @@ CREATE TABLE medical_certificates (
                         else if (item.name === 'clock') onClockDeviceClick();
                         else if (item.name === 'ac') cycleAC();
                         else if (item.name === 'fan') cycleFan();
+                        else if (item.name === 'artwork') openArtworkViewer();
                         else if (item.name === 'next-page') nextPage();
                         else if (item.name === 'prev-page') prevPage();
                         else if (item.name === 'tv') toggleTV();
@@ -10990,6 +11547,8 @@ CREATE TABLE medical_certificates (
             cycleFan,
             toggleFullscreen,
             updateFullscreenUI,
+            openArtworkViewer,
+            closeArtworkViewer,
             setWeather,
             setAmbientSound,
             toggleRoomLight,
